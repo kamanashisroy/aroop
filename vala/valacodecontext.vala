@@ -416,6 +416,11 @@ public class Vala.CodeContext {
 				var ns_ref = new UsingDirective (new UnresolvedSymbol (null, "Dova", null));
 				source_file.add_using_directive (ns_ref);
 				root.add_using_directive (ns_ref);
+			} else if (profile == Profile.AROOP) {
+				// import the Aroop namespace by default (namespace of backend-specific standard library)
+				var ns_ref = new UsingDirective (new UnresolvedSymbol (null, "Aroop", null));
+				source_file.add_using_directive (ns_ref);
+				root.add_using_directive (ns_ref);
 			}
 
 			add_source_file (source_file);

@@ -194,6 +194,7 @@ dist_vapi_DATA = \
 	poppler-glib.deps \
 	poppler-glib.vapi \
 	posix.vapi \
+	aroop-1.0.vapi \
 	purple.deps \
 	purple.vapi \
 	raptor.vapi \

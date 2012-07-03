@@ -214,6 +214,9 @@ class Vala.Compiler {
 		} else if (profile == "dova") {
 			context.profile = Profile.DOVA;
 			context.add_define ("DOVA");
+		} else if (profile == "aroop") {
+			context.profile = Profile.AROOP;
+			context.add_define("AROOP");
 		} else {
 			Report.error (null, "Unknown profile %s".printf (profile));
 		}
