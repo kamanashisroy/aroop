@@ -28,6 +28,18 @@ libvala_la_VALASOURCES = \
 	valaccodestructmodule.vala \
 	valaclassregisterfunction.vala \
 	valactype.vala \
+	valaarooparraymodule.vala \
+	valaaroopassignmentmodule.vala \
+	valaaroopbasemodule.vala \
+	valaaroopccodegenimpl.vala \
+	valaaroopcontrolflowmodule.vala \
+	valaaroopdelegatemodule.vala \
+	valaaroopmemberaccessmodule.vala \
+	valaaroopmethodcallmodule.vala \
+	valaaroopmethodmodule.vala \
+	valaaroopobjectmodule.vala \
+	valaaroopstructmodule.vala \
+	valaaroopvaluemodule.vala \
 	valadovaarraymodule.vala \
 	valadovaassignmentmodule.vala \
 	valadovabasemodule.vala \

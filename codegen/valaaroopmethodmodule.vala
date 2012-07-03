@@ -1,6 +1,6 @@
-/* aroop-1.0.vala
+/* valaaroopmethodmodule.vala
  *
- * Copyright (C) 20012-2014 Kamanashis Roy Shuva <kamanashisroy@gmail.com>
+ * Copyright (C) 2007-2009  Jürg Billeter
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -11,17 +11,32 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- *
+
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  * Author:
- * 	Kamanashis Roy (kamanashisroy@gmail.com)
+ * 	Jürg Billeter <j@bitron.ch>
  */
 
-[CCode (cprefix = "Aroop", lower_case_cprefix = "aroop_", cheader_filename = "aroop_core.h", gir_namespace = "Aroop", gir_version = "1.0")]
-namespace Aroop {
-	public int aroop_obj_callback(void*data, int callback_action, void*cb_data, int size);
-	/*[CCode (type_id = "aroop_any_type", marshaller_type_name = "AROOP", get_value_function = "aroop_any_get_value", set_value_function = "aroop_any_set_value")]*/
+/**
+ * The link between a method and generated code.
+ */
+public abstract class Vala.AroopMethodModule : AroopStructModule {
+	public override bool method_has_wrapper (Method method) {
+		return (method.get_attribute ("NoWrapper") == null);
+	}
+
+	public override string? get_custom_creturn_type (Method m) {
+		var attr = m.get_attribute ("CCode");
+		if (attr != null) {
+			string type = attr.get_string ("type");
+			if (type != null) {
+				return type;
+			}
+		}
+		return null;
+	}
 }
+

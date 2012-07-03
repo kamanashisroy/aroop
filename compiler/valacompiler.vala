@@ -267,7 +267,14 @@ class Vala.Compiler {
 		} else if (context.profile == Profile.DOVA) {
 			if (!nostdpkg) {
 				/* default package */
+				context.add_external_package ("posix");
 				context.add_external_package ("dova-core-0.1");
+			}
+		} else if (context.profile == Profile.AROOP) {
+			if (!nostdpkg) {
+				/* default package */
+				// XXX should I load posix ?? context.add_external_package ("posix");
+				context.add_external_package ("aroop-1.0");
 			}
 		}
 
@@ -294,6 +301,8 @@ class Vala.Compiler {
 			context.codegen = new GDBusServerModule ();
 		} else if (context.profile == Profile.DOVA) {
 			context.codegen = new DovaErrorModule ();
+		} else if (context.profile == Profile.AROOP) {
+			context.codegen = new AroopCCodegenImpl ();
 		} else {
 			context.codegen = new CCodeDelegateModule ();
 		}
