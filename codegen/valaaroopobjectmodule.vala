@@ -26,6 +26,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			return;
 		}
 
+#if 0
 		if (cl.base_class == null) {
 			decl_space.add_type_declaration (new CCodeTypeDefinition ("struct _%s".printf (get_ccode_name (cl)), new CCodeVariableDeclarator (get_ccode_name (cl))));
 		} else if (cl == string_type.data_type) {
@@ -36,7 +37,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			generate_class_declaration (cl.base_class, decl_space);
 			decl_space.add_type_declaration (new CCodeTypeDefinition (get_ccode_name (cl.base_class), new CCodeVariableDeclarator (get_ccode_name (cl))));
 		}
-
 		if (cl.base_class == null) {
 			var instance_struct = new CCodeStruct ("_%s".printf (get_ccode_name (cl)));
 			instance_struct.add_field ("AroopType *", "type");
@@ -93,6 +93,23 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			type_init_fun.add_parameter (new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType *"));
 		}
 		decl_space.add_function_declaration (type_init_fun);
+#else
+		decl_space.add_type_declaration(new CCodeTypeDefinition ("struct _%s,".printf (get_ccode_name (cl)), new CCodeVariableDeclarator (get_ccode_name (cl))));
+		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf (get_ccode_name (cl)));
+		foreach (Method m in cl.get_methods ()) {
+			//vtable_struct.add_field ("AroopType *", "type");
+			generate_virtual_method_declaration (m, decl_space, vtable_struct);
+		}
+		decl_space.add_type_definition (vtable_struct);
+
+		var class_struct = new CCodeStruct ("_%s".printf (get_ccode_name (cl)));
+		if (cl.base_class != null) {
+			class_struct.add_field ("%s".printf(get_ccode_name (cl.base_class)), "super_data");
+		}
+		// TODO do something when there is no vtable ..
+		class_struct.add_field ("struct aroop_vtable_%s*".printf(get_ccode_name (cl)), "vtable");
+		decl_space.add_type_definition (class_struct);
+#endif
 	}
 
 	void generate_virtual_method_declaration (Method m, CCodeFile decl_space, CCodeStruct type_struct) {
