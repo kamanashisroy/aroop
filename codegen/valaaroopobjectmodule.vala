@@ -27,47 +27,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		}
 
 #if 0
-		if (cl.base_class == null) {
-			decl_space.add_type_declaration (new CCodeTypeDefinition ("struct _%s".printf (get_ccode_name (cl)), new CCodeVariableDeclarator (get_ccode_name (cl))));
-		} else if (cl == string_type.data_type) {
-			generate_class_declaration (cl.base_class, decl_space);
-			decl_space.add_type_declaration (new CCodeTypeDefinition ("const uint8_t *", new CCodeVariableDeclarator (get_ccode_name (cl))));
-		} else {
-			// typedef to base class instead of dummy struct to avoid warnings/casts
-			generate_class_declaration (cl.base_class, decl_space);
-			decl_space.add_type_declaration (new CCodeTypeDefinition (get_ccode_name (cl.base_class), new CCodeVariableDeclarator (get_ccode_name (cl))));
-		}
-		if (cl.base_class == null) {
-			var instance_struct = new CCodeStruct ("_%s".printf (get_ccode_name (cl)));
-			instance_struct.add_field ("AroopType *", "type");
-			decl_space.add_type_definition (instance_struct);
-		} else if (cl == type_class) {
-			var value_copy_function = new CCodeFunction ("aroop_type_value_copy");
-			value_copy_function.add_parameter (new CCodeParameter ("type", "AroopType *"));
-			value_copy_function.add_parameter (new CCodeParameter ("dest", "void *"));
-			value_copy_function.add_parameter (new CCodeParameter ("dest_index", "intptr_t"));
-			value_copy_function.add_parameter (new CCodeParameter ("src", "void *"));
-			value_copy_function.add_parameter (new CCodeParameter ("src_index", "intptr_t"));
-
-			cfile.add_function_declaration (value_copy_function);
-
-			var value_equals_function = new CCodeFunction ("aroop_type_value_equals", "bool");
-			value_equals_function.add_parameter (new CCodeParameter ("type", "AroopType *"));
-			value_equals_function.add_parameter (new CCodeParameter ("value", "void *"));
-			value_equals_function.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-			value_equals_function.add_parameter (new CCodeParameter ("other", "void *"));
-			value_equals_function.add_parameter (new CCodeParameter ("other_index", "intptr_t"));
-
-			cfile.add_function_declaration (value_equals_function);
-
-			var value_hash_function = new CCodeFunction ("aroop_type_value_hash", "uintptr_t");
-			value_hash_function.add_parameter (new CCodeParameter ("type", "AroopType *"));
-			value_hash_function.add_parameter (new CCodeParameter ("value", "void *"));
-			value_hash_function.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-
-			cfile.add_function_declaration (value_hash_function);
-		}
-
 		if (cl.base_class != null) {
 			// cycle Object -> any -> Type -> Object needs to be broken to get correct declaration order
 			generate_class_declaration (type_class, decl_space);
@@ -95,17 +54,26 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		decl_space.add_function_declaration (type_init_fun);
 #else
 		decl_space.add_type_declaration(new CCodeTypeDefinition ("struct _%s,".printf (get_ccode_name (cl)), new CCodeVariableDeclarator (get_ccode_name (cl))));
-		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf (get_ccode_name (cl)));
-		foreach (Method m in cl.get_methods ()) {
-			//vtable_struct.add_field ("AroopType *", "type");
-			generate_virtual_method_declaration (m, decl_space, vtable_struct);
-		}
-		decl_space.add_type_definition (vtable_struct);
+
+		add_vtable(cl, decl_space);
 
 		var class_struct = new CCodeStruct ("_%s".printf (get_ccode_name (cl)));
 		if (cl.base_class != null) {
 			class_struct.add_field ("%s".printf(get_ccode_name (cl.base_class)), "super_data");
 		}
+		foreach (Field f in cl.get_fields ()) {
+			if (f.binding == MemberBinding.INSTANCE)  {
+				generate_type_declaration (f.variable_type, decl_space);
+
+				string field_ctype = get_ccode_name (f.variable_type);
+				if (f.is_volatile) {
+					field_ctype = "volatile " + field_ctype;
+				}
+
+				class_struct.add_field (field_ctype, get_ccode_name (f) + get_ccode_declarator_suffix (f.variable_type));
+			}
+		}
+		//add_pray_function(cl, class_struct);
 		// TODO do something when there is no vtable ..
 		class_struct.add_field ("struct aroop_vtable_%s*".printf(get_ccode_name (cl)), "vtable");
 		decl_space.add_type_definition (class_struct);
@@ -153,182 +121,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return false;
 	}
 
-	void generate_class_private_declaration (Class cl, CCodeFile decl_space) {
-		if (add_symbol_declaration (decl_space, cl, get_ccode_name (cl) + "Private")) {
-			return;
-		}
-
-		var instance_priv_struct = new CCodeStruct ("_%sPrivate".printf (get_ccode_name (cl)));
-		var type_priv_struct = new CCodeStruct ("_%sTypePrivate".printf (get_ccode_name (cl)));
-
-		foreach (Field f in cl.get_fields ()) {
-			if (f.binding == MemberBinding.INSTANCE)  {
-				generate_type_declaration (f.variable_type, decl_space);
-
-				string field_ctype = get_ccode_name (f.variable_type);
-				if (f.is_volatile) {
-					field_ctype = "volatile " + field_ctype;
-				}
-
-				instance_priv_struct.add_field (field_ctype, get_ccode_name (f) + get_ccode_declarator_suffix (f.variable_type));
-			}
-		}
-
-		if (cl.get_full_name () == "Aroop.Type") {
-			var vdeclarator = new CCodeFunctionDeclarator ("value_copy");
-			vdeclarator.add_parameter (new CCodeParameter ("dest", "void *"));
-			vdeclarator.add_parameter (new CCodeParameter ("dest_index", "intptr_t"));
-			vdeclarator.add_parameter (new CCodeParameter ("src", "void *"));
-			vdeclarator.add_parameter (new CCodeParameter ("src_index", "intptr_t"));
-
-			var vdecl = new CCodeDeclaration ("void");
-			vdecl.add_declarator (vdeclarator);
-			instance_priv_struct.add_declaration (vdecl);
-
-			vdeclarator = new CCodeFunctionDeclarator ("value_equals");
-			vdeclarator.add_parameter (new CCodeParameter ("value", "void *"));
-			vdeclarator.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-			vdeclarator.add_parameter (new CCodeParameter ("other", "void *"));
-			vdeclarator.add_parameter (new CCodeParameter ("other_index", "intptr_t"));
-
-			vdecl = new CCodeDeclaration ("bool");
-			vdecl.add_declarator (vdeclarator);
-			instance_priv_struct.add_declaration (vdecl);
-
-			vdeclarator = new CCodeFunctionDeclarator ("value_hash");
-			vdeclarator.add_parameter (new CCodeParameter ("value", "void *"));
-			vdeclarator.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-
-			vdecl = new CCodeDeclaration ("uintptr_t");
-			vdecl.add_declarator (vdeclarator);
-			instance_priv_struct.add_declaration (vdecl);
-
-			vdeclarator = new CCodeFunctionDeclarator ("value_to_any");
-			vdeclarator.add_parameter (new CCodeParameter ("value", "void *"));
-			vdeclarator.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-
-			vdecl = new CCodeDeclaration ("AroopObject *");
-			vdecl.add_declarator (vdeclarator);
-			instance_priv_struct.add_declaration (vdecl);
-
-			vdeclarator = new CCodeFunctionDeclarator ("value_from_any");
-			vdeclarator.add_parameter (new CCodeParameter ("any_", "any *"));
-			vdeclarator.add_parameter (new CCodeParameter ("value", "void *"));
-			vdeclarator.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-
-			vdecl = new CCodeDeclaration ("void");
-			vdecl.add_declarator (vdeclarator);
-			instance_priv_struct.add_declaration (vdecl);
-		}
-
-		foreach (var type_param in cl.get_type_parameters ()) {
-			var type_param_decl = new CCodeDeclaration ("AroopType *");
-			type_param_decl.add_declarator (new CCodeVariableDeclarator ("%s_type".printf (type_param.name.down ())));
-			type_priv_struct.add_declaration (type_param_decl);
-		}
-
-		foreach (Method m in cl.get_methods ()) {
-			generate_virtual_method_declaration (m, decl_space, type_priv_struct);
-		}
-
-		foreach (Property prop in cl.get_properties ()) {
-			if (!prop.is_abstract && !prop.is_virtual) {
-				continue;
-			}
-			generate_type_declaration (prop.property_type, decl_space);
-
-			var t = (ObjectTypeSymbol) prop.parent_symbol;
-
-			var this_type = new ObjectType (t);
-			var cselfparam = new CCodeParameter ("this", get_ccode_name (this_type));
-			var cvalueparam = new CCodeParameter ("value", get_ccode_name (prop.property_type));
-
-			if (prop.get_accessor != null) {
-				var vdeclarator = new CCodeFunctionDeclarator ("get_%s".printf (prop.name));
-				vdeclarator.add_parameter (cselfparam);
-				string creturn_type = get_ccode_name (prop.property_type);
-
-				var vdecl = new CCodeDeclaration (creturn_type);
-				vdecl.add_declarator (vdeclarator);
-				type_priv_struct.add_declaration (vdecl);
-			}
-			if (prop.set_accessor != null) {
-				var vdeclarator = new CCodeFunctionDeclarator ("set_%s".printf (prop.name));
-				vdeclarator.add_parameter (cselfparam);
-				vdeclarator.add_parameter (cvalueparam);
-
-				var vdecl = new CCodeDeclaration ("void");
-				vdecl.add_declarator (vdeclarator);
-				type_priv_struct.add_declaration (vdecl);
-			}
-		}
-
-		if (!instance_priv_struct.is_empty) {
-			decl_space.add_type_declaration (new CCodeTypeDefinition ("struct %s".printf (instance_priv_struct.name), new CCodeVariableDeclarator ("%sPrivate".printf (get_ccode_name (cl)))));
-			decl_space.add_type_definition (instance_priv_struct);
-		}
-
-		if (!type_priv_struct.is_empty) {
-			decl_space.add_type_declaration (new CCodeTypeDefinition ("struct %s".printf (type_priv_struct.name), new CCodeVariableDeclarator ("%sTypePrivate".printf (get_ccode_name (cl)))));
-			decl_space.add_type_definition (type_priv_struct);
-		}
-
-		var cdecl = new CCodeDeclaration ("intptr_t");
-		cdecl.add_declarator (new CCodeVariableDeclarator ("_%s_object_offset".printf (get_ccode_lower_case_name (cl)), new CCodeConstant ("0")));
-		cdecl.modifiers = CCodeModifiers.STATIC;
-		decl_space.add_type_member_declaration (cdecl);
-
-		CCodeExpression type_offset;
-
-		string macro;
-		if (cl.base_class == null) {
-			// offset of any class is 0
-			macro = "((%sPrivate *) o)".printf (get_ccode_name (cl));
-			type_offset = new CCodeConstant ("sizeof (anyPrivate) + sizeof (AroopObjectPrivate) + sizeof (AroopTypePrivate)");
-		} else if (cl == object_class) {
-			macro = "((%sPrivate *) (((char *) o) + sizeof (anyPrivate)))".printf (get_ccode_name (cl));
-			type_offset = new CCodeConstant ("sizeof (anyPrivate) + sizeof (AroopObjectPrivate) + sizeof (AroopTypePrivate) + sizeof (anyTypePrivate)");
-		} else if (cl == type_class) {
-			macro = "((%sPrivate *) (((char *) o) + sizeof (anyPrivate) + sizeof (AroopObjectPrivate)))".printf (get_ccode_name (cl));
-			type_offset = new CCodeConstant ("sizeof (anyPrivate) + sizeof (AroopObjectPrivate) + sizeof (AroopTypePrivate) + sizeof (anyTypePrivate) + sizeof (AroopObjectTypePrivate)");
-		} else {
-			macro = "((%sPrivate *) (((char *) o) + _%s_object_offset))".printf (get_ccode_name (cl), get_ccode_lower_case_name (cl));
-			type_offset = new CCodeConstant ("0");
-		}
-		if (!instance_priv_struct.is_empty) {
-			decl_space.add_type_member_declaration (new CCodeMacroReplacement ("%s_GET_PRIVATE(o)".printf (get_ccode_upper_case_name (cl, null)), macro));
-		}
-
-		cdecl = new CCodeDeclaration ("intptr_t");
-		cdecl.add_declarator (new CCodeVariableDeclarator ("_%s_type_offset".printf (get_ccode_lower_case_name (cl)), type_offset));
-		cdecl.modifiers = CCodeModifiers.STATIC;
-		decl_space.add_type_member_declaration (cdecl);
-	}
-
-	CCodeFunction create_set_value_copy_function (bool decl_only = false) {
-		var result = new CCodeFunction ("aroop_type_set_value_copy");
-		result.add_parameter (new CCodeParameter ("type", "AroopType *"));
-		result.add_parameter (new CCodeParameter ("(*function) (void *dest, intptr_t dest_index, void *src, intptr_t src_index)", "void"));
-		if (decl_only) {
-			return result;
-		}
-
-		result.block = new CCodeBlock ();
-
-		var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("DOVA_TYPE_GET_PRIVATE"));
-		priv_call.add_argument (new CCodeIdentifier ("type"));
-
-		result.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, "value_copy"), new CCodeIdentifier ("function"))));
-		return result;
-	}
-
-	public void declare_set_value_copy_function (CCodeFile decl_space) {
-		if (add_symbol_declaration (decl_space, type_class, "aroop_type_set_value_copy")) {
-			return;
-		}
-		decl_space.add_function_declaration (create_set_value_copy_function (true));
-	}
-
 	CCodeFunction create_set_value_equals_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_equals");
 		result.add_parameter (new CCodeParameter ("type", "AroopType *"));
@@ -370,12 +162,14 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return result;
 	}
 
+#if 0
 	public void declare_set_value_hash_function (CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, type_class, "aroop_type_set_value_hash")) {
 			return;
 		}
 		decl_space.add_function_declaration (create_set_value_hash_function (true));
 	}
+#endif
 
 	CCodeFunction create_set_value_to_any_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_to_any");
@@ -394,12 +188,14 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return result;
 	}
 
+#if 0
 	public void declare_set_value_to_any_function (CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, type_class, "aroop_type_set_value_to_any")) {
 			return;
 		}
 		decl_space.add_function_declaration (create_set_value_to_any_function (true));
 	}
+#endif
 
 	CCodeFunction create_set_value_from_any_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_from_any");
@@ -418,356 +214,69 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return result;
 	}
 
+#if 0
 	public void declare_set_value_from_any_function (CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, type_class, "aroop_type_set_value_from_any")) {
 			return;
 		}
 		decl_space.add_function_declaration (create_set_value_from_any_function (true));
 	}
+#endif
 
-	public CCodeBlock generate_type_get_function (TypeSymbol cl, Class? base_class) {
-		DataType? base_class_type = null;
-		if (base_class != null && cl is Class) {
-			foreach (DataType base_type in ((Class) cl).get_base_types ()) {
-				if (base_type.data_type == base_class) {
-					base_class_type = base_type;
-					break;
-				}
-			}
+	private void add_vtable(Class cl, CCodeFile decl_space) {
+		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf (get_ccode_name (cl)));
+		foreach (Method m in cl.get_methods ()) {
+			generate_virtual_method_declaration (m, decl_space, vtable_struct);
 		}
-
-		var cdecl = new CCodeDeclaration ("AroopType *");
-		cdecl.add_declarator (new CCodeVariableDeclarator ("%s_type".printf (get_ccode_lower_case_name (cl)), new CCodeConstant ("NULL")));
-		cdecl.modifiers = CCodeModifiers.STATIC;
-		cfile.add_type_member_declaration (cdecl);
-
-		var type_fun = new CCodeFunction ("%s_type_get".printf (get_ccode_lower_case_name (cl)), "AroopType *");
-		if (cl.is_internal_symbol ()) {
-			type_fun.modifiers = CCodeModifiers.STATIC;
-		}
-
-		var object_type_symbol = cl as ObjectTypeSymbol;
-		if (object_type_symbol != null) {
-			foreach (var type_param in object_type_symbol.get_type_parameters ()) {
-				type_fun.add_parameter (new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType *"));
-			}
-		}
-
-		type_fun.block = new CCodeBlock ();
-
-		var type_init_block = new CCodeBlock ();
-
-		if (base_class == null) {
-			var sizeof_call = new CCodeFunctionCall (new CCodeIdentifier ("sizeof"));
-			sizeof_call.add_argument (new CCodeIdentifier ("%sPrivate".printf (get_ccode_name (cl))));
-
-			var calloc_call = new CCodeFunctionCall (new CCodeIdentifier ("calloc"));
-			calloc_call.add_argument (new CCodeConstant ("1"));
-			calloc_call.add_argument (new CCodeConstant ("sizeof (anyPrivate) + sizeof (AroopObjectPrivate) + sizeof (AroopTypePrivate) + sizeof (anyTypePrivate)"));
-
-			type_init_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl))), calloc_call)));
-
-			var set_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_object_size"));
-			set_size.add_argument (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl))));
-			set_size.add_argument (sizeof_call);
-			type_init_block.add_statement (new CCodeExpressionStatement (set_size));
-
-			type_init_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("_any_type_offset"), new CCodeConstant ("sizeof (any) + sizeof (AroopObjectPrivate) + sizeof (AroopTypePrivate)"))));
-
-			set_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_type_size"));
-			set_size.add_argument (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl))));
-			set_size.add_argument (new CCodeConstant ("sizeof (any) + sizeof (AroopObjectPrivate) + sizeof (AroopTypePrivate) + sizeof (anyTypePrivate)"));
-			type_init_block.add_statement (new CCodeExpressionStatement (set_size));
-
-			type_init_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl))), "type"), new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_type_get")))));
-		} else {
-			generate_method_declaration ((Method) object_class.scope.lookup ("alloc"), cfile);
-			generate_method_declaration ((Method) type_class.scope.lookup ("alloc"), cfile);
-
-			var base_type = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_get".printf (get_ccode_lower_case_name (base_class))));
-			for (int i = 0; i < base_class.get_type_parameters ().size; i++) {
-				base_type.add_argument (new CCodeConstant ("NULL"));
-			}
-
-			var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_alloc"));
-			alloc_call.add_argument (base_type);
-			if (!(cl is Class) || has_instance_struct ((Class) cl)) {
-				alloc_call.add_argument (new CCodeConstant ("sizeof (%sPrivate)".printf (get_ccode_name (cl))));
-			} else {
-				alloc_call.add_argument (new CCodeConstant ("0"));
-			}
-			if ((!(cl is Class) || has_type_struct ((Class) cl)) && !(cl is Delegate)) {
-				alloc_call.add_argument (new CCodeConstant ("sizeof (%sTypePrivate)".printf (get_ccode_name (cl))));
-			} else {
-				alloc_call.add_argument (new CCodeConstant ("0"));
-			}
-			alloc_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl)))));
-			alloc_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier ("_%s_object_offset".printf (get_ccode_lower_case_name (cl)))));
-			alloc_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier ("_%s_type_offset".printf (get_ccode_lower_case_name (cl)))));
-
-			type_init_block.add_statement (new CCodeExpressionStatement (alloc_call));
-		}
-
-		var type_init_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_init".printf (get_ccode_lower_case_name (cl))));
-		type_init_call.add_argument (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl))));
-
-		if (object_type_symbol != null) {
-			for (int i = 0; i < object_type_symbol.get_type_parameters ().size; i++) {
-				type_init_call.add_argument (new CCodeConstant ("NULL"));
-			}
-		}
-
-		type_init_block.add_statement (new CCodeExpressionStatement (type_init_call));
-
-		type_fun.block.add_statement (new CCodeIfStatement (new CCodeUnaryExpression (CCodeUnaryOperator.LOGICAL_NEGATION, new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl)))), type_init_block));
-
-		if (object_type_symbol != null && object_type_symbol.get_type_parameters ().size > 0) {
-			// generics
-			var specialized_type_get_block = new CCodeBlock ();
-
-			generate_property_accessor_declaration (((Property) type_class.scope.lookup ("next_type")).get_accessor, cfile);
-			generate_method_declaration ((Method) type_class.scope.lookup ("insert_type"), cfile);
-
-			var first = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_next_type"));
-			first.add_argument (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl))));
-
-			cdecl = new CCodeDeclaration ("AroopType *");
-			cdecl.add_declarator (new CCodeVariableDeclarator ("result", first));
-			specialized_type_get_block.add_statement (cdecl);
-
-			var next = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_next_type"));
-			next.add_argument (new CCodeIdentifier ("result"));
-
-			var next_check = new CCodeBlock ();
-			next_check.add_statement (new CCodeIfStatement (new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, new CCodeMemberAccess.pointer (get_type_private_from_type (object_type_symbol, new CCodeIdentifier ("result")), "%s_type".printf (object_type_symbol.get_type_parameters ().get (0).name.down ())), new CCodeIdentifier ("%s_type".printf (object_type_symbol.get_type_parameters ().get (0).name.down ()))), new CCodeBreakStatement ()));
-			next_check.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("result"), next)));
-
-			specialized_type_get_block.add_statement (new CCodeWhileStatement (new CCodeIdentifier ("result"), next_check));
-
-			var specialized_type_init_block = new CCodeBlock ();
-
-			generate_method_declaration ((Method) type_class.scope.lookup ("alloc"), cfile);
-
-			var base_type = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_get".printf (get_ccode_lower_case_name (base_class))));
-			if (base_class_type != null) {
-				foreach (var type_arg in base_class_type.get_type_arguments ()) {
-					base_type.add_argument (get_type_id_expression (type_arg, true));
-				}
-			}
-
-			var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_alloc"));
-			alloc_call.add_argument (base_type);
-			if (!(cl is Class) || has_instance_struct ((Class) cl)) {
-				alloc_call.add_argument (new CCodeConstant ("sizeof (%sPrivate)".printf (get_ccode_name (cl))));
-			} else {
-				alloc_call.add_argument (new CCodeConstant ("0"));
-			}
-			if (!(cl is Class) || has_type_struct ((Class) cl)) {
-				alloc_call.add_argument (new CCodeConstant ("sizeof (%sTypePrivate)".printf (get_ccode_name (cl))));
-			} else {
-				alloc_call.add_argument (new CCodeConstant ("0"));
-			}
-			alloc_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier ("result")));
-			alloc_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier ("_%s_object_offset".printf (get_ccode_lower_case_name (cl)))));
-			alloc_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier ("_%s_type_offset".printf (get_ccode_lower_case_name (cl)))));
-
-			specialized_type_init_block.add_statement (new CCodeExpressionStatement (alloc_call));
-
-			type_init_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_init".printf (get_ccode_lower_case_name (cl))));
-			type_init_call.add_argument (new CCodeIdentifier ("result"));
-
-			foreach (var type_param in object_type_symbol.get_type_parameters ()) {
-				type_init_call.add_argument (new CCodeIdentifier ("%s_type".printf (type_param.name.down ())));
-			}
-
-			specialized_type_init_block.add_statement (new CCodeExpressionStatement (type_init_call));
-
-			var insert_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_insert_type"));
-			insert_call.add_argument (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl))));
-			insert_call.add_argument (new CCodeIdentifier ("result"));
-			specialized_type_init_block.add_statement (new CCodeExpressionStatement (insert_call));
-
-			specialized_type_get_block.add_statement (new CCodeIfStatement (new CCodeUnaryExpression (CCodeUnaryOperator.LOGICAL_NEGATION, new CCodeIdentifier ("result")), specialized_type_init_block));
-
-			specialized_type_get_block.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("result")));
-
-			type_fun.block.add_statement (new CCodeIfStatement (new CCodeIdentifier ("%s_type".printf (object_type_symbol.get_type_parameters ().get (0).name.down ())), specialized_type_get_block));
-		}
-
-		type_fun.block.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (cl)))));
-
-		cfile.add_function (type_fun);
-
-		var type_init_fun = new CCodeFunction ("%s_type_init".printf (get_ccode_lower_case_name (cl)));
-		if (cl.is_internal_symbol ()) {
-			type_init_fun.modifiers = CCodeModifiers.STATIC;
-		}
-		type_init_fun.add_parameter (new CCodeParameter ("type", "AroopType *"));
-		if (object_type_symbol != null) {
-			foreach (var type_param in object_type_symbol.get_type_parameters ()) {
-				type_init_fun.add_parameter (new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType *"));
-			}
-		}
-		type_init_fun.block = new CCodeBlock ();
-
-		if (base_class == null || cl == object_class || cl == value_class || cl == string_class) {
-			var sizeof_call = new CCodeFunctionCall (new CCodeIdentifier ("sizeof"));
-			sizeof_call.add_argument (new CCodeIdentifier ("void *"));
-
-			var set_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_value_size"));
-			set_size.add_argument (new CCodeIdentifier ("type"));
-			set_size.add_argument (sizeof_call);
-			type_init_fun.block.add_statement (new CCodeExpressionStatement (set_size));
-
-			declare_set_value_copy_function (cfile);
-
-			var value_copy_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_value_copy"));
-			value_copy_call.add_argument (new CCodeIdentifier ("type"));
-			value_copy_call.add_argument (new CCodeCastExpression (new CCodeIdentifier ("%s_copy".printf (get_ccode_lower_case_name (cl))), "void (*)(void *, intptr_t,  void *, intptr_t)"));
-			type_init_fun.block.add_statement (new CCodeExpressionStatement (value_copy_call));
-
-			var function = new CCodeFunction ("%s_copy".printf (get_ccode_lower_case_name (cl)), "void");
-			function.modifiers = CCodeModifiers.STATIC;
-			function.add_parameter (new CCodeParameter ("dest", "any **"));
-			function.add_parameter (new CCodeParameter ("dest_index", "intptr_t"));
-			function.add_parameter (new CCodeParameter ("src", "any **"));
-			function.add_parameter (new CCodeParameter ("src_index", "intptr_t"));
-
-			function.block = new CCodeBlock ();
-			var cfrag = new CCodeFragment ();
-			function.block.add_statement (cfrag);
-
-			var dest = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("dest"), new CCodeIdentifier ("dest_index"));
-			var src = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("src"), new CCodeIdentifier ("src_index"));
-
-			var unref_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_unref".printf (get_ccode_lower_case_name (cl))));
-			unref_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, dest));
-			var unref_block = new CCodeBlock ();
-			unref_block.add_statement (new CCodeExpressionStatement (unref_call));
-			unref_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, dest), new CCodeConstant ("NULL"))));
-			function.block.add_statement (new CCodeIfStatement (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, dest), unref_block));
-
-			var ref_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_ref".printf (get_ccode_lower_case_name (cl))));
-			ref_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, src));
-			var ref_block = new CCodeBlock ();
-			ref_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, dest), ref_call)));
-			function.block.add_statement (new CCodeIfStatement (new CCodeIdentifier ("src"), ref_block));
-
-			cfile.add_function (function);
-
-			{
-				var value_equals_fun = new CCodeFunction ("%s_value_equals".printf (get_ccode_lower_case_name (cl)), "bool");
-				value_equals_fun.modifiers = CCodeModifiers.STATIC;
-				value_equals_fun.add_parameter (new CCodeParameter ("value", get_ccode_name (cl) + "**"));
-				value_equals_fun.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-				value_equals_fun.add_parameter (new CCodeParameter ("other", get_ccode_name (cl) + "**"));
-				value_equals_fun.add_parameter (new CCodeParameter ("other_index", "intptr_t"));
-				value_equals_fun.block = new CCodeBlock ();
-				var val = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("value"), new CCodeIdentifier ("value_index"));
-				var other = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("other"), new CCodeIdentifier ("other_index"));
-				var ccall = new CCodeFunctionCall (new CCodeIdentifier ("any_equals"));
-				ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, val));
-				ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, other));
-				value_equals_fun.block.add_statement (new CCodeReturnStatement (ccall));
-				cfile.add_function (value_equals_fun);
-
-				declare_set_value_equals_function (cfile);
-
-				var value_equals_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_value_equals"));
-				value_equals_call.add_argument (new CCodeIdentifier ("type"));
-				value_equals_call.add_argument (new CCodeCastExpression (new CCodeIdentifier ("%s_value_equals".printf (get_ccode_lower_case_name (cl))), "bool (*)(void *, intptr_t,  void *, intptr_t)"));
-				type_init_fun.block.add_statement (new CCodeExpressionStatement (value_equals_call));
-			}
-
-			{
-				var value_hash_fun = new CCodeFunction ("%s_value_hash".printf (get_ccode_lower_case_name (cl)), "uintptr_t");
-				value_hash_fun.modifiers = CCodeModifiers.STATIC;
-				value_hash_fun.add_parameter (new CCodeParameter ("value", get_ccode_name (cl) + "**"));
-				value_hash_fun.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-				value_hash_fun.block = new CCodeBlock ();
-				var val = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("value"), new CCodeIdentifier ("value_index"));
-				var ccall = new CCodeFunctionCall (new CCodeIdentifier ("any_hash"));
-				ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, val));
-				value_hash_fun.block.add_statement (new CCodeReturnStatement (ccall));
-				cfile.add_function (value_hash_fun);
-
-				declare_set_value_hash_function (cfile);
-
-				var value_hash_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_value_hash"));
-				value_hash_call.add_argument (new CCodeIdentifier ("type"));
-				value_hash_call.add_argument (new CCodeCastExpression (new CCodeIdentifier ("%s_value_hash".printf (get_ccode_lower_case_name (cl))), "uintptr_t (*)(void *, intptr_t)"));
-				type_init_fun.block.add_statement (new CCodeExpressionStatement (value_hash_call));
-			}
-
-			// generate method to box value
-			var value_to_any_fun = new CCodeFunction ("%s_value_to_any".printf (get_ccode_lower_case_name (cl)), "any*");
-			value_to_any_fun.modifiers = CCodeModifiers.STATIC;
-			value_to_any_fun.add_parameter (new CCodeParameter ("value", get_ccode_name (cl) + "**"));
-			value_to_any_fun.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-			value_to_any_fun.block = new CCodeBlock ();
-			var val = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("value"), new CCodeIdentifier ("value_index"));
-			string to_any_fun = "%s_ref".printf (get_ccode_lower_case_name (cl));
-			if (cl == string_class) {
-				to_any_fun = "string_to_any";
-			}
-			var ccall = new CCodeFunctionCall (new CCodeIdentifier (to_any_fun));
-			ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, val));
-			value_to_any_fun.block.add_statement (new CCodeReturnStatement (ccall));
-			cfile.add_function (value_to_any_fun);
-
-			declare_set_value_to_any_function (cfile);
-
-			var value_to_any_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_value_to_any"));
-			value_to_any_call.add_argument (new CCodeIdentifier ("type"));
-			value_to_any_call.add_argument (new CCodeIdentifier ("%s_value_to_any".printf (get_ccode_lower_case_name (cl))));
-			type_init_fun.block.add_statement (new CCodeExpressionStatement (value_to_any_call));
-
-			// generate method to unbox value
-			var value_from_any_fun = new CCodeFunction ("%s_value_from_any".printf (get_ccode_lower_case_name (cl)));
-			value_from_any_fun.modifiers = CCodeModifiers.STATIC;
-			value_from_any_fun.add_parameter (new CCodeParameter ("any_", "any *"));
-			value_from_any_fun.add_parameter (new CCodeParameter ("value", get_ccode_name (cl) + "**"));
-			value_from_any_fun.add_parameter (new CCodeParameter ("value_index", "intptr_t"));
-			value_from_any_fun.block = new CCodeBlock ();
-			string from_any_fun = "%s_ref".printf (get_ccode_lower_case_name (cl));
-			if (cl == string_class) {
-				from_any_fun = "string_from_any";
-			}
-			ccall = new CCodeFunctionCall (new CCodeIdentifier (from_any_fun));
-			ccall.add_argument (new CCodeIdentifier ("any_"));
-			value_from_any_fun.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, val), ccall)));
-			value_from_any_fun.block.add_statement (new CCodeReturnStatement (ccall));
-			cfile.add_function (value_from_any_fun);
-
-			declare_set_value_from_any_function (cfile);
-
-			var value_from_any_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_set_value_from_any"));
-			value_from_any_call.add_argument (new CCodeIdentifier ("type"));
-			value_from_any_call.add_argument (new CCodeIdentifier ("%s_value_from_any".printf (get_ccode_lower_case_name (cl))));
-			type_init_fun.block.add_statement (new CCodeExpressionStatement (value_from_any_call));
-		} else {
-			type_init_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_init".printf (get_ccode_lower_case_name (base_class))));
-			type_init_call.add_argument (new CCodeIdentifier ("type"));
-
-			if (base_class_type != null) {
-				foreach (var type_arg in base_class_type.get_type_arguments ()) {
-					type_init_call.add_argument (get_type_id_expression (type_arg, true));
-				}
-			}
-
-			type_init_fun.block.add_statement (new CCodeExpressionStatement (type_init_call));
-
-			if (object_type_symbol != null) {
-				foreach (var type_param in object_type_symbol.get_type_parameters ()) {
-					type_init_fun.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (get_type_private_from_type (object_type_symbol, new CCodeIdentifier ("type")), "%s_type".printf (type_param.name.down ())), new CCodeIdentifier ("%s_type".printf (type_param.name.down ())))));
-				}
-			}
-		}
-
-		cfile.add_function (type_init_fun);
-
-		return type_init_fun.block;
+		decl_space.add_type_definition (vtable_struct);
+
+		var vdecl = new CCodeDeclaration ("struct aroop_vtable_%s".printf (get_ccode_name (cl)));
+		vdecl.add_declarator (new CCodeVariableDeclarator ("vtable_%s".printf(get_ccode_name(cl))));
+		decl_space.add_type_member_declaration(vdecl);
 	}
+
+	private void add_pray_function (Class cl) {
+		var function = new CCodeFunction ("%spray".printf (get_ccode_lower_case_prefix (cl)), "void");
+		function.modifiers = CCodeModifiers.STATIC;
+
+		function.add_parameter (new CCodeParameter ("data", "God*"));
+		function.add_parameter (new CCodeParameter ("callback", "int"));
+		function.add_parameter (new CCodeParameter ("cb_data", "void*"));
+		function.add_parameter (new CCodeParameter ("va_list", "ap"));
+		function.add_parameter (new CCodeParameter ("size", "int"));
+
+		push_function (function); // XXX I do not know what push does 
+
+		cfile.add_function_declaration (function);
+
+		pop_function (); // XXX I do not know what pop does 
+
+		// Now add definition
+		var vblock = new CCodeBlock ();
+
+		var stat = new CCodeDeclaration ("%s *".printf (cl.name));
+		stat.add_declarator (new CCodeVariableDeclarator ("this"));
+		vblock.add_statement (stat);
+
+		var assign_stat = new CCodeIdentifier ("data");
+		vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("this"), new CCodeCastExpression (assign_stat, "%s *".printf (cl.name)))));
+
+		var switch_stat = new CCodeSwitchStatement (new CCodeIdentifier ("callback"));
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_INITIALIZE")));
+		switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("this->vtable"), new CCodeIdentifier ("&vtable_%s".printf(cl.name)))));
+		switch_stat.add_statement (new CCodeBreakStatement());
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_FINALIZE")));
+		switch_stat.add_statement (new CCodeBreakStatement());
+		vblock.add_statement (switch_stat);
+
+		vblock.add_statement (new CCodeReturnStatement(new CCodeConstant ("0")));
+
+		function.block = vblock;
+
+		cfile.add_function (function);
+
+	}
+
 
 	void add_finalize_function (Class cl) {
 		var function = new CCodeFunction ("%sfinalize".printf (get_ccode_lower_case_prefix (cl)), "void");
@@ -835,8 +344,8 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	public override void visit_class (Class cl) {
 		push_context (new EmitContext (cl));
 
+		add_pray_function (cl);
 		generate_class_declaration (cl, cfile);
-		generate_class_private_declaration (cl, cfile);
 
 		if (!cl.is_internal_symbol ()) {
 			generate_class_declaration (cl, header_file);
@@ -844,6 +353,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		cl.accept_children (this);
 
+#if 0
 		var type_init_block = generate_type_get_function (cl, cl.base_class);
 
 		foreach (DataType base_type in cl.get_base_types ()) {
@@ -871,7 +381,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			override_call.add_argument (new CCodeIdentifier ("%sfinalize".printf (get_ccode_lower_case_prefix (cl))));
 			type_init_block.add_statement (new CCodeExpressionStatement (override_call));
 		}
-
+#if 0
 		foreach (Method m in cl.get_methods ()) {
 			if (m.is_virtual || m.overrides) {
 				var override_call = new CCodeFunctionCall (new CCodeIdentifier ("%soverride_%s".printf (get_ccode_lower_case_prefix (m.base_method.parent_symbol), m.name)));
@@ -885,7 +395,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				type_init_block.add_statement (new CCodeExpressionStatement (override_call));
 			}
 		}
-
+#endif
 		foreach (Property prop in cl.get_properties ()) {
 			if (prop.is_virtual || prop.overrides) {
 				if (prop.get_accessor != null) {
@@ -1007,6 +517,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			declare_set_value_from_any_function (header_file);
 			cfile.add_function (create_set_value_from_any_function ());
 		}
+#endif
 
 		pop_context ();
 	}
@@ -1121,6 +632,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		pop_context ();
 	}
 
+#if 0
 	public override void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, acc.prop, get_ccode_name (acc))) {
 			return;
@@ -1179,8 +691,10 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			decl_space.add_function_declaration (override_func);
 		}
 	}
+#endif
 
 	public override void visit_property_accessor (PropertyAccessor acc) {
+#if 0
 		push_context (new EmitContext (acc));
 
 		var prop = (Property) acc.prop;
@@ -1305,6 +819,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		}
 
 		pop_context ();
+#endif
 	}
 
 	public override void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
@@ -1359,19 +874,25 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			return;
 		}
 
-		var function = new CCodeFunction (get_ccode_name (m));
+		if (m.is_abstract || m.is_virtual) {
+			// TODO remove the __VA_ARGS__ for single argument function
+			var func_macro = new CCodeMacroReplacement("%s(x, ...)".printf(get_ccode_name(m)), "((%s*)x)->%s(x, __VA_ARGS__)".printf(get_ccode_name((Class) m.parent_symbol), m.name));
+			decl_space.add_type_declaration (func_macro);
+		} else {
+			var function = new CCodeFunction (get_ccode_name (m));
 
-		if (m.is_internal_symbol ()) {
-			function.modifiers |= CCodeModifiers.STATIC;
-			if (m.is_inline) {
-				function.modifiers |= CCodeModifiers.INLINE;
+			if (m.is_internal_symbol ()) {
+				function.modifiers |= CCodeModifiers.STATIC;
+				if (m.is_inline) {
+					function.modifiers |= CCodeModifiers.INLINE;
+				}
 			}
+
+			generate_cparameters (m, decl_space, function, null, new CCodeFunctionCall (new CCodeIdentifier ("fake")));
+
+			decl_space.add_function_declaration (function);
 		}
-
-		generate_cparameters (m, decl_space, function, null, new CCodeFunctionCall (new CCodeIdentifier ("fake")));
-
-		decl_space.add_function_declaration (function);
-
+#if 0
 		if (m.is_abstract || m.is_virtual) {
 			var base_func = function.copy ();
 			base_func.name = "%sbase_%s".printf (get_ccode_lower_case_prefix (m.parent_symbol), m.name);
@@ -1393,12 +914,12 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			override_func.add_parameter (new CCodeParameter ("(*function) %s".printf (param_list), (m.return_type is GenericType) ? "void" : get_ccode_name (m.return_type)));
 			decl_space.add_function_declaration (override_func);
 		}
-
+#endif
 		if (m is CreationMethod && m.parent_symbol is Class) {
 			generate_class_declaration ((Class) m.parent_symbol, decl_space);
 
 			// _init function
-			function = new CCodeFunction (get_ccode_real_name (m));
+			var function = new CCodeFunction (get_ccode_real_name (m));
 
 			if (m.is_internal_symbol ()) {
 				function.modifiers |= CCodeModifiers.STATIC;
@@ -1428,7 +949,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		foreach (Expression postcondition in m.get_postconditions ()) {
 			postcondition.emit (this);
 		}
-
 
 		generate_method_declaration (m, cfile);
 
@@ -1531,7 +1051,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				cfile.add_function (function);
 			}
 		}
-
+#if 0
 		if (m.is_abstract || m.is_virtual) {
 			generate_class_declaration ((Class) object_class, cfile);
 
@@ -1660,7 +1180,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 			cfile.add_function (override_func);
 		}
-
+#endif
 		pop_context ();
 
 		if (m.entry_point) {
@@ -1765,13 +1285,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			cdecl.add_declarator (new CCodeVariableDeclarator ("this"));
 			vblock.add_statement (cdecl);
 
-			var type_get = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_lower_case_name (current_class) + "_type_get"));
-			foreach (var type_param in current_class.get_type_parameters ()) {
-				type_get.add_argument (new CCodeIdentifier ("%s_type".printf (type_param.name.down ())));
-			}
-
 			var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_alloc"));
-			alloc_call.add_argument (type_get);
+			alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (get_ccode_name(current_class))));
+			alloc_call.add_argument (new CCodeIdentifier("%spray".printf (get_ccode_lower_case_prefix (current_class))));
 			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("this"), new CCodeCastExpression (alloc_call, "%s *".printf (get_ccode_name (current_type_symbol))))));
 
 			// allocate memory for fields of generic types

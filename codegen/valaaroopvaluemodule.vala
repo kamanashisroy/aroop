@@ -70,6 +70,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 	public override void visit_struct (Struct st) {
 		base.visit_struct (st);
 
+#if 0
 		var cdecl = new CCodeDeclaration ("intptr_t");
 		cdecl.add_declarator (new CCodeVariableDeclarator ("_%s_object_offset".printf (get_ccode_lower_case_name (st)), new CCodeConstant ("0")));
 		cdecl.modifiers = CCodeModifiers.STATIC;
@@ -273,6 +274,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		cfile.add_function (type_init_fun);
 
 		add_struct_copy_function (st);
+#endif
 	}
 
 	void add_struct_copy_function (Struct st) {

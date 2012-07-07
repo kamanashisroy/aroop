@@ -24,4 +24,7 @@
 namespace Aroop {
 	public int aroop_obj_callback(void*data, int callback_action, void*cb_data, int size);
 	/*[CCode (type_id = "aroop_any_type", marshaller_type_name = "AROOP", get_value_function = "aroop_any_get_value", set_value_function = "aroop_any_set_value")]*/
+
+	public struct God {
+	}
 }
