@@ -26,36 +26,10 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			return;
 		}
 
-#if 0
-		if (cl.base_class != null) {
-			// cycle Object -> any -> Type -> Object needs to be broken to get correct declaration order
-			generate_class_declaration (type_class, decl_space);
-		}
-		generate_method_declaration ((Method) object_class.scope.lookup ("ref"), decl_space);
-		generate_method_declaration ((Method) object_class.scope.lookup ("unref"), decl_space);
-
-		var type_fun = new CCodeFunction ("%s_type_get".printf (get_ccode_lower_case_name (cl)), "AroopType *");
-		if (cl.is_internal_symbol ()) {
-			type_fun.modifiers = CCodeModifiers.STATIC;
-		}
-		foreach (var type_param in cl.get_type_parameters ()) {
-			type_fun.add_parameter (new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType *"));
-		}
-		decl_space.add_function_declaration (type_fun);
-
-		var type_init_fun = new CCodeFunction ("%s_type_init".printf (get_ccode_lower_case_name (cl)));
-		if (cl.is_internal_symbol ()) {
-			type_init_fun.modifiers = CCodeModifiers.STATIC;
-		}
-		type_init_fun.add_parameter (new CCodeParameter ("type", "AroopType *"));
-		foreach (var type_param in cl.get_type_parameters ()) {
-			type_init_fun.add_parameter (new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType *"));
-		}
-		decl_space.add_function_declaration (type_init_fun);
-#else
 		decl_space.add_type_declaration(new CCodeTypeDefinition ("struct _%s,".printf (get_ccode_name (cl)), new CCodeVariableDeclarator (get_ccode_name (cl))));
 
-		add_vtable(cl, decl_space);
+		generate_vtable(cl, decl_space);
+		generate_class_system_init_function(cl, decl_space);
 
 		var class_struct = new CCodeStruct ("_%s".printf (get_ccode_name (cl)));
 		if (cl.base_class != null) {
@@ -77,7 +51,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		// TODO do something when there is no vtable ..
 		class_struct.add_field ("struct aroop_vtable_%s*".printf(get_ccode_name (cl)), "vtable");
 		decl_space.add_type_definition (class_struct);
-#endif
 	}
 
 	void generate_virtual_method_declaration (Method m, CCodeFile decl_space, CCodeStruct type_struct) {
@@ -223,7 +196,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 #endif
 
-	private void add_vtable(Class cl, CCodeFile decl_space) {
+	private void generate_vtable(Class cl, CCodeFile decl_space) {
 		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf (get_ccode_name (cl)));
 		foreach (Method m in cl.get_methods ()) {
 			generate_virtual_method_declaration (m, decl_space, vtable_struct);
@@ -233,6 +206,28 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		var vdecl = new CCodeDeclaration ("struct aroop_vtable_%s".printf (get_ccode_name (cl)));
 		vdecl.add_declarator (new CCodeVariableDeclarator ("vtable_%s".printf(get_ccode_name(cl))));
 		decl_space.add_type_member_declaration(vdecl);
+	}
+
+	private void generate_class_system_init_function(Class cl, CCodeFile decl_space) {
+		var ifunc = new CCodeFunction ("%stype_system_init".printf (get_ccode_lower_case_prefix (cl)), "int");
+		push_function (ifunc); // XXX I do not know what push does 
+
+		decl_space.add_function_declaration (ifunc);
+
+		pop_function (); // XXX I do not know what pop does 
+
+		// Now add definition
+		var iblock = new CCodeBlock ();
+
+		foreach (Method m in cl.get_methods ()) {
+			if (m.is_virtual || m.overrides) {
+				iblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("vtable_%s.%s".printf(get_ccode_name(cl), get_ccode_vfunc_name (m))), new CCodeIdentifier ( get_ccode_real_name (m) ))));
+			}
+		}
+
+		iblock.add_statement (new CCodeReturnStatement(new CCodeConstant ("0")));
+		ifunc.block = iblock;
+		decl_space.add_function (ifunc);
 	}
 
 	private void add_pray_function (Class cl) {
