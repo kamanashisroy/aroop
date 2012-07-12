@@ -29,7 +29,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		decl_space.add_type_declaration(new CCodeTypeDefinition ("struct _%s,".printf (get_ccode_name (cl)), new CCodeVariableDeclarator (get_ccode_name (cl))));
 
 		generate_vtable(cl, decl_space);
-		generate_class_system_init_function(cl, decl_space);
 
 		var class_struct = new CCodeStruct ("_%s".printf (get_ccode_name (cl)));
 		if (cl.base_class != null) {
@@ -47,9 +46,8 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				class_struct.add_field (field_ctype, get_ccode_name (f) + get_ccode_declarator_suffix (f.variable_type));
 			}
 		}
-		//add_pray_function(cl, class_struct);
 		// TODO do something when there is no vtable ..
-		class_struct.add_field ("struct aroop_vtable_%s*".printf(get_ccode_name (cl)), "vtable");
+		class_struct.add_field ("struct aroop_vtable_%s*".printf(get_ccode_lower_case_name (cl)), "vtable");
 		decl_space.add_type_definition (class_struct);
 	}
 
@@ -196,23 +194,32 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 #endif
 
+	private void generate_vtable_helper(Class cl, CCodeFile decl_space, Class of_class) {
+		var vdecl = new CCodeDeclaration ("struct aroop_vtable_%s".printf (get_ccode_lower_case_name(of_class)));
+		vdecl.add_declarator (new CCodeVariableDeclarator ("vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_lower_case_name(of_class))));
+		decl_space.add_type_member_declaration(vdecl);
+	}
+
 	private void generate_vtable(Class cl, CCodeFile decl_space) {
-		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf (get_ccode_name (cl)));
+		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf (get_ccode_lower_case_name (cl)));
 		foreach (Method m in cl.get_methods ()) {
 			generate_virtual_method_declaration (m, decl_space, vtable_struct);
 		}
 		decl_space.add_type_definition (vtable_struct);
-
-		var vdecl = new CCodeDeclaration ("struct aroop_vtable_%s".printf (get_ccode_name (cl)));
-		vdecl.add_declarator (new CCodeVariableDeclarator ("vtable_%s".printf(get_ccode_name(cl))));
-		decl_space.add_type_member_declaration(vdecl);
+		generate_vtable_helper(cl, decl_space, cl);
+		foreach (DataType base_type in cl.get_base_types ()) {
+			var object_type = (ObjectType) base_type;
+			if (object_type.type_symbol is Class) {
+				generate_vtable_helper(cl, decl_space, ((Class)object_type.type_symbol));
+			}
+		}
 	}
 
-	private void generate_class_system_init_function(Class cl, CCodeFile decl_space) {
+	private void add_class_system_init_function(Class cl) {
 		var ifunc = new CCodeFunction ("%stype_system_init".printf (get_ccode_lower_case_prefix (cl)), "int");
 		push_function (ifunc); // XXX I do not know what push does 
 
-		decl_space.add_function_declaration (ifunc);
+		cfile.add_function_declaration (ifunc);
 
 		pop_function (); // XXX I do not know what pop does 
 
@@ -221,13 +228,13 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		foreach (Method m in cl.get_methods ()) {
 			if (m.is_virtual || m.overrides) {
-				iblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("vtable_%s.%s".printf(get_ccode_name(cl), get_ccode_vfunc_name (m))), new CCodeIdentifier ( get_ccode_real_name (m) ))));
+				iblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("vtable_%sovrd_%s.%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_lower_case_name((Class) m.base_method.parent_symbol), get_ccode_vfunc_name (m))), new CCodeIdentifier ( get_ccode_real_name (m) ))));
 			}
 		}
 
 		iblock.add_statement (new CCodeReturnStatement(new CCodeConstant ("0")));
 		ifunc.block = iblock;
-		decl_space.add_function (ifunc);
+		cfile.add_function (ifunc);
 	}
 
 	private void add_pray_function (Class cl) {
@@ -258,7 +265,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		var switch_stat = new CCodeSwitchStatement (new CCodeIdentifier ("callback"));
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_INITIALIZE")));
-		switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("this->vtable"), new CCodeIdentifier ("&vtable_%s".printf(cl.name)))));
+		switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("this->vtable"), new CCodeIdentifier ("&vtable_%s_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_lower_case_name(cl))))));
 		switch_stat.add_statement (new CCodeBreakStatement());
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_FINALIZE")));
 		switch_stat.add_statement (new CCodeBreakStatement());
@@ -340,6 +347,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		push_context (new EmitContext (cl));
 
 		add_pray_function (cl);
+		add_class_system_init_function(cl);
 		generate_class_declaration (cl, cfile);
 
 		if (!cl.is_internal_symbol ()) {
