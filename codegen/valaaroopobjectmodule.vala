@@ -280,7 +280,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		foreach (DataType base_type in cl.get_base_types ()) {
 			var object_type = (ObjectType) base_type;
 			if (object_type.type_symbol is Class) {
-				switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("(%s)this->vtable".printf(get_ccode_aroop_name(((Class)object_type.type_symbol)))), new CCodeIdentifier ("&vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(((Class)object_type.type_symbol)))))));
+				switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("((%s*)this)->vtable".printf(get_ccode_aroop_name(((Class)object_type.type_symbol)))), new CCodeIdentifier ("&vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(((Class)object_type.type_symbol)))))));
 			}
 		}
 		switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("this->vtable"), new CCodeIdentifier ("&vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(cl))))));

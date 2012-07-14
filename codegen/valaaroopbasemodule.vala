@@ -2280,13 +2280,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		if (node is ObjectType) {
 			var object_type = (ObjectType) node;
 			if (object_type.type_symbol is Class) {
-				return CCodeBaseModule.get_ccode_lower_case_name (node, null);
+				return CCodeBaseModule.get_ccode_lower_case_name (node, null) + "*";
 			} else if (object_type.type_symbol is Interface) {
-				return CCodeBaseModule.get_ccode_lower_case_name (node, null);
+				return CCodeBaseModule.get_ccode_lower_case_name (node, null) + "*";
 			}
+#if 0
 		} else if (node.data_type is Enum) {
 			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
-#if 0
 		} else if (node is DelegateType) {
 			var deleg_type = (DelegateType) node;
 			var d = deleg_type.delegate_symbol;
@@ -2305,9 +2305,8 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 #endif
 		} else if(node is Class || node is Interface || node is Enum) {
 			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
-		} else {
-			return CCodeBaseModule.get_ccode_name (node);
 		}
+		return CCodeBaseModule.get_ccode_name (node);
 	}
 
 	public string get_ccode_name (CodeNode node) {
