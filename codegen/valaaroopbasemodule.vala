@@ -1341,10 +1341,14 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public override void visit_string_literal (StringLiteral expr) {
 		// FIXME handle escaped characters in scanner/parser and escape them here again for C
+#if no_string_t
 		var cliteral = new CCodeConstant ("\"\\0\" " + expr.value);
 
 		var cbinary = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, cliteral, new CCodeConstant ("1"));
 		set_cvalue (expr, new CCodeCastExpression (cbinary, "string_t"));
+#else
+		set_cvalue (expr, new CCodeConstant(expr.value));
+#endif
 	}
 
 	public override void visit_null_literal (NullLiteral expr) {
@@ -2326,11 +2330,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public string get_ccode_ref_function (TypeSymbol node) {
-		return CCodeBaseModule.get_ccode_ref_function (node);
+		return "OPPREF";
+		//return CCodeBaseModule.get_ccode_ref_function (node);
 	}
 
 	public string get_ccode_unref_function (ObjectTypeSymbol node) {
-		return CCodeBaseModule.get_ccode_unref_function (node);
+		return "OPPUNREF";
+		//return CCodeBaseModule.get_ccode_unref_function (node);
 	}
 
 	public string get_ccode_free_function (TypeSymbol node) {

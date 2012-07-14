@@ -22,15 +22,13 @@
 
 [CCode (cprefix = "Aroop", lower_case_cprefix = "aroop_", cheader_filename = "aroop_core.h", gir_namespace = "Aroop", gir_version = "1.0")]
 namespace Aroop {
-	/*public int aroop_obj_callback(void*data, int callback_action, void*cb_data, int size);*/
 	/*[CCode (type_id = "aroop_any_type", marshaller_type_name = "AROOP", get_value_function = "aroop_any_get_value", set_value_function = "aroop_any_set_value")]*/
 
 	[CCode (cname = "aroop_god")]
-	public interface God {}
-
-	public class ArrayList {
-		public God? get (int index);
-		public void set (int index, God item);
-		public int count_unsafe();
+	public interface God {
+		[CCode (cname = "OPPREF")]
+		public static void ref();
+		[CCode (cname = "OPPUNREF")]
+		public static void unref();
 	}
 }

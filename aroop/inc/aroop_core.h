@@ -12,7 +12,13 @@ typedef int bool;
 
 typedef struct opp_factory opp_factory_t;
 typedef struct opp_pool opp_pool_t;
+typedef char string;
+
+
+
 C_CAPSULE_START
+
+int aroop_init(int argc, char ** argv);
 void*aroop_object_alloc (int size, opp_callback_t cb);
 
 C_CAPSULE_END

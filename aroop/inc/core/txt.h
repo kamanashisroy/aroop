@@ -1,0 +1,55 @@
+/*
+ * xultb_txt.h
+ *
+ *  Created on: Dec 21, 2011
+ *      Author: ayaskanti
+ */
+
+#ifndef XULTB_STRING_H_
+#define XULTB_STRING_H_
+
+#include "core/config.h"
+
+C_CAPSULE_START
+
+// TODO build an immutable txt ..
+struct aroop_txt {
+	struct aroop_txt*proto;
+	int hash;
+	int size;
+	int len;
+	char*str;
+};
+
+typedef struct aroop_txt aroop_txt;
+typedef int xultb_bool_t;
+
+#define aroop_txt_create(x) ({aroop_txt y;y.str = x,y.hash = 0,y.len = strlen(x);y.size=y.len+1;y;})
+
+#if 0
+aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
+#endif
+#define xultb_subtxt(src,off,width,dest) ({(dest)->str = (src)->str+off;(dest)->len = width;(dest)->hash=0;dest;})
+
+#define aroop_txtcmp(x,y) ({int min = x->len>y->len?y->len:x->len;memcmp(x->str, y->str, min);})
+
+#define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;(x && x->len == (sizeof(static_text)-1) && !memcmp(x->str, static_text,x->len));})
+
+
+aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
+#define aroop_txt_new_static(x) ({aroop_txt_new(x,sizeof(x)-1, NULL, 0);})
+aroop_txt*aroop_txt_clone(const char*content, int len, int scalability_index);
+aroop_txt*aroop_txtrim(aroop_txt*text);
+
+aroop_txt*aroop_txt_cat(aroop_txt*text, aroop_txt*suffix);
+aroop_txt*aroop_txt_cat_char(aroop_txt*text, char c);
+aroop_txt*aroop_txt_cat_static(aroop_txt*text, char*suffix);
+aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
+#define aroop_txt_indexof_char(haystack, niddle) ({const char*haystack##pos = strchr(haystack->str, niddle);int haystack##i = -1;if(haystack##pos && haystack##pos < (haystack->str+haystack->len))haystack##i = haystack##pos-haystack->str;haystack##i;})
+#define aroop_txt_to_vala(x) x->str
+
+void aroop_txt_system_init();
+
+C_CAPSULE_END
+
+#endif /* XULTB_STRING_H_ */

@@ -5,7 +5,7 @@
  *      Author: root
  */
 
-#include "core/string.h"
+#include "core/txt.h"
 #include "opp/opp_factory.h"
 #include "opp/opp_iterator.h"
 #include "opp/opp_hash_table.h"
@@ -16,7 +16,7 @@ C_CAPSULE_START
 
 struct opp_hash_table_item {
 	struct opp_object_ext _ext;
-	xultb_str_t*key;
+	aroop_txt*key;
 	void*obj_data;
 };
 
@@ -42,14 +42,14 @@ OPP_CB(hash_table_item) {
 
 static int match_hash(const void*data, const void*func_data) {
 	const struct opp_hash_table_item*item = data;
-	const xultb_str_t*key = func_data;
+	const aroop_txt*key = func_data;
 	if(key->len == item->key->len && !memcmp(key->str, item->key->str, key->len)) {
 		return 0;
 	}
 	return -1;
 }
 
-void*opp_hash_table_get(struct opp_factory*ht, xultb_str_t*key) {
+void*opp_hash_table_get(struct opp_factory*ht, aroop_txt*key) {
 	unsigned long hash = opp_get_hash_bin(key->str, key->len);
 	struct opp_hash_table_item*item = opp_search(ht, hash, match_hash, key);
 	if(!item) {
@@ -60,7 +60,7 @@ void*opp_hash_table_get(struct opp_factory*ht, xultb_str_t*key) {
 	return ret;
 }
 
-int opp_hash_table_set(struct opp_factory*ht, xultb_str_t*key, void*obj_data) {
+int opp_hash_table_set(struct opp_factory*ht, aroop_txt*key, void*obj_data) {
 	struct opp_hash_table_item*item = opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash, key);
 	if(item) {
 		if(item->obj_data) {

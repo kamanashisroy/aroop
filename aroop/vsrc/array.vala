@@ -1,5 +1,5 @@
 
-public class ArrayList {
+public class aroop.ArrayList {
 	opp_factory container;
 	public Aroop.God? get(int index) {
 		return null;

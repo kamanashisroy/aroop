@@ -55,7 +55,7 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 			if (cl == current_class) {
 				ccall.add_argument (new CCodeIdentifier ("this"));
 			} else {
-				ccall.add_argument (new CCodeCastExpression (new CCodeIdentifier ("this"), get_ccode_name (cl) + "*"));
+				ccall.add_argument (new CCodeCastExpression (new CCodeIdentifier ("this"), get_ccode_aroop_name (cl) + "*"));
 			}
 		} else if (m != null) {
 			if (m.binding == MemberBinding.INSTANCE) {
