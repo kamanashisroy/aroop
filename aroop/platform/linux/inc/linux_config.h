@@ -16,34 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with Aroop.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Author:
- * 	Kamanashis Roy (kamanashisroy@gmail.com)
+ *  Created on: Jun 29, 2011
+ *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+#ifndef XULTB_LINUX_CONFIG_H
+#define XULTB_LINUX_CONFIG_H
 
-#ifndef AROOP_CORE_H_
-#define AROOP_CORE_H_
+#include <inttypes.h>
+#include "unistd.h"
+#include "string.h"
+#include "stdlib.h"
+#include <assert.h>
+#include <stdarg.h>
 
-#include "core/config.h"
-#include "opp/opp_factory.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef void aroop_god;
-typedef int bool;
+typedef quint8 SYNC_UWORD8_T;
+typedef quint16 SYNC_UWORD16_T;
+typedef quint32 SYNC_UWORD32_T;
 
-#define true 1
-#define false 0
+typedef qint16 SYNC_SWORD16_T;
+typedef qint32 SYNC_SWORD32_T;
 
-typedef struct opp_factory opp_factory_t;
-typedef struct opp_pool opp_pool_t;
-typedef char string;
+#define SYNC_ASSERT(x) assert(x)
 
+#ifdef __cplusplus
+}
+#endif
 
+#endif //XULTB_LINUX_CONFIG_H
 
-C_CAPSULE_START
-
-int aroop_init(int argc, char ** argv);
-void*aroop_object_alloc (int size, opp_callback_t cb);
-
-C_CAPSULE_END
-
-#endif // AROOP_CORE_H_
