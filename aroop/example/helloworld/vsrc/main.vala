@@ -22,17 +22,18 @@
 
 
 
-class Animal: God {
-	public virtual aroop.txt sound() {
-		return aroop.txt.create_static("nothing");
+class Animal: aroop.God {
+	public virtual aroop.txt voice() {
+		return aroop.txt.create_static("Hello world");
+	}
+	public aroop.txt describe() {
+		return aroop.txt.create_static("Time is tiny, women are many.");
 	}
 }
 
 class Goat : Animal {
-	public override aroop.txt sound() {
-		var out = aroop.txt.create_static("maa");
-		return out;
-		//return new aroop.txt("maa", 3, null);
+	public override aroop.txt voice() {
+		return aroop.txt.create_static("maahamaahamaahalo");
 	}
 }
 
@@ -41,6 +42,6 @@ int main() {
 	Animal? an = null;
 	an = new Goat();
 
-	print(an.sound().to_string());
+	aroop.God.pray(an.voice(), aroop.pray.DESCRIBE);
 	return 0;
 }

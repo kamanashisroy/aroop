@@ -36,6 +36,22 @@ public struct aroop_uword16 {
 public struct aroop_uword32 {
 }
 
+[CCode (cprefix = "OPPN_ACTION_", cname = "int")]
+public enum aroop.pray {
+	DESCRIBE,
+}
+
+[CCode (cname = "aroop_god")]
+public interface aroop.God {
+#if NOREFFF
+	[CCode (cname = "OPPREF")]
+	public static void ref();
+	[CCode (cname = "OPPUNREF")]
+	public static void unref();
+#endif
+	[CCode (cname = "aroop_object_pray")]
+	public static void pray(void*data, int callback, void*cb_data = null);
+}
 
 [CCode (cname = "aroop_txt", cheader_filename = "core/txt.h")]
 public class aroop.txt {

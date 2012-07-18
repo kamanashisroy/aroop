@@ -21,6 +21,7 @@
  */
 
 #include "opp/opp_factory.h"
+#include "opp/opp_io.h"
 #include "core/txt.h"
 
 aroop_txt*DOT;
@@ -111,6 +112,11 @@ OPP_CB(aroop_txt) {
 		return 0;
 	case OPPN_ACTION_FINALIZE:
 		OPPUNREF(txt->proto);
+		break;
+	case OPPN_ACTION_DESCRIBE:
+		if(txt->str && txt->len != 0) {
+			printf("%s\n", txt->str);
+		}
 		break;
 	}
 	return 0;

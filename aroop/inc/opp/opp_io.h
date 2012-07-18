@@ -27,6 +27,12 @@
 extern "C" {
 #endif
 
+enum {
+	OPPN_ACTION_DESCRIBE = 512+64,
+	OPPN_ACTION_WATCHDOG,
+};
+
+
 
 enum {
 	IO_ACTION_READ = 128,

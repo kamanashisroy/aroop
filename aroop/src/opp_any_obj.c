@@ -28,6 +28,7 @@
 #include "opp/opp_any_obj.h"
 #include "opp/opp_factory.h"
 #include "opp/opp_type.h"
+#include "opp/opp_io.h"
 
 C_CAPSULE_START
 
@@ -62,8 +63,13 @@ OPP_CB(any_obj) {
 	{
 		struct any_obj*cb = (data+size);
 		cb--;
-		cb->cb(obj, OPPN_ACTION_FINALIZE, NULL, ap, size - sizeof(struct any_obj));
-		break;
+		return cb->cb(obj, OPPN_ACTION_FINALIZE, NULL, ap, size - sizeof(struct any_obj));
+	}
+	case OPPN_ACTION_DESCRIBE:
+	{
+		struct any_obj*cb = (data+size);
+		cb--;
+		return cb->cb(obj, OPPN_ACTION_DESCRIBE, NULL, ap, size - sizeof(struct any_obj));
 	}
 	}
 	return 0;

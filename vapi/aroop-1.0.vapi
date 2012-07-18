@@ -24,11 +24,4 @@
 namespace Aroop {
 	/*[CCode (type_id = "aroop_any_type", marshaller_type_name = "AROOP", get_value_function = "aroop_any_get_value", set_value_function = "aroop_any_set_value")]*/
 
-	[CCode (cname = "aroop_god")]
-	public interface God {
-		[CCode (cname = "OPPREF")]
-		public static void ref();
-		[CCode (cname = "OPPUNREF")]
-		public static void unref();
-	}
 }

@@ -26,6 +26,8 @@
 
 #include "core/config.h"
 #include "opp/opp_factory.h"
+#include "opp/opp_any_obj.h"
+#include "opp/opp_io.h"
 
 typedef void aroop_god;
 typedef int bool;
@@ -42,7 +44,9 @@ typedef char string;
 C_CAPSULE_START
 
 int aroop_init(int argc, char ** argv);
-void*aroop_object_alloc (int size, opp_callback_t cb);
+
+#define aroop_object_alloc(x,y) opp_any_obj_alloc(x,y)
+#define aroop_object_pray(x,y,z) opp_callback(x,y,z)
 
 C_CAPSULE_END
 

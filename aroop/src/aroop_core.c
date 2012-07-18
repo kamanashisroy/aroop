@@ -29,6 +29,3 @@ int aroop_init(int argc, char ** argv) {
 	aroop_txt_system_init();
 }
 
-void*aroop_object_alloc (int size, opp_callback_t cb) {
-	return opp_any_obj_alloc(size, cb);
-}

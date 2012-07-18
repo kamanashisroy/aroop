@@ -1269,8 +1269,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public override void visit_return_statement (ReturnStatement stmt) {
 		// free local variables
 		append_local_free (current_symbol);
+		var holder = new CCodeIdentifier ("result");
 
-		ccode.add_return ((current_return_type is VoidType) ? null : new CCodeIdentifier ("result"));
+		var rexpr = stmt.return_expression;
+		if(rexpr != null) {
+			ccode.add_assignment (holder, get_cvalue(rexpr));
+		}
+		ccode.add_return ((current_return_type is VoidType) ? null : holder);
 	}
 
 	public override void visit_delete_statement (DeleteStatement stmt) {

@@ -635,8 +635,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 					cdecl.add_declarator (new CCodeVariableDeclarator.zero ("result", default_value_for_type (m.return_type, true)));
 					ccode.add_statement (cdecl);
 
-					ccode.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("result")));
+					//ccode.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("result")));
 				}
+
 
 				var st = m.parent_symbol as Struct;
 				if (m is CreationMethod && st != null && (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ())) {
@@ -650,136 +651,10 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				cfile.add_function (function);
 			}
 		}
-#if 0
+
 		if (m.is_abstract || m.is_virtual) {
 			generate_class_declaration ((Class) object_class, cfile);
-
-			var vfunc = new CCodeFunction (get_ccode_name (m), (m.return_type is GenericType) ? "void" : get_ccode_aroop_name (m.return_type));
-			vfunc.block = new CCodeBlock ();
-
-			vfunc.add_parameter (new CCodeParameter ("this", "%s *".printf (get_ccode_aroop_name (m.parent_symbol))));
-			foreach (TypeParameter type_param in m.get_type_parameters ()) {
-				vfunc.add_parameter (new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType*"));
-			}
-			foreach (Parameter param in m.get_parameters ()) {
-				string ctypename = get_ccode_aroop_name (param.variable_type);
-				if (param.direction != ParameterDirection.IN) {
-					ctypename += "*";
-				}
-				vfunc.add_parameter (new CCodeParameter (param.name, ctypename));
-			}
-			if (m.return_type is GenericType) {
-				vfunc.add_parameter (new CCodeParameter ("result", "void *"));
-			}
-
-			if (m.get_full_name () == "any.equals") {
-				// make this null-safe
-				var null_block = new CCodeBlock ();
-				null_block.add_statement (new CCodeReturnStatement (new CCodeUnaryExpression (CCodeUnaryOperator.LOGICAL_NEGATION, new CCodeIdentifier ("other"))));
-				vfunc.block.add_statement (new CCodeIfStatement (new CCodeUnaryExpression (CCodeUnaryOperator.LOGICAL_NEGATION, new CCodeIdentifier ("this")), null_block));
-			} else if (m.get_full_name () == "any.hash") {
-				// make this null-safe
-				var null_block = new CCodeBlock ();
-				null_block.add_statement (new CCodeReturnStatement (new CCodeConstant ("0")));
-				vfunc.block.add_statement (new CCodeIfStatement (new CCodeUnaryExpression (CCodeUnaryOperator.LOGICAL_NEGATION, new CCodeIdentifier ("this")), null_block));
-			} else if (m.get_full_name () == "any.to_string") {
-				// make this null-safe
-				var null_string = new CCodeFunctionCall (new CCodeIdentifier ("string_create_from_cstring"));
-				null_string.add_argument (new CCodeConstant ("\"(null)\""));
-				var null_block = new CCodeBlock ();
-				null_block.add_statement (new CCodeReturnStatement (null_string));
-				vfunc.block.add_statement (new CCodeIfStatement (new CCodeExpression (CCodeUnaryOperator.LOGICAL_NEGATION, new CCodeIdentifier ("this")), null_block));
-			}
-
-			var vcast = get_type_private_from_type ((ObjectTypeSymbol) m.parent_symbol, get_type_from_instance (new CCodeIdentifier ("this")));
-
-			var vcall = new CCodeFunctionCall (new CCodeMemberAccess.pointer (vcast, get_ccode_vfunc_name (m)));
-			vcall.add_argument (new CCodeIdentifier ("this"));
-			foreach (TypeParameter type_param in m.get_type_parameters ()) {
-				vcall.add_argument (new CCodeIdentifier ("%s_type".printf (type_param.name.down ())));
-			}
-			foreach (Parameter param in m.get_parameters ()) {
-				vcall.add_argument (new CCodeIdentifier (param.name));
-			}
-			if (m.return_type is GenericType) {
-				vcall.add_argument (new CCodeIdentifier ("result"));
-			}
-
-			if (m.return_type is VoidType || m.return_type is GenericType) {
-				vfunc.block.add_statement (new CCodeExpressionStatement (vcall));
-			} else {
-				vfunc.block.add_statement (new CCodeReturnStatement (vcall));
-			}
-
-			cfile.add_function (vfunc);
-
-
-			vfunc = new CCodeFunction ("%sbase_%s".printf (get_ccode_lower_case_prefix (m.parent_symbol), m.name), (m.return_type is GenericType) ? "void" : get_ccode_aroop_name (m.return_type));
-			vfunc.block = new CCodeBlock ();
-
-			vfunc.add_parameter (new CCodeParameter ("base_type", "AroopType *"));
-			vfunc.add_parameter (new CCodeParameter ("this", "%s *".printf (get_ccode_aroop_name (m.parent_symbol))));
-			foreach (TypeParameter type_param in m.get_type_parameters ()) {
-				vfunc.add_parameter (new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType*"));
-			}
-			foreach (Parameter param in m.get_parameters ()) {
-				string ctypename = get_ccode_aroop_name (param.variable_type);
-				if (param.direction != ParameterDirection.IN) {
-					ctypename += "*";
-				}
-				vfunc.add_parameter (new CCodeParameter (param.name, ctypename));
-			}
-			if (m.return_type is GenericType) {
-				vfunc.add_parameter (new CCodeParameter ("result", "void *"));
-			}
-
-			var base_type = new CCodeIdentifier ("base_type");
-
-			vcast = get_type_private_from_type ((ObjectTypeSymbol) m.parent_symbol, base_type);
-
-			vcall = new CCodeFunctionCall (new CCodeMemberAccess.pointer (vcast, get_ccode_vfunc_name (m)));
-			vcall.add_argument (new CCodeIdentifier ("this"));
-			foreach (TypeParameter type_param in m.get_type_parameters ()) {
-				vcall.add_argument (new CCodeIdentifier ("%s_type".printf (type_param.name.down ())));
-			}
-			foreach (Parameter param in m.get_parameters ()) {
-				vcall.add_argument (new CCodeIdentifier (param.name));
-			}
-			if (m.return_type is GenericType) {
-				vcall.add_argument (new CCodeIdentifier ("result"));
-			}
-
-			if (m.return_type is VoidType || m.return_type is GenericType) {
-				vfunc.block.add_statement (new CCodeExpressionStatement (vcall));
-			} else {
-				vfunc.block.add_statement (new CCodeReturnStatement (vcall));
-			}
-
-			cfile.add_function (vfunc);
-
-
-			string param_list = "(%s *this".printf (get_ccode_aroop_name (m.parent_symbol));
-			foreach (var param in m.get_parameters ()) {
-				param_list += ", ";
-				param_list += get_ccode_aroop_name (param.variable_type);
-			}
-			if (m.return_type is GenericType) {
-				param_list += ", void *";
-			}
-			param_list += ")";
-
-			var override_func = new CCodeFunction ("%soverride_%s".printf (get_ccode_lower_case_prefix (m.parent_symbol), m.name));
-			override_func.add_parameter (new CCodeParameter ("type", "AroopType *"));
-			override_func.add_parameter (new CCodeParameter ("(*function) %s".printf (param_list), (m.return_type is GenericType) ? "void" : get_ccode_aroop_name (m.return_type)));
-			override_func.block = new CCodeBlock ();
-
-			vcast = get_type_private_from_type ((ObjectTypeSymbol) m.parent_symbol, new CCodeIdentifier ("type"));
-
-			override_func.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (vcast, m.name), new CCodeIdentifier ("function"))));
-
-			cfile.add_function (override_func);
 		}
-#endif
 		pop_context ();
 
 		if (m.entry_point) {
@@ -852,6 +727,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				ccode.add_statement (main_stmt);
 			}
 
+			
 			var ret_stmt = new CCodeReturnStatement (new CCodeIdentifier ("result"));
 			ret_stmt.line = cmain.line;
 			ccode.add_statement (ret_stmt);
