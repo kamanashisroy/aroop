@@ -24,7 +24,7 @@
 
 class Animal: aroop.God {
 	public virtual aroop.txt voice() {
-		return aroop.txt.create_static("Hello world");
+		return new aroop.txt("Hello world", 11);
 	}
 	public aroop.txt describe() {
 		return aroop.txt.create_static("Time is tiny, women are many.");
@@ -42,6 +42,6 @@ int main() {
 	Animal? an = null;
 	an = new Goat();
 
-	aroop.God.pray(an.voice(), aroop.pray.DESCRIBE);
+	an.voice().pray(aroop.pray.DESCRIBE);
 	return 0;
 }

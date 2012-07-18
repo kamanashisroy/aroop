@@ -61,7 +61,8 @@ aroop_txt*aroop_txt_cat_char(aroop_txt*text, char c);
 aroop_txt*aroop_txt_cat_static(aroop_txt*text, char*suffix);
 aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_indexof_char(haystack, niddle) ({const char*haystack##pos = strchr(haystack->str, niddle);int haystack##i = -1;if(haystack##pos && haystack##pos < (haystack->str+haystack->len))haystack##i = haystack##pos-haystack->str;haystack##i;})
-#define aroop_txt_to_vala(x) x->str
+#define aroop_txt_to_vala(x) ({x->str;})
+#define aroop_txt_length(x) ({x->len;})
 
 void aroop_txt_system_init();
 

@@ -49,12 +49,14 @@ public interface aroop.God {
 	[CCode (cname = "OPPUNREF")]
 	public static void unref();
 #endif
-	[CCode (cname = "aroop_object_pray")]
-	public static void pray(void*data, int callback, void*cb_data = null);
+	[CCode (cname = "aroop_god_pray")]
+	public void pray(int callback, void*cb_data = null);
+	[CCode (cname = "aroop_god_is_same")]
+	public bool is_same(aroop.God another);
 }
 
 [CCode (cname = "aroop_txt", cheader_filename = "core/txt.h")]
-public class aroop.txt {
+public class aroop.txt : aroop.God {
 	aroop.txt*proto;
 	int hash;
 	int size;
@@ -66,6 +68,10 @@ public class aroop.txt {
 	public static aroop.txt*create_static(char*content);
 	[CCode (cname = "aroop_txt_to_vala")]
 	public string to_string();
+	[CCode (cname = "aroop_txt_length")]
+	public int length();
+	[CCode (cname = "BLANK_STRING")]
+	public static aroop.txt BLANK_STRING;
 }
 
 
