@@ -27,6 +27,7 @@ $(TARGET_AR):$(OBJECTS)
 clean:
 	$(RM) $(OBJECTS) $(TARGET_AR)
 
-genvapi:
+
+nogenvapi:
 	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI_DIR) --vapidir=vapi --pkg=posix  --pkg=opp --pkg=aroop_core $(VSOURCES) --library aroop_array --vapi=vapi/aroop_array.vapi --use-header --header=inc/aroop_array.h
 

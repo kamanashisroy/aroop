@@ -36,6 +36,20 @@ public struct aroop_uword16 {
 public struct aroop_uword32 {
 }
 
+[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_indexed_list.h")]
+public struct aroop.ArrayList<G> {
+	[CCode (cname = "opp_indexed_list_create2")]
+	public ArrayList(int inc = 16);
+	[CCode (cname = "opp_indexed_list_create2")]
+	public int create(int inc = 16);
+	[CCode (cname = "opp_indexed_list_get")]
+	public G? get(int index);
+	[CCode (cname = "opp_indexed_list_set")]
+	public void set(int index, G item);
+	[CCode (cname = "OPP_FACTORY_USE_COUNT")]
+	public int count_unsafe();
+}
+
 [CCode (cprefix = "OPPN_ACTION_", cname = "int")]
 public enum aroop.pray {
 	DESCRIBE,
