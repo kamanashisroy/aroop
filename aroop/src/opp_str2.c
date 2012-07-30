@@ -134,7 +134,7 @@ void opp_str2system_verb(void (*log)(void *log_data, const char*fmt, ...), void*
 }
 
 #ifdef OPP_ALLOW_UNSAFE_MULTIPLE_INIT
-static int initialized = 0;
+static int initialized = 0; // TODO make it volatile
 #endif
 void opp_str2system_init() {
 #ifdef OPP_ALLOW_UNSAFE_MULTIPLE_INIT
@@ -143,7 +143,7 @@ void opp_str2system_init() {
 #endif
 		OPP_FACTORY_CREATE(&str2_factory, OPP_STR2_BUFFER_INC, 32, NULL);
 #ifdef OPP_ALLOW_UNSAFE_MULTIPLE_INIT
-		initialized = 1;
+		initialized = 1; // TODO make it atomic
 	}
 #endif
 }
@@ -151,7 +151,7 @@ void opp_str2system_init() {
 void opp_str2system_deinit() {
 	opp_factory_destroy(&str2_factory);
 #ifdef OPP_ALLOW_UNSAFE_MULTIPLE_INIT
-	initialized = 0;
+	initialized = 0; // TODO make it atomic
 #endif
 }
 

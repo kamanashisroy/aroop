@@ -29,7 +29,7 @@
 
 C_CAPSULE_START
 
-void*opp_any_obj_alloc(int size, opp_callback_t cb, ...);
+void*opp_any_obj_alloc(int size, opp_callback_t cb, void*arg, ...);
 
 void opp_any_obj_system_init();
 void opp_any_obj_system_deinit();

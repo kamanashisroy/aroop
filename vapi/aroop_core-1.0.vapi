@@ -36,19 +36,32 @@ public struct aroop_uword16 {
 public struct aroop_uword32 {
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_indexed_list.h")]
+[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_indexed_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.ArrayList<G> {
 	[CCode (cname = "opp_indexed_list_create2")]
 	public ArrayList(int inc = 16);
 	[CCode (cname = "opp_indexed_list_create2")]
 	public int create(int inc = 16);
-	[CCode (cname = "opp_indexed_list_get")]
+	[CCode (cname = "aroop_indexed_list_get")]
 	public G? get(int index);
 	[CCode (cname = "opp_indexed_list_set")]
 	public void set(int index, G item);
 	[CCode (cname = "OPP_FACTORY_USE_COUNT")]
 	public int count_unsafe();
 }
+
+[CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_destroy_function=true, destroy_function="opp_queue_deinit")]
+public struct aroop.Queue<G> {
+	[CCode (cname = "opp_queue_init2")]
+	public Queue(int scindex = 0);
+	//[CCode (cname = "opp_queue_deinit")]
+	//public ~Queue();
+	[CCode (cname = "opp_enqueue")]
+	public int enqueue(G data);
+	[CCode (cname = "opp_dequeue")]
+	public G? dequeue();
+}
+
 
 [CCode (cprefix = "OPPN_ACTION_", cname = "int")]
 public enum aroop.pray {
@@ -67,6 +80,12 @@ public interface aroop.God {
 	public void pray(int callback, void*cb_data = null);
 	[CCode (cname = "aroop_god_is_same")]
 	public bool is_same(aroop.God another);
+	[CCode (cname = "opp_unset_flag")]
+	public void unflag(ulong flg);
+	[CCode (cname = "opp_set_flag")]
+	public void flag(ulong flg);
+	[CCode (cname = "opp_test_flag")]
+	public bool test(ulong flg);
 }
 
 [CCode (cname = "aroop_txt", cheader_filename = "core/txt.h")]

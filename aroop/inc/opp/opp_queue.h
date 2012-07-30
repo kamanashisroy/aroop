@@ -65,6 +65,8 @@ struct opp_queue {
 	SYNC_UWORD8_T _factory_idx;
 };
 
+typedef struct opp_queue opp_queue_t;
+
 #define OPP_QUEUE_SIZE(q) ({(q)->_use_count;})
 
 int opp_enqueue(struct opp_queue*queue, void*obj_data);

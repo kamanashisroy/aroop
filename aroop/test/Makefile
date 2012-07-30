@@ -1,5 +1,5 @@
 
-VALA_HOME=../../../
+VALA_HOME=../../
 VALAC=$(VALA_HOME)/compiler/valac
 VAPI=$(VALA_HOME)/vapi
 
@@ -10,8 +10,8 @@ OBJECTS=$(addsuffix .o, $(basename $(CSOURCES)))
 
 GEN_HEADER=inc/zoo.h
 
-INCLUDES+=-I../../inc
-LIBS+=-L../../ -laroop_core
+INCLUDES+=-I../inc
+LIBS+=-L../ -laroop_core
 
 CC+=-ggdb -ggdb3
 

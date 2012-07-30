@@ -20,9 +20,6 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
-#ifndef OPP_ANY_OBJ_H_
-#define OPP_ANY_OBJ_H_
-
 
 #include "core/config.h"
 #include "opp/opp_any_obj.h"
@@ -90,4 +87,3 @@ void opp_any_obj_system_deinit() {
 
 C_CAPSULE_END
 
-#endif /* OPP_ANY_OBJ_H_ */

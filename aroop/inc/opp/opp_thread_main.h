@@ -16,40 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Aroop.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Author:
- * 	Kamanashis Roy (kamanashisroy@gmail.com)
+ *  Created on: Jun 17, 2011
+ *      Author: kamanashisroy@gmail.com
  */
 
+#ifndef OPP_THREAD_MAIN_H_
+#define OPP_THREAD_MAIN_H_
 
-#ifndef AROOP_CORE_H_
-#define AROOP_CORE_H_
 
 #include "core/config.h"
-#include "opp/opp_factory.h"
-#include "opp/opp_any_obj.h"
-#include "opp/opp_io.h"
-
-typedef void aroop_god;
-typedef int bool;
-
-#define true 1
-#define false 0
-
-typedef struct opp_factory opp_factory_t;
-typedef struct opp_pool opp_pool_t;
-typedef char string;
-
-
 
 C_CAPSULE_START
 
-int aroop_init(int argc, char ** argv);
+struct opp_context {
+	OPP_OBJECT_EXT_TINY();
+	struct opp_factory objs;
+};
 
-#define aroop_object_alloc(x,y) opp_any_obj_alloc(x,y,NULL)
-#define aroop_god_pray(x,y,z) opp_callback(x,y,z)
-#define aroop_god_is_same(x,y) ({(x && y && x == y);})
-#define aroop_indexed_list_get(x,y,z) ({*z = opp_indexed_list_get(x, y);})
+typedef int (*opp_thread_func_t) (int*argc, char*args[]);
+int opp_thread_main(opp_thread_func_t func, int*argc, char*args[]);
 
 C_CAPSULE_END
 
-#endif // AROOP_CORE_H_
+#endif /* OPP_THREAD_MAIN_H_ */

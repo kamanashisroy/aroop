@@ -275,6 +275,7 @@ class Vala.Compiler {
 				/* default package */
 				// XXX should I load posix ?? context.add_external_package ("posix");
 				context.add_external_package ("aroop-1.0");
+				context.add_external_package ("aroop_core-1.0");
 			}
 		}
 
