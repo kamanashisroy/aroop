@@ -36,6 +36,12 @@ public struct aroop_uword16 {
 public struct aroop_uword32 {
 }
 
+[CCode (cname = "opp_hash_t", default_value = "0U")] // NOTE regression error may occur here
+[IntegerType (rank = 7)]
+public struct aroop_hash {
+}
+
+
 [CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_indexed_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.ArrayList<G> {
 	[CCode (cname = "opp_indexed_list_create2")]
@@ -50,10 +56,30 @@ public struct aroop.ArrayList<G> {
 	public int count_unsafe();
 }
 
+[CCode (cname = "opp_list_item", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
+public struct aroop.container {
+}
+
+delegate int aroop.iterator_do(void*data, void*func_data);
+
+[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+public struct aroop.Set<G> {
+	[CCode (cname = "opp_list_create2")]
+	public int create(int inc = 16, uchar flag = OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF);
+	[CCode (cname = "aroop_set_add")]
+	public bool add(G item);
+	[CCode (cname = "opp_factory_list_do_full")]
+	public int do(iterator_cb callback, void*func_data
+		, uint if_list_flag, uint if_not_list_flag, uint if_flag, uint if_not_flag
+		, aroop_hash list_hash, aroop_hash hash);
+}
+
 [CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_destroy_function=true, destroy_function="opp_queue_deinit")]
 public struct aroop.Queue<G> {
 	[CCode (cname = "opp_queue_init2")]
 	public Queue(int scindex = 0);
+	[CCode (cname = "opp_queue_deinit")]
+	public int destroy();
 	//[CCode (cname = "opp_queue_deinit")]
 	//public ~Queue();
 	[CCode (cname = "opp_enqueue")]
@@ -62,6 +88,17 @@ public struct aroop.Queue<G> {
 	public G? dequeue();
 }
 
+delegate int aroop.factory_cb(void*data, int callback, void*cb_data, va_list ap, int size);
+
+[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+public struct aroop.factory<G> {
+	[CCode (cname = "opp_factory_create_full")]
+	public int create(int inc=16, int datalen, int token_offset, uchar flags, aroop.factory_cb callback);
+	[CCode (cname = "opp_factory_do_full")]
+	public int do(/*fill me*/);
+	[CCode (cname = "opp_factory_destroy")]
+	public int destroy();
+}
 
 [CCode (cprefix = "OPPN_ACTION_", cname = "int")]
 public enum aroop.pray {

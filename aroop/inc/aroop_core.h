@@ -49,6 +49,7 @@ int aroop_init(int argc, char ** argv);
 #define aroop_god_pray(x,y,z) opp_callback(x,y,z)
 #define aroop_god_is_same(x,y) ({(x && y && x == y);})
 #define aroop_indexed_list_get(x,y,z) ({*z = opp_indexed_list_get(x, y);})
+#define aroop_set_add(x,y) ({opp_alloc4(x,0,0,y) != NULL})
 
 C_CAPSULE_END
 
