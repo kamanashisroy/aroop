@@ -41,6 +41,33 @@ public struct aroop_uword32 {
 public struct aroop_hash {
 }
 
+[CCode (cname = "sync_mutex_t")]
+public struct aroop_mutex {
+}
+
+[CCode (cname = "SYNC_UWORD32_T", default_value = "0U")] // NOTE: this will work for 32 and 16 bit processor
+[IntegerType (rank = 7)]
+public struct aroop_magic {
+}
+
+[CCode (cprefix = "AROOP_FLAG_")]
+enum factory_flags {
+	HAS_LOCK = 1,
+	SWEEP_ON_UNREF = 1<<1,
+	EXTENDED = 1<<2,
+	SEARCHABLE = 1<<3,
+	INITIALIZE = 1<<4,
+}
+
+[CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_iterator_destroy")]
+public struct aroop.Iterator<G> {
+	[CCode (cname = "opp_iterator_create")]
+	public Iterator(aroop.Factory fac, uint if_flag, uint ifnflag, aroop_hash hash);
+	[CCode (cname = "aroop_iterator_next")]
+	public bool next ();
+	[CCode (cname = "aroop_iterator_get")]
+	public G? get ();
+}
 
 [CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_indexed_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.ArrayList<G> {
@@ -58,14 +85,17 @@ public struct aroop.ArrayList<G> {
 
 [CCode (cname = "opp_list_item", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public struct aroop.container {
+	[CCode (cname = "aroop_list_item_get")]
+	public God get();
 }
 
-delegate int aroop.iterator_do(void*data, void*func_data);
+public delegate int aroop.iterator_cb(void*data, void*func_data);
+
 
 [CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Set<G> {
 	[CCode (cname = "opp_list_create2")]
-	public int create(int inc = 16, uchar flag = OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF);
+	public int create(int inc = 16, uchar flag = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_set_add")]
 	public bool add(G item);
 	[CCode (cname = "opp_factory_list_do_full")]
@@ -88,14 +118,20 @@ public struct aroop.Queue<G> {
 	public G? dequeue();
 }
 
-delegate int aroop.factory_cb(void*data, int callback, void*cb_data, va_list ap, int size);
+[CCode (cname = "struct opp_object_ext", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+struct hashable_ext {
+}
+
+public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va_list*/void* ap, int size);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
-public struct aroop.factory<G> {
+public struct aroop.Factory<G> {
 	[CCode (cname = "opp_factory_create_full")]
 	public int create(int inc=16, int datalen, int token_offset, uchar flags, aroop.factory_cb callback);
 	[CCode (cname = "opp_factory_do_full")]
 	public int do(/*fill me*/);
+	[CCode (cname = "aroop_factory_iterator_get")]
+	public int iterator(aroop.Iterator<G> it, uint if_flag, uint ifnflag, aroop_hash hash);
 	[CCode (cname = "opp_factory_destroy")]
 	public int destroy();
 }

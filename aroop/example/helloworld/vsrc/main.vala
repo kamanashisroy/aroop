@@ -21,7 +21,6 @@
  */
 
 
-
 class Animal: aroop.God {
 	public virtual aroop.txt voice() {
 		return new aroop.txt("Hello world", 11);
