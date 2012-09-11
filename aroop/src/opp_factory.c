@@ -255,7 +255,7 @@ struct opp_object {
 static void opp_factory_gc_nolock(struct opp_factory*obuff);
 
 int opp_factory_create_full(struct opp_factory*obuff
-		, int inc
+		, SYNC_UWORD16_T inc
 		, SYNC_UWORD16_T obj_size
 		, int token_offset
 		, unsigned char property

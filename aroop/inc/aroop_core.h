@@ -44,16 +44,23 @@ typedef char string;
 C_CAPSULE_START
 
 int aroop_init(int argc, char ** argv);
+int aroop_deinit();
 
 #define aroop_object_alloc(x,y) opp_any_obj_alloc(x,y,NULL)
 #define aroop_god_pray(x,y,z) opp_callback(x,y,z)
 #define aroop_god_is_same(x,y) ({(x && y && x == y);})
+#define aroop_god_shrink(x,y) ({opp_shrink(x,sizeof(*x)+y);})
 #define aroop_indexed_list_get(x,y,z) ({*z = opp_indexed_list_get(x, y);})
 #define aroop_set_add(x,y) ({opp_alloc4(x,0,0,y) != NULL})
 #define aroop_iterator_next(x) ({opp_iterator_next(x) != NULL})
 #define aroop_iterator_get(x) ({x->data})
 #define aroop_factory_iterator_get(x,y,a,b,c) ({opp_iterator_create(y,x,a,b,c);})
 #define aroop_list_item_get(x) ({x->obj_data;})
+#define aroop_get_token(x) ({x->_ext.token;})
+#define aroop_donothing(x)
+#define aroop_memclean(x,y) ({memset((x->_ext+1), 0, y - sizeof(x->_ext));})
+#define aroop_memclean_raw(x,y) ({memset(x, 0, y);})
+
 
 C_CAPSULE_END
 

@@ -137,7 +137,7 @@ static int opp_##x##_callback(void*data, int callback, void*cb_data, va_list ap,
 
 #define OPP_FACTORY_CREATE(obuff, x, y, z) ({opp_factory_create_full(obuff, x, y, 1, OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF, z);})
 int opp_factory_create_full(struct opp_factory*obuff
-		, int inc
+		, SYNC_UWORD16_T inc
 		, SYNC_UWORD16_T obj_size
 		, int token_offset
 		, unsigned char property

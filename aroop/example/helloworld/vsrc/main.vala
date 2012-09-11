@@ -20,19 +20,20 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+using aroop;
 
-class Animal: aroop.God {
-	public virtual aroop.txt voice() {
-		return new aroop.txt("Hello world", 11);
+class Animal: God {
+	public virtual txt voice() {
+		return new txt("Hello world", 11);
 	}
-	public aroop.txt describe() {
-		return aroop.txt.create_static("Time is tiny, women are many.");
+	public txt describe() {
+		return txt.create_static("Time is tiny, women are many.");
 	}
 }
 
 class Goat : Animal {
-	public override aroop.txt voice() {
-		return aroop.txt.create_static("maahamaahamaahalo");
+	public override txt voice() {
+		return txt.create_static("maahamaahamaahalo");
 	}
 }
 
@@ -41,6 +42,6 @@ int main() {
 	Animal? an = null;
 	an = new Goat();
 
-	an.voice().pray(aroop.pray.DESCRIBE);
+	an.voice().pray(prayer.DESCRIBE);
 	return 0;
 }

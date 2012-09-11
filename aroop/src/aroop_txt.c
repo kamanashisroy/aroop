@@ -53,6 +53,7 @@ aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_
 aroop_txt*aroop_txt_clone(const char*content, int len, int scalability_index) {
 	XULTB_ASSERT_RETURN(content && len, NULL);
 	aroop_txt*str = opp_alloc4(&txt_pool, sizeof(aroop_txt)+len+1, 0, NULL);
+	str->hash = 0;
 	XULTB_ASSERT_RETURN(str, NULL);
 	str->size = len+1;
 	str->len = len;
@@ -68,6 +69,7 @@ aroop_txt*aroop_txt_clone(const char*content, int len, int scalability_index) {
 
 aroop_txt*aroop_txtrim(aroop_txt*text) {
 	// TODO trim
+	text->hash = 0;
 	return text;
 }
 
@@ -75,6 +77,7 @@ aroop_txt*aroop_txtrim(aroop_txt*text) {
 aroop_txt*aroop_txt_cat(aroop_txt*text, aroop_txt*suffix) {
 	// TODO check if we have enough space
 	SYNC_ASSERT(text->size > (text->len + suffix->len));
+	text->hash = 0;
 	memcpy(text->str+text->len, suffix->str, suffix->len);
 	text->len += suffix->len;
 	*(text->str+text->len) = '\0';
@@ -83,6 +86,7 @@ aroop_txt*aroop_txt_cat(aroop_txt*text, aroop_txt*suffix) {
 
 aroop_txt*aroop_txt_cat_char(aroop_txt*text, char c) {
 	SYNC_ASSERT(text->size > (text->len + 1));
+	text->hash = 0;
 	*(text->str+text->len) = c;
 	text->len++;
 	*(text->str+text->len) = '\0';
@@ -92,6 +96,7 @@ aroop_txt*aroop_txt_cat_char(aroop_txt*text, char c) {
 aroop_txt*aroop_txt_cat_static(aroop_txt*text, char*suffix) {
 	int len = strlen(suffix);
 	SYNC_ASSERT(text->size > (text->len + len));
+	text->hash = 0;
 	memcpy(text->str+text->len, suffix, len);
 	text->len += len;
 	*(text->str+text->len) = '\0';
@@ -100,6 +105,7 @@ aroop_txt*aroop_txt_cat_static(aroop_txt*text, char*suffix) {
 
 aroop_txt*aroop_txt_set_len(aroop_txt*text, int len) {
 	SYNC_ASSERT(text->size > len);
+	text->hash = 0;
 	text->len = len;
 	*(text->str+len) = '\0';
 	return text;
