@@ -8,7 +8,7 @@ class test_array : God {
 		ArrayList<txt> list = ArrayList<txt>(16);
 		txt str = new txt("Fine", 4);
 		list[0] = str;
-		list[0].pray(aroop.pray.DESCRIBE);
+		list[0].pray(prayer.DESCRIBE);
 		return 0;
 	}
 }

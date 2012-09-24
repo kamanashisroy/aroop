@@ -973,18 +973,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				return new CCodeIdentifier (var_name);
 			}
 		} else {
-			var ccall = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_get".printf (CCodeBaseModule.get_ccode_lower_case_name (type.data_type))));
-			var object_type_symbol = type.data_type as ObjectTypeSymbol;
-			if (object_type_symbol != null) {
-				for (int i = 0; i < object_type_symbol.get_type_parameters ().size; i++) {
-					if (type.get_type_arguments ().size == 0) {
-						ccall.add_argument (new CCodeConstant ("NULL"));
-					} else {
-						ccall.add_argument (get_type_id_expression (type.get_type_arguments ().get (i)));
-					}
-				}
-			}
-			return ccall;
+			return new CCodeIdentifier (get_ccode_aroop_name((ObjectTypeSymbol)type.data_type));
 		}
 	}
 
@@ -1606,7 +1595,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 			generate_type_declaration (expr.type_reference, cfile);
 
-			if (cl != null && !cl.is_compact) {
+			if ((st != null) || (cl != null && !cl.is_compact)) {
 				add_generic_type_arguments (creation_call, expr.type_reference.get_type_arguments (), expr);
 			}
 
@@ -2293,7 +2282,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			} else if (object_type.type_symbol is Interface) {
 				return CCodeBaseModule.get_ccode_lower_case_name (node, null) + "*";
 			}
-#if 0
+#if false
 		} else if (node.data_type is Enum) {
 			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
 		} else if (node is DelegateType) {
@@ -2316,6 +2305,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
 		}
 		return CCodeBaseModule.get_ccode_name (node);
+	}
+
+	public string get_ccode_aroop_definition(ObjectTypeSymbol node) {
+		return "struct _%s".printf (get_ccode_aroop_name (node));
 	}
 
 	public string get_ccode_name (CodeNode node) {

@@ -193,10 +193,6 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 			generate_delegate_declaration (d, header_file);
 		}
 
-#if 0
-		generate_type_get_function (d, delegate_class);
-#endif
-
 		var instance_priv_struct = new CCodeStruct ("_%sPrivate".printf (get_ccode_name (d)));
 
 		instance_priv_struct.add_field ("void", "(*method) (void)");

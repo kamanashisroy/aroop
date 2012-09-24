@@ -92,8 +92,8 @@ public struct aroop.Iterator<G> {
 public struct aroop.ArrayList<G> : aroop.countable {
 	[CCode (cname = "opp_indexed_list_create2")]
 	public ArrayList(int inc = 16);
-	[CCode (cname = "opp_indexed_list_create2")]
-	public int create(int inc = 16);
+	//[CCode (cname = "opp_indexed_list_create2")]
+	//public int create(int inc = 16);
 	[CCode (cname = "aroop_indexed_list_get")]
 	public G? get(int index);
 	[CCode (cname = "opp_indexed_list_set")]
@@ -111,7 +111,9 @@ public delegate int aroop.iterator_cb(God data, void*func_data);
 [CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Set<G> : aroop.countable {
 	[CCode (cname = "opp_list_create2")]
-	public int create(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	public Set(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	//[CCode (cname = "opp_list_create2")]
+	//public int create(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_set_add")]
 	public bool add(G item);
 	[CCode (cname = "opp_factory_do_full")]
@@ -149,10 +151,14 @@ struct hashable_ext {
 public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va_list*/void* ap, int size);
 public delegate int aroop.factory_log(void*log_data, char*fmt, ...);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_memcpy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Factory<G> : aroop.countable {
-	[CCode (cname = "opp_factory_create_full")]
-	public int create(uint inc=16, uint datalen, int token_offset, uchar flags, aroop.factory_cb callback);
+	[CCode (cname = "aroop_assert_factory_creation_full")]
+	private Factory(uint inc=16, uint datalen, int token_offset, uchar flags, aroop.factory_cb callback);
+	[CCode (cname = "aroop_assert_factory_creation_for_type_full")]
+	public Factory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	[CCode (cname = "aroop_assert_factory_creation_for_type")]
+	public Factory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "opp_alloc4")]
 	public G? alloc_full(uint16 size = 0, int doubleref = 0, void*init_data = null);
 	[CCode (cname = "opp_get")]
@@ -165,7 +171,14 @@ public struct aroop.Factory<G> : aroop.countable {
 	public int verb(iterator_cb do_func, void*func_data, factory_log log, void*log_data);
 }
 
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_memcpy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
+	[CCode (cname = "aroop_srcblefac_constr")]
+	private SearchableFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED, aroop.factory_cb callback);
+	[CCode (cname = "aroop_srcblefac_constr_4_type_full")]
+	public SearchableFactory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED);
+	[CCode (cname = "aroop_srcblefac_constr_4_type")]
+	public SearchableFactory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED);
 	[CCode (cname = "opp_search")]
 	public G? search(aroop_hash hash, iterator_cb compare_func, void*compare_data);
 	[CCode (cname = "opp_factory_do_pre_order")]
@@ -246,17 +259,23 @@ public struct aroop.etxt { // embeded txt
 	public string to_string_magical();
 	[CCode (cname = "aroop_txt_string_or_magical")]
 	public string or_magical(aroop.txt other);
-	[CCode (cname = "aroop_txt_is_empty_magical")]
-	public bool is_empty_magical();
+	[CCode (cname = "aroop_txt_string_or")]
+	public aroop.etxt* e_or_magical(aroop.etxt*other);
+	[CCode (cname = "aroop_txt_is_empty")]
+	public bool is_empty();
 	[CCode (cname = "aroop_txtcmp")]
 	public int cmp(aroop.etxt*other);
+	[CCode (cname = "aroop_txt_equals")]
+	public bool equals(aroop.etxt other);
 	[CCode (cname = "aroop_txt_iequals")]
 	public bool iequals(aroop.etxt*other);
 	[CCode (cname = "aroop_txt_equals_static")]
 	public bool equals_string(string other);
+	[CCode (cname = "aroop_txt_destroy")]
+	public void destroy();
 }
 
-[CCode (cname = "struct aroop_txt", cheader_filename = "core/txt.h")]
+[CCode (cname = "struct aroop_txt", cheader_filename = "core/txt.h", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.txt : aroop.God {
 	/*aroop.txt*proto;
 	aroop_hash hash;
@@ -265,6 +284,8 @@ public class aroop.txt : aroop.God {
 	char*str;*/
 	[CCode (cname = "aroop_txt_new")]
 	public txt(char*content, int len = 0, aroop.txt? proto = null, int scalability_index = 0);
+	//[CCode (cname = "aroop_txt_destroy")]
+	//~txt();
 	[CCode (cname = "aroop_txt_new_static")]
 	public static aroop.txt*create_static(char*content);
 	[CCode (cname = "aroop_txt_to_vala")]
@@ -278,7 +299,7 @@ public class aroop.txt : aroop.God {
 	[CCode (cname = "aroop_txt_to_vala_magical")]
 	public string to_string_magical();
 	[CCode (cname = "aroop_txt_string_or_magical")]
-	public string or_magical(aroop.txt other);
+	public aroop.txt or_magical(aroop.txt other);
 	[CCode (cname = "aroop_txt_is_empty_magical")]
 	public bool is_empty_magical();
 	[CCode (cname = "aroop_txtcmp")]
@@ -290,12 +311,12 @@ public class aroop.txt : aroop.God {
 }
 
 public class aroop.core {
-	[CCode (cname = "SYNC_ASSERT")]
+	[CCode (cname = "aroop_assert")]
 	public static void assert(bool value);
 	[CCode (cname = "aroop_init")]
-	public static void init();
+	public static int libinit(int argc, char ** argv);
 	[CCode (cname = "aroop_deinit")]
-	public static void deinit();
+	public static void libdeinit();
 	[CCode (cname = "aroop_memory_alloc")]
 	public static God memory_alloc(ulong size);
 	[CCode (cname = "aroop_memclean_raw")]

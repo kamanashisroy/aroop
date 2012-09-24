@@ -51,7 +51,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			}
 
 			if (expr.inner is BaseAccess) {
-#if 0
+#if false
 				if (m.base_method != null) {
 					var base_class = (Class) m.base_method.parent_symbol;
 

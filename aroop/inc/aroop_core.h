@@ -35,10 +35,7 @@ typedef int bool;
 #define true 1
 #define false 0
 
-typedef struct opp_factory opp_factory_t;
-typedef struct opp_pool opp_pool_t;
 typedef char string;
-
 
 
 C_CAPSULE_START
@@ -60,7 +57,9 @@ int aroop_deinit();
 #define aroop_donothing(x)
 #define aroop_memclean(x,y) ({memset((x->_ext+1), 0, y - sizeof(x->_ext));})
 #define aroop_memclean_raw(x,y) ({memset(x, 0, y);})
-
+// TODO remove all the SYNC_ prefix things ..
+#define aroop_assert(x)	SYNC_ASSERT(x)
+#define aroop_memcpy(x,nouse,y,nouse2) ({if(x && y){memcpy(x,y,sizeof(*x));}})
 
 C_CAPSULE_END
 

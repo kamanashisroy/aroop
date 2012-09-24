@@ -26,7 +26,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			return;
 		}
 
-		decl_space.add_type_declaration(new CCodeTypeDefinition ("struct _%s".printf (get_ccode_aroop_name (cl)), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
+		decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
 
 		generate_vtable(cl, decl_space);
 
@@ -133,7 +133,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return result;
 	}
 
-#if 0
+#if false
 	public void declare_set_value_hash_function (CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, type_class, "aroop_type_set_value_hash")) {
 			return;
@@ -388,7 +388,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		pop_context ();
 	}
 
-#if 0
+#if false
 	public override void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, acc.prop, get_ccode_name (acc))) {
 			return;
@@ -458,7 +458,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		}
 		decl_space.add_type_declaration(new CCodeTypeDefinition ("void*", new CCodeVariableDeclarator (get_ccode_aroop_name (iface))));
 
-#if 0
+#if false
 		var vtable_struct = new CCodeStruct ("aroop_iface_vtable_%s".printf (get_ccode_aroop_name (iface)));
 		foreach (Method m in iface.get_methods ()) {
 			generate_virtual_method_declaration (m, decl_space, vtable_struct);
