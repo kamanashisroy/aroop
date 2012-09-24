@@ -28,6 +28,8 @@
 #include "opp/opp_factory.h"
 #include "opp/opp_any_obj.h"
 #include "opp/opp_io.h"
+#include "opp/opp_indexed_list.h"
+#include "opp/opp_list.h"
 
 typedef struct opp_factory opp_factory_t;
 typedef struct opp_pool opp_pool_t;
@@ -45,7 +47,7 @@ enum {
 #endif
 };
 
-
+// Factory
 #define aroop_assert_factory_creation_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4, x5) == 0);})
 #define aroop_assert_factory_creation_for_type(x0, x1, x2, x3, x4) ({\
@@ -61,6 +63,21 @@ enum {
 #define aroop_srcblefac_constr_4_type_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_srcblefac_constr(x0, x2, x3 ,x4, x5, x1##_pray);})
 
+// ArrayList
+#define aroop_array_list_create(x,y,z) ({aroop_assert(opp_indexed_list_create2(x,z) == 0);})
+#define aroop_indexed_list_get(x,y,z) ({*z = opp_indexed_list_get(x, y);})
+#define aroop_indexed_list_set(x,y,z) ({opp_indexed_list_set(x, y, *z);})
+
+// Set
+#define aroop_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3);})
+#define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL})
+
+#define aroop_factory_cpy_or_destroy(x,nouse,y,nouse2) ({\
+	if(x && y){ \
+		memcpy(x,y,sizeof(*x)); \
+	} else { \
+		opp_factory_destroy(x); \
+	};0;})
 
 C_CAPSULE_END
 

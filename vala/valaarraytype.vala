@@ -48,6 +48,17 @@ public class Vala.ArrayType : ReferenceType {
 	 */
 	public int length { get; set; }
 
+	public Expression? const_size {
+		get { return _const_size; }
+		set {
+			_const_size = value;
+			if (_const_size != null) {
+				_const_size.parent_node = this;
+			}
+		}
+	}
+
+	private Expression _const_size = null;
 	/**
 	 * The rank of this array.
 	 */
@@ -202,6 +213,8 @@ public class Vala.ArrayType : ReferenceType {
 
 	public override void accept_children (CodeVisitor visitor) {
 		element_type.accept (visitor);
+		if (const_size != null)
+			const_size.accept(visitor);
 	}
 
 	public override void replace_type (DataType old_type, DataType new_type) {
@@ -214,12 +227,87 @@ public class Vala.ArrayType : ReferenceType {
 		return element_type.is_accessible (sym);
 	}
 
+	private int parse_constant_expression(Expression expr) {
+		if (expr is BinaryExpression) {
+			var bin = (BinaryExpression) expr;
+			int left = parse_constant_expression(bin.left);
+			int right = parse_constant_expression(bin.right);
+
+			switch(bin.operator) {
+				case BinaryOperator.PLUS:
+					return left + right;
+				case BinaryOperator.MINUS:
+					return left - right;
+				case BinaryOperator.MUL:
+					return left * right;
+				case BinaryOperator.DIV:
+					return left / right;
+				case BinaryOperator.MOD:
+					return left % right;
+				case BinaryOperator.SHIFT_LEFT:
+					return left << right;
+				case BinaryOperator.SHIFT_RIGHT:
+					return left >> right;
+				case BinaryOperator.BITWISE_AND:
+					return left & right;
+				case BinaryOperator.BITWISE_OR:
+					return left | right;
+				case BinaryOperator.BITWISE_XOR:
+					return left ^ right;
+				default:
+					return -1;
+			}
+		} else if (expr is UnaryExpression) {
+			var unary = (UnaryExpression) expr;
+			int left = parse_constant_expression(unary.inner);
+
+			switch(unary.operator) {
+				case UnaryOperator.PLUS:
+					return +left;
+				case UnaryOperator.MINUS:
+					return -left;
+				case UnaryOperator.BITWISE_COMPLEMENT:
+					return ~left;
+				default:
+					return -1;
+			}
+		} else if (expr is IntegerLiteral) {
+			var lit = (IntegerLiteral) expr;
+			return lit.value.to_int();
+		} else if (expr is MemberAccess && expr.symbol_reference is Constant) {
+			var constant = (Constant) expr.symbol_reference;
+			return parse_constant_expression(constant.value);
+		} else {
+			Report.error (source_reference, "syntax error, found invalid expression definition");
+			Report.error (expr.source_reference, "definition is using an invalid type");
+			return -1;
+		}
+	}
+
 	public override bool check (CodeContext context) {
 		if (invalid_syntax) {
 			Report.error (source_reference, "syntax error, no expression allowed between array brackets");
 			error = true;
 			return false;
 		}
+		if (fixed_length && const_size != null) {
+			const_size.check (context);
+
+
+			if (!(const_size is MemberAccess && const_size.symbol_reference is Constant) && (const_size.value_type == null || !(const_size.value_type is IntegerType) || !const_size.is_constant())) {
+				Report.error (const_size.source_reference, "Expression of constant integer type expected while found %s".printf(const_size.to_string()));
+				return false;
+			}
+
+			int array_length = parse_constant_expression(const_size);
+			if (array_length > 0) {
+				length = array_length;
+ 			} else {
+				Report.error (const_size.source_reference, "Expression of positive constant integer type expected, %d given".printf(array_length));
+ 				return false;
+ 			}
+ 		}
+
 		return element_type.check (context);
 	}
 

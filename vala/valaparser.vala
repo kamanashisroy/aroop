@@ -504,14 +504,24 @@ public class Vala.Parser : CodeVisitor {
 		// inline-allocated array
 		if (type != null && accept (TokenType.OPEN_BRACKET)) {
 			int array_length = -1;
+ 			Expression size_expression = null;
 
 			if (current () != TokenType.CLOSE_BRACKET) {
-				if (current () != TokenType.INTEGER_LITERAL) {
-					throw new ParseError.SYNTAX (get_error ("expected `]' or integer literal"));
+				switch(current ()) {
+					case TokenType.IDENTIFIER:
+					case TokenType.MINUS:
+					case TokenType.PLUS:
+					case TokenType.OPEN_PARENS:
+					case TokenType.TILDE:
+						size_expression = parse_expression();
+						break;
+					case TokenType.INTEGER_LITERAL:
+						var length_literal = (IntegerLiteral) parse_literal ();
+						array_length = length_literal.value.to_int ();
+						break;
+					default:
+						throw new ParseError.SYNTAX (get_error ("expected `]' or integer literal while found %s".printf(current().to_string())));
 				}
-
-				var length_literal = (IntegerLiteral) parse_literal ();
-				array_length = int.parse (length_literal.value);
 			}
 			expect (TokenType.CLOSE_BRACKET);
 
@@ -520,7 +530,10 @@ public class Vala.Parser : CodeVisitor {
 			if (array_length > 0) {
 				array_type.fixed_length = true;
 				array_type.length = array_length;
-			}
+			} else if (size_expression != null) {
+				array_type.fixed_length = true;
+				array_type.const_size = size_expression;
+ 			}
 			array_type.value_owned = type.value_owned;
 
 			return array_type;

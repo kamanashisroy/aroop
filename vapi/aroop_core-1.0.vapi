@@ -88,15 +88,13 @@ public struct aroop.Iterator<G> {
 	public G? get ();
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_indexed_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.ArrayList<G> : aroop.countable {
-	[CCode (cname = "opp_indexed_list_create2")]
+	[CCode (cname = "aroop_array_list_create")]
 	public ArrayList(int inc = 16);
-	//[CCode (cname = "opp_indexed_list_create2")]
-	//public int create(int inc = 16);
 	[CCode (cname = "aroop_indexed_list_get")]
 	public G? get(int index);
-	[CCode (cname = "opp_indexed_list_set")]
+	[CCode (cname = "aroop_indexed_list_set")]
 	public void set(int index, G item);
 }
 
@@ -108,13 +106,13 @@ public class aroop.container : God {
 
 public delegate int aroop.iterator_cb(God data, void*func_data);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Set<G> : aroop.countable {
-	[CCode (cname = "opp_list_create2")]
+	[CCode (cname = "aroop_list_create")]
 	public Set(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	//[CCode (cname = "opp_list_create2")]
 	//public int create(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
-	[CCode (cname = "aroop_set_add")]
+	[CCode (cname = "aroop_list_add")]
 	public bool add(G item);
 	[CCode (cname = "opp_factory_do_full")]
 	public int visit_each_hacked(iterator_cb do_func, void*func_data, uint if_flag, uint if_not_flag, aroop_hash hash);
@@ -151,7 +149,7 @@ struct hashable_ext {
 public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va_list*/void* ap, int size);
 public delegate int aroop.factory_log(void*log_data, char*fmt, ...);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_memcpy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Factory<G> : aroop.countable {
 	[CCode (cname = "aroop_assert_factory_creation_full")]
 	private Factory(uint inc=16, uint datalen, int token_offset, uchar flags, aroop.factory_cb callback);
@@ -171,7 +169,7 @@ public struct aroop.Factory<G> : aroop.countable {
 	public int verb(iterator_cb do_func, void*func_data, factory_log log, void*log_data);
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_memcpy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
 	[CCode (cname = "aroop_srcblefac_constr")]
 	private SearchableFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED, aroop.factory_cb callback);
@@ -217,6 +215,11 @@ public abstract class aroop.Searchable : aroop.God {
 	protected void memclean(ulong size);
 }
 
+public struct aroop.Trident {
+	//[CCode (cname = "aroop_god_pray")]
+	//public void pray(int callback, void*cb_data = null);
+}
+
 [CCode (cname = "aroop_god")]
 public interface aroop.God {
 #if NOREFFF
@@ -244,9 +247,11 @@ public interface aroop.God {
 }
 
 [CCode (cname = "struct aroop_txt", cheader_filename = "core/txt.h")]
-public struct aroop.etxt { // embeded txt
-	[CCode (cname = "aroop_txt_create")]
+public struct aroop.etxt : aroop.Trident { // embeded txt
+	[CCode (cname = "aroop_txt_embeded")]
 	public etxt(string content);
+	[CCode (cname = "aroop_txt_embeded_static")]
+	public etxt.from_static(string content);
 	[CCode (cname = "aroop_txt_create")]
 	public etxt.from_txt(aroop.txt proto);
 	[CCode (cname = "aroop_txt_to_vala")]
@@ -287,7 +292,7 @@ public class aroop.txt : aroop.God {
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~txt();
 	[CCode (cname = "aroop_txt_new_static")]
-	public static aroop.txt*create_static(char*content);
+	public txt.from_static(char*content);
 	[CCode (cname = "aroop_txt_to_vala")]
 	public string to_string();
 	[CCode (cname = "aroop_txt_length")]
