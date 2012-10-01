@@ -2303,6 +2303,8 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 #endif
 		} else if(node is Class || node is Interface || node is Enum) {
 			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
+		} else if(node is EnumValueType) {
+			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
 		}
 		return CCodeBaseModule.get_ccode_name (node);
 	}

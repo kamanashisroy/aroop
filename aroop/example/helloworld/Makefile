@@ -1,6 +1,6 @@
 
 VALA_HOME=../../../
-VALAC=$(VALA_HOME)/compiler/valac
+VALAC=$(VALA_HOME)/compiler/aroopc
 VAPI=$(VALA_HOME)/vapi
 
 VSOURCES=$(wildcard vsrc/*.vala)

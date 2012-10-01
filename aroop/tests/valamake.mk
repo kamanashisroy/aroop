@@ -1,6 +1,6 @@
 
 VALA_HOME=../../../../
-VALAC=$(VALA_HOME)/compiler/valac
+VALAC=$(VALA_HOME)/compiler/aroopc
 VAPI=$(VALA_HOME)/vapi
 
 VSOURCES=$(wildcard vsrc/*.vala)
@@ -8,8 +8,8 @@ VSOURCE_BASE=$(basename $(notdir $(VSOURCES)))
 CSOURCES=$(addprefix vsrc/, $(addsuffix .c,$(VSOURCE_BASE)))
 OBJECTS=$(addprefix vsrc/, $(addsuffix .o,$(VSOURCE_BASE)))
 
-INCLUDES+=-I$(VALA_HOME)/aroop/inc
-LIBS+=-L$(VALA_HOME)/aroop/ -laroop_core
+INCLUDES+=-I$(VALA_HOME)/aroop/core/inc
+LIBS+=-L$(VALA_HOME)/aroop/core/ -laroop_core
 
 CC+=-ggdb -ggdb3
 

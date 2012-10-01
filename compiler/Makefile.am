@@ -10,42 +10,42 @@ AM_CPPFLAGS = \
 	-DPACKAGE_DATADIR=\"$(pkgdatadir)\" \
 	$(NULL)
 
-BUILT_SOURCES = valac.vala.stamp
+BUILT_SOURCES = aroopc.vala.stamp
 
 bin_PROGRAMS = \
-	valac \
+	aroopc \
 	$(NULL)
 
-valac_VALASOURCES = \
-	valacompiler.vala \
+aroopc_VALASOURCES = \
+	aroopcompiler.vala \
 	$(NULL)
 
-valac_SOURCES = \
-	valac.vala.stamp \
-	$(valac_VALASOURCES:.vala=.c) \
+aroopc_SOURCES = \
+	aroopc.vala.stamp \
+	$(aroopc_VALASOURCES:.vala=.c) \
 	$(NULL)
 
-valac.vala.stamp: $(valac_VALASOURCES)
+aroopc.vala.stamp: $(aroopc_VALASOURCES)
 	$(VALA_V)$(VALAC) $(COVERAGE_VALAFLAGS) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --vapidir $(srcdir)/../gee --pkg gee --vapidir $(srcdir)/../ccode --pkg ccode --vapidir $(srcdir)/../vala --pkg vala --vapidir $(srcdir)/../codegen --pkg codegen --pkg config $^
 	@touch $@
 
-valac_LDADD = \
+aroopc_LDADD = \
 	$(COVERAGE_LIBS) \
 	$(GLIB_LIBS) \
 	../codegen/libvala@PACKAGE_SUFFIX@.la \
 	$(NULL)
 
-EXTRA_DIST = $(valac_VALASOURCES) valac.vala.stamp
+EXTRA_DIST = $(aroopc_VALASOURCES) aroopc.vala.stamp
 
 install-exec-hook:
-	cd $(DESTDIR)$(bindir) && $(LN_S) -f valac@PACKAGE_SUFFIX@$(EXEEXT) vala@PACKAGE_SUFFIX@$(EXEEXT)
+	cd $(DESTDIR)$(bindir) && $(LN_S) -f aroopc@PACKAGE_SUFFIX@$(EXEEXT) vala@PACKAGE_SUFFIX@$(EXEEXT)
 if ENABLE_UNVERSIONED
-	cd $(DESTDIR)$(bindir) && $(LN_S) -f valac@PACKAGE_SUFFIX@$(EXEEXT) valac$(EXEEXT)
+	cd $(DESTDIR)$(bindir) && $(LN_S) -f aroopc@PACKAGE_SUFFIX@$(EXEEXT) aroopc$(EXEEXT)
 	cd $(DESTDIR)$(bindir) && $(LN_S) -f vala@PACKAGE_SUFFIX@$(EXEEXT) vala$(EXEEXT)
 endif
 
 MAINTAINERCLEANFILES = \
-	$(valac_VALASOURCES:.vala=.c) \
+	$(aroopc_VALASOURCES:.vala=.c) \
 	$(NULL)
 
 VALA_V = $(VALA_V_$(V))

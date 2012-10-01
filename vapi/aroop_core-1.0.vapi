@@ -315,6 +315,15 @@ public class aroop.txt : aroop.God {
 	public bool equals(aroop.txt other);
 }
 
+[Compact]
+[CCode (cname = "char", has_free_function = false)]
+public class aroop.mem {
+	[CCode (cname = "aroop_mem_copy")]
+	public bool copy_from(aroop.mem other, uint len);
+	[CCode (cname = "aroop_mem_shift")]
+	public aroop.mem shift(int inc);
+}
+
 public class aroop.core {
 	[CCode (cname = "aroop_assert")]
 	public static void assert(bool value);

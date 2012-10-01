@@ -204,6 +204,7 @@ class Vala.Compiler {
 		context.thread = thread;
 		context.mem_profiler = mem_profiler;
 		context.save_temps = save_temps;
+#if false
 		if (profile == "posix") {
 			context.profile = Profile.POSIX;
 			context.add_define ("POSIX");
@@ -215,11 +216,14 @@ class Vala.Compiler {
 			context.profile = Profile.DOVA;
 			context.add_define ("DOVA");
 		} else if (profile == "aroop") {
+#endif
 			context.profile = Profile.AROOP;
 			context.add_define("AROOP");
+#if false
 		} else {
 			Report.error (null, "Unknown profile %s".printf (profile));
 		}
+#endif
 		nostdpkg |= fast_vapi_filename != null;
 		context.nostdpkg = nostdpkg;
 
@@ -237,6 +241,7 @@ class Vala.Compiler {
 			context.add_define ("VALA_0_%d".printf (i));
 		}
 
+#if false
 		if (context.profile == Profile.POSIX) {
 			if (!nostdpkg) {
 				/* default package */
@@ -271,13 +276,16 @@ class Vala.Compiler {
 				context.add_external_package ("dova-core-0.1");
 			}
 		} else if (context.profile == Profile.AROOP) {
+#endif
 			if (!nostdpkg) {
 				/* default package */
 				// XXX should I load posix ?? context.add_external_package ("posix");
 				context.add_external_package ("aroop-1.0");
 				context.add_external_package ("aroop_core-1.0");
 			}
+#if false
 		}
+#endif
 
 		if (packages != null) {
 			foreach (string package in packages) {
@@ -298,15 +306,19 @@ class Vala.Compiler {
 			return quit ();
 		}
 
+#if false
 		if (context.profile == Profile.GOBJECT) {
 			context.codegen = new GDBusServerModule ();
 		} else if (context.profile == Profile.DOVA) {
 			context.codegen = new DovaErrorModule ();
 		} else if (context.profile == Profile.AROOP) {
+#endif
 			context.codegen = new AroopCCodegenImpl ();
+#if false
 		} else {
 			context.codegen = new CCodeDelegateModule ();
 		}
+#endif
 
 		bool has_c_files = false;
 
