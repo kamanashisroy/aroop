@@ -103,8 +103,8 @@ AC_CONFIG_FILES([Makefile
            gee/Makefile
            ccode/Makefile
            vala/Makefile
-           codegen/Makefile
-           compiler/Makefile
+           aroop/codegen/Makefile
+           aroop/compiler/Makefile
            vapi/Makefile
            tests/Makefile
            doc/Makefile

@@ -41,19 +41,24 @@ public class Vala.AroopValueModule : AroopObjectModule {
 
 		generate_class_declaration (type_class, decl_space);
 
+#if false
 		var type_fun = new CCodeFunction ("%s_type_get".printf (get_ccode_lower_case_name (st)), "AroopType *");
 		if (st.is_internal_symbol ()) {
 			type_fun.modifiers = CCodeModifiers.STATIC;
 		}
 		decl_space.add_function_declaration (type_fun);
+#endif
 
+#if false
 		var type_init_fun = new CCodeFunction ("%s_type_init".printf (get_ccode_lower_case_name (st)));
 		type_init_fun.add_parameter (new CCodeParameter ("type", "AroopType *"));
 		if (st.is_internal_symbol ()) {
 			type_init_fun.modifiers = CCodeModifiers.STATIC;
 		}
 		decl_space.add_function_declaration (type_init_fun);
+#endif
 
+#if false
 		var function = new CCodeFunction (get_ccode_copy_function (st), "void");
 		if (st.is_internal_symbol ()) {
 			function.modifiers = CCodeModifiers.STATIC;
@@ -65,6 +70,11 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		function.add_parameter (new CCodeParameter ("src_index", "intptr_t"));
 
 		decl_space.add_function_declaration (function);
+#endif
+
+		var func_macro = new CCodeMacroReplacement("%s(dst,dst_index,src,src_index)".printf(get_ccode_copy_function(st)), "({aroop_struct_cpy_or_destroy(dst,src,%s);})".printf(CCodeBaseModule.get_ccode_destroy_function(st)));
+		decl_space.add_type_declaration (func_macro);
+
 	}
 
 	public override void visit_struct (Struct st) {

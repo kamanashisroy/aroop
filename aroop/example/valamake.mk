@@ -1,5 +1,5 @@
 
-VALA_HOME=../../../../
+VALA_HOME=../../../
 VALAC=$(VALA_HOME)/aroop/compiler/aroopc
 VAPI=$(VALA_HOME)/vapi
 
@@ -24,7 +24,6 @@ test.bin:genvapi $(OBJECTS)
 
 clean:
 	$(RM) $(CSOURCES)
-	$(RM) zoo.vapi
 	$(RM) $(GEN_HEADER)
 	$(RM) test.bin
 	$(RM) $(OBJECTS)

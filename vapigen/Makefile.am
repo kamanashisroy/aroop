@@ -50,13 +50,13 @@ vapicheck.vala.stamp: $(vapicheck_VALASOURCES)
 
 vapigen_LDADD = \
 	$(GLIB_LIBS) \
-	../codegen/libvala@PACKAGE_SUFFIX@.la \
+	../aroop/codegen/libvala@PACKAGE_SUFFIX@.la \
 	../gobject-introspection/libgidl.la \
 	$(NULL)
 
 vapicheck_LDADD = \
 	$(GLIB_LIBS) \
-	../codegen/libvala@PACKAGE_SUFFIX@.la \
+	../aroop/codegen/libvala@PACKAGE_SUFFIX@.la \
 	../gobject-introspection/libgidl.la \
 	$(NULL)
 

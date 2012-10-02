@@ -12,8 +12,8 @@ SUBDIRS = \
 	gee \
 	ccode \
 	vala \
-	codegen \
-	compiler \
+	aroop/codegen \
+	aroop/compiler \
 	vapi \
 	tests \
 	doc \
@@ -24,8 +24,8 @@ DIST_SUBDIRS = \
 	gee \
 	ccode \
 	vala \
-	codegen \
-	compiler \
+	aroop/codegen \
+	aroop/compiler \
 	vapi \
 	tests \
 	doc \

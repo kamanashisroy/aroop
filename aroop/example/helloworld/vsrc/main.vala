@@ -27,13 +27,13 @@ class Animal: God {
 		return new txt("Hello world", 11);
 	}
 	public txt describe() {
-		return txt.create_static("Time is tiny, women are many.");
+		return new txt.from_static("Time is tiny, women are many.");
 	}
 }
 
 class Goat : Animal {
 	public override txt voice() {
-		return txt.create_static("maahamaahamaahalo");
+		return new txt.from_static("maahamaahamaahalo");
 	}
 }
 

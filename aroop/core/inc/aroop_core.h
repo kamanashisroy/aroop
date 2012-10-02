@@ -61,6 +61,13 @@ int aroop_deinit();
 #define aroop_mem_copy(x,y,z) ({memcpy(x,y,z);})
 #define aroop_mem_shift(x,y) ({((char*)x+y);})
 
+#define aroop_struct_cpy_or_destroy(x,y,destroy_func) ({\
+	if(x && y){ \
+		memcpy(x,y,sizeof(*x)); \
+	} else { \
+		destroy_func(x); \
+	};0;})
+
 
 C_CAPSULE_END
 

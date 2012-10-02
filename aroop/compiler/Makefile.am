@@ -5,7 +5,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/gee \
 	-I$(top_srcdir)/ccode \
 	-I$(top_srcdir)/vala \
-	-I$(top_srcdir)/codegen \
+	-I$(top_srcdir)/aroop/codegen \
 	$(GLIB_CFLAGS) \
 	-DPACKAGE_DATADIR=\"$(pkgdatadir)\" \
 	$(NULL)
@@ -26,13 +26,13 @@ aroopc_SOURCES = \
 	$(NULL)
 
 aroopc.vala.stamp: $(aroopc_VALASOURCES)
-	$(VALA_V)$(VALAC) $(COVERAGE_VALAFLAGS) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --vapidir $(srcdir)/../gee --pkg gee --vapidir $(srcdir)/../ccode --pkg ccode --vapidir $(srcdir)/../vala --pkg vala --vapidir $(srcdir)/../codegen --pkg codegen --pkg config $^
+	$(VALA_V)$(VALAC) $(COVERAGE_VALAFLAGS) $(VALAFLAGS) -C --vapidir $(top_srcdir)/vapi --pkg gobject-2.0 --vapidir $(top_srcdir)/gee --pkg gee --vapidir $(top_srcdir)/ccode --pkg ccode --vapidir $(top_srcdir)/vala --pkg vala --vapidir $(top_srcdir)/aroop/codegen --pkg codegen --pkg config $^
 	@touch $@
 
 aroopc_LDADD = \
 	$(COVERAGE_LIBS) \
 	$(GLIB_LIBS) \
-	../codegen/libvala@PACKAGE_SUFFIX@.la \
+	$(top_srcdir)/aroop/codegen/libvala@PACKAGE_SUFFIX@.la \
 	$(NULL)
 
 EXTRA_DIST = $(aroopc_VALASOURCES) aroopc.vala.stamp

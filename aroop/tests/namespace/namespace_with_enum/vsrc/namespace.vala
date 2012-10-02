@@ -7,6 +7,10 @@ enum someenum {
 	VALUE = 10,
 }
 
+struct test_struct {
+	someenum value;
+}
+
 class test_namespace : God {
 
 	public static int main() {

@@ -52,7 +52,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 		var instance_struct = new CCodeStruct ("_%s".printf (get_ccode_name (st)));
 
 		foreach (Field f in st.get_fields ()) {
-			string field_ctype = get_ccode_name (f.variable_type);
+			string field_ctype =  get_ccode_aroop_name(f.variable_type);
 			if (f.is_volatile) {
 				field_ctype = "volatile " + field_ctype;
 			}
