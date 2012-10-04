@@ -1731,7 +1731,7 @@ static int obj_debug_dump(const void*data, const void*func_data) {
 }
 #endif
 
-void opp_factory_verb(struct opp_factory*obuff, int (*verb_obj)(const void*data, const void*func_data), const void*func_data, void (*log)(void *log_data, const char*fmt, ...), void*log_data) {
+void opp_factory_verb(struct opp_factory*obuff, opp_verb_t verb_obj, const void*func_data, void (*log)(void *log_data, const char*fmt, ...), void*log_data) {
 #if 0
 	int i, use_count = 0, pool_count = 0;
 	SYNC_UWORD8_T*j;

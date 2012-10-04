@@ -267,14 +267,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 				aroop_priv = true;
 			}
 
-			CCodeExpression inst;
-			if (aroop_priv) {
-				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (cl, null))));
-				priv_call.add_argument (pub_inst);
-				inst = priv_call;
-			} else {
-				inst = pub_inst;
-			}
+			CCodeExpression inst = pub_inst;
 			if (instance_target_type.data_type.is_reference_type () || (instance != null && instance.value_type is PointerType)) {
 				result.cvalue = new CCodeMemberAccess.pointer (inst, get_ccode_name (f));
 			} else {

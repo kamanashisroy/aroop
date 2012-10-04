@@ -22,29 +22,32 @@
 
 public class Vala.AroopObjectModule : AroopArrayModule {
 	public override void generate_class_declaration (Class cl, CCodeFile decl_space) {
+		if(!cl.is_internal_symbol() && !decl_space.is_header) {
+			generate_class_declaration (cl, header_file);
+			return;
+		}
 		if (add_symbol_declaration (decl_space, cl, get_ccode_lower_case_name (cl))) {
 			return;
 		}
 
+		if (cl.base_class != null) {
+			if (cl.base_class.is_internal_symbol ()) {
+				generate_class_declaration (cl.base_class, cfile);
+			} else {
+				generate_class_declaration (cl.base_class, header_file);
+			}
+		}
+		
 		decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
 
 		generate_vtable(cl, decl_space);
 
 		var class_struct = new CCodeStruct ("_%s".printf (get_ccode_aroop_name (cl)));
 		if (cl.base_class != null) {
-			class_struct.add_field ("%s".printf(get_ccode_aroop_name (cl.base_class)), "super_data");
+			class_struct.add_field (get_ccode_aroop_definition(cl.base_class), "super_data");
 		}
 		foreach (Field f in cl.get_fields ()) {
-			if (f.binding == MemberBinding.INSTANCE)  {
-				generate_type_declaration (f.variable_type, decl_space);
-
-				string field_ctype = get_ccode_aroop_name (f.variable_type);
-				if (f.is_volatile) {
-					field_ctype = "volatile " + field_ctype;
-				}
-
-				class_struct.add_field (field_ctype, get_ccode_name (f) + get_ccode_declarator_suffix (f.variable_type));
-			}
+			generate_element_declaration(f, class_struct, decl_space);
 		}
 		// TODO do something when there is no vtable ..
 		class_struct.add_field ("struct aroop_vtable_%s*".printf(get_ccode_aroop_name (cl)), "vtable");
@@ -184,21 +187,33 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		decl_space.add_type_definition (vtable_struct);
 	}
 
-	private void add_class_system_init_prepare(Class cl, Class of_class) {
+	private void add_vtable_ovrd_variables(Class cl, Class of_class) {
+		if (of_class.base_class != null) {
+			add_vtable_ovrd_variables(cl, of_class.base_class);
+		}
 		var vdecl = new CCodeDeclaration ("struct aroop_vtable_%s".printf (get_ccode_aroop_name(of_class)));
 		vdecl.add_declarator (new CCodeVariableDeclarator ("vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(of_class))));
 		cfile.add_type_member_declaration(vdecl);
 	}
+	
+	private void cpy_vtable_of_base_class(Class cl, Class of_class, CCodeBlock block) {
+		if(of_class.base_class != null) {
+			cpy_vtable_of_base_class(cl, of_class.base_class, block);			
+		}
+		block.add_statement (
+			new CCodeExpressionStatement (
+				new CCodeAssignment (
+					new CCodeIdentifier (
+						"vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(of_class))
+						), new CCodeIdentifier ("vtable_%sovrd_%s".printf( get_ccode_lower_case_prefix(cl.base_class), get_ccode_aroop_name(of_class)))
+						)
+				)
+			);
+	}
 
 	private void add_class_system_init_function(Class cl) {
 		// create the vtable instances
-		add_class_system_init_prepare(cl, cl);
-		foreach (DataType base_type in cl.get_base_types ()) {
-			var object_type = (ObjectType) base_type;
-			if (object_type.type_symbol is Class) {
-				add_class_system_init_prepare(cl, ((Class)object_type.type_symbol));
-			}
-		}
+		add_vtable_ovrd_variables(cl, cl);
 
 		var ifunc = new CCodeFunction ("%stype_system_init".printf (get_ccode_lower_case_prefix (cl)), "int");
 		push_function (ifunc); // XXX I do not know what push does 
@@ -219,24 +234,34 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		var finish = new CCodeReturnStatement(new CCodeConstant ("0"));
 		// check if we are already initiated ..
 		iblock.add_statement (new CCodeIfStatement(new CCodeIdentifier ("done"), finish));
-		// copy vtable from base class
-		var some_parent_type = (ObjectType)null;
-		foreach (DataType base_type in cl.get_base_types ()) {
-			var object_type = (ObjectType) base_type;
-			if (object_type.type_symbol is Class) {
-				if(some_parent_type == null) {
-					some_parent_type = object_type;
-					// ask for initiation of super class ..
-					iblock.add_statement(new CCodeExpressionStatement (new CCodeFunctionCall (new CCodeIdentifier ("%stype_system_init".printf (get_ccode_lower_case_prefix ((Class)object_type.type_symbol))))));
-				}
-				iblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name((Class) object_type.type_symbol))), new CCodeIdentifier ("vtable_%sovrd_%s".printf( get_ccode_lower_case_prefix((Class) some_parent_type.type_symbol), get_ccode_aroop_name((Class) object_type.type_symbol) ) ))));
-			}
+		
+		if(cl.base_class != null) {
+			// initiate base class
+			iblock.add_statement(
+			new CCodeExpressionStatement (
+				new CCodeFunctionCall (
+					new CCodeIdentifier (
+						"%stype_system_init".printf (get_ccode_lower_case_prefix (cl.base_class))
+						)
+					)
+				)
+			);	
+			
+			// copy vtable from all the base classes recursively
+			cpy_vtable_of_base_class(cl, cl.base_class, iblock);
 		}
 
 		// prepare our vtable
 		foreach (Method m in cl.get_methods ()) {
 			if (m.is_virtual || m.overrides) {
-				iblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("vtable_%sovrd_%s.%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name((Class) m.base_method.parent_symbol), get_ccode_vfunc_name (m))), new CCodeIdentifier ( get_ccode_real_name (m) ))));
+				iblock.add_statement (
+					new CCodeExpressionStatement (
+						new CCodeAssignment (
+							new CCodeIdentifier (
+								"vtable_%sovrd_%s.%s".printf(get_ccode_lower_case_prefix(cl)
+								, get_ccode_aroop_name((Class) m.base_method.parent_symbol)
+								, get_ccode_vfunc_name (m)))
+							, new CCodeIdentifier ( get_ccode_real_name (m) ))));
 			}
 		}
 
@@ -246,6 +271,21 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		cfile.add_function (ifunc);
 	}
 
+	private void set_vtables(Class cl, Class of_class, CCodeBlock block) {
+		if(of_class.base_class != null) {
+			set_vtables(cl, of_class.base_class, block);			
+		}
+		block.add_statement (new CCodeExpressionStatement (
+			new CCodeAssignment(
+				new CCodeIdentifier (
+					"((%s*)this)->vtable".printf(
+						get_ccode_aroop_name(of_class))),
+				new CCodeIdentifier (
+					"&vtable_%sovrd_%s".printf(
+						get_ccode_lower_case_prefix(cl)
+						, get_ccode_aroop_name(of_class))))));
+	}
+	
 	private void add_pray_function (Class cl) {
 		var function = new CCodeFunction ("%spray".printf (get_ccode_lower_case_prefix (cl)), "int");
 		function.modifiers = CCodeModifiers.STATIC;
@@ -277,14 +317,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		switch_stat.add_statement(new CCodeExpressionStatement (new CCodeFunctionCall (new CCodeIdentifier ("%stype_system_init".printf (get_ccode_lower_case_prefix (cl))))));
 
 		// assign vtables
-		foreach (DataType base_type in cl.get_base_types ()) {
-			var object_type = (ObjectType) base_type;
-			if (object_type.type_symbol is Class) {
-				switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("((%s*)this)->vtable".printf(get_ccode_aroop_name(((Class)object_type.type_symbol)))), new CCodeIdentifier ("&vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(((Class)object_type.type_symbol)))))));
-			}
-		}
-		switch_stat.add_statement (new CCodeExpressionStatement (new CCodeAssignment(new CCodeIdentifier ("this->vtable"), new CCodeIdentifier ("&vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(cl))))));
-
+		set_vtables(cl, cl, switch_stat as CCodeBlock);
 
 		switch_stat.add_statement (new CCodeBreakStatement());
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_FINALIZE")));
@@ -298,7 +331,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		cfile.add_function (function);
 
 	}
-
 
 	void add_finalize_function (Class cl) {
 		var function = new CCodeFunction ("%sfinalize".printf (get_ccode_lower_case_prefix (cl)), "void");
@@ -316,14 +348,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		foreach (var f in cl.get_fields ()) {
 			if (f.binding == MemberBinding.INSTANCE)  {
-				CCodeExpression lhs = null;
-				if (f.is_internal_symbol ()) {
-					var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (cl, null))));
-					priv_call.add_argument (new CCodeIdentifier ("this"));
-					lhs = new CCodeMemberAccess.pointer (priv_call, get_ccode_name (f));
-				} else {
-					lhs = new CCodeMemberAccess.pointer (new CCodeIdentifier ("this"), get_ccode_name (f));
-				}
+				CCodeExpression lhs = new CCodeMemberAccess.pointer (new CCodeIdentifier ("this"), get_ccode_name (f));
 
 				if (requires_destroy (f.variable_type)) {
 					var this_access = new MemberAccess.simple ("this");
@@ -368,8 +393,8 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		add_pray_function (cl);
 		add_class_system_init_function(cl);
-		generate_class_declaration (cl, cfile);
 
+		generate_class_declaration (cl, cfile);
 		if (!cl.is_internal_symbol ()) {
 			generate_class_declaration (cl, header_file);
 		}

@@ -579,6 +579,20 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			generate_type_declaration (type_arg, decl_space);
 		}
 	}
+	
+	public void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space) {
+		if (f.binding != MemberBinding.INSTANCE)  {
+			return;
+		}
+		string field_ctype =  get_ccode_aroop_name(f.variable_type);
+		if (f.is_volatile) {
+			field_ctype = "volatile " + field_ctype;
+		}
+		
+		generate_type_declaration (f.variable_type, decl_space);
+		container.add_field (field_ctype, get_ccode_name (f) 
+			+ get_ccode_declarator_suffix (f.variable_type));
+	}
 
 	public virtual void generate_struct_declaration (Struct st, CCodeFile decl_space) {
 	}
@@ -2275,42 +2289,15 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public string get_ccode_aroop_name(CodeNode node) {
-		if (node is ObjectType) {
-			var object_type = (ObjectType) node;
-			if (object_type.type_symbol is Class) {
-				return CCodeBaseModule.get_ccode_lower_case_name (node, null) + "*";
-			} else if (object_type.type_symbol is Interface) {
-				return CCodeBaseModule.get_ccode_lower_case_name (node, null) + "*";
-			}
-#if false
-		} else if (node.data_type is Enum) {
-			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
-		} else if (node is DelegateType) {
-			var deleg_type = (DelegateType) node;
-			var d = deleg_type.delegate_symbol;
-			generate_delegate_declaration (d, decl_space);
-			generate_enum_declaration (en, decl_space);
-		} else if (node is ValueType) {
-			var value_type = (ValueType) node;
-			generate_struct_declaration ((Struct) value_type.type_symbol, decl_space);
-		} else if (node is ArrayType) {
-			var array_type = (ArrayType) node;
-			generate_struct_declaration (array_struct, decl_space);
-			generate_type_declaration (array_type.element_type, decl_space);
-		} else if (node is PointerType) {
-			var pointer_type = (PointerType) node;
-			generate_type_declaration (pointer_type.base_type, decl_space);
-#endif
-		} else if(node is Class || node is Interface || node is Enum) {
-			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
-		} else if(node is EnumValueType) {
-			return CCodeBaseModule.get_ccode_lower_case_name (node, null);
-		}
 		return CCodeBaseModule.get_ccode_name (node);
 	}
 
 	public string get_ccode_aroop_definition(ObjectTypeSymbol node) {
-		return "struct _%s".printf (get_ccode_aroop_name (node));
+		if(node.external_package) {
+			return get_ccode_aroop_name(node);
+		} else {
+			return "struct _%s".printf (get_ccode_aroop_name (node));
+		}
 	}
 
 	public string get_ccode_name (CodeNode node) {

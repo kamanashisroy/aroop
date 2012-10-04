@@ -14,8 +14,10 @@ struct test_struct {
 class test_namespace : God {
 
 	public static int main() {
-		someenum i;
-		(new txt.from_static("fine")).pray(prayer.DESCRIBE);
+		someenum i = someenum.VALUE;
+		if(i == someenum.VALUE) {
+			(new txt.from_static("fine")).pray(prayer.DESCRIBE);
+		}
 		return 0;
 	}
 }

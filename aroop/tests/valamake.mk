@@ -11,10 +11,16 @@ OBJECTS=$(addprefix vsrc/, $(addsuffix .o,$(VSOURCE_BASE)))
 INCLUDES+=-I$(VALA_HOME)/aroop/core/inc
 LIBS+=-L$(VALA_HOME)/aroop/core/ -laroop_core
 
+ifeq ($(VHEADER_FILE),)
+VHEADER=
+else
+VHEADER=--use-header --header=$(VHEADER_FILE)
+endif
+
 CC+=-ggdb -ggdb3
 
 genvapi:
-	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI) --vapidir ../../vapi --vapidir vapi $(VSOURCES)
+	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI) --vapidir ../../vapi --vapidir vapi $(VHEADER) $(VSOURCES)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@

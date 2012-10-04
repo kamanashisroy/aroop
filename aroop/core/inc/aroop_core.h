@@ -45,6 +45,7 @@ int aroop_deinit();
 
 #define aroop_object_alloc(x,y) opp_any_obj_alloc(x,y,NULL)
 #define aroop_god_pray(x,y,z) opp_callback(x,y,z)
+#define aroop_god_describe(x) opp_callback(x, OPPN_ACTION_DESCRIBE, NULL)
 #define aroop_god_is_same(x,y) ({(x && y && x == y);})
 #define aroop_god_shrink(x,y) ({opp_shrink(x,sizeof(*x)+y);})
 #define aroop_iterator_next(x) ({opp_iterator_next(x) != NULL})

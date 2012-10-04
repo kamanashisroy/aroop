@@ -8,12 +8,20 @@ CTARGETS=$(subst _test,.clean,$(DIRS))
 
 all:$(TARGETS)
 
+%.all:%_test/Makefile
+	$(MAKE) -C $(subst Makefile,,$^) all
+	touch $@
+
 %.all:%_test
-	$(MAKE) -C $^ all
+	$(MAKE) -f ../../arooprules.mk -C $^ all
 	touch $@
 
 %.clean:%_test
-	$(MAKE) -C $^ clean
+	$(MAKE) -f ../../arooprules.mk -C $^ clean
+	touch $@
+
+%.clean:%_test/Makefile
+	$(MAKE) -C $(subst Makefile,,$^) clean
 	touch $@
 
 clean:$(CTARGETS)

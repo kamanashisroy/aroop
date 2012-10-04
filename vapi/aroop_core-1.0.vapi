@@ -146,7 +146,9 @@ public struct aroop.Queue<G> {
 struct hashable_ext {
 }
 
+[CCode (cname = "opp_callback_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va_list*/void* ap, int size);
+[CCode (cname = "opp_verb_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.factory_log(void*log_data, char*fmt, ...);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
@@ -191,7 +193,7 @@ public enum aroop.god_flag {
 	ZOMBIE = 1<<12,
 }
 
-[CCode (cprefix = "OPPN_ACTION_", cname = "int")]
+[CCode (lower_case_cprefix = "OPPN_ACTION_", cprefix = "OPPN_ACTION_", cname = "int")]
 public enum aroop.prayer {
 	INITIALIZE = 512,
 	FINALIZE,
@@ -218,6 +220,8 @@ public abstract class aroop.Searchable : aroop.God {
 public struct aroop.Trident {
 	//[CCode (cname = "aroop_god_pray")]
 	//public void pray(int callback, void*cb_data = null);
+	[CCode (cname = "aroop_donothing")]
+	public void describe();
 }
 
 [CCode (cname = "aroop_god")]
@@ -232,6 +236,8 @@ public interface aroop.God {
 	public God pin();
 	[CCode (cname = "OPPUNREF")]
 	public void unpin();
+	[CCode (cname = "aroop_god_describe")]
+	public virtual void describe();
 	[CCode (cname = "aroop_god_pray")]
 	public void pray(int callback, void*cb_data = null);
 	[CCode (cname = "aroop_god_is_same")]

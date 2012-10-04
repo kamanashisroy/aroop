@@ -511,17 +511,23 @@ public class Vala.CCodeAttribute : AttributeCache {
 	private string get_default_name () {
 		var sym = node as Symbol;
 		if (sym != null) {
-			if (sym is Constant && !(sym is EnumValue)) {
+			if(sym is EnumValue) {
+				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).up (), sym.name); 
+			} else if (sym is Constant) {
 				if (sym.parent_symbol is Block) {
 					// local constant
 					return sym.name;
 				}
 				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).up (), sym.name);
 			} else if (sym is Field) {
+				string prefix = "";
+				if(sym.is_internal_symbol()) {
+					prefix = "_hdn_";
+				}
 				if (((Field) sym).binding == MemberBinding.STATIC) {
-					return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name);
+					return "%s%s%s".printf (prefix, CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name);
 				} else {
-					return sym.name;
+					return "%s%s".printf(prefix, sym.name);
 				}
 			} else if (sym is CreationMethod) {
 				var m = (CreationMethod) sym;
@@ -574,19 +580,13 @@ public class Vala.CCodeAttribute : AttributeCache {
 					// typedef for floating types
 					return st.width == 64 ? "double" : "float";
 				} else {
-					return "%s%s".printf (CCodeBaseModule.get_ccode_prefix (sym.parent_symbol), sym.name);
+					return CCodeBaseModule.get_ccode_lower_case_name (sym);
 				}
 			} else {
-				return "%s%s".printf (CCodeBaseModule.get_ccode_prefix (sym.parent_symbol), sym.name);
+				return CCodeBaseModule.get_ccode_lower_case_name (sym);
 			}
 		} else if (node is ObjectType) {
 			var type = (ObjectType) node;
-			if (CodeContext.get ().profile == Profile.DOVA) {
-				if (type.type_symbol.get_full_name () == "string") {
-					return "string_t";
-				}
-			}
-
 			string cname;
 			if (!type.value_owned) {
 				cname = CCodeBaseModule.get_ccode_const_name (type.type_symbol);
@@ -600,40 +600,19 @@ public class Vala.CCodeAttribute : AttributeCache {
 			if (type.inline_allocated) {
 				return cname;
 			} else {
-				if (CodeContext.get ().profile == Profile.DOVA) {
-					return "DovaArray";
-				} else {
-					return "%s*".printf (cname);
-				}
+				return "%s*".printf (cname);
 			}
 		} else if (node is DelegateType) {
 			var type = (DelegateType) node;
-			if (CodeContext.get ().profile == Profile.DOVA) {
-				return "%s*".printf (CCodeBaseModule.get_ccode_name (type.delegate_symbol));
-			} else {
-				return CCodeBaseModule.get_ccode_name (type.delegate_symbol);
-			}
+			return CCodeBaseModule.get_ccode_name (type.delegate_symbol);
 		} else if (node is ErrorType) {
 			return "GError*";
 		} else if (node is GenericType) {
-			if (CodeContext.get ().profile == Profile.GOBJECT) {
-				var type = (GenericType) node;
-				if (type.value_owned) {
-					return "gpointer";
-				} else {
-					return "gconstpointer";
-				}
-			} else {
-				return "void *";
-			}
+			return "aroop_god*";
 		} else if (node is MethodType) {
 			return "gpointer";
 		} else if (node is NullType) {
-			if (CodeContext.get ().profile == Profile.GOBJECT) {
-				return "gpointer";
-			} else {
-				return "void *";
-			}
+			return "aroop_god*";
 		} else if (node is PointerType) {
 			var type = (PointerType) node;
 			if (type.base_type.data_type != null && type.base_type.data_type.is_reference_type ()) {
@@ -645,10 +624,10 @@ public class Vala.CCodeAttribute : AttributeCache {
 			return "void";
 		} else if (node is ClassType) {
 			var type = (ClassType) node;
-			return "%sClass*".printf (CCodeBaseModule.get_ccode_name (type.class_symbol));
+			return "%s*".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
 		} else if (node is InterfaceType) {
 			var type = (InterfaceType) node;
-			return "%s*".printf (CCodeBaseModule.get_ccode_type_name (type.interface_symbol));
+			return "%s*".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
 		} else if (node is ValueType) {
 			var type = (ValueType) node;
 			var cname = CCodeBaseModule.get_ccode_name (type.type_symbol);
