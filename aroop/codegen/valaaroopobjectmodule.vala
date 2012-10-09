@@ -61,8 +61,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		foreach (Field f in cl.get_fields ()) {
 			generate_element_declaration(f, class_struct, decl_space);
 		}
-		// TODO do something when there is no vtable ..
-		class_struct.add_field ("%s*".printf(get_ccode_vtable_struct (cl)), "vtable");
+		if(cl.has_vtables) {
+			class_struct.add_field ("%s*".printf(get_ccode_vtable_struct (cl)), "vtable");
+		}
 		decl_space.add_type_definition (class_struct);
 	}
 
@@ -203,6 +204,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		if (of_class.base_class != null) {
 			add_vtable_ovrd_variables(cl, of_class.base_class);
 		}
+		if(!of_class.has_vtables) {
+			return;
+		}
 		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
 		vdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(cl, of_class)));
 		cfile.add_type_member_declaration(vdecl);
@@ -211,6 +215,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	private void cpy_vtable_of_base_class(Class cl, Class of_class, CCodeBlock block) {
 		if(of_class.base_class != null) {
 			cpy_vtable_of_base_class(cl, of_class.base_class, block);			
+		}
+		if(!of_class.has_vtables) {
+			return;
 		}
 		block.add_statement (
 			new CCodeExpressionStatement (
@@ -285,6 +292,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	private void set_vtables(Class cl, Class of_class, CCodeBlock block) {
 		if(of_class.base_class != null) {
 			set_vtables(cl, of_class.base_class, block);			
+		}
+		if(!of_class.has_vtables) {
+			return;
 		}
 		block.add_statement (new CCodeExpressionStatement (
 			new CCodeAssignment(

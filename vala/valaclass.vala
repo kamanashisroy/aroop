@@ -62,6 +62,10 @@ public class Vala.Class : ObjectTypeSymbol {
 		}
 	}
 
+
+	// public bool has_vtables {public get; private set;}
+	public bool has_vtables;
+
 	/**
 	 * Instances of immutable classes are immutable after construction.
 	 */
@@ -216,6 +220,7 @@ public class Vala.Class : ObjectTypeSymbol {
 	 */
 	public Class (string name, SourceReference? source_reference = null, Comment? comment = null) {
 		base (name, source_reference, comment);
+		has_vtables = false;
 	}
 
 	/**
@@ -340,6 +345,9 @@ public class Vala.Class : ObjectTypeSymbol {
 				m.error = true;
 				return;
 			}
+		}
+		if(m.is_virtual || m.is_abstract) {
+			has_vtables = true;
 		}
 
 		methods.add (m);
