@@ -496,7 +496,7 @@ public abstract class Vala.CCodeMemberAccessModule : CCodeControlFlowModule {
 	/* Returns lvalue access to the given field */
 	public override TargetValue get_field_cvalue (Field field, TargetValue? instance) {
 		var value_type = field.variable_type.copy ();
-
+		
 		var result = new GLibValue (value_type);
 		if (instance != null) {
 			result.actual_value_type = field.variable_type.get_actual_type (instance.value_type, null, field);

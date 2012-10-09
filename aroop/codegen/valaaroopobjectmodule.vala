@@ -21,9 +21,21 @@
  */
 
 public class Vala.AroopObjectModule : AroopArrayModule {
+	private string get_ccode_vtable_struct(Class cl) {
+		return "struct aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl));
+	}
+	
+	private string get_ccode_vtable_var(Class cl, Class of_class) {
+		return "vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl)
+			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));
+	}
+	
 	public override void generate_class_declaration (Class cl, CCodeFile decl_space) {
 		if(!cl.is_internal_symbol() && !decl_space.is_header) {
 			generate_class_declaration (cl, header_file);
+			return;
+		}
+		if(cl.is_internal_symbol() && decl_space.is_header) {
 			return;
 		}
 		if (add_symbol_declaration (decl_space, cl, get_ccode_lower_case_name (cl))) {
@@ -50,7 +62,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			generate_element_declaration(f, class_struct, decl_space);
 		}
 		// TODO do something when there is no vtable ..
-		class_struct.add_field ("struct aroop_vtable_%s*".printf(get_ccode_aroop_name (cl)), "vtable");
+		class_struct.add_field ("%s*".printf(get_ccode_vtable_struct (cl)), "vtable");
 		decl_space.add_type_definition (class_struct);
 	}
 
@@ -180,7 +192,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 
 	private void generate_vtable(Class cl, CCodeFile decl_space) {
-		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf (get_ccode_aroop_name (cl)));
+		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl)));
 		foreach (Method m in cl.get_methods ()) {
 			generate_virtual_method_declaration (m, decl_space, vtable_struct);
 		}
@@ -191,8 +203,8 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		if (of_class.base_class != null) {
 			add_vtable_ovrd_variables(cl, of_class.base_class);
 		}
-		var vdecl = new CCodeDeclaration ("struct aroop_vtable_%s".printf (get_ccode_aroop_name(of_class)));
-		vdecl.add_declarator (new CCodeVariableDeclarator ("vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(of_class))));
+		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
+		vdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(cl, of_class)));
 		cfile.add_type_member_declaration(vdecl);
 	}
 	
@@ -203,12 +215,11 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		block.add_statement (
 			new CCodeExpressionStatement (
 				new CCodeAssignment (
-					new CCodeIdentifier (
-						"vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl), get_ccode_aroop_name(of_class))
-						), new CCodeIdentifier ("vtable_%sovrd_%s".printf( get_ccode_lower_case_prefix(cl.base_class), get_ccode_aroop_name(of_class)))
-						)
+					new CCodeIdentifier (get_ccode_vtable_var(cl, of_class))
+					, new CCodeIdentifier (get_ccode_vtable_var(cl.base_class, of_class))
 				)
-			);
+			)
+		);
 	}
 
 	private void add_class_system_init_function(Class cl) {
@@ -258,8 +269,8 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 					new CCodeExpressionStatement (
 						new CCodeAssignment (
 							new CCodeIdentifier (
-								"vtable_%sovrd_%s.%s".printf(get_ccode_lower_case_prefix(cl)
-								, get_ccode_aroop_name((Class) m.base_method.parent_symbol)
+								"%s.%s".printf(
+								get_ccode_vtable_var(cl, (Class) m.base_method.parent_symbol)
 								, get_ccode_vfunc_name (m)))
 							, new CCodeIdentifier ( get_ccode_real_name (m) ))));
 			}
@@ -280,10 +291,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				new CCodeIdentifier (
 					"((%s*)this)->vtable".printf(
 						get_ccode_aroop_name(of_class))),
-				new CCodeIdentifier (
-					"&vtable_%sovrd_%s".printf(
-						get_ccode_lower_case_prefix(cl)
-						, get_ccode_aroop_name(of_class))))));
+				new CCodeIdentifier ("&%s".printf(get_ccode_vtable_var(cl, of_class))))));
 	}
 	
 	private void add_pray_function (Class cl) {
@@ -394,8 +402,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		add_pray_function (cl);
 		add_class_system_init_function(cl);
 
-		generate_class_declaration (cl, cfile);
-		if (!cl.is_internal_symbol ()) {
+		if (cl.is_internal_symbol ()) {
+			generate_class_declaration (cl, cfile);
+		} else {
 			generate_class_declaration (cl, header_file);
 		}
 
@@ -852,7 +861,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (vcall == null) {
 				instance_param = new CCodeParameter ("this", get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
 			}
-		} else if (m.binding == MemberBinding.INSTANCE || (m.parent_symbol is Struct && m is CreationMethod)) {
+		} else if (m.binding == MemberBinding.INSTANCE || (m.parent_symbol is Struct/* && m is CreationMethod*/)) {
 			TypeSymbol parent_type = find_parent_type (m);
 			var this_type = get_data_type_for_symbol (parent_type);
 
@@ -866,7 +875,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				generate_type_declaration (base_type, decl_space);
 				instance_param = new CCodeParameter ("this", get_ccode_aroop_name (base_type));
 			} else {
-				if (m.parent_symbol is Struct && m is CreationMethod) {
+				if (m.parent_symbol is Struct/* && m is CreationMethod*/) {
 					var st = (Struct) m.parent_symbol;
 					if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
 						// use return value

@@ -72,7 +72,7 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_is_empty_magical(x) ({(!x || !(x->str) || (x->len == 0))})
 #define aroop_txt_string_or(x,y) ({(x->str&&x->len!=0)?x:y;})
 #define aroop_txt_string_or_magical(x,y) ({(x&&x->str&&x->len!=0)?x:y;})
-#define aroop_txt_destroy(x) ({if(x->proto)OPPUNREF(x->proto);})
+#define aroop_txt_destroy(x) ({if((x)->proto)OPPUNREF((x)->proto);})
 
 void aroop_txt_system_init();
 void aroop_txt_system_deinit();

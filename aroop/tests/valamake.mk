@@ -25,11 +25,12 @@ genvapi:
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
 
-test.bin:genvapi $(OBJECTS)
+test.bin:$(OBJECTS)
 	$(CC) $(OBJECTS) $(LIBS) -o $@
 
 clean:
 	$(RM) $(CSOURCES)
+	$(RM) $(VHEADER_FILE)
 	$(RM) zoo.vapi
 	$(RM) $(GEN_HEADER)
 	$(RM) test.bin

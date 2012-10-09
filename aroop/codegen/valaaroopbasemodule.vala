@@ -358,6 +358,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public void generate_enum_declaration (Enum en, CCodeFile decl_space) {
+		if(!en.is_internal_symbol() && !decl_space.is_header) {
+			generate_enum_declaration (en, header_file);
+			return;
+		}
+		if(en.is_internal_symbol() && decl_space.is_header) {
+			return;
+		}
 		if (add_symbol_declaration (decl_space, en, get_ccode_aroop_name (en))) {
 			return;
 		}

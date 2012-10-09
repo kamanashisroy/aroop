@@ -710,9 +710,9 @@ public class Vala.CCodeAttribute : AttributeCache {
 			if (csuffix.has_suffix ("_class")) {
 				csuffix = csuffix.substring (0, csuffix.length - "_class".length) + "class";
 			}
-			return csuffix;
+			return "%s".printf(csuffix);
 		} else if (sym.name != null) {
-			return Symbol.camel_case_to_lower_case (sym.name);
+			return "%s".printf(Symbol.camel_case_to_lower_case (sym.name));
 		}
 		return "";
 	}

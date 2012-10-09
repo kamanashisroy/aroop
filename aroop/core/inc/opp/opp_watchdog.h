@@ -23,6 +23,8 @@
 #ifndef OBJ_WATCHDOG_H_
 #define OBJ_WATCHDOG_H_
 
+C_CAPSULE_START
+
 enum watchdog_severity {
 	WATCHDOG_ALERT = 'A',
 	WATCHDOG_NOTICE = 'N',
@@ -43,5 +45,7 @@ int opp_watchdog_deinit();
 #define opp_watchdog_init()
 #define opp_watchdog_deinit()
 #endif
+
+C_CAPSULE_END
 
 #endif /* OBJ_WATCHDOG_H_ */

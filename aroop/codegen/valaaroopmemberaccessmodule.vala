@@ -52,6 +52,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 
 			if (expr.inner is BaseAccess) {
 #if false
+				// TODO check if there is base access..
 				if (m.base_method != null) {
 					var base_class = (Class) m.base_method.parent_symbol;
 
@@ -202,11 +203,16 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), "this");
 			} else {
 				var st = current_type_symbol as Struct;
+#if true
 				if (st != null && !st.is_boolean_type () && !st.is_integer_type () && !st.is_floating_type () && (!st.is_simple_type () || current_method is CreationMethod)) {
 					result.cvalue = new CCodeIdentifier ("(*this)");
 				} else {
 					result.cvalue = new CCodeIdentifier ("this");
 				}
+#else
+				//result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), "this");
+				result.cvalue = new CCodeIdentifier ("this");
+#endif
 			}
 		} else {
 			if (p.captured) {
@@ -251,7 +257,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 
 	public TargetValue get_field_cvalue (Field f, TargetValue? instance) {
 		var result = new AroopValue (f.variable_type);
-
+		
 		if (f.binding == MemberBinding.INSTANCE) {
 			CCodeExpression pub_inst = null;
 
@@ -268,7 +274,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			}
 
 			CCodeExpression inst = pub_inst;
-			if (instance_target_type.data_type.is_reference_type () || (instance != null && instance.value_type is PointerType)) {
+			if (instance_target_type.data_type.is_reference_type () || (instance != null && (instance.value_type is PointerType))) {
 				result.cvalue = new CCodeMemberAccess.pointer (inst, get_ccode_name (f));
 			} else {
 				result.cvalue = new CCodeMemberAccess (inst, get_ccode_name (f));

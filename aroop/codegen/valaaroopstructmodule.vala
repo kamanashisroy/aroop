@@ -24,14 +24,19 @@ using GLib;
 
 public abstract class Vala.AroopStructModule : AroopBaseModule {
 	public override void generate_struct_declaration (Struct st, CCodeFile decl_space) {
+		if(!st.is_internal_symbol() && !decl_space.is_header) {
+			generate_struct_declaration (st, header_file);
+			return;
+		}
+		if(st.is_internal_symbol() && decl_space.is_header) {
+			return;
+		}
 		if (add_symbol_declaration (decl_space, st, get_ccode_name (st))) {
 			return;
 		}
 
 		if (st.base_struct != null) {
 			generate_struct_declaration (st.base_struct, decl_space);
-
-			decl_space.add_type_declaration (new CCodeTypeDefinition (get_ccode_name (st.base_struct), new CCodeVariableDeclarator (get_ccode_name (st))));
 			return;
 		}
 
@@ -63,9 +68,10 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 	public override void visit_struct (Struct st) {
 		push_context (new EmitContext (st));
 
-		generate_struct_declaration (st, cfile);
 
-		if (!st.is_internal_symbol ()) {
+		if (st.is_internal_symbol ()) {
+			generate_struct_declaration (st, cfile);
+		} else {
 			generate_struct_declaration (st, header_file);
 		}
 

@@ -16,12 +16,12 @@ all:$(TARGETS)
 	$(MAKE) -f ../../arooprules.mk -C $^ all
 	touch $@
 
-%.clean:%_test
-	$(MAKE) -f ../../arooprules.mk -C $^ clean
-	touch $@
-
 %.clean:%_test/Makefile
 	$(MAKE) -C $(subst Makefile,,$^) clean
+	touch $@
+
+%.clean:%_test
+	$(MAKE) -f ../../arooprules.mk -C $^ clean
 	touch $@
 
 clean:$(CTARGETS)

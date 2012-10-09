@@ -60,7 +60,7 @@ public struct aroop_mutex {
 public struct aroop_magic {
 }
 
-[CCode (cprefix = "AROOP_FLAG_")]
+[CCode (lower_case_cprefix = "AROOP_FLAG_")]
 enum factory_flags {
 	HAS_LOCK = 1,
 	SWEEP_ON_UNREF = 1<<1,
@@ -185,7 +185,7 @@ public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
 	public int do_preorder(iterator_cb do_func, void*func_data, uint if_flag, uint if_not_flag, aroop_hash hash);
 }
 
-[CCode (cprefix = "OPPN_", cname = "int", cheader_filename = "opp/opp_factory.h")]
+[CCode (lower_case_cprefix = "OPPN_", cname = "int", cheader_filename = "opp/opp_factory.h")]
 public enum aroop.god_flag {
 	ALL = 1<<15,
 	INTERNAL_1 = 1<<14,

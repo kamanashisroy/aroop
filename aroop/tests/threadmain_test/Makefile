@@ -1,20 +1,29 @@
 
-SOURCES=$(wildcard src/*.c)
-OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
 
+# enter all the directories and make them
 
-INCLUDES+=-I../../inc
-LIBS+=-L../../ -laroop_core -lpthread
+DIRS=$(subst Makefile,,$(wildcard *_test))
+TARGETS=$(subst _test,.all,$(DIRS))
+CTARGETS=$(subst _test,.clean,$(DIRS))
 
-CC+=-ggdb -ggdb3
+all:$(TARGETS)
 
-all:test
+%.all:%_test/Makefile
+	$(MAKE) -C $(subst Makefile,,$^) all
+	touch $@
 
-test:$(OBJECTS)
-	$(CC) $(OBJECTS) $(LIBS) -o test.bin
+%.all:%_test
+	$(MAKE) -f ../../arooprules.mk -C $^ all
+	touch $@
 
-.c.o:
-	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
-clean:
-	$(RM) test.bin
-	$(RM) $(OBJECTS)
+%.clean:%_test/Makefile
+	$(MAKE) -C $(subst Makefile,,$^) clean
+	touch $@
+
+%.clean:%_test
+	$(MAKE) -f ../../arooprules.mk -C $^ clean
+	touch $@
+
+clean:$(CTARGETS)
+	$(RM) -f *.clean *.all
+
