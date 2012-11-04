@@ -27,18 +27,17 @@
 #define XULTB_PLATFORM_ENTER(x) x
 #define XULTB_PLATFORM_WALK(x) x
 
-#ifdef  QTGUI_LIBRARY
+#ifdef ASTERISK_CHANNEL
+#include "ast_config.h"
+#elif defined(QTGUI_LIBRARY)
 #include "qt_config.h"
-#else
-#ifdef __EPOC32__
+#elif defined(__EPOC32__)
 #include "symb_config.h"
-#else
-#ifdef WIN
+#elif defined(WIN)
 #include "win_config.h"
-#else
-#ifdef ANDROID_XULTB
+#elif defined(ANDROID_XULTB)
 #include "android_config.h"
-#else
+#else // ANDROID_XULTB
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
@@ -57,9 +56,6 @@ typedef int32_t SYNC_SWORD32_T;
 
 #define SYNC_ASSERT(x) assert(x)
 #endif // ifdef ANDROID else
-#endif // ifdef WIN else
-#endif // ifdef __EPOC32__ else
-#endif
 
 #include "core/decorator.h"
 

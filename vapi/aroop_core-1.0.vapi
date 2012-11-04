@@ -98,7 +98,7 @@ public struct aroop.ArrayList<G> : aroop.countable {
 	public void set(int index, G item);
 }
 
-[CCode (cname = "opp_list_item", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "struct opp_list_item", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public class aroop.container : God {
 	[CCode (cname = "aroop_list_item_get")]
 	public God get();
@@ -130,7 +130,7 @@ public struct aroop.SearchableSet<G> : aroop.Set<G> {
 
 [CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_destroy_function=true, destroy_function="opp_queue_deinit")]
 public struct aroop.Queue<G> {
-	[CCode (cname = "opp_queue_init2")]
+	[CCode (cname = "aroop_queue_init")]
 	public Queue(int scindex = 0);
 	[CCode (cname = "opp_queue_deinit")]
 	public int destroy();
@@ -234,7 +234,7 @@ public interface aroop.God {
 #endif
 	[CCode (cname = "OPPREF")]
 	public God pin();
-	[CCode (cname = "OPPUNREF")]
+	[CCode (cname = "aroop_god_unpin")]
 	public void unpin();
 	[CCode (cname = "aroop_god_describe")]
 	public virtual void describe();

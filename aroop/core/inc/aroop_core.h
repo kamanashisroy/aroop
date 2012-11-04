@@ -44,6 +44,7 @@ int aroop_init(int argc, char ** argv);
 int aroop_deinit();
 
 #define aroop_object_alloc(x,y) opp_any_obj_alloc(x,y,NULL)
+#define aroop_god_unpin(x) ({void*y=x;OPPUNREF(y);/*x=y;*/}) // TODO fix this workarround.
 #define aroop_god_pray(x,y,z) opp_callback(x,y,z)
 #define aroop_god_describe(x) opp_callback(x, OPPN_ACTION_DESCRIBE, NULL)
 #define aroop_god_is_same(x,y) ({(x && y && x == y);})
@@ -61,6 +62,9 @@ int aroop_deinit();
 #define aroop_memcpy_struct(x,nouse,y,nouse2) ({if(x && y){memcpy(x,y,sizeof(*x));}})
 #define aroop_mem_copy(x,y,z) ({memcpy(x,y,z);})
 #define aroop_mem_shift(x,y) ({((char*)x+y);})
+#define aroop_queue_init(x,y,z) ({opp_queue_init2(x,z);})
+
+//#define aroop_unref(x) ({OPPUNREF(x);NULL;})
 
 #define aroop_struct_cpy_or_destroy(x,y,destroy_func) ({\
 	if(x && y){ \

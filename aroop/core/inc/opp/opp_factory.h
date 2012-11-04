@@ -173,7 +173,7 @@ int opp_test_flag(const void*data, unsigned int flag);
 #define OPPREF(x) ({opp_ref(x, __FILE__, __LINE__);})
 void*opp_ref(void*data, const char*filename, int lineno);
 #define OPPUNREF2(x) ({opp_unref((void**)(x), __FILE__, __LINE__);})
-#define OPPUNREF(x) opp_unref((void**)&(x), __FILE__, __LINE__)
+#define OPPUNREF(x) ({opp_unref((void**)&(x), __FILE__, __LINE__);})
 void opp_unref(void**data, const char*filename, int lineno);
 //#ifdef OPP_BUFFER_HAS_LOCK
 #define OPPUNREF_UNLOCKED(x) ({opp_unref_unlocked((void**)&(x), __FILE__, __LINE__);})
