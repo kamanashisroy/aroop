@@ -1791,6 +1791,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public override void visit_cast_expression (CastExpression expr) {
 		if (expr.is_silent_cast) {
 			if (expr.inner.value_type is ObjectType) {
+#if false
 				var ccomma = new CCodeCommaExpression ();
 				var temp_decl = get_temp_variable (expr.inner.value_type, true, expr);
 
@@ -1806,14 +1807,22 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				ccomma.append_expression (new CCodeConditionalExpression (ccheck, ccast, cnull));
 
 				set_cvalue (expr, ccomma);
+#else
+				var silent_cast = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_silent_cast"));
+				silent_cast.add_argument (get_type_id_expression (expr.type_reference));
+				silent_cast.add_argument (get_type_id_expression (expr.inner.value_type));
+				silent_cast.add_argument (get_cvalue (expr.inner));
+				set_cvalue (expr, silent_cast);
+#endif
 			} else {
 				expr.error = true;
 				Report.error (expr.source_reference, "Operation not supported for this type");
 			}
 			return;
 		}
-
+		
 		if (expr.type_reference.data_type != null && expr.type_reference.data_type.get_full_name () == "Aroop.Value") {
+#if false
 			// box value
 			var temp_decl = get_temp_variable (expr.inner.value_type, true, expr);
 			emit_temp_var (temp_decl);
@@ -1829,8 +1838,16 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			ccomma.append_expression (to_any);
 
 			set_cvalue (expr, ccomma);
+#else
+			var needs_cast = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_unimplemented_cast"));
+			needs_cast.add_argument (get_type_id_expression (expr.type_reference));
+			needs_cast.add_argument (get_type_id_expression (expr.inner.value_type));
+			needs_cast.add_argument (get_cvalue (expr.inner));
+			set_cvalue (expr, needs_cast);
+#endif
 			return;
 		} else if (expr.inner.value_type.data_type != null && expr.inner.value_type.data_type.get_full_name () == "Aroop.Value") {
+#if false
 			// unbox value
 			var temp_decl = get_temp_variable (expr.type_reference, true, expr);
 			emit_temp_var (temp_decl);
@@ -1851,6 +1868,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			ccomma.append_expression (cvar);
 
 			set_cvalue (expr, ccomma);
+#else
+			var needs_cast = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_unimplemented_cast"));
+			needs_cast.add_argument (get_type_id_expression (expr.type_reference));
+			needs_cast.add_argument (get_type_id_expression (expr.inner.value_type));
+			needs_cast.add_argument (get_cvalue (expr.inner));
+			set_cvalue (expr, needs_cast);
+#endif
 			return;
 		}
 

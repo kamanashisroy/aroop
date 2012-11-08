@@ -3,7 +3,6 @@ using aroop;
 
 
 class TestFactory : God {
-	int element;
 	static Factory<TestFactory> simpleFac;
 	static Factory<TestFactory> sizedFac;
 	static SearchableFactory<TestFactory> simpleSFac;

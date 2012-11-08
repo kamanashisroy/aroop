@@ -28,6 +28,7 @@
 #include "opp/opp_factory.h"
 #include "opp/opp_any_obj.h"
 #include "opp/opp_io.h"
+#include "aroop_core_type_conversion.h"
 
 typedef void aroop_god;
 typedef int bool;
@@ -65,6 +66,7 @@ int aroop_deinit();
 #define aroop_queue_init(x,y,z) ({opp_queue_init2(x,z);})
 
 //#define aroop_unref(x) ({OPPUNREF(x);NULL;})
+#define any_is_a(x,y) 1
 
 #define aroop_struct_cpy_or_destroy(x,y,destroy_func) ({\
 	if(x && y){ \
