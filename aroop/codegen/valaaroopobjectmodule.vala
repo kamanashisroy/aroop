@@ -603,6 +603,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		generate_cparameters (m, cfile, function);
 
+
 		// generate *_real_* functions for virtual methods
 		if (!m.is_abstract) {
 			if (m.base_method != null || m.base_interface_method != null) {
@@ -615,6 +616,14 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 			if (m.body != null) {
 				push_function (function);
+
+				if(m.overrides) {
+					ccode.add_declaration("%s *".printf (get_ccode_aroop_name(current_class)), new CCodeVariableDeclarator ("this"));
+					var lop = new CCodeIdentifier ("this");
+					var rop = new CCodeCastExpression (new CCodeIdentifier ("base_instance"), "%s *".printf (get_ccode_aroop_name(current_class)));
+					ccode.add_assignment (lop, rop);
+				}
+		
 
 				if (context.module_init_method == m) {
 					add_module_init ();
@@ -690,8 +699,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 					ccode.add_statement (cdecl);
 
 					ccode.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("this")));
-				}
-
+				}				
 				cfile.add_function (function);
 			}
 		}
@@ -871,7 +879,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (vcall == null) {
 				instance_param = new CCodeParameter ("this", get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
 			}
-		} else if (m.binding == MemberBinding.INSTANCE || (m.parent_symbol is Struct/* && m is CreationMethod*/)) {
+		} else if (m.binding == MemberBinding.INSTANCE || (m.parent_symbol is Struct)) {
 			TypeSymbol parent_type = find_parent_type (m);
 			var this_type = get_data_type_for_symbol (parent_type);
 
@@ -883,7 +891,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			} else if (m.overrides) {
 				var base_type = new ObjectType ((Class) m.base_method.parent_symbol);
 				generate_type_declaration (base_type, decl_space);
-				instance_param = new CCodeParameter ("this", get_ccode_aroop_name (base_type));
+				instance_param = new CCodeParameter ("base_instance", get_ccode_aroop_name (base_type));
 			} else {
 				if (m.parent_symbol is Struct/* && m is CreationMethod*/) {
 					var st = (Struct) m.parent_symbol;

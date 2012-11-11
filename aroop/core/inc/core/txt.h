@@ -67,7 +67,7 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_length(x) ({x->len;})
 #define aroop_txt_get_hash(x) ({((x)->hash != 0)?hash:(hash = opp_get_hash_bin((x)->str, (x)->len));})
 #define aroop_txt_to_vala(x) ({(x&&x->str)?x->str:"(null)"})
-#define aroop_txt_to_vala_magical(x) ({(x&&x->str&&x->len!=0)?x->str:"(null)"})
+#define aroop_txt_to_vala_magical(x) ({((x)&&(x)->str&&(x)->len!=0)?(x)->str:"(null)"})
 #define aroop_txt_is_empty(x) ({(!((x)->str) || ((x)->len == 0))})
 #define aroop_txt_is_empty_magical(x) ({(!(x) || !((x)->str) || ((x)->len == 0))})
 #define aroop_txt_string_or(x,y) ({(x->str&&x->len!=0)?x:y;})
