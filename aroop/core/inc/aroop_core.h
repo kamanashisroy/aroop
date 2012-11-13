@@ -56,6 +56,7 @@ int aroop_deinit();
 #define aroop_list_item_get(x) ({x->obj_data;})
 #define aroop_get_token(x) ({x->_ext.token;})
 #define aroop_donothing(x)
+#define aroop_donothing4(x,y,a,b)
 #define aroop_memclean(x,y) ({memset((x->_ext+1), 0, y - sizeof(x->_ext));})
 #define aroop_memclean_raw(x,y) ({memset(x, 0, y);})
 // TODO remove all the SYNC_ prefix things ..

@@ -159,7 +159,7 @@ public struct aroop.Factory<G> : aroop.countable {
 	public Factory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_assert_factory_creation_for_type")]
 	public Factory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
-	[CCode (cname = "opp_alloc4")]
+	[CCode (cname = "aroop_alloc_full")]
 	public G? alloc_full(uint16 size = 0, int doubleref = 0, void*init_data = null);
 	[CCode (cname = "opp_get")]
 	public G? get(uint token);

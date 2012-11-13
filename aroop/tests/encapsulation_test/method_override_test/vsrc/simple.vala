@@ -4,6 +4,9 @@ using aroop;
 internal abstract class Fruit {
 	protected int pid;
 	public abstract int get();
+	public virtual void set() {
+		pid = -1;
+	}
 }
 
 internal class Mango : Fruit {
@@ -15,6 +18,9 @@ internal class Mango : Fruit {
 	public override int get() {
 		return id+pid;
 	}
+	public new void set() {
+		pid = 12;
+	}
 }
 
 class MainClass : God {
@@ -23,7 +29,10 @@ class MainClass : God {
 		var mango = new Mango();
 		Fruit fr = null;
 		fr = mango;
-		fr.get();
+		mango.set();
+		core.assert(fr.get() == 13);
+		fr.set();
+		core.assert(fr.get() == 0);
 		return 0;
 	}
 }

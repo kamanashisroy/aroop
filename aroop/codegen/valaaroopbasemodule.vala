@@ -1055,7 +1055,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		} else if (type is ArrayType) {
 			return new CCodeIdentifier ("aroop_object_unref");
 		} else if (type is DelegateType) {
-			return new CCodeIdentifier ("aroop_object_unref");
+			return new CCodeConstant ("aroop_donothing4");
 		} else if (type is PointerType) {
 			return new CCodeIdentifier ("free");
 		} else {
@@ -1073,7 +1073,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 		var ccall = new CCodeFunctionCall (get_destroy_func_expression (type));
 
-		if (type is ValueType && !type.nullable) {
+		if ((type is ValueType && !type.nullable) || type is DelegateType) {
 			// normal value type, no null check
 			ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cvar));
 			ccall.add_argument (new CCodeConstant ("0"));
@@ -2112,6 +2112,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		generate_type_declaration (target_type, cfile);
 
 		if (target_type is DelegateType && expression_type is MethodType) {
+#if false
 			var deleg_type = (DelegateType) target_type;
 			var method_type = (MethodType) expression_type;
 			CCodeExpression delegate_target;
@@ -2133,7 +2134,6 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 					delegate_target = new CCodeConstant ("NULL");
 				}
 			}
-
 			var d = deleg_type.delegate_symbol;
 
 			string wrapper_name = "_wrapper%d_".printf (next_wrapper_id++);
@@ -2193,6 +2193,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			ccall.add_argument (delegate_target);
 			ccall.add_argument (new CCodeIdentifier (wrapper_name));
 			return ccall;
+#else
+			return source_cexpr;
+#endif
 		}
 
 		var cl = target_type.data_type as Class;

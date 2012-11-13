@@ -36,7 +36,8 @@ internal class Orchard : God {
 		int i = 0;
 		mangoes = SearchableFactory<Mango>.for_type(16, 1, factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE);
 		for(i=10;i != 0;i--) {
-			Mango x = mangoes.alloc_full(0, 1);
+			Mango x = mangoes.alloc_full(4, 0, null);
+			core.assert(x != null);
 			x.constr(i);
 		}
 		i = 5;

@@ -44,9 +44,9 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 			generate_method_declaration (m, cfile);
 			ccall = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_real_name (m)));
 		} else if (itype is DelegateType) {
-			deleg = ((DelegateType) itype).delegate_symbol;
-			ccall = new CCodeFunctionCall (new CCodeIdentifier ("%s_invoke".printf (get_ccode_lower_case_name (deleg))));
-			ccall.add_argument (get_cvalue (expr.call));
+			//deleg = ((DelegateType) itype).delegate_symbol;
+			//ccall = new CCodeFunctionCall (new CCodeIdentifier ());
+			//ccall.add_argument (get_cvalue (expr.call));
 		}
 
 		if (m is CreationMethod) {
