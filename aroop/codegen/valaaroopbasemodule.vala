@@ -440,7 +440,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 
 		var cdecl = new CCodeDeclaration (field_ctype);
-		cdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_name (f)));
+		cdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_name (f) + get_ccode_declarator_suffix (f.variable_type)));
 		if (f.is_internal_symbol ()) {
 			cdecl.modifiers = CCodeModifiers.STATIC;
 		} else {
@@ -461,7 +461,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			if (!f.is_internal_symbol ()) {
 				generate_field_declaration (f, header_file);
 			}
-
+#if false
 			var var_decl = new CCodeVariableDeclarator (get_ccode_name (f));
 			var_decl.initializer = default_value_for_type (f.variable_type, true);
 
@@ -487,6 +487,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			}
 
 			cfile.add_type_member_declaration (var_def);
+#endif
 		}
 	}
 

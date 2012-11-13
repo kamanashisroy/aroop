@@ -79,8 +79,8 @@ enum {
 #define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL})
 
 #define aroop_factory_cpy_or_destroy(x,nouse,y,nouse2) ({\
-	if(x && y){ \
-		memcpy(x,y,sizeof(*x)); \
+	if((x) && (y)){ \
+		memcpy(x,y,sizeof(*(x))); \
 	} else { \
 		opp_factory_destroy(x); \
 	};0;})
