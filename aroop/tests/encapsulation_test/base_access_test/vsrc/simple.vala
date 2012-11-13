@@ -3,6 +3,9 @@ using aroop;
 
 internal abstract class Fruit {
 	protected int pid;
+	internal Fruit(int id) {
+		pid = id;
+	}
 	public abstract int get();
 }
 
@@ -10,7 +13,7 @@ internal class Mango : Fruit {
 	protected int id;
 	internal Mango() {
 		id = 1;
-		pid = 2;
+		base(2);
 	}
 	public override int get() {
 		return id+pid;

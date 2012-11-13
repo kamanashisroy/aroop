@@ -89,9 +89,11 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 					}
 				}
 
+#if false				
 				if (ma.inner is BaseAccess) {
 					ccall.add_argument (new CCodeFunctionCall (new CCodeIdentifier ("%s_type_get".printf (get_ccode_lower_case_name (current_class.base_class)))));
 				}
+#endif				
 				ccall.add_argument (instance);
 			}
 
