@@ -71,6 +71,7 @@ enum factory_flags {
 
 //public delegate void aroop.verb_func(God data, void*func_data);
 
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.countable {
 	[CCode (cname = "OPP_FACTORY_USE_COUNT")]
 	public int count_unsafe();
@@ -104,6 +105,7 @@ public class aroop.container : God {
 	public God get();
 }
 
+[CCode (cname = "aroop_iterator_cb", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.iterator_cb(God data, void*func_data);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]

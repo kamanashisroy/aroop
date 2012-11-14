@@ -551,7 +551,7 @@ public class Vala.CCodeAttribute : AttributeCache {
 				}
 				if (sym.name == "main" && sym.parent_symbol.name == null) {
 					// avoid conflict with generated main function
-					return "_vala_main";
+					return "_aroop_main";
 				} else if (sym.name.has_prefix ("_")) {
 					return "_%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name.substring (1));
 				} else {

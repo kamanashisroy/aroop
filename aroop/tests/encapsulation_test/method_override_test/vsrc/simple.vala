@@ -1,6 +1,10 @@
 
 using aroop;
 
+internal interface Tree {
+	public abstract int get_height();
+}
+
 internal abstract class Fruit {
 	protected int pid;
 	public abstract int get();
@@ -9,7 +13,7 @@ internal abstract class Fruit {
 	}
 }
 
-internal class Mango : Fruit {
+internal class Mango : Fruit,Tree {
 	protected int id;
 	internal Mango() {
 		id = 1;
@@ -20,6 +24,9 @@ internal class Mango : Fruit {
 	}
 	public new void set() {
 		pid = 12;
+	}
+	public int get_height() {
+		return pid*id;
 	}
 }
 

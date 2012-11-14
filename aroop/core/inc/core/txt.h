@@ -47,11 +47,11 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #endif
 #define xultb_subtxt(src,off,width,dest) ({(dest)->str = (src)->str+off;(dest)->len = width;(dest)->hash=0;dest;})
 
-#define aroop_txtcmp(x,y) ({int min = x->len>y->len?y->len:x->len;memcmp(x->str, y->str, min);})
-#define aroop_txt_equals(x,y) ({(x && y && x->len == y->len && !memcmp(x->str, y->str, x->len));})
-#define aroop_txt_iequals(x,y) ({(x && y && x->len == y->len && !strncasecmp(x->str, y->str, x->len));})
+#define aroop_txtcmp(x,y) ({int min = (x)->len>(y)->len?(y)->len:(x)->len;memcmp((x)->str, (y)->str, min);})
+#define aroop_txt_equals(x,y) ({((x) && (y) && (x)->len == (y)->len && !memcmp((x)->str, (y)->str, (x)->len));})
+#define aroop_txt_iequals(x,y) ({((x) && (y) && (x)->len == (y)->len && !strncasecmp((x)->str, (y)->str, (x)->len));})
 
-#define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;(x && x->len == (sizeof(static_text)-1) && !memcmp(x->str, static_text,x->len));})
+#define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;((x) && (x)->len == (sizeof(static_text)-1) && !memcmp((x)->str, static_text,(x)->len));})
 
 
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);

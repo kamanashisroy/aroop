@@ -617,7 +617,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (m.body != null) {
 				push_function (function);
 
-				if(m.overrides) {
+				if(m.overrides || m.base_interface_method != null) {
 					ccode.add_declaration("%s *".printf (get_ccode_aroop_name(current_class)), new CCodeVariableDeclarator ("this"));
 					var lop = new CCodeIdentifier ("this");
 					var rop = new CCodeCastExpression (new CCodeIdentifier ("base_instance"), "%s *".printf (get_ccode_aroop_name(current_class)));
@@ -887,7 +887,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 			if (m.base_interface_method != null && !m.is_abstract && !m.is_virtual) {
 				var base_type = new ObjectType ((Interface) m.base_interface_method.parent_symbol);
-				instance_param = new CCodeParameter ("this", get_ccode_aroop_name (base_type));
+				instance_param = new CCodeParameter ("base_instance", get_ccode_aroop_name (base_type));
 			} else if (m.overrides) {
 				var base_type = new ObjectType ((Class) m.base_method.parent_symbol);
 				generate_type_declaration (base_type, decl_space);
