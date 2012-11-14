@@ -51,63 +51,6 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 
 			function.add_parameter (new CCodeParameter (param.name, get_ccode_name (param.variable_type)));
 		}
-
-#if false
-		function.block = new CCodeBlock ();
-
-		var get_target = new CCodeFunctionCall (new CCodeIdentifier ("aroop_delegate_get_target"));
-		get_target.add_argument (new CCodeIdentifier ("this"));
-
-		var cdecl = new CCodeDeclaration ("AroopObject*");
-		cdecl.add_declarator (new CCodeVariableDeclarator ("target", get_target));
-		function.block.add_statement (cdecl);
-
-		var priv = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (d))));
-		priv.add_argument (new CCodeIdentifier ("this"));
-
-		string instance_param_list = "(AroopObject *";
-		if (param_list != "") {
-			instance_param_list += ",";
-			instance_param_list += param_list;
-		}
-		instance_param_list += ")";
-
-		var instance_block = new CCodeBlock ();
-		var instance_call = new CCodeFunctionCall (new CCodeCastExpression (new CCodeMemberAccess.pointer (priv, "method"), "%s (*) %s".printf (function.return_type, instance_param_list)));
-
-		instance_call.add_argument (new CCodeIdentifier ("target"));
-
-		string static_param_list = "(";
-		if (param_list != "") {
-			static_param_list += param_list;
-		} else {
-			static_param_list += "void";
-		}
-		static_param_list += ")";
-
-		var static_block = new CCodeBlock ();
-		var static_call = new CCodeFunctionCall (new CCodeCastExpression (new CCodeMemberAccess.pointer (priv, "method"), "%s (*) %s".printf (function.return_type, static_param_list)));
-
-		foreach (Parameter param in d.get_parameters ()) {
-			instance_call.add_argument (new CCodeIdentifier (param.name));
-			static_call.add_argument (new CCodeIdentifier (param.name));
-		}
-
-		if (d.return_type is VoidType) {
-			instance_block.add_statement (new CCodeExpressionStatement (instance_call));
-			static_block.add_statement (new CCodeExpressionStatement (static_call));
-		} else if (d.return_type is GenericType) {
-			instance_call.add_argument (new CCodeIdentifier ("result"));
-			static_call.add_argument (new CCodeIdentifier ("result"));
-			instance_block.add_statement (new CCodeExpressionStatement (instance_call));
-			static_block.add_statement (new CCodeExpressionStatement (static_call));
-		} else {
-			instance_block.add_statement (new CCodeReturnStatement (instance_call));
-			static_block.add_statement (new CCodeReturnStatement (static_call));
-		}
-
-		function.block.add_statement (new CCodeIfStatement (new CCodeIdentifier ("target"), instance_block, static_block));
-#endif
 		return function;
 	}
 

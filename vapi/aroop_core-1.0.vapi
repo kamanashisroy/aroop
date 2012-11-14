@@ -138,7 +138,7 @@ public struct aroop.Queue<G> {
 	public int destroy();
 	[CCode (cname = "opp_enqueue")]
 	public int enqueue(G data);
-	[CCode (cname = "opp_dequeue")]
+	[CCode (cname = "aroop_dequeue")]
 	public G? dequeue();
 	[CCode (cname = "OPP_QUEUE_SIZE")]
 	public int count_unsafe();
@@ -150,7 +150,7 @@ struct hashable_ext {
 
 [CCode (cname = "opp_callback_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va_list*/void* ap, int size);
-[CCode (cname = "opp_verb_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_log_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.factory_log(void*log_data, char*fmt, ...);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
@@ -163,7 +163,7 @@ public struct aroop.Factory<G> : aroop.countable {
 	public Factory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_alloc_full")]
 	public G? alloc_full(uint16 size = 0, int doubleref = 0, void*init_data = null);
-	[CCode (cname = "opp_get")]
+	[CCode (cname = "aroop_factory_get_by_token")]
 	public G? get(uint token);
 	[CCode (cname = "opp_factory_do_full")]
 	public int visit_each(iterator_cb do_func, void*func_data, uint if_flag, uint if_not_flag, aroop_hash hash);
@@ -258,6 +258,8 @@ public interface aroop.God {
 public struct aroop.etxt : aroop.Trident { // embeded txt
 	[CCode (cname = "aroop_txt_embeded")]
 	public etxt(string content);
+	[CCode (cname = "aroop_txt_embeded_with_length")]
+	public etxt.given_length(string content, int len);
 	[CCode (cname = "aroop_txt_embeded_static")]
 	public etxt.from_static(string content);
 	[CCode (cname = "aroop_txt_create")]
@@ -279,7 +281,7 @@ public struct aroop.etxt : aroop.Trident { // embeded txt
 	[CCode (cname = "aroop_txtcmp")]
 	public int cmp(aroop.etxt*other);
 	[CCode (cname = "aroop_txt_equals")]
-	public bool equals(aroop.etxt other);
+	public bool equals(aroop.etxt*other);
 	[CCode (cname = "aroop_txt_iequals")]
 	public bool iequals(aroop.etxt*other);
 	[CCode (cname = "aroop_txt_equals_static")]

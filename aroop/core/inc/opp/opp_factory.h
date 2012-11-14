@@ -157,7 +157,8 @@ struct opp_pool*opp_factory_create_pool_donot_use(struct opp_factory*obuff, stru
 #define OPP_FACTORY_CHECK(x)
 #endif
 typedef int (*opp_verb_t)(const void*data, const void*func_data);
-void opp_factory_verb(struct opp_factory*obuff, opp_verb_t verb_obj, const void*func_data, void (*log)(void*log_data, const char*fmt, ...), void*log_data);
+typedef void (*opp_log_t)(void*log_data, const char*fmt, ...);
+void opp_factory_verb(struct opp_factory*obuff, opp_verb_t verb_obj, const void*func_data, opp_log_t log, void*log_data);
 
 // obj api
 #define OPP_ALLOC1(x) ({opp_alloc4(x, 0, 0, NULL);})

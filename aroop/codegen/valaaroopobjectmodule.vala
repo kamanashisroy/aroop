@@ -879,7 +879,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (vcall == null) {
 				instance_param = new CCodeParameter ("this", get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
 			}
-		} else if (m.binding == MemberBinding.INSTANCE || (m.parent_symbol is Struct)) {
+		} else if (m.binding == MemberBinding.INSTANCE /*|| (m.parent_symbol is Struct)*/) {
 			TypeSymbol parent_type = find_parent_type (m);
 			var this_type = get_data_type_for_symbol (parent_type);
 

@@ -55,6 +55,7 @@ enum {
 	aroop_assert_factory_creation_full(x0, sizeof(x1), x2, x3 ,x4, x1##_pray);})
 #define aroop_assert_factory_creation_for_type_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1##_pray);})
+#define aroop_factory_get_by_token(x,y,z) ({*z = opp_get(x,y);})
 typedef int (*aroop_iterator_cb)(void*data, void*func_data);
 
 // searchable
@@ -86,6 +87,8 @@ typedef int (*aroop_iterator_cb)(void*data, void*func_data);
 		opp_factory_destroy(x); \
 	};0;})
 
+// queue
+#define aroop_dequeue(x,y) ({*y = opp_dequeue(x);})
 
 C_CAPSULE_END
 
