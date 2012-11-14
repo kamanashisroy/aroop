@@ -49,6 +49,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				generate_class_declaration (cl.base_class, header_file);
 			}
 		}
+		generate_getter_setter_declaration(cl, decl_space);
 		
 		decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
 
@@ -65,6 +66,42 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			class_struct.add_field ("%s*".printf(get_ccode_vtable_struct (cl)), "vtable");
 		}
 		decl_space.add_type_definition (class_struct);
+	}
+
+	public void generate_getter_setter_declaration(Class cl, CCodeFile decl_space) {
+		foreach (Property prop in cl.get_properties ()) {
+            if (prop.is_abstract && prop.is_virtual) {
+            	// say we do not support that
+				Report.error (prop.source_reference, "virtual or abstract property is not supported");
+            }
+            generate_type_declaration (prop.property_type, decl_space);
+			var prop_name = get_ccode_name (prop.field) + get_ccode_declarator_suffix (prop.field.variable_type);
+			var prop_accessor = "";
+			var get_params = "";
+			var set_params = "y";
+			if(prop.binding == MemberBinding.INSTANCE) {
+				prop_accessor = "((%s*)x)->".printf(get_ccode_aroop_name(cl));
+				get_params = "x";
+				set_params = "x,y";
+			}
+			if (prop.get_accessor != null) {
+				var macro_function = "%sget_%s(%s)".printf (CCodeBaseModule.get_ccode_lower_case_prefix (cl)
+				                                            , prop.name, get_params);
+				var macro_body = "({%s%s;})".printf(prop_accessor, prop_name);
+				
+				var func_macro = new CCodeMacroReplacement(macro_function, macro_body);
+				decl_space.add_type_declaration (func_macro);
+            }
+            if (prop.set_accessor != null) {
+				// TODO define it in local file if it is not public 
+				var macro_function = "%sset_%s(%s)".printf (CCodeBaseModule.get_ccode_lower_case_prefix (cl)
+				                                            , prop.name, set_params);
+				var macro_body = "({%s%s = y;})".printf(prop_accessor, prop_name);
+				var func_macro = new CCodeMacroReplacement(macro_function, macro_body);
+				decl_space.add_type_declaration (func_macro);
+            }
+        }
+
 	}
 
 	void generate_virtual_method_declaration (Method m, CCodeFile decl_space, CCodeStruct type_struct) {
