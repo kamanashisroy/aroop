@@ -52,7 +52,7 @@ enum {
 #define aroop_assert_factory_creation_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4, x5) == 0);})
 #define aroop_assert_factory_creation_for_type(x0, x1, x2, x3, x4) ({\
-	aroop_assert_factory_creation_full(x0, sizeof(x1), x2, x3 ,x4, x1##_pray);})
+	aroop_assert_factory_creation_full(x0, x2, sizeof(x1), x3 ,x4, x1##_pray);})
 #define aroop_assert_factory_creation_for_type_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1##_pray);})
 #define aroop_factory_get_by_token(x,y,z) ({*z = opp_get(x,y);})
@@ -78,7 +78,7 @@ typedef int (*aroop_iterator_cb)(void*data, void*func_data);
 
 // Set
 #define aroop_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3);})
-#define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL})
+#define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL;})
 
 #define aroop_factory_cpy_or_destroy(x,nouse,y,nouse2) ({\
 	if((x) && (y)){ \

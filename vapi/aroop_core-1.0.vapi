@@ -257,9 +257,9 @@ public interface aroop.God {
 [CCode (cname = "struct aroop_txt", cheader_filename = "core/txt.h")]
 public struct aroop.etxt : aroop.Trident { // embeded txt
 	[CCode (cname = "aroop_txt_embeded")]
-	public etxt(string content);
+	public etxt(string content, God?proto = null);
 	[CCode (cname = "aroop_txt_embeded_with_length")]
-	public etxt.given_length(string content, int len);
+	public etxt.given_length(string content, int len, God?proto = null);
 	[CCode (cname = "aroop_txt_embeded_static")]
 	public etxt.from_static(string content);
 	[CCode (cname = "aroop_txt_create")]

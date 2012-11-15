@@ -32,6 +32,10 @@ C_CAPSULE_START
 #define RB_MAX_HEIGHT 128
 #endif
 
+#ifndef OPP_OBJECT_EXT_TINY
+#error "undefined OPP_OBJECT_EXT_TINY"
+#endif
+
 /* A red-black tree node. */
 struct opp_object_ext
   {

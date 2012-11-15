@@ -654,7 +654,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (m.body != null) {
 				push_function (function);
 
-				if(m.overrides || m.base_interface_method != null) {
+				if(m.overrides || (m.base_interface_method != null && !m.is_abstract && !m.is_virtual)) {
 					ccode.add_declaration("%s *".printf (get_ccode_aroop_name(current_class)), new CCodeVariableDeclarator ("this"));
 					var lop = new CCodeIdentifier ("this");
 					var rop = new CCodeCastExpression (new CCodeIdentifier ("base_instance"), "%s *".printf (get_ccode_aroop_name(current_class)));

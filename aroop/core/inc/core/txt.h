@@ -39,9 +39,9 @@ struct aroop_txt {
 typedef struct aroop_txt aroop_txt;
 typedef int xultb_bool_t;
 
-#define aroop_txt_embeded_with_length(x,y,z) ({(x)->str = y,(x)->hash = 0,(x)->len = z;(x)->size=(x)->len+1;})
-#define aroop_txt_embeded(x,y) ({(x)->str = y,(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
-#define aroop_txt_embeded_static(x,y) ({(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
+#define aroop_txt_embeded_with_length(x,y,z,p) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = z;(x)->size=(x)->len+1;})
+#define aroop_txt_embeded(x,y,p) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
+#define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
 
 #if false
 aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
