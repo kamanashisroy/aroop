@@ -20,7 +20,7 @@ endif
 CC+=-ggdb -ggdb3
 
 genvapi:
-	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI) --vapidir ../../vapi --vapidir vapi $(VHEADER) $(VSOURCES)
+	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI) --vapidir ../../vapi --vapidir vapi $(TESTVAPI) $(VHEADER) $(VSOURCES)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
@@ -31,7 +31,6 @@ test.bin:$(OBJECTS)
 clean:
 	$(RM) $(CSOURCES)
 	$(RM) $(VHEADER_FILE)
-	$(RM) zoo.vapi
 	$(RM) $(GEN_HEADER)
 	$(RM) test.bin
 	$(RM) $(OBJECTS)

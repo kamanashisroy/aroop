@@ -21,6 +21,36 @@
  */
 
 /**
+ * Represents a struct declaration in the C code.
+ */
+public class Vala.CCodeStructPrototype : Vala.CCodeNode {
+        /**
+         * The struct name.
+         */
+		private string type_name { get; set; }
+		private string name { get; set; }
+		public CCodeStruct definition;
+        public CCodeStructPrototype (string name) {
+            this.name = "_%s".printf (name);
+			this.type_name = name;
+			definition = new CCodeStruct(this.name);
+        }
+
+		public void generate_type_declaration(CCodeFile decl_space) {
+			decl_space.add_type_declaration (new CCodeTypeDefinition ("struct _%s".printf (type_name), new CCodeVariableDeclarator (type_name)));
+		}
+	
+        public override void write (CCodeWriter writer) {
+                writer.write_string ("struct ");
+                writer.write_string (name);
+                writer.write_string (";");
+                writer.write_newline ();
+                writer.write_newline ();
+        }
+}
+
+
+/**
  * Code visitor generating C Code.
  */
 public abstract class Vala.AroopBaseModule : CodeGenerator {

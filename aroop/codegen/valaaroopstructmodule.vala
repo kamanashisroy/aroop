@@ -22,24 +22,8 @@
 
 using GLib;
 
-public abstract class Vala.AroopStructModule : AroopBaseModule {
+public abstract class Vala.AroopStructModule : AroopBaseModule {  
 	public override void generate_struct_declaration (Struct st, CCodeFile decl_space) {
-		if(!st.is_internal_symbol() && !decl_space.is_header) {
-			generate_struct_declaration (st, header_file);
-			return;
-		}
-		if(st.is_internal_symbol() && decl_space.is_header) {
-			return;
-		}
-		if (add_symbol_declaration (decl_space, st, get_ccode_name (st))) {
-			return;
-		}
-
-		if (st.base_struct != null) {
-			generate_struct_declaration (st.base_struct, decl_space);
-			return;
-		}
-
 		if (st.is_boolean_type ()) {
 			// typedef for boolean types
 			return;
@@ -53,15 +37,35 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 			// typedef for generic floating types
 			return;
 		}
+		if(st.external_package) {
+			return;
+		}
+		if(!st.is_internal_symbol() && !decl_space.is_header) {
+			generate_struct_declaration (st, header_file);
+			return;
+		}
+		var proto = new CCodeStructPrototype (get_ccode_name (st));
+		if(st.is_internal_symbol() && decl_space.is_header) {
+			// declare prototype	
+			decl_space.add_type_definition (proto);
+			proto.generate_type_declaration(decl_space);
+			return;
+		}
+		if (add_symbol_declaration (decl_space, st, get_ccode_name (st))) {
+			return;
+		}
 
-		var instance_struct = new CCodeStruct ("_%s".printf (get_ccode_name (st)));
+		if (st.base_struct != null) {
+			generate_struct_declaration (st.base_struct, decl_space);
+			return;
+		}
+
+		var instance_struct = proto.definition;
 
 		foreach (Field f in st.get_fields ()) {
 			generate_element_declaration(f, instance_struct, decl_space);
 		}
-
-		decl_space.add_type_declaration (new CCodeTypeDefinition ("struct _%s".printf (get_ccode_name (st)), new CCodeVariableDeclarator (get_ccode_name (st))));
-
+		proto.generate_type_declaration(decl_space);
 		decl_space.add_type_definition (instance_struct);
 	}
 

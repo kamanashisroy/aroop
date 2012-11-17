@@ -31,11 +31,18 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 	
 	public override void generate_class_declaration (Class cl, CCodeFile decl_space) {
+		if(cl.external_package) {
+			return;
+		}
 		if(!cl.is_internal_symbol() && !decl_space.is_header) {
 			generate_class_declaration (cl, header_file);
 			return;
 		}
+		var proto = new CCodeStructPrototype (get_ccode_aroop_name (cl));
 		if(cl.is_internal_symbol() && decl_space.is_header) {
+			// declare prototype
+			decl_space.add_type_definition (proto);
+			proto.generate_type_declaration(decl_space);
 			return;
 		}
 		if (add_symbol_declaration (decl_space, cl, get_ccode_lower_case_name (cl))) {
@@ -50,12 +57,13 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			}
 		}
 		generate_getter_setter_declaration(cl, decl_space);
-		
-		decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
+
+		proto.generate_type_declaration(decl_space);
+		//decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
 
 		generate_vtable(cl, decl_space);
 
-		var class_struct = new CCodeStruct ("_%s".printf (get_ccode_aroop_name (cl)));
+		var class_struct = proto.definition;
 		if (cl.base_class != null) {
 			class_struct.add_field (get_ccode_aroop_definition(cl.base_class), "super_data");
 		}

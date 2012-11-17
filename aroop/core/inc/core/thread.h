@@ -78,5 +78,4 @@ typedef char sync_cond_t;
 	} \
 }}while(0)
 
-
 #endif /* SYNC_THREAD_H_ */

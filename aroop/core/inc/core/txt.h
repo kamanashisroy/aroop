@@ -52,7 +52,8 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #define aroop_txt_equals(x,y) ({((x) && (y) && (x)->len == (y)->len && !memcmp((x)->str, (y)->str, (x)->len));})
 #define aroop_txt_iequals(x,y) ({((x) && (y) && (x)->len == (y)->len && !strncasecmp((x)->str, (y)->str, (x)->len));})
 
-#define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;((x) && (x)->len == (sizeof(static_text)-1) && !memcmp((x)->str, static_text,(x)->len));})
+#define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;((x) && (x)->len == (sizeof(static_y)-1) && !memcmp((x)->str, static_text,(x)->len));})
+#define aroop_txt_equals_chararray(x,y) ({((!(x) && !(y)) || ((x) && !(x)->str && !(y) )) || ((x) && !strcmp((x)->str, y));})
 
 
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
@@ -66,7 +67,7 @@ aroop_txt*aroop_txt_cat_static(aroop_txt*text, char*suffix);
 aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_indexof_char(haystack, niddle) ({const char*haystack##pos = strchr((haystack)->str, niddle);int haystack##i = -1;if(haystack##pos && haystack##pos < ((haystack)->str+(haystack)->len))haystack##i = haystack##pos-(haystack)->str;haystack##i;})
 #define aroop_txt_length(x) ({(x)->len;})
-#define aroop_txt_get_hash(x) ({((x)->hash != 0)?hash:(hash = opp_get_hash_bin((x)->str, (x)->len));})
+#define aroop_txt_get_hash(x) ({((x)->hash != 0)?(x)->hash:((x)->hash = opp_get_hash_bin((x)->str, (x)->len));})
 #define aroop_txt_to_vala(x) ({(((x)&&(x)->str)?(x)->str:"(null)");})
 #define aroop_txt_to_vala_magical(x) ({(((x)&&(x)->str&&(x)->len!=0)?(x)->str:"(null)");})
 #define aroop_txt_is_empty(x) ({(!((x)->str) || ((x)->len == 0));})

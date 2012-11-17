@@ -284,8 +284,10 @@ public struct aroop.etxt : aroop.Trident { // embeded txt
 	public bool equals(aroop.etxt*other);
 	[CCode (cname = "aroop_txt_iequals")]
 	public bool iequals(aroop.etxt*other);
-	[CCode (cname = "aroop_txt_equals_static")]
+	[CCode (cname = "aroop_txt_equals_chararray")]
 	public bool equals_string(string other);
+	[CCode (cname = "aroop_txt_equals_static")]
+	public bool equals_static_string(string other);
 	[CCode (cname = "aroop_txt_destroy")]
 	public void destroy();
 }
