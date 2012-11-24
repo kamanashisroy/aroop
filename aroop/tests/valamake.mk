@@ -11,6 +11,12 @@ OBJECTS=$(addprefix vsrc/, $(addsuffix .o,$(VSOURCE_BASE)))
 INCLUDES+=-I$(VALA_HOME)/aroop/core/inc
 LIBS+=-L$(VALA_HOME)/aroop/core/ -laroop_core
 
+ifeq ($(VLIBRARY_FILE),)
+VLIBRARY=
+else
+VLIBRARY=--library $(VLIBRARY_FILE)
+endif
+
 ifeq ($(VHEADER_FILE),)
 VHEADER=
 else
@@ -20,7 +26,7 @@ endif
 CC+=-ggdb -ggdb3
 
 genvapi:
-	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI) --vapidir ../../vapi --vapidir vapi $(TESTVAPI) $(VHEADER) $(VSOURCES)
+	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI) --vapidir ../../vapi --vapidir vapi $(TESTVAPI) $(VLIBRARY) $(VHEADER) $(VSOURCES)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
@@ -31,6 +37,7 @@ test.bin:$(OBJECTS)
 clean:
 	$(RM) $(CSOURCES)
 	$(RM) $(VHEADER_FILE)
+	$(RM) $(VLIBRARY_FILE).vapi
 	$(RM) $(GEN_HEADER)
 	$(RM) test.bin
 	$(RM) $(OBJECTS)

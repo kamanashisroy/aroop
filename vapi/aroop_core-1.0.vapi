@@ -144,8 +144,12 @@ public struct aroop.Queue<G> {
 	public int count_unsafe();
 }
 
-[CCode (cname = "struct opp_object_ext", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "struct opp_object_ext_tiny", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
 struct hashable_ext {
+}
+
+[CCode (cname = "struct opp_object_ext", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+struct searcable_ext {
 }
 
 [CCode (cname = "opp_callback_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
@@ -206,15 +210,24 @@ public enum aroop.prayer {
 	DESCRIBE,
 }
 
-[CCode (cname = "struct opp_object_ext", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
-public abstract class aroop.Searchable : aroop.God {
+[CCode (cname = "struct opp_object_ext_tiny", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+public abstract class aroop.Hashable : aroop.God {
 	private hashable_ext _ext;
 	[CCode (cname = "aroop_donothing")]
-	public Searchable();
+	public Hashable();
 	[CCode (cname = "opp_set_hash")]
 	protected void set_hash(aroop_hash hash);
 	[CCode (cname = "aroop_get_token")]
 	public uint16 get_token();
+	[CCode (cname = "aroop_memclean")]
+	protected void memclean(ulong size);
+}
+
+[CCode (cname = "struct opp_object_ext", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+public abstract class aroop.Searchable : aroop.Hashable {
+	private searcable_ext _ext;
+	[CCode (cname = "aroop_donothing")]
+	public Searchable();
 	[CCode (cname = "aroop_memclean")]
 	protected void memclean(ulong size);
 }
@@ -264,6 +277,12 @@ public struct aroop.etxt : aroop.Trident { // embeded txt
 	public etxt.from_static(string content);
 	[CCode (cname = "aroop_txt_create")]
 	public etxt.from_txt(aroop.txt proto);
+	[CCode (cname = "aroop_txt_embeded_from_embeded")]
+	public etxt.from_etxt(aroop.etxt*proto);
+	[CCode (cname = "aroop_memclean_raw2")]
+	public etxt.EMPTY();
+	[CCode (cname = "aroop_txt_embeded_buffer")]
+	public bool buffer(int size);
 	[CCode (cname = "aroop_txt_to_vala")]
 	public string to_string();
 	[CCode (cname = "aroop_txt_length")]

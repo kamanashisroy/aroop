@@ -41,6 +41,20 @@ typedef int xultb_bool_t;
 
 #define aroop_txt_embeded_with_length(x,y,z,p) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = z;(x)->size=(x)->len+1;})
 #define aroop_txt_embeded(x,y,p) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
+#define aroop_txt_embeded_from_embeded(x,y) ({ \
+	if((y)->proto) { \
+		(x)->proto = OPPREF((y)->proto); \
+		(x)->str = (y)->str; \
+	} else { \
+		opp_str2_reuse2((x)->str, (y)->str); \
+		(x)->proto = (x)->str; \
+	} \
+	(x)->hash = (y)->hash; \
+	(x)->len = (y)->len; \
+	(x)->size=(x)->len+1; \
+})
+
+#define aroop_txt_embeded_buffer(x,y) ({if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}x->str;})
 #define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
 
 #if false
@@ -74,7 +88,7 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_is_empty_magical(x) ({(!(x) || !((x)->str) || ((x)->len == 0));})
 #define aroop_txt_string_or(x,y) ({((x)->str&&(x)->len!=0)?x:y;})
 #define aroop_txt_string_or_magical(x,y) ({((x)&&(x)->str&&(x)->len!=0)?x:y;})
-#define aroop_txt_destroy(x) ({if((x)->proto)OPPUNREF((x)->proto);})
+#define aroop_txt_destroy(x) ({if((x)->proto)OPPUNREF((x)->proto);(x)->str = NULL;(x)->len = 0;(x)->hash = 0;(x)->size = 0;})
 
 void aroop_txt_system_init();
 void aroop_txt_system_deinit();
