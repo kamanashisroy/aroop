@@ -14,7 +14,7 @@ internal struct Orchard {
 	}
 }
 
-class MainClass : God {
+class MainClass : None {
 
 	public static int main() {
 		Orchard orchard = Orchard();

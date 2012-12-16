@@ -14,6 +14,7 @@ SUBDIRS = \
 	vala \
 	aroop/codegen \
 	aroop/compiler \
+	aroop/vapi \
 	vapi \
 	tests \
 	doc \
@@ -26,6 +27,7 @@ DIST_SUBDIRS = \
 	vala \
 	aroop/codegen \
 	aroop/compiler \
+	aroop/vapi \
 	vapi \
 	tests \
 	doc \
@@ -37,9 +39,9 @@ aclocaldir = $(datadir)/aclocal
 dist_aclocal_DATA = vala.m4
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvala@PACKAGE_SUFFIX@.pc
+pkgconfig_DATA = libaroop@PACKAGE_SUFFIX@.pc
 
-libvala@PACKAGE_SUFFIX@.pc: libvala.pc
+libaroop@PACKAGE_SUFFIX@.pc: libaroop.pc
 	cp $< $@
 
 .PHONY: bootstrap
@@ -96,14 +98,14 @@ gen-ChangeLog:
 	fi
 
 CLEANFILES = \
-	libvala@PACKAGE_SUFFIX@.pc
+	libaroop@PACKAGE_SUFFIX@.pc
 	$(NULL)
 
 EXTRA_DIST = \
 	ChangeLog.pre-0-4 \
 	ChangeLog.pre-0-5-7 \
 	MAINTAINERS \
-	libvala.pc.in \
+	libaroop.pc.in \
 	.version \
 	build-aux/git-version-gen \
 	build-aux/gitlog-to-changelog \

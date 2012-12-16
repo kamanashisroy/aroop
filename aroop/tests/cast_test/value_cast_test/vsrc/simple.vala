@@ -1,7 +1,7 @@
 
 using aroop;
 
-class MainClass : God {
+class MainClass : None {
 
 	public static int main() {
 		int x = 10;

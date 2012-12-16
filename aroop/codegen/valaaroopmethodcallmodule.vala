@@ -220,6 +220,13 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 			ccall_expr = ccomma;
 		}
 
+		if (expr.tree_can_fail) {
+			// method can fail
+			current_method_inner_error = true;
+			// add &inner_error before the ellipsis arguments
+			ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_variable_cexpression ("_inner_error_")));
+		}
+
 		if (expr.parent_node is ExpressionStatement) {
 			ccode.add_expression (ccall_expr);
 		} else {

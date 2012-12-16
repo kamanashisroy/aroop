@@ -2,7 +2,7 @@
 using aroop;
 
 
-class TestFactory : God {
+class TestFactory : None {
 	static Factory<TestFactory> simpleFac;
 	static Factory<TestFactory> sizedFac;
 	static SearchableFactory<TestFactory> simpleSFac;

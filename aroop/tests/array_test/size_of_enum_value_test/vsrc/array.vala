@@ -2,7 +2,7 @@
 using aroop;
 
 
-class test_array : God {
+class test_array : None {
 	enum configuration {
 #if EMBEDED
 		COLLECTION_SIZE = 20

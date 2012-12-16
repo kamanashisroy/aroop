@@ -728,6 +728,23 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 				m.body.emit (this);
 
+				if (current_method_inner_error) {
+					/* always separate error parameter and inner_error local variable
+					 * as error may be set to NULL but we're always interested in inner errors
+					 */
+#if false
+					if (m.coroutine) {
+						closure_struct.add_field ("aroop_wrong*", "_inner_error_");
+
+						// no initialization necessary, closure struct is zeroed
+					} else {
+#endif
+						ccode.add_declaration ("aroop_wrong*", new CCodeVariableDeclarator.zero ("_inner_error_", new CCodeConstant ("NULL")));
+#if false
+					}
+#endif
+				}
+
 				if (!(m.return_type is VoidType) && !(m.return_type is GenericType)) {
 					var cdecl = new CCodeDeclaration (get_ccode_aroop_name (m.return_type));
 					cdecl.add_declarator (new CCodeVariableDeclarator.zero ("result", default_value_for_type (m.return_type, true)));
@@ -885,6 +902,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 			var vcall = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_real_name (m)));
 			vcall.add_argument (new CCodeIdentifier ("this"));
+			if(m.tree_can_fail) {
+				vcall.add_argument (new CCodeIdentifier ("_err"));
+			}
 			vblock.add_statement (new CCodeExpressionStatement (vcall));
 
 			generate_cparameters (m, cfile, vfunc, null, vcall);
@@ -1027,6 +1047,16 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			}
 
 			generate_type_declaration (m.return_type, decl_space);
+		}
+		
+		if(m.tree_can_fail) {
+			var cparam = new CCodeParameter ("_err", "aroop_wrong**");
+			current_method_inner_error = true;
+
+			func.add_parameter (cparam);
+			if (vdeclarator != null) {
+				vdeclarator.add_parameter (cparam);
+			}
 		}
 	}
 

@@ -22,13 +22,15 @@
 
 using aroop;
 
-class Animal: God {
+class Animal: None {
 	public virtual txt voice() {
 		return new txt("Hello world", 11);
 	}
-	public txt describe() {
-		return new txt.from_static("Time is tiny, women are many.");
+#if false
+	public override void describe() {
+		etxt.from_static("Time is tiny, women are many.").desribe();
 	}
+#endif
 }
 
 class Goat : Animal {
@@ -42,6 +44,7 @@ int main() {
 	Animal? an = null;
 	an = new Goat();
 
-	an.voice().pray(prayer.DESCRIBE);
+	an.voice().describe();
+	//an.describe();
 	return 0;
 }

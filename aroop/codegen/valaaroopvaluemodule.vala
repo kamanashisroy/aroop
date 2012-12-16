@@ -176,7 +176,13 @@ public class Vala.AroopValueModule : AroopObjectModule {
 	public override void visit_assignment (Assignment assignment) {
 		var generic_type = assignment.left.value_type as GenericType;
 		if (generic_type == null) {
+#if false
+			// We are doing this for experimental purpose .. ..
+			var locate_myself = new CCodeFunctionCall(new CCodeIdentifier ("aroop_locate_myself"));
+			set_cvalue (assignment, locate_myself);
+#else
 			base.visit_assignment (assignment);
+#endif
 			return;
 		}
 

@@ -1,6 +1,6 @@
 NULL =
 
-VALAC = $(top_builddir)/compiler/valac
+#VALAC = $(top_builddir)/compiler/valac
 
 SUBDIRS = \
 	vala-gen-introspect \
@@ -50,13 +50,13 @@ vapicheck.vala.stamp: $(vapicheck_VALASOURCES)
 
 vapigen_LDADD = \
 	$(GLIB_LIBS) \
-	../aroop/codegen/libvala@PACKAGE_SUFFIX@.la \
+	../aroop/codegen/libaroop@PACKAGE_SUFFIX@.la \
 	../gobject-introspection/libgidl.la \
 	$(NULL)
 
 vapicheck_LDADD = \
 	$(GLIB_LIBS) \
-	../aroop/codegen/libvala@PACKAGE_SUFFIX@.la \
+	../aroop/codegen/libaroop@PACKAGE_SUFFIX@.la \
 	../gobject-introspection/libgidl.la \
 	$(NULL)
 

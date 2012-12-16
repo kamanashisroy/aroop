@@ -6,7 +6,7 @@ struct Mango {
 	int i;
 }
 
-class test_array : God {
+class test_array : None {
 	static Mango mangoes[10];
 	public static int main() {
 		mangoes[1].i = 10;

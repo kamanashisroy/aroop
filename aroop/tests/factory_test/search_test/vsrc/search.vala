@@ -11,7 +11,7 @@ internal class Mango : Searchable {
 		set_hash(value);
 		return 0;
 	}
-	internal static int match_int_unowned(God data, void*compare_data) {
+	internal static int match_int_unowned(None data, void*compare_data) {
 		unowned Mango x = data as Mango;
 		int value = *(int*)compare_data;
 		if(value == x.id) {
@@ -19,7 +19,7 @@ internal class Mango : Searchable {
 		}
 		return -1;
 	}
-	internal static int match_int(God data, void*compare_data) {
+	internal static int match_int(None data, void*compare_data) {
 		Mango x = data as Mango;
 		int value = *(int*)compare_data;
 		if(value == x.id) {
@@ -29,7 +29,7 @@ internal class Mango : Searchable {
 	}
 }
 
-internal class Orchard : God {
+internal class Orchard : None {
 	static SearchableFactory<Mango> mangoes;
 
 	public static int main() {

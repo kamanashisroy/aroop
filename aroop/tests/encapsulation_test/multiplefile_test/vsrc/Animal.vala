@@ -1,7 +1,7 @@
 
 using aroop;
 
-public class Animal : God {
+public class Animal : None {
 	etxt vc;
 	public Animal() {
 		vc = etxt.from_static("Time is tiny, women are many.");

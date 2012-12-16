@@ -3,7 +3,7 @@ using X;
 using aroop;
 
 
-class D : God {
+class D : None {
 
 	public static int main() {
 		C c = 10;

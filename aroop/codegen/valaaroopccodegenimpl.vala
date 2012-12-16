@@ -21,18 +21,18 @@
  *	Thijs Vermeir <thijsvermeir@gmail.com>
  */
 
-public class Vala.AroopCCodegenImpl : AroopDelegateModule {
+public class Vala.AroopCCodegenImpl : AroopErrorModule {
 	private int current_try_id = 0;
 	private int next_try_id = 0;
 	private bool is_in_catch = false;
-
+#if false
 	public override void visit_throw_statement (ThrowStatement stmt) {
 		ccode.add_assignment (new CCodeIdentifier ("aroop_error"), get_cvalue (stmt.error_expression));
 
 		add_simple_check (stmt, true);
 	}
 
-	public void return_with_exception () {
+	public new void return_with_exception () {
 		// propagate error
 		// nothing to do
 
@@ -272,6 +272,7 @@ public class Vala.AroopCCodegenImpl : AroopDelegateModule {
 
 		base.append_local_free (sym, stop_at_loop, stop_at);
 	}
+#endif
 }
 
 // vim:sw=8 noet

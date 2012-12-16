@@ -24,7 +24,6 @@
 #define SYNC_LOGGER_H_
 
 #include "core/config.h"
-//#include "types_internal.h"
 
 C_CAPSULE_START
 

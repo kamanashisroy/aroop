@@ -1,16 +1,17 @@
 
 using aroop;
 
-class Mango : None {
-	public static int get() {
+
+internal struct Mango {
+	int element;
+	public static int pulse() {
 		return 10;
 	}
 }
 
 class test_array : None {
-
 	public static int main() {
-		core.assert(Mango.get() == 10);
+		core.assert(Mango.pulse() == 10);
 		return 0;
 	}
 }

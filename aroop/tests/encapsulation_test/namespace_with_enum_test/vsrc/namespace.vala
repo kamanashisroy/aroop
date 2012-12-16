@@ -11,7 +11,7 @@ struct test_struct {
 	someenum value;
 }
 
-class test_namespace : God {
+class test_namespace : None {
 
 	public static int main() {
 		someenum i = someenum.VALUE;

@@ -2,7 +2,7 @@
 using aroop;
 
 
-class test_array : God {
+class test_array : None {
 
 	public static int main() {
 		ArrayList<txt> list = ArrayList<txt>(16);

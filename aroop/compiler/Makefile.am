@@ -32,7 +32,7 @@ aroopc.vala.stamp: $(aroopc_VALASOURCES)
 aroopc_LDADD = \
 	$(COVERAGE_LIBS) \
 	$(GLIB_LIBS) \
-	$(top_srcdir)/aroop/codegen/libvala@PACKAGE_SUFFIX@.la \
+	$(top_srcdir)/aroop/codegen/libaroop@PACKAGE_SUFFIX@.la \
 	$(NULL)
 
 EXTRA_DIST = $(aroopc_VALASOURCES) aroopc.vala.stamp

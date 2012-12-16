@@ -58,12 +58,14 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		public Symbol? current_symbol;
 		public ArrayList<Symbol> symbol_stack = new ArrayList<Symbol> ();
 		public TryStatement current_try;
+		public CatchClause current_catch;
 		public CCodeFunction ccode;
 		public ArrayList<CCodeFunction> ccode_stack = new ArrayList<CCodeFunction> ();
 		public ArrayList<LocalVariable> temp_ref_vars = new ArrayList<LocalVariable> ();
 		public int next_temp_var_id;
 		public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
-
+		public bool current_method_inner_error;
+		
 		public EmitContext (Symbol? symbol = null) {
 			current_symbol = symbol;
 		}
@@ -92,6 +94,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public TryStatement current_try {
 		get { return emit_context.current_try; }
 		set { emit_context.current_try = value; }
+	}
+
+	public CatchClause current_catch {
+		get { return emit_context.current_catch; }
+		set { emit_context.current_catch = value; }
 	}
 
 	public TypeSymbol? current_type_symbol {
@@ -215,6 +222,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	Set<Symbol> generated_external_symbols;
 
 	public Map<string,string> variable_name_map { get { return emit_context.variable_name_map; } }
+
+	public bool current_method_inner_error {
+		get { return emit_context.current_method_inner_error; }
+		set { emit_context.current_method_inner_error = value; }
+	}
 
 	public AroopBaseModule () {
 		reserved_identifiers = new HashSet<string> (str_hash, str_equal);
@@ -990,7 +1002,6 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 
 		next_temp_var_id++;
-
 		return local;
 	}
 
@@ -1696,6 +1707,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				// instance parameter is at the end in a struct creation method
 				creation_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, instance));
 			}
+			
+			if (expr.tree_can_fail) {
+				// method can fail
+				current_method_inner_error = true;
+				creation_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_variable_cexpression ("_inner_error_")));
+				
+			}
 
 			if (ellipsis) {
 				/* ensure variable argument list ends with NULL
@@ -1712,6 +1730,25 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			if (get_custom_creturn_type (m) != null) {
 				creation_expr = new CCodeCastExpression (creation_expr, get_ccode_aroop_name (expr.type_reference));
 			}
+		} else if (expr.symbol_reference is ErrorCode) {
+			var ecode = (ErrorCode) expr.symbol_reference;
+			var edomain = (ErrorDomain) ecode.parent_symbol;
+			CCodeFunctionCall creation_call;
+
+			generate_error_domain_declaration (edomain, cfile);
+
+			if (expr.get_argument_list ().size == 1) {
+				// must not be a format argument
+				creation_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_error_new_literal"));
+			} else {
+				creation_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_error_new"));
+			}
+			creation_call.add_argument (new CCodeIdentifier (get_error_module_lower_case_name (edomain)));
+			creation_call.add_argument (new CCodeIdentifier (get_error_module_lower_case_name (ecode)));
+			foreach (Expression arg in expr.get_argument_list ()) {
+				creation_call.add_argument (get_cvalue (arg));
+			}
+			creation_expr = creation_call;
 		} else {
 			assert (false);
 		}
@@ -1755,6 +1792,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			ccode.add_assignment (temp_ref, creation_expr);
 			set_cvalue (expr, temp_ref);
 		}
+	}
+
+	public virtual void generate_error_domain_declaration (ErrorDomain edomain, CCodeFile decl_space) {
 	}
 
 	public CCodeExpression? handle_struct_argument (Parameter param, Expression arg, CCodeExpression? cexpr) {
@@ -2068,10 +2108,17 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				// manual memory management for non-void pointers
 				// treat void* special to not leak memory with void* method parameters
 			} else if (requires_destroy (expression_type)) {
+#if false
 				var decl = get_temp_variable (expression_type, true, expression_type);
 				emit_temp_var (decl);
 				temp_ref_vars.insert (0, decl);
 				cexpr = new CCodeAssignment (get_variable_cexpression (decl.name), cexpr);
+#else
+				// use macro instead of temporary variable
+				var assign_n_unref = new CCodeFunctionCall(new CCodeIdentifier ("aroop_assign_requires_destroy_TODO"));
+				assign_n_unref.add_argument(cexpr); // TODO add the unref method there.
+				cexpr = assign_n_unref;
+#endif
 			}
 		}
 
@@ -2392,6 +2439,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public string get_ccode_free_function (TypeSymbol node) {
+		if (node is ErrorType || node is ErrorDomain || node is ErrorCode) {
+			return "aroop_free_error";
+		}
 		return CCodeBaseModule.get_ccode_free_function (node);
 	}
 
@@ -2411,7 +2461,15 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		return CCodeBaseModule.get_ccode_real_name (node);
 	}
 
+	public virtual string get_error_module_lower_case_name (CodeNode node, string? infix = null) {
+		return "";
+	}
+	
 	public string get_ccode_lower_case_name (CodeNode node, string? infix = null) {
+		if (node is ErrorType || node is ErrorDomain || node is ErrorCode) {
+			//assert(false);
+			return get_error_module_lower_case_name(node,infix);
+		}
 		return CCodeBaseModule.get_ccode_lower_case_name (node, infix);
 	}
 

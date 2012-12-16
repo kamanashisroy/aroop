@@ -1,7 +1,7 @@
 
 VALA_HOME=../../../../
 VALAC=$(VALA_HOME)/aroop/compiler/aroopc
-VAPI=$(VALA_HOME)/vapi
+VAPI= --vapidir $(VALA_HOME)/vapi --vapidir $(VALA_HOME)/aroop/vapi
 
 VSOURCES=$(wildcard vsrc/*.vala)
 VSOURCE_BASE=$(basename $(notdir $(VSOURCES)))
@@ -26,7 +26,7 @@ endif
 CC+=-ggdb -ggdb3
 
 genvapi:
-	$(VALAC) --profile=aroop -D POSIX -C  --vapidir $(VAPI) --vapidir ../../vapi --vapidir vapi $(TESTVAPI) $(VLIBRARY) $(VHEADER) $(VSOURCES)
+	$(VALAC) --profile=aroop -D POSIX -C $(VAPI) --vapidir ../../vapi --vapidir vapi $(TESTVAPI) $(VLIBRARY) $(VHEADER) $(VSOURCES)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@

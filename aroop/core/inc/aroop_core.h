@@ -29,8 +29,10 @@
 #include "opp/opp_any_obj.h"
 #include "opp/opp_io.h"
 #include "aroop_core_type_conversion.h"
+#include "aroop_error.h"
+#include "aroop_assignment.h"
 
-typedef void aroop_god;
+typedef void aroop_none;
 typedef int bool;
 
 #define true 1
@@ -45,11 +47,11 @@ int aroop_init(int argc, char ** argv);
 int aroop_deinit();
 
 #define aroop_object_alloc(x,y) opp_any_obj_alloc(x,y,NULL)
-#define aroop_god_unpin(x) ({void*y=x;OPPUNREF(y);/*x=y;*/}) // TODO fix this workarround.
-#define aroop_god_pray(x,y,z) opp_callback(x,y,z)
-#define aroop_god_describe(x) opp_callback(x, OPPN_ACTION_DESCRIBE, NULL)
-#define aroop_god_is_same(x,y) ({(x && y && x == y);})
-#define aroop_god_shrink(x,y) ({opp_shrink(x,sizeof(*x)+y);})
+#define aroop_none_unpin(x) ({void*y=x;OPPUNREF(y);/*x=y;*/}) // TODO fix this workarround.
+#define aroop_none_pray(x,y,z) opp_callback(x,y,z)
+#define aroop_none_describe(x) opp_callback(x, OPPN_ACTION_DESCRIBE, NULL)
+#define aroop_none_is_same(x,y) ({(x && y && x == y);})
+#define aroop_none_shrink(x,y) ({opp_shrink(x,sizeof(*x)+y);})
 #define aroop_iterator_next(x) ({opp_iterator_next(x) != NULL})
 #define aroop_iterator_get(x) ({x->data})
 #define aroop_factory_iterator_get(x,y,a,b,c) ({opp_iterator_create(y,x,a,b,c);})
@@ -76,7 +78,6 @@ int aroop_deinit();
 	} else { \
 		destroy_func(x); \
 	};0;})
-
 
 C_CAPSULE_END
 

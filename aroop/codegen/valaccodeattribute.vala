@@ -606,7 +606,7 @@ public class Vala.CCodeAttribute : AttributeCache {
 			var type = (DelegateType) node;
 			return CCodeBaseModule.get_ccode_name (type.delegate_symbol);
 		} else if (node is ErrorType) {
-			return "GError*";
+			return "aroop_wrong*";
 		} else if (node is GenericType) {
 			return "aroop_god*";
 		} else if (node is MethodType) {
