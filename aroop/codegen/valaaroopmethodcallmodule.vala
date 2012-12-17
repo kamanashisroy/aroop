@@ -21,6 +21,7 @@
  */
 
 public class Vala.AroopMethodCallModule : AroopAssignmentModule {
+
 	public override void visit_method_call (MethodCall expr) {
 		// the bare function call
 		var ccall = new CCodeFunctionCall (get_cvalue (expr.call));
@@ -60,40 +61,11 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 		} else if (m != null) {
 			if (m.binding == MemberBinding.INSTANCE) {
 				var instance = get_cvalue (ma.inner);
-
-				if (ma.member_name == "begin" && ma.inner.symbol_reference == ma.symbol_reference) {
-					var inner_ma = (MemberAccess) ma.inner;
-					instance = get_cvalue (inner_ma.inner);
-				}
-
 				var st = m.parent_symbol as Struct;
 				if (st != null && !st.is_simple_type ()) {
-					// we need to pass struct instance by reference
-					var unary = instance as CCodeUnaryExpression;
-					if (unary != null && unary.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
-						// *expr => expr
-						instance = unary.inner;
-					} else if (instance is CCodeIdentifier || instance is CCodeMemberAccess) {
-						instance = new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, instance);
-					} else {
-						// if instance is e.g. a function call, we can't take the address of the expression
-						// (tmp = expr, &tmp)
-						var ccomma = new CCodeCommaExpression ();
-
-						var temp_var = get_temp_variable (ma.inner.target_type);
-						emit_temp_var (temp_var);
-						ccomma.append_expression (new CCodeAssignment (get_variable_cexpression (temp_var.name), instance));
-						ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_variable_cexpression (temp_var.name)));
-
-						instance = ccomma;
-					}
+					instance = generate_instance_cargument_for_struct(expr, m, instance);
 				}
-
-#if false				
-				if (ma.inner is BaseAccess) {
-					ccall.add_argument (new CCodeFunctionCall (new CCodeIdentifier ("%s_type_get".printf (get_ccode_lower_case_name (current_class.base_class)))));
-				}
-#endif				
+				
 				ccall.add_argument (instance);
 			}
 
@@ -124,7 +96,7 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 				var param = params_it.get ();
 				ellipsis = param.params_array || param.ellipsis;
 				if (!ellipsis) {
-					cexpr = handle_struct_argument (param, arg, cexpr);
+					cexpr = generate_cargument_for_struct (param, arg, cexpr);
 
 					// unref old value for non-null non-weak ref/out arguments
 					// disabled for arrays for now as that requires special handling

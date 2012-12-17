@@ -83,5 +83,119 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 
 		pop_context ();
 	}
+	
+	public bool is_current_instance_struct(TypeSymbol instance) {
+		return instance == current_type_symbol;
+	}
+	
+	public CCodeExpression generate_instance_cargument_for_struct(MethodCall expr, Method m, CCodeExpression instance) { // TODO this function should be in struct module
+		var ma = expr.call as MemberAccess;
+		var returnval = instance;
+		// we need to pass struct instance by reference
+		var unary = instance as CCodeUnaryExpression;
+		
+		if (unary != null) {
+			if(unary.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
+				// *expr => expr
+				//print("[%s]*expr => expr\n", m.name);
+				
+				returnval = unary.inner;
+			}
+		} else if (instance is CCodeIdentifier) {
+			if((Struct)m.parent_symbol == current_type_symbol) {
+				print("[%s]'this' struct instance argument:%s\n", m.name, ((CCodeIdentifier)instance).name);
+				return returnval;
+			} else {
+				print("[%s]struct instance argument(it is not 'this' so it requires '&' operator):%s\n", m.name, ((CCodeIdentifier)instance).name);
+				return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, instance);
+			}
+		} else if(instance is CCodeMemberAccess) {
+			print("[%s]memberaccess:%s\n", m.name, expr.target_value.value_type.to_string());
+			returnval = instance;
+		} else {
+			// if instance is e.g. a function call, we can't take the address of the expression
+			// (tmp = expr, &tmp)
+			var ccomma = new CCodeCommaExpression ();
+
+			var temp_var = get_temp_variable (ma.inner.target_type);
+			emit_temp_var (temp_var);
+			ccomma.append_expression (new CCodeAssignment (get_variable_cexpression (temp_var.name), instance));
+			ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_variable_cexpression (temp_var.name)));
+
+			returnval = ccomma;
+		}
+		return returnval;
+	}
+	
+	public CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
+		var returnparam = param;
+		var st = (Struct) m.parent_symbol;
+		if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
+			// use return value
+		} else {
+			returnparam = new CCodeParameter ("this", get_ccode_aroop_name (this_type)+"*");
+			//returnparam = new CCodeUnaryExpression((CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)));
+		}
+		return returnparam;
+	}
+
+	public override CCodeExpression? generate_cargument_for_struct (Parameter param, Expression arg, CCodeExpression? cexpr) {
+		if (!((arg.formal_target_type is StructValueType) || (arg.formal_target_type is PointerType))) {
+			return cexpr;
+		}
+
+		if(arg.formal_target_type is PointerType) {
+			if(arg.target_type is PointerType) {
+				if (param.direction == ParameterDirection.IN) {
+					var unary = cexpr as CCodeUnaryExpression;
+					if (unary != null) {
+						if(unary.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {// *expr => expr
+							print("working with1 : %s\n", param.name);
+							return unary.inner;
+						} else { 
+							return cexpr;
+						}
+					} else if (cexpr is CCodeIdentifier || cexpr is CCodeMemberAccess) {
+						print("working with2 : %s\n", param.name);
+						return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cexpr);
+					} else {
+#if true
+						var ccomma = new CCodeCommaExpression ();
+						ccomma.append_expression (cexpr);
+						return ccomma;
+#else
+						print("working with3 : %s\n", param.name);
+						// if cexpr is e.g. a function call, we can't take the address of the expression
+						// (tmp = expr, &tmp)
+						var ccomma = new CCodeCommaExpression ();
+
+						var temp_var = get_temp_variable (arg.target_type);
+						emit_temp_var (temp_var);
+						ccomma.append_expression (new CCodeAssignment (get_variable_cexpression (temp_var.name), cexpr));
+						ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier (temp_var.name)));
+
+						return ccomma;
+#endif
+					}
+				}
+			}
+			print("formal target is pointer : %s\n", param.name);
+			return cexpr;
+		}
+#if false			
+		if(arg.formal_target_type is StructValueType) {
+			if (cexpr is CCodeIdentifier || cexpr is CCodeMemberAccess) {
+				print("function argument struct passed by value : %s\n", param.name);
+				return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cexpr);
+			}
+		}
+#endif
+		return cexpr;
+	}
+	
+	public override CCodeExpression? handle_struct_argument (Parameter param, Expression arg, CCodeExpression? cexpr) {
+		assert_not_reached ();
+		return null;
+	}
 }
 

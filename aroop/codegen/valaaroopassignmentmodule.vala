@@ -31,7 +31,7 @@ public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
 		bool unref_old = requires_destroy (assignment.left.value_type);
 
 		if (unref_old) {
-#if false
+#if true
 			if (!is_pure_ccode_expression (lhs)) {
 				/* Assign lhs to temp var to avoid repeating side effect */
 				var lhs_value_type = assignment.left.value_type.copy ();

@@ -1605,6 +1605,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 	}
 
+	public virtual CCodeExpression? generate_cargument_for_struct (Parameter param, Expression arg, CCodeExpression? cexpr) {
+		assert_not_reached();
+		return null;
+	}
+	
 	public override void visit_object_creation_expression (ObjectCreationExpression expr) {
 		CCodeExpression instance = null;
 		CCodeExpression creation_expr = null;
@@ -1673,7 +1678,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 					param = params_it.get ();
 					ellipsis = param.ellipsis;
 					if (!ellipsis) {
-						cexpr = handle_struct_argument (param, arg, cexpr);
+						cexpr = generate_cargument_for_struct (param, arg, cexpr);
 					}
 				}
 
@@ -1794,35 +1799,12 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 	}
 
-	public virtual void generate_error_domain_declaration (ErrorDomain edomain, CCodeFile decl_space) {
+	public virtual CCodeExpression? handle_struct_argument (Parameter param, Expression arg, CCodeExpression? cexpr) {
+		assert_not_reached();
+		return null;
 	}
-
-	public CCodeExpression? handle_struct_argument (Parameter param, Expression arg, CCodeExpression? cexpr) {
-		if (arg.formal_target_type is GenericType && !(arg.target_type is GenericType)) {
-			// we already use a reference for arguments of ref and out parameters
-			if (param.direction == ParameterDirection.IN) {
-				var unary = cexpr as CCodeUnaryExpression;
-				if (unary != null && unary.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
-					// *expr => expr
-					return unary.inner;
-				} else if (cexpr is CCodeIdentifier || cexpr is CCodeMemberAccess) {
-					return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cexpr);
-				} else {
-					// if cexpr is e.g. a function call, we can't take the address of the expression
-					// (tmp = expr, &tmp)
-					var ccomma = new CCodeCommaExpression ();
-
-					var temp_var = get_temp_variable (arg.target_type);
-					emit_temp_var (temp_var);
-					ccomma.append_expression (new CCodeAssignment (get_variable_cexpression (temp_var.name), cexpr));
-					ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier (temp_var.name)));
-
-					return ccomma;
-				}
-			}
-		}
-
-		return cexpr;
+	
+	public virtual void generate_error_domain_declaration (ErrorDomain edomain, CCodeFile decl_space) {
 	}
 
 	public override void visit_sizeof_expression (SizeofExpression expr) {
@@ -2190,90 +2172,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		generate_type_declaration (target_type, cfile);
 
 		if (target_type is DelegateType && expression_type is MethodType) {
-#if false
-			var deleg_type = (DelegateType) target_type;
-			var method_type = (MethodType) expression_type;
-			CCodeExpression delegate_target;
-			if (expr is LambdaExpression) {
-				var lambda = (LambdaExpression) expr;
-				if (lambda.method.closure) {
-					int block_id = get_block_id (current_closure_block);
-					delegate_target = get_variable_cexpression ("_data%d_".printf (block_id));
-				} else if (get_this_type () != null) {
-					delegate_target = new CCodeIdentifier ("this");
-				} else {
-					delegate_target = new CCodeConstant ("NULL");
-				}
-			} else {
-				if (method_type.method_symbol.binding == MemberBinding.INSTANCE) {
-					var ma = (MemberAccess) expr;
-					delegate_target = (CCodeExpression) get_ccodenode (ma.inner);
-				} else {
-					delegate_target = new CCodeConstant ("NULL");
-				}
-			}
-			var d = deleg_type.delegate_symbol;
-
-			string wrapper_name = "_wrapper%d_".printf (next_wrapper_id++);
-			var wrapper = new CCodeFunction (wrapper_name);
-			wrapper.modifiers = CCodeModifiers.STATIC;
-			var call = new CCodeFunctionCall (source_cexpr);
-
-			if (method_type.method_symbol.binding == MemberBinding.INSTANCE) {
-				wrapper.add_parameter (new CCodeParameter ("this", "void *"));
-				call.add_argument (new CCodeIdentifier ("this"));
-			}
-
-			var method_param_iter = method_type.method_symbol.get_parameters ().iterator ();
-			foreach (Parameter param in d.get_parameters ()) {
-				method_param_iter.next ();
-				var method_param = method_param_iter.get ();
-				string ctype = get_ccode_aroop_name (param.variable_type);
-				if (param.variable_type is GenericType && !(method_param.variable_type is GenericType)) {
-					ctype = get_ccode_aroop_name (method_param.variable_type) + "*";
-					call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, new CCodeIdentifier (param.name)));
-				} else if (!(param.variable_type is GenericType) && method_param.variable_type is GenericType) {
-					call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier (param.name)));
-				} else {
-					call.add_argument (new CCodeIdentifier (param.name));
-				}
-
-				wrapper.add_parameter (new CCodeParameter (param.name, ctype));
-			}
-
-			wrapper.block = new CCodeBlock ();
-			if (d.return_type is VoidType) {
-				wrapper.block.add_statement (new CCodeExpressionStatement (call));
-			} else {
-				var method_return_type = method_type.method_symbol.return_type;
-				if (d.return_type is GenericType && !(method_return_type is GenericType)) {
-					wrapper.add_parameter (new CCodeParameter ("result", get_ccode_aroop_name (method_return_type) + "*"));
-					wrapper.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, new CCodeIdentifier ("result")), call)));
-				} else if (!(d.return_type is GenericType) && method_return_type is GenericType) {
-					wrapper.return_type = get_ccode_aroop_name (d.return_type);
-					var cdecl = new CCodeDeclaration (get_ccode_aroop_name (d.return_type));
-					cdecl.add_declarator (new CCodeVariableDeclarator ("result"));
-					call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier ("result")));
-					wrapper.block.add_statement (new CCodeExpressionStatement (call));
-					wrapper.block.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("result")));
-				} else if (d.return_type is GenericType) {
-					wrapper.add_parameter (new CCodeParameter ("result", "void *"));
-					wrapper.block.add_statement (new CCodeExpressionStatement (call));
-				} else {
-					wrapper.return_type = get_ccode_aroop_name (d.return_type);
-					wrapper.block.add_statement (new CCodeReturnStatement (call));
-				}
-			}
-
-			cfile.add_function (wrapper);
-
-			var ccall = new CCodeFunctionCall (new CCodeIdentifier ("%s_new".printf (get_ccode_lower_case_name (deleg_type.delegate_symbol))));
-			ccall.add_argument (delegate_target);
-			ccall.add_argument (new CCodeIdentifier (wrapper_name));
-			return ccall;
-#else
 			return source_cexpr;
-#endif
 		}
 
 		var cl = target_type.data_type as Class;

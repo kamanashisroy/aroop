@@ -203,16 +203,8 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), "this");
 			} else {
 				var st = current_type_symbol as Struct;
-#if true
-				if (st != null && !st.is_boolean_type () && !st.is_integer_type () && !st.is_floating_type () && (!st.is_simple_type () || current_method is CreationMethod)) {
-					result.cvalue = new CCodeIdentifier ("(*this)");
-				} else {
-					result.cvalue = new CCodeIdentifier ("this");
-				}
-#else
 				//result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), "this");
 				result.cvalue = new CCodeIdentifier ("this");
-#endif
 			}
 		} else {
 			if (p.captured) {
@@ -233,7 +225,8 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 						if (p.variable_type is GenericType) {
 							result.cvalue = get_variable_cexpression (p.name);
 						} else {
-							result.cvalue = new CCodeIdentifier ("(*%s)".printf (get_variable_cname (p.name)));
+							result.cvalue = get_variable_cexpression (p.name);
+							//result.cvalue = new CCodeIdentifier ("(*%s)".printf (get_variable_cname (p.name)));
 						}
 					} else {
 						// Property setters of non simple structs shall replace all occurences
@@ -274,7 +267,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			}
 
 			CCodeExpression inst = pub_inst;
-			if (instance_target_type.data_type.is_reference_type () || (instance != null && (instance.value_type is PointerType))) {
+			if (instance_target_type.data_type.is_reference_type () || (instance != null && (instance.value_type is PointerType || (instance.value_type is StructValueType && is_current_instance_struct((TypeSymbol) f.parent_symbol))))) {
 				result.cvalue = new CCodeMemberAccess.pointer (inst, get_ccode_name (f));
 			} else {
 				result.cvalue = new CCodeMemberAccess (inst, get_ccode_name (f));
