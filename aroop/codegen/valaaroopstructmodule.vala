@@ -84,9 +84,28 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 		pop_context ();
 	}
 	
-	public bool is_current_instance_struct(TypeSymbol instance) {
-		return instance == current_type_symbol;
+	public bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {
+		CCodeIdentifier?cid = null;
+		if(!(cexpr is CCodeIdentifier) || (cid = (CCodeIdentifier)cexpr) == null || cid.name == null) {
+			return false;
+		}
+		//print("[%s]member access identifier:%s\n", instanceType.name, cid.name);
+		return (instanceType == current_type_symbol && (cid.name) == "this");
 	}
+	
+	public CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
+		if(is_current_instance_struct((TypeSymbol) f.parent_symbol, cexpr)) {
+			return new CCodeMemberAccess.pointer (cexpr, get_ccode_name (f));
+		}
+		unowned CCodeUnaryExpression?cuop = null;
+		if((cexpr is CCodeUnaryExpression) 
+			&& (cuop = (CCodeUnaryExpression)cexpr) == null
+			&& cuop.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
+			return new CCodeMemberAccess.pointer (cuop.inner, get_ccode_name (f));
+		}
+		return new CCodeMemberAccess (cexpr, get_ccode_name (f));
+	}
+
 	
 	public CCodeExpression generate_instance_cargument_for_struct(MethodCall expr, Method m, CCodeExpression instance) { // TODO this function should be in struct module
 		var ma = expr.call as MemberAccess;
@@ -103,15 +122,16 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 			}
 		} else if (instance is CCodeIdentifier) {
 			if((Struct)m.parent_symbol == current_type_symbol) {
-				print("[%s]'this' struct instance argument:%s\n", m.name, ((CCodeIdentifier)instance).name);
+				//print("[%s]'this' struct instance argument:%s\n", m.name, ((CCodeIdentifier)instance).name);
 				return returnval;
 			} else {
-				print("[%s]struct instance argument(it is not 'this' so it requires '&' operator):%s\n", m.name, ((CCodeIdentifier)instance).name);
+				//print("[%s]struct instance argument(it is not 'this' so it requires '&' operator):%s\n", m.name, ((CCodeIdentifier)instance).name);
 				return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, instance);
 			}
 		} else if(instance is CCodeMemberAccess) {
-			print("[%s]memberaccess:%s\n", m.name, expr.target_value.value_type.to_string());
-			returnval = instance;
+			//print("[%s]memberaccess:%s\n", m.name, expr.target_value.value_type.to_string());
+			return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, instance);
+			//returnval = instance;
 		} else {
 			// if instance is e.g. a function call, we can't take the address of the expression
 			// (tmp = expr, &tmp)
@@ -150,13 +170,13 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 					var unary = cexpr as CCodeUnaryExpression;
 					if (unary != null) {
 						if(unary.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {// *expr => expr
-							print("working with1 : %s\n", param.name);
+							//print("working with1 : %s\n", param.name);
 							return unary.inner;
 						} else { 
 							return cexpr;
 						}
 					} else if (cexpr is CCodeIdentifier || cexpr is CCodeMemberAccess) {
-						print("working with2 : %s\n", param.name);
+						//print("working with2 : %s\n", param.name);
 						return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cexpr);
 					} else {
 #if true
@@ -179,7 +199,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 					}
 				}
 			}
-			print("formal target is pointer : %s\n", param.name);
+			//print("formal target is pointer : %s\n", param.name);
 			return cexpr;
 		}
 #if false			

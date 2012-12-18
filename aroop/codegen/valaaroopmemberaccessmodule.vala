@@ -203,7 +203,6 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), "this");
 			} else {
 				var st = current_type_symbol as Struct;
-				//result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), "this");
 				result.cvalue = new CCodeIdentifier ("this");
 			}
 		} else {
@@ -247,7 +246,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 
 		return result;
 	}
-
+	
 	public TargetValue get_field_cvalue (Field f, TargetValue? instance) {
 		var result = new AroopValue (f.variable_type);
 		
@@ -267,7 +266,10 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			}
 
 			CCodeExpression inst = pub_inst;
-			if (instance_target_type.data_type.is_reference_type () || (instance != null && (instance.value_type is PointerType || (instance.value_type is StructValueType && is_current_instance_struct((TypeSymbol) f.parent_symbol))))) {
+			if (instance.value_type is StructValueType) {
+				result.cvalue = get_field_cvalue_for_struct(f, inst);
+			} else if (instance_target_type.data_type.is_reference_type () || (instance != null 
+					&& (instance.value_type is PointerType))) {
 				result.cvalue = new CCodeMemberAccess.pointer (inst, get_ccode_name (f));
 			} else {
 				result.cvalue = new CCodeMemberAccess (inst, get_ccode_name (f));

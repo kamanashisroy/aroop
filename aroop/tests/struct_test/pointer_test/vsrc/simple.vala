@@ -4,12 +4,21 @@ using aroop;
 internal struct Orchard {
 	etxt tree;
 	internal Orchard(etxt plant) {
-		string bingo = plant.to_string();
+		plant.to_string();
 		filter(&plant);
 	}
 	private void filter(etxt*plant) {
-		string bingo = plant.to_string();
+		plant.to_string();
 		tree = etxt(plant.to_string());
+	}
+	internal void my_copy(Orchard other) {
+		tree = other.tree;
+	}
+	internal void copy_by_value(Orchard*other) {
+		tree = other.tree;
+	}
+	internal void copy_inverse(Orchard*other) {
+		other.copy_by_value(this);
 	}
 }
 

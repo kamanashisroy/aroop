@@ -6,15 +6,17 @@ internal class Mango : Searchable {
 	internal Mango() {
 	}
 	internal int constr(int value) {
-		core.memclean_raw(this, sizeof(hashable_ext));
+		//this.memclean(sizeof(Mango));
 		this.id = value;
 		set_hash(value);
+		print("New mango %d\n", value);
 		return 0;
 	}
 	internal static int match_int_unowned(None data, void*compare_data) {
 		unowned Mango x = data as Mango;
 		int value = *(int*)compare_data;
 		if(value == x.id) {
+			print("Matched %d-%d\n", x.id, value);
 			return 0;
 		}
 		return -1;
