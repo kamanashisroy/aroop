@@ -167,39 +167,25 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 		if(arg.formal_target_type is PointerType) {
 			if(arg.target_type is PointerType) {
 				if (param.direction == ParameterDirection.IN) {
-					var unary = cexpr as CCodeUnaryExpression;
-					if (unary != null) {
-						if(unary.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {// *expr => expr
+					CCodeUnaryExpression?unary = null;
+					if ((unary = cexpr as CCodeUnaryExpression) != null) {
+						if(unary.operator == CCodeUnaryOperator.ADDRESS_OF 
+							&& unary.inner is CCodeIdentifier 
+							&& ((CCodeIdentifier)unary.inner).name == "this") {// &this => this
 							//print("working with1 : %s\n", param.name);
 							return unary.inner;
 						} else { 
 							return cexpr;
 						}
 					} else if (cexpr is CCodeIdentifier || cexpr is CCodeMemberAccess) {
-						//print("working with2 : %s\n", param.name);
-						return new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cexpr);
+						return cexpr;
 					} else {
-#if true
 						var ccomma = new CCodeCommaExpression ();
 						ccomma.append_expression (cexpr);
 						return ccomma;
-#else
-						print("working with3 : %s\n", param.name);
-						// if cexpr is e.g. a function call, we can't take the address of the expression
-						// (tmp = expr, &tmp)
-						var ccomma = new CCodeCommaExpression ();
-
-						var temp_var = get_temp_variable (arg.target_type);
-						emit_temp_var (temp_var);
-						ccomma.append_expression (new CCodeAssignment (get_variable_cexpression (temp_var.name), cexpr));
-						ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier (temp_var.name)));
-
-						return ccomma;
-#endif
 					}
 				}
 			}
-			//print("formal target is pointer : %s\n", param.name);
 			return cexpr;
 		}
 #if false			
