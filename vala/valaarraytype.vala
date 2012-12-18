@@ -154,6 +154,7 @@ public class Vala.ArrayType : ReferenceType {
 		if (fixed_length) {
 			result.fixed_length = true;
 			result.length = length;
+			result.const_size = const_size;
 		}
 
 		return result;
@@ -302,6 +303,8 @@ public class Vala.ArrayType : ReferenceType {
 			int array_length = parse_constant_expression(const_size);
 			if (array_length > 0) {
 				length = array_length;
+			} else if(array_length == 0) {
+				length = 0; // we could not evaluate the expression
  			} else {
 				Report.error (const_size.source_reference, "Expression of positive constant integer type expected, %d given".printf(array_length));
  				return false;

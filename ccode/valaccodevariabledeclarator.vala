@@ -42,21 +42,27 @@ public class Vala.CCodeVariableDeclarator : CCodeDeclarator {
 	public string? declarator_suffix { get; set; }
 
 	/**
+	 * The optional declarator suffix.
+	 */
+	public CCodeExpression? declarator_suffix_cexpr { get; set; }
+	/**
 	 * Initializer only used to zero memory, safe to initialize as part
 	 * of declaration at beginning of block instead of separate assignment.
 	 */
 	public bool init0 { get; set; }
 
-	public CCodeVariableDeclarator (string name, CCodeExpression? initializer = null, string? declarator_suffix = null) {
+	public CCodeVariableDeclarator (string name, CCodeExpression? initializer = null, string? declarator_suffix = null, CCodeExpression? declarator_suffix_cexpr = null) {
 		this.name = name;
 		this.initializer = initializer;
 		this.declarator_suffix = declarator_suffix;
+		this.declarator_suffix_cexpr = declarator_suffix_cexpr;
 	}
 
-	public CCodeVariableDeclarator.zero (string name, CCodeExpression? initializer, string? declarator_suffix = null) {
+	public CCodeVariableDeclarator.zero (string name, CCodeExpression? initializer, string? declarator_suffix = null, CCodeExpression? declarator_suffix_cexpr = null) {
 		this.name = name;
 		this.initializer = initializer;
 		this.declarator_suffix = declarator_suffix;
+		this.declarator_suffix_cexpr = declarator_suffix_cexpr;
 		this.init0 = true;
 	}
 
@@ -64,6 +70,12 @@ public class Vala.CCodeVariableDeclarator : CCodeDeclarator {
 		writer.write_string (name);
 		if (declarator_suffix != null) {
 			writer.write_string (declarator_suffix);
+		}
+
+		if(declarator_suffix_cexpr != null) {
+			writer.write_string ("[");
+			declarator_suffix_cexpr.write(writer);
+			writer.write_string ("]");
 		}
 
 		if (initializer != null) {
@@ -76,6 +88,12 @@ public class Vala.CCodeVariableDeclarator : CCodeDeclarator {
 		writer.write_string (name);
 		if (declarator_suffix != null) {
 			writer.write_string (declarator_suffix);
+		}
+
+		if(declarator_suffix_cexpr != null) {
+			writer.write_string ("[");
+			declarator_suffix_cexpr.write(writer);
+			writer.write_string ("]");
 		}
 
 		if (initializer != null && init0) {

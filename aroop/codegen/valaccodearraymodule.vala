@@ -129,7 +129,7 @@ public class Vala.CCodeArrayModule : CCodeMethodCallModule {
 		var array_type = value.value_type as ArrayType;
 
 		if (array_type != null && array_type.fixed_length) {
-			return new CCodeConstant (array_type.length.to_string ());
+			return generate_fixed_array_length_expression(array_type);
 		}
 
 		// dim == -1 => total size over all dimensions
@@ -454,7 +454,7 @@ public class Vala.CCodeArrayModule : CCodeMethodCallModule {
 
 			ccall = new CCodeFunctionCall (new CCodeIdentifier ("_vala_array_destroy"));
 			ccall.add_argument (get_cvalue_ (value));
-			ccall.add_argument (new CCodeConstant ("%d".printf (array_type.length)));
+			ccall.add_argument (generate_fixed_array_length_expression(array_type));
 			ccall.add_argument (new CCodeCastExpression (get_destroy_func_expression (array_type.element_type), "GDestroyNotify"));
 
 			return ccall;
@@ -535,6 +535,25 @@ public class Vala.CCodeArrayModule : CCodeMethodCallModule {
 
 		return dup_func;
 	}
+		
+	CCodeExpression generate_fixed_array_length_expression(ArrayType array_type) {
+		assert_not_reached();
+		assert(array_type.fixed_length);
+		if(array_type.const_size != null && array_type.length == 0) {
+#if false
+			EmitContext xt = new EmitContext;
+			push_context (xt);
+			array_type.const_size.emit(this);
+			pop_context();
+			return xt.TODO();
+#else
+			assert_not_reached();
+			return get_cvalue(array_type.const_size);
+#endif
+		}
+		assert_not_reached();
+		return new CCodeConstant ("%d".printf (array_type.length));
+	}
 
 	string generate_array_copy_wrapper (ArrayType array_type) {
 		string dup_func = "_vala_array_copy%d".printf (++next_array_dup_id);
@@ -561,7 +580,7 @@ public class Vala.CCodeArrayModule : CCodeMethodCallModule {
 			ccode.add_declaration ("int", new CCodeVariableDeclarator ("i"));
 
 			ccode.open_for (new CCodeAssignment (new CCodeIdentifier ("i"), new CCodeConstant ("0")),
-			                   new CCodeBinaryExpression (CCodeBinaryOperator.LESS_THAN, new CCodeIdentifier ("i"), new CCodeConstant ("%d".printf (array_type.length))),
+			                   new CCodeBinaryExpression (CCodeBinaryOperator.LESS_THAN, new CCodeIdentifier ("i"), generate_fixed_array_length_expression(array_type)),
 			                   new CCodeUnaryExpression (CCodeUnaryOperator.POSTFIX_INCREMENT, new CCodeIdentifier ("i")));
 
 
@@ -575,7 +594,7 @@ public class Vala.CCodeArrayModule : CCodeMethodCallModule {
 
 			var sizeof_call = new CCodeFunctionCall (new CCodeIdentifier ("sizeof"));
 			sizeof_call.add_argument (new CCodeIdentifier (get_ccode_name (array_type.element_type)));
-			dup_call.add_argument (new CCodeBinaryExpression (CCodeBinaryOperator.MUL, new CCodeConstant ("%d".printf (array_type.length)), sizeof_call));
+			dup_call.add_argument (new CCodeBinaryExpression (CCodeBinaryOperator.MUL, generate_fixed_array_length_expression(array_type), sizeof_call));
 
 			ccode.add_expression (dup_call);
 		}

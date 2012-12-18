@@ -482,7 +482,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 
 		var cdecl = new CCodeDeclaration (field_ctype);
-		cdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_name (f) + get_ccode_declarator_suffix (f.variable_type)));
+		cdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_name (f) + get_ccode_declarator_suffix (f.variable_type), generate_declarator_suffix_cexpr(f.variable_type)));
 		if (f.is_internal_symbol ()) {
 			cdecl.modifiers = CCodeModifiers.STATIC;
 		} else {
@@ -641,7 +641,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		
 		generate_type_declaration (f.variable_type, decl_space);
 		container.add_field (field_ctype, get_ccode_name (f) 
-			+ get_ccode_declarator_suffix (f.variable_type));
+			+ get_ccode_declarator_suffix (f.variable_type), null, generate_declarator_suffix_cexpr(f.variable_type));
 	}
 
 	public virtual void generate_struct_declaration (Struct st, CCodeFile decl_space) {
@@ -734,7 +734,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				if (local.captured) {
 					generate_type_declaration (local.variable_type, cfile);
 
-					data.add_field (get_ccode_aroop_name (local.variable_type), get_variable_cname (local.name) + get_ccode_declarator_suffix (local.variable_type));
+					data.add_field (get_ccode_aroop_name (local.variable_type), get_variable_cname (local.name) + get_ccode_declarator_suffix (local.variable_type), null, generate_declarator_suffix_cexpr(local.variable_type));
 				}
 			}
 			// free in reverse order
@@ -926,7 +926,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				ccode.add_assignment (new CCodeMemberAccess.pointer (get_variable_cexpression ("_data%d_".printf (get_block_id ((Block) local.parent_symbol))), get_variable_cname (local.name)), rhs);
 			}
 		} else {
-			var cvar = new CCodeVariableDeclarator (get_variable_cname (local.name), rhs, get_ccode_declarator_suffix (local.variable_type));
+			var cvar = new CCodeVariableDeclarator (get_variable_cname (local.name), rhs, get_ccode_declarator_suffix (local.variable_type), generate_declarator_suffix_cexpr(local.variable_type));
 
 			var cdecl = new CCodeDeclaration (get_ccode_aroop_name (local.variable_type));
 			cdecl.add_declarator (cvar);
@@ -1197,7 +1197,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public void emit_temp_var (LocalVariable local) {
 		var cdecl = new CCodeDeclaration (get_ccode_aroop_name (local.variable_type));
 
-		var vardecl = new CCodeVariableDeclarator (local.name, null, get_ccode_declarator_suffix (local.variable_type));
+		var vardecl = new CCodeVariableDeclarator (local.name, null, get_ccode_declarator_suffix (local.variable_type), generate_declarator_suffix_cexpr(local.variable_type));
 		cdecl.add_declarator (vardecl);
 
 		var st = local.variable_type.data_type as Struct;
@@ -2392,7 +2392,46 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		return CCodeBaseModule.get_ccode_sentinel (m);
 	}
 
+	public CCodeExpression? generate_declarator_suffix_cexpr(DataType given_type) {
+		ArrayType?array_type = null;
+		if(given_type != null && given_type is ArrayType && (array_type = (ArrayType)given_type) != null) {
+			print("Array [%s]:%d\n", get_ccode_declarator_suffix(given_type), array_type.length);
+			if(array_type.const_size != null) {
+				print("We have a const expression\n");
+				if(array_type.const_size.symbol_reference is Constant) {
+					print("We should put %s here\n", ((Constant)array_type.const_size.symbol_reference).name);
+				}
+			}
+		}
+		if(given_type is ArrayType && (array_type = (ArrayType)given_type) != null &&array_type.fixed_length && array_type.const_size != null && array_type.length == 0) {
+			print("We are doing %s\n", get_cvalue(array_type.const_size) == null?"nothing":"something");
+#if false			
+			CCodeFunction function;
+			function = new CCodeFunction ("nothing");
+			push_function(function);
+			
+			//EmitContext xt = new EmitContext;
+			//push_context (xt);
+			array_type.const_size.emit(this);
+			//pop_context();
+			pop_function();
+			return get_cvalue(function.body);
+#else			
+			array_type.const_size.emit(this);
+			print("We are doing %s\n", get_cvalue(array_type.const_size) == null?"nothing":"something");
+			return get_cvalue(array_type.const_size);
+#endif
+		}
+		return null;
+	}
+	
 	public string get_ccode_declarator_suffix (DataType type) {
+		if (type != null && type is ArrayType) {
+			var array_type = type as ArrayType;
+			if (array_type.fixed_length && array_type.length == 0) {
+				return "";
+			}
+		}
 		return CCodeBaseModule.get_ccode_declarator_suffix (type);
 	}
 
