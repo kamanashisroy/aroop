@@ -121,7 +121,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 				returnval = unary.inner;
 			}
 		} else if (instance is CCodeIdentifier) {
-			if((Struct)m.parent_symbol == current_type_symbol) {
+			if(is_current_instance_struct((TypeSymbol)m.parent_symbol, instance)) {
 				//print("[%s]'this' struct instance argument:%s\n", m.name, ((CCodeIdentifier)instance).name);
 				return returnval;
 			} else {
