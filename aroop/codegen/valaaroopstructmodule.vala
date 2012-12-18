@@ -99,7 +99,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 		}
 		unowned CCodeUnaryExpression?cuop = null;
 		if((cexpr is CCodeUnaryExpression) 
-			&& (cuop = (CCodeUnaryExpression)cexpr) == null
+			&& (cuop = (CCodeUnaryExpression)cexpr) != null
 			&& cuop.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
 			return new CCodeMemberAccess.pointer (cuop.inner, get_ccode_name (f));
 		}

@@ -18,7 +18,7 @@ internal struct Orchard {
 		tree = other.tree;
 	}
 	internal void copy_inverse(Orchard*other) {
-		other.copy_by_value(this);
+		other.copy_by_value(&this);
 	}
 }
 
