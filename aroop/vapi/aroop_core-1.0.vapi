@@ -278,6 +278,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public bool buffer(int size);
 	[CCode (cname = "aroop_txt_to_vala")]
 	public string to_string();
+	[CCode (cname = "aroop_txt_to_int")]
+	public int to_int();
 	[CCode (cname = "aroop_txt_length")]
 	public int length();
 	[CCode (cname = "aroop_txt_get_hash")]
@@ -300,6 +302,17 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public bool equals_string(string other);
 	[CCode (cname = "aroop_txt_equals_static")]
 	public bool equals_static_string(string other);
+	[CCode (cname = "aroop_txt_printf")]
+	[PrintfFormat]
+	public void printf(string format,...);
+	[CCode (cname = "aroop_txt_shift_token")]
+	public void shift_token(string delim, etxt*output);
+	[CCode (cname = "aroop_txt_char_at")]
+	public char char_at(int index);
+	[CCode (cname = "aroop_txt_contains_char")]
+	public bool contains_char(char x);
+	[CCode (cname = "aroop_txt_shift")]
+	public bool shift(int inc);
 	[CCode (cname = "aroop_txt_destroy")]
 	public void destroy();
 }

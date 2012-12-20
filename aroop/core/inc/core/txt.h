@@ -42,11 +42,12 @@ typedef int xultb_bool_t;
 #define aroop_txt_embeded_with_length(x,y,z,p) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = z;(x)->size=(x)->len+1;})
 #define aroop_txt_embeded(x,y,p) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
 #define aroop_txt_embeded_from_embeded(x,y) ({ \
+	aroop_memclean_raw2(x); \
 	if((y)->proto) { \
 		(x)->proto = OPPREF((y)->proto); \
 		(x)->str = (y)->str; \
 	} else { \
-		opp_str2_reuse2((x)->str, (y)->str); \
+		opp_str2_reuse2(&(x)->str, (y)->str); \
 		(x)->proto = (x)->str; \
 	} \
 	(x)->hash = (y)->hash; \
@@ -54,7 +55,7 @@ typedef int xultb_bool_t;
 	(x)->size=(x)->len+1; \
 })
 
-#define aroop_txt_embeded_buffer(x,y) ({if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}x->str;})
+#define aroop_txt_embeded_buffer(x,y) ({if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}x->str;(x)->proto = (x)->str;})
 #define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
 
 #if false
@@ -69,6 +70,7 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;((x) && (x)->len == (sizeof(static_y)-1) && !memcmp((x)->str, static_text,(x)->len));})
 #define aroop_txt_equals_chararray(x,y) ({((!(x) && !(y)) || ((x) && !(x)->str && !(y) )) || ((x) && !strcmp((x)->str, y));})
 
+#define aroop_txt_printf(x, ...) ({snprintf(x->str, x->size - 1, __VA_ARGS__);})
 
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
 #define aroop_txt_new_static(x) ({aroop_txt_new(x,sizeof(x)-1, NULL, 0);})
@@ -83,6 +85,7 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_length(x) ({(x)->len;})
 #define aroop_txt_get_hash(x) ({((x)->hash != 0)?(x)->hash:((x)->hash = opp_get_hash_bin((x)->str, (x)->len));})
 #define aroop_txt_to_vala(x) ({(((x)&&(x)->str)?(x)->str:"(null)");})
+#define aroop_txt_to_int(x) ({((x) && (x)->str)?atoi((x)->str):0;})
 #define aroop_txt_to_vala_magical(x) ({(((x)&&(x)->str&&(x)->len!=0)?(x)->str:"(null)");})
 #define aroop_txt_is_empty(x) ({(!((x)->str) || ((x)->len == 0));})
 #define aroop_txt_is_empty_magical(x) ({(!(x) || !((x)->str) || ((x)->len == 0));})
@@ -90,6 +93,24 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_string_or_magical(x,y) ({((x)&&(x)->str&&(x)->len!=0)?x:y;})
 #define aroop_txt_destroy(x) ({if((x)->proto)OPPUNREF((x)->proto);(x)->str = NULL;(x)->len = 0;(x)->hash = 0;(x)->size = 0;})
 
+// string play
+// TODO optimize this shift code
+#define aroop_txt_shift_token(x,s,y) ({ \
+	aroop_txt_destroy(y); \
+	(y)->str = strsep(&((x)->str),s); \
+	if((y)->str){ \
+		(y)->len = strlen(((y)->str)); \
+		if((x)->proto){(y)->proto = OPPREF(((x)->proto));} \
+	} \
+	(x)->len = (x)->str?strlen(((x)->str)):0; \
+})
+
+// char operation
+#define aroop_txt_char_at(x,i) ({((x)->str && (x)->len > i)?(x)->str[i]:'\0';})
+#define aroop_txt_contains_char(x,c) ({((x)->str)?memchr((x)->str,c,(x)->len):0;})
+#define aroop_txt_shift(x,inc) ({if((x)->str && (x)->len >= inc){(x)->str+=inc;(x)->len-=inc;inc;}else{0;}})
+
+// system 
 void aroop_txt_system_init();
 void aroop_txt_system_deinit();
 

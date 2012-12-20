@@ -2394,7 +2394,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public CCodeExpression? generate_declarator_suffix_cexpr(DataType given_type) {
 		ArrayType?array_type = null;
-		if(given_type != null && given_type is ArrayType && (array_type = (ArrayType)given_type) != null) {
+		/*if(given_type != null && given_type is ArrayType && (array_type = (ArrayType)given_type) != null) {
 			print("Array [%s]:%d\n", get_ccode_declarator_suffix(given_type), array_type.length);
 			if(array_type.const_size != null) {
 				print("We have a const expression\n");
@@ -2402,25 +2402,12 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 					print("We should put %s here\n", ((Constant)array_type.const_size.symbol_reference).name);
 				}
 			}
-		}
+		}*/
 		if(given_type is ArrayType && (array_type = (ArrayType)given_type) != null &&array_type.fixed_length && array_type.const_size != null && array_type.length == 0) {
-			print("We are doing %s\n", get_cvalue(array_type.const_size) == null?"nothing":"something");
-#if false			
-			CCodeFunction function;
-			function = new CCodeFunction ("nothing");
-			push_function(function);
-			
-			//EmitContext xt = new EmitContext;
-			//push_context (xt);
+			//print("We are doing %s\n", get_cvalue(array_type.const_size) == null?"nothing":"something");
 			array_type.const_size.emit(this);
-			//pop_context();
-			pop_function();
-			return get_cvalue(function.body);
-#else			
-			array_type.const_size.emit(this);
-			print("We are doing %s\n", get_cvalue(array_type.const_size) == null?"nothing":"something");
+			//print("We are doing %s\n", get_cvalue(array_type.const_size) == null?"nothing":"something");
 			return get_cvalue(array_type.const_size);
-#endif
 		}
 		return null;
 	}

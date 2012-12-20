@@ -40,10 +40,13 @@ int aroop_init(int argc, char ** argv) {
 		}
 	} while(1);
 #else
-	core_users++;
+	SYNC_UWORD16_T newval = ++core_users;
 #endif
-	opp_any_obj_system_init();
-	aroop_txt_system_init();
+	if(newval) {
+		opp_any_obj_system_init();
+		aroop_txt_system_init();
+		opp_str2system_init();
+	}
 }
 
 int aroop_deinit() {
@@ -58,10 +61,11 @@ int aroop_deinit() {
 		}
 	} while(1);
 #else
-	SYNC_UWORD16_T newval = core_users--;
+	SYNC_UWORD16_T newval = --core_users;
 #endif
 	if(newval == 0) {
 		opp_any_obj_system_deinit();
 		aroop_txt_system_deinit();
+		opp_str2system_deinit();
 	}
 }
