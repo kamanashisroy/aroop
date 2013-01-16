@@ -709,8 +709,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		CCodeParameter instance_param = null;
 		if (m.closure) {
 			var closure_block = current_closure_block;
-			int block_id = get_block_id (closure_block);
-			instance_param = new CCodeParameter ("_data%d_".printf (block_id), "Block%dData*".printf (block_id));
+			instance_param = new CCodeParameter (
+				generate_block_var_name (closure_block)
+				, generate_block_name (closure_block) + "*");
 		} else if (m.parent_symbol is Class && m is CreationMethod) {
 			if (vcall == null) {
 				instance_param = new CCodeParameter ("this", get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
@@ -788,6 +789,15 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (vdeclarator != null) {
 				vdeclarator.add_parameter (cparam);
 			}
+			if (param.variable_type is DelegateType) {
+				CCodeParameter xparam = new CCodeParameter (get_variable_cname (param.name)+"_closure_data", "void*");
+				func.add_parameter (xparam);
+				if (vdeclarator != null) {
+					vdeclarator.add_parameter (xparam);
+				}
+			}
+			
+			
 			if (vcall != null) {
 				if (param.name != null) {
 					vcall.add_argument (get_variable_cexpression (param.name));

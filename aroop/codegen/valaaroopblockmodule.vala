@@ -29,12 +29,12 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 		decl_space.add_function (unref_fun);
 	}
 	
-	private string generate_block_name(Block b) {
+	public string generate_block_name(Block b) {
 		int block_id = get_block_id (b);
 		return "Block%dData".printf (block_id);
 	}
 	
-	protected string generate_block_var_name(Block b) {
+	public string generate_block_var_name(Block b) {
 		int block_id = get_block_id (b);
 		return "_data%d_".printf (block_id);
 	}

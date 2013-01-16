@@ -45,9 +45,20 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 			generate_method_declaration (m, cfile);
 			ccall = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_real_name (m)));
 		} else if (itype is DelegateType) {
-			//deleg = ((DelegateType) itype).delegate_symbol;
-			//ccall = new CCodeFunctionCall (new CCodeIdentifier ());
-			//ccall.add_argument (get_cvalue (expr.call));
+			bool is_param = false;
+			foreach (Parameter param in current_method.get_parameters ()) {
+				print("symbol:%s:parent:%s\n".printf(expr.call.to_string(), param.name.to_string()));
+				if(param.name == expr.call.to_string()) {
+					is_param = true;
+					break;
+				}
+			}
+			if(is_param) {
+				// TODO avoid to_string() 
+				ccall.add_argument (new CCodeIdentifier(expr.call.to_string() + "_closure_data"));
+			} else {
+				ccall.add_argument (new CCodeConstant("NULL"));
+			}
 		}
 
 		if (m is CreationMethod) {
@@ -156,10 +167,19 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 						cexpr = new CCodeCastExpression (cexpr, CCodeBaseModule.get_ccode_type (param));
 					}
 				}
+				if(arg.value_type is MethodType && current_closure_block != null && param.variable_type is DelegateType) {			
+					Block b = current_closure_block;
+					ccall.add_argument (cexpr);
+					cexpr = new CCodeUnaryExpression (
+						CCodeUnaryOperator.ADDRESS_OF, 
+						new CCodeIdentifier(generate_block_var_name(b))
+					);
+					i++;
+					params_it.next();
+				}
 			}
 
 			ccall.add_argument (cexpr);
-
 			i++;
 		}
 		if (params_it.next ()) {

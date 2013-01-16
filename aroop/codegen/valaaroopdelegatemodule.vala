@@ -45,7 +45,9 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 
 	CCodeFunctionDeclarator generate_invoke_function (Delegate d, CCodeFile decl_space) {
 		var function = new CCodeFunctionDeclarator (get_ccode_aroop_name (d));
-
+		
+		function.add_parameter (new CCodeParameter ("_closure_data", "void*"));
+		
 		foreach (Parameter param in d.get_parameters ()) {
 			generate_type_declaration (param.variable_type, decl_space);
 
