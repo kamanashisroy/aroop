@@ -184,9 +184,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			// used in postconditions
 			result.cvalue = new CCodeIdentifier ("result");
 		} else if (local.captured) {
-			// captured variables are stored on the heap
-			var block = (Block) local.parent_symbol;
-			result.cvalue = new CCodeMemberAccess.pointer (get_variable_cexpression ("_data%d_".printf (get_block_id (block))), get_variable_cname (local.name));
+			result.cvalue = get_local_cvalue_for_block(local);
 		} else {
 			result.cvalue = get_variable_cexpression (local.name);
 		}
@@ -212,7 +210,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 				if (block == null) {
 					block = ((Method) p.parent_symbol).body;
 				}
-				result.cvalue = new CCodeMemberAccess.pointer (get_variable_cexpression ("_data%d_".printf (get_block_id (block))), get_variable_cname (p.name));
+				result.cvalue = new CCodeMemberAccess.pointer (get_variable_cexpression (generate_block_var_name (block)), get_variable_cname (p.name));
 			} else {
 				if (current_method != null && current_method.coroutine) {
 					// use closure

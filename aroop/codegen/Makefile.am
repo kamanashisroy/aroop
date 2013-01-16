@@ -38,6 +38,7 @@ libaroop_la_VALASOURCES = \
 	valaaroopmethodmodule.vala \
 	valaaroopobjectmodule.vala \
 	valaaroopstructmodule.vala \
+	valaaroopblockmodule.vala \
 	valaaroopvaluemodule.vala \
 	valaarooperrormodule.vala \
 	valaclassregisterfunction.vala \

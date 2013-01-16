@@ -264,18 +264,28 @@ public interface aroop.None { // We can call it, Omnipresent(in religion)
 public struct aroop.etxt : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_embeded")]
 	public etxt(string content, None?proto = null);
-	[CCode (cname = "aroop_txt_embeded_with_length")]
+	[CCode (cname = "aroop_txt_embeded_new_with_length")]
 	public etxt.given_length(string content, int len, None?proto = null);
 	[CCode (cname = "aroop_txt_embeded_static")]
 	public etxt.from_static(string content);
 	[CCode (cname = "aroop_txt_create")]
 	public etxt.from_txt(aroop.txt proto);
-	[CCode (cname = "aroop_txt_embeded_from_embeded")]
+	[CCode (cname = "aroop_txt_embeded_reuse_embeded")]
 	public etxt.from_etxt(aroop.etxt*proto);
 	[CCode (cname = "aroop_memclean_raw2")]
 	public etxt.EMPTY();
+	[CCode (cname = "aroop_txt_embeded_dup_embeded")]
+	public etxt.dup_etxt(aroop.etxt*proto);
+	[CCode (cname = "aroop_txt_embeded_dup_string")]
+	public etxt.dup_string(string src);
 	[CCode (cname = "aroop_txt_embeded_buffer")]
 	public bool buffer(int size);
+	[CCode (cname = "aroop_txt_embeded_stackbuffer")]
+	public etxt.stack(int size);
+	[CCode (cname = "aroop_txt_embeded_with_length")]
+	public void set_string_full(string content, int len, None?proto=null);
+	[CCode (cname = "aroop_txt_size")]
+	public int size();
 	[CCode (cname = "aroop_txt_to_vala")]
 	public string to_string();
 	[CCode (cname = "aroop_txt_to_int")]
@@ -302,6 +312,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public bool equals_string(string other);
 	[CCode (cname = "aroop_txt_equals_static")]
 	public bool equals_static_string(string other);
+	[CCode (cname = "aroop_txt_zero_terminate")]
+	public void zero_terminate();
 	[CCode (cname = "aroop_txt_printf")]
 	[PrintfFormat]
 	public void printf(string format,...);
@@ -311,6 +323,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public char char_at(int index);
 	[CCode (cname = "aroop_txt_contains_char")]
 	public bool contains_char(char x);
+	/* "good".shift(1) will give "ood"
+	 * "good".shift(-1) will give "goo" */
 	[CCode (cname = "aroop_txt_shift")]
 	public bool shift(int inc);
 	[CCode (cname = "aroop_txt_destroy")]
@@ -319,11 +333,6 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 
 [CCode (cname = "struct aroop_txt", cheader_filename = "core/txt.h", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.txt : aroop.None {
-	/*aroop.txt*proto;
-	aroop_hash hash;
-	int size;
-	int len;
-	char*str;*/
 	[CCode (cname = "aroop_txt_new")]
 	public txt(char*content, int len = 0, aroop.txt? proto = null, int scalability_index = 0);
 	//[CCode (cname = "aroop_txt_destroy")]

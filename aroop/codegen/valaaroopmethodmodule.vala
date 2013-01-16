@@ -23,7 +23,7 @@
 /**
  * The link between a method and generated code.
  */
-public abstract class Vala.AroopMethodModule : AroopStructModule {
+public abstract class Vala.AroopMethodModule : AroopBlockModule {
 	public override bool method_has_wrapper (Method method) {
 		return (method.get_attribute ("NoWrapper") == null);
 	}
@@ -91,36 +91,11 @@ public abstract class Vala.AroopMethodModule : AroopStructModule {
 				}
 
 				if (m.closure) {
-					// add variables for parent closure blocks
-					// as closures only have one parameter for the innermost closure block
-					var closure_block = current_closure_block;
-					int block_id = get_block_id (closure_block);
-					while (true) {
-						var parent_closure_block = next_closure_block (closure_block.parent_symbol);
-						if (parent_closure_block == null) {
-							break;
-						}
-						int parent_block_id = get_block_id (parent_closure_block);
-
-						var parent_data = new CCodeMemberAccess.pointer (new CCodeIdentifier ("_data%d_".printf (block_id)), "_data%d_".printf (parent_block_id));
-						var cdecl = new CCodeDeclaration ("Block%dData*".printf (parent_block_id));
-						cdecl.add_declarator (new CCodeVariableDeclarator ("_data%d_".printf (parent_block_id), parent_data));
-
-						ccode.add_statement (cdecl);
-
-						closure_block = parent_closure_block;
-						block_id = parent_block_id;
-					}
-
-					// add self variable for closures
-					// as closures have block data parameter
-					if (m.binding == MemberBinding.INSTANCE) {
-						var cself = new CCodeMemberAccess.pointer (new CCodeIdentifier ("_data%d_".printf (block_id)), "this");
-						var cdecl = new CCodeDeclaration ("%s *".printf (get_ccode_aroop_name (current_class)));
-						cdecl.add_declarator (new CCodeVariableDeclarator ("this", cself));
-
-						ccode.add_statement (cdecl);
-					}
+					populate_variables_of_parent_closure(
+						current_closure_block
+						, m.binding == MemberBinding.INSTANCE
+						, ccode
+					);
 				}
 				foreach (Parameter param in m.get_parameters ()) {
 					if (param.ellipsis) {
