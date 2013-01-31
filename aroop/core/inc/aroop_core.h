@@ -79,6 +79,8 @@ int aroop_deinit();
 		destroy_func(x); \
 	};0;})
 
+#define aroop_search(a,h,cb,cbp,ret) ({*(ret) = opp_search(a, h, cb, cbp);})
+
 C_CAPSULE_END
 
 #endif // AROOP_CORE_H_

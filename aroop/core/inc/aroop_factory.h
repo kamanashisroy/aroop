@@ -56,7 +56,7 @@ enum {
 #define aroop_assert_factory_creation_for_type_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1##_pray);})
 #define aroop_factory_get_by_token(x,y,z) ({*z = opp_get(x,y);})
-typedef int (*aroop_iterator_cb)(void*data, void*func_data);
+typedef int (*aroop_iterator_cb)(void*func_data, void*data);
 
 // searchable
 #define aroop_srcblefac_constr(x0, x1, x2, x3, x4, x5) ({\

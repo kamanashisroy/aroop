@@ -55,6 +55,12 @@ C_CAPSULE_START
 typedef SYNC_UWORD32_T opp_hash_t;
 #define OPP_OBJECT_EXT_TINY() opp_hash_t hash;OPP_VOLATILE_VAR SYNC_UWORD16_T flag,token;
 #define OPP_RBTREE
+#ifndef OBJ_COMP_T
+#define OBJ_COMP_T
+typedef int (*obj_do_t)(void*func_data, void*data);
+typedef int (*obj_comp_t)(const void*func_data, const void*data);
+#endif
+
 
 C_CAPSULE_END
 
@@ -166,6 +172,7 @@ void opp_factory_verb(struct opp_factory*obuff, opp_verb_t verb_obj, const void*
 void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, void*init_data, ...);
 void opp_shrink(void*data, int size);
 void opp_set_hash(void*data, opp_hash_t hash);
+#define obj_get_hash(data) ({((struct opp_object_ext*)data)->hash;})
 void opp_set_flag(void*data, unsigned int flag);
 void opp_unset_flag(void*data, unsigned int flag);
 #ifdef OPP_CAN_TEST_FLAG

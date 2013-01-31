@@ -2,7 +2,7 @@
 using aroop;
 
 
-class test_array : None {
+class test_array : Replicable {
 	enum configuration {
 #if EMBEDED
 		COLLECTION_SIZE = 20

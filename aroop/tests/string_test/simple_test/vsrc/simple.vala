@@ -1,7 +1,7 @@
 
 using aroop;
 
-internal class Orchard : None {
+internal class Orchard : Replicable {
 	public int add(etxt garden) {
 		etxt mango = etxt.EMPTY();
 		etxt field = etxt.from_etxt(&garden);
@@ -17,7 +17,7 @@ internal class Orchard : None {
 	}
 }
 
-class MainClass : None {
+class MainClass : Replicable {
 	public static int main() {
 		Orchard heaven = new Orchard();
 		etxt nandan = etxt.from_static("mango:16,pineapple:18");

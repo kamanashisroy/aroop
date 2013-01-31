@@ -47,7 +47,7 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 		} else if (itype is DelegateType) {
 			bool is_param = false;
 			foreach (Parameter param in current_method.get_parameters ()) {
-				print("symbol:%s:parent:%s\n".printf(expr.call.to_string(), param.name.to_string()));
+				//print("symbol:%s:parent:%s\n".printf(expr.call.to_string(), param.name.to_string()));
 				if(param.name == expr.call.to_string()) {
 					is_param = true;
 					break;
@@ -74,7 +74,7 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 				var instance = get_cvalue (ma.inner);
 				var st = m.parent_symbol as Struct;
 				if (st != null && !st.is_simple_type ()) {
-					instance = generate_instance_cargument_for_struct(expr, m, instance);
+					instance = generate_instance_cargument_for_struct(ma, m, instance);
 				}
 				
 				ccall.add_argument (instance);
@@ -167,15 +167,32 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 						cexpr = new CCodeCastExpression (cexpr, CCodeBaseModule.get_ccode_type (param));
 					}
 				}
-				if(arg.value_type is MethodType && current_closure_block != null && param.variable_type is DelegateType) {			
-					Block b = current_closure_block;
-					ccall.add_argument (cexpr);
-					cexpr = new CCodeUnaryExpression (
-						CCodeUnaryOperator.ADDRESS_OF, 
-						new CCodeIdentifier(generate_block_var_name(b))
-					);
-					i++;
-					params_it.next();
+				if(arg.value_type is MethodType && param.variable_type is DelegateType) {					
+					Method? m22 = null;
+					var ma22 = arg as MemberAccess;
+					if(ma22 != null) {
+						m22 = ((MethodType) arg.value_type).method_symbol;
+						if (m22 != null && m22.binding == MemberBinding.INSTANCE) {
+							var instance22 = get_cvalue (ma22.inner);
+							var st22 = m22.parent_symbol as Struct;
+							if (st22 != null && !st22.is_simple_type ()) {
+								instance22 = generate_instance_cargument_for_struct(ma22, m22, instance22);
+							}
+							ccall.add_argument (cexpr);
+							cexpr = instance22;
+							i++;
+							params_it.next();
+						}
+					} else if(current_closure_block != null) {
+						Block b = current_closure_block;
+						ccall.add_argument (cexpr);
+						cexpr = new CCodeUnaryExpression (
+							CCodeUnaryOperator.ADDRESS_OF, 
+							new CCodeIdentifier(generate_block_var_name(b))
+						);
+						i++;
+						params_it.next();
+					}
 				}
 			}
 

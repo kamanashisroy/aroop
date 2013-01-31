@@ -3,7 +3,7 @@ using aroop;
 
 delegate int my_cb(int value);
 
-class Simple : None {
+class Simple : Replicable {
 
 	public static int cb_impl(int value) {
 		return 0;

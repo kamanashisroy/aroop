@@ -11,7 +11,7 @@ internal class Mango : Fruit {
 	}
 }
 
-class MainClass : None {
+class MainClass : Replicable {
 
 	public static int main() {
 		unowned Mango x;

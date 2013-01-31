@@ -1,7 +1,7 @@
 
 using aroop;
 
-internal class Orchard : None {
+internal class Orchard : Replicable {
 	txt mango;
 	txt jackfruit;
 	internal Orchard() {
@@ -10,7 +10,7 @@ internal class Orchard : None {
 	}
 }
 
-class MainClass : None {
+class MainClass : Replicable {
 
 	public static int main() {
 		Orchard orchard = new Orchard();

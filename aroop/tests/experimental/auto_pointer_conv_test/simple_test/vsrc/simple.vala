@@ -16,7 +16,7 @@ internal struct Orchard {
 	}
 }
 
-class MainClass : None {
+class MainClass : Replicable {
 
 	public static int main() {
 		Orchard baikuntha = Orchard();

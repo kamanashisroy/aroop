@@ -2,7 +2,7 @@
 using aroop;
 
 
-class test_array : None {
+class test_array : Replicable {
 
 	public static int main() {
 		ArrayList<txt> list = ArrayList<txt>(16);

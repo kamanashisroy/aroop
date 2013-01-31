@@ -811,7 +811,6 @@ void opp_set_hash(void*data, opp_hash_t hash) {
 	}
 }
 
-
 #ifdef OPP_CAN_TEST_FLAG
 int obj_test_flag(const void*data, unsigned int flag) {
 	const struct opp_object*obj = (data - sizeof(struct opp_object));
@@ -1058,7 +1057,7 @@ int opp_hijack(void**src, void*dest, const char*filename, int lineno) {
 #endif
 
 #define CHECK_WEAK_OBJ(x) ({if(!x->refcount){bsv &= ~( 1 << bit_idx);continue;}})
-void*opp_search(struct opp_factory*obuff, opp_hash_t hash, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data) {
+void*opp_search(struct opp_factory*obuff, opp_hash_t hash, obj_comp_t compare_func, const void*compare_data) {
 	void*ret;
 	SYNC_ASSERT(obuff->property & OPPF_SEARCHABLE);
 	OPP_LOCK(obuff);
@@ -1069,7 +1068,7 @@ void*opp_search(struct opp_factory*obuff, opp_hash_t hash, int (*compare_func)(c
 	return ret;
 }
 
-void*opp_find_list_full_donot_use(struct opp_factory*obuff, int (*compare_func)(const void*data, const void*compare_data)
+void*opp_find_list_full_donot_use(struct opp_factory*obuff, obj_comp_t compare_func
 		, const void*compare_data, unsigned int if_flag, unsigned int if_not_flag, opp_hash_t hash, int shouldref) {
 	int k;
 	BITSTRING_TYPE*bitstring,bsv;
@@ -1130,7 +1129,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, int (*compare_func)(
 							continue;
 						}
 					}
-					if(compare_func(item->obj_data, compare_data)) {
+					if(compare_func(compare_data, item->obj_data)) {
 						retval = item->obj_data;
 						if(shouldref) {
 							OPPREF(retval);
@@ -1151,7 +1150,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, int (*compare_func)(
 }
 
 
-void*opp_find_full(struct opp_factory*obuff, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data
+void*opp_find_full(struct opp_factory*obuff, obj_comp_t compare_func, const void*compare_data
 		, unsigned int if_flag, unsigned int if_not_flag, opp_hash_t hash, unsigned int shouldref) {
 	int k;
 	BITSTRING_TYPE*bitstring,bsv;
@@ -1238,7 +1237,7 @@ void*opp_find_full(struct opp_factory*obuff, int (*compare_func)(const void*data
 							continue;
 						}
 					}
-					if((compare_func?compare_func(data, compare_data):1)) {
+					if((compare_func?compare_func(compare_data, data):1)) {
 						retval = data;
 						if(shouldref) {
 							OPPREF(retval);
@@ -1351,7 +1350,7 @@ void opp_factory_gc_donot_use(struct opp_factory*obuff) {
 	OPP_UNLOCK(obuff);
 }
 
-void opp_factory_list_do_full(struct opp_factory*obuff, int (*obj_do)(void*data, void*func_data), void*func_data
+void opp_factory_list_do_full(struct opp_factory*obuff, obj_do_t obj_do, void*func_data
 		, unsigned int if_list_flag, unsigned int if_not_list_flag, unsigned int if_flag, unsigned int if_not_flag
 		, opp_hash_t list_hash, opp_hash_t hash) {
 	int k;
@@ -1449,7 +1448,7 @@ void opp_factory_list_do_full(struct opp_factory*obuff, int (*obj_do)(void*data,
 							continue;
 						}
 					}
-					if(obj_do && obj_do(item, func_data)) {
+					if(obj_do && obj_do(func_data, item)) {
 						goto exitpoint;
 					}
 					CHECK_OBJ(obj);
@@ -1578,7 +1577,7 @@ int opp_iterator_destroy(struct opp_iterator*iterator) {
 	return 0;
 }
 
-void opp_factory_do_pre_order(struct opp_factory*obuff, int (*obj_do)(void*data, void*func_data), void*func_data, unsigned int if_flag
+void opp_factory_do_pre_order(struct opp_factory*obuff, obj_do_t obj_do, void*func_data, unsigned int if_flag
 		, unsigned int if_not_flag) {
 	SYNC_ASSERT(obuff->property & OPPF_SEARCHABLE);
 	OPP_LOCK(obuff);
@@ -1586,7 +1585,7 @@ void opp_factory_do_pre_order(struct opp_factory*obuff, int (*obj_do)(void*data,
 	OPP_UNLOCK(obuff);
 }
 
-void opp_factory_do_full(struct opp_factory*obuff, int (*obj_do)(void*data, void*func_data), void*func_data, unsigned int if_flag
+void opp_factory_do_full(struct opp_factory*obuff, obj_do_t obj_do, void*func_data, unsigned int if_flag
 		, unsigned int if_not_flag, opp_hash_t hash) {
 #if 0
 	int i;
@@ -1597,7 +1596,7 @@ void opp_factory_do_full(struct opp_factory*obuff, int (*obj_do)(void*data, void
 			j = pool->head;
 			for(;j<pool->end;j+=obuff->obj_size) {
 				if(((struct opp_object*)(j))->refcount && (((struct opp_object*)(j))->flag & if_flag) && !(((struct opp_object*)(j))->flag & if_not_flag) && (hash == 0 || hash == ((struct opp_object*)(j))->flag)) {
-					if(obj_do && obj_do(j + sizeof(struct opp_object), func_data)) {
+					if(obj_do && obj_do(func_data, j + sizeof(struct opp_object))) {
 						goto exitpoint;
 					}
 				}
@@ -1687,7 +1686,7 @@ exitpoint:
 							continue;
 						}
 					}
-					if(obj_do && obj_do((void*)(obj+1), func_data)) {
+					if(obj_do && obj_do(func_data, (void*)(obj+1))) {
 						goto exitpoint;
 					}
 //					CHECK_OBJ(obj);
@@ -1861,14 +1860,14 @@ static int pencil_verb(const void*data, const void*func_data) {
 	return 0;
 }
 
-static int pencil_compare(const void*data, const void*compare_data) {
+static int pencil_compare(const void*compare_data, const void*data) {
 	const int *color = compare_data;
 	const struct pencil* pen = data;
 	if(pen->color == *color) return 1;
 	return 0;
 }
 
-static int pencil_compare_all(const void*data, const void*compare_data) {
+static int pencil_compare_all(const void*compare_data, const void*data) {
 	return 1;
 }
 

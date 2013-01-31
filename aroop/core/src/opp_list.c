@@ -62,16 +62,16 @@ int opp_list_create2(struct opp_factory*olist, int pool_size, unsigned int flag)
 }
 
 struct opp_find_list_helper {
-	int (*compare_func)(const void*data, const void*compare_data);
+	obj_comp_t compare_func;
 	const void*compare_data;
 	struct opp_factory*olist;
 	int count;
 };
 
-static int opp_factory_list_compare(void*data, void*func_data) {
+static int opp_factory_list_compare(void*func_data, void*data) {
 	struct opp_find_list_helper*helper = (struct opp_find_list_helper*)func_data;
 
-	if(helper->compare_func(data, helper->compare_data)) {
+	if(helper->compare_func(helper->compare_data, data)) {
 		return 0;
 	}
 
@@ -92,7 +92,7 @@ int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_no
 }
 
 int opp_list_find_from_factory(struct opp_factory*obuff, struct opp_factory*olist
-		, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data) {
+		, obj_comp_t compare_func, const void*compare_data) {
 	struct opp_find_list_helper helper = {
 #ifdef __cplusplus
 			compare_func, compare_data, olist, 0

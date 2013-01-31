@@ -107,8 +107,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 	}
 
 	
-	public CCodeExpression generate_instance_cargument_for_struct(MethodCall expr, Method m, CCodeExpression instance) { // TODO this function should be in struct module
-		var ma = expr.call as MemberAccess;
+	public CCodeExpression generate_instance_cargument_for_struct(MemberAccess ma, Method m, CCodeExpression instance) { 
 		var returnval = instance;
 		// we need to pass struct instance by reference
 		var unary = instance as CCodeUnaryExpression;

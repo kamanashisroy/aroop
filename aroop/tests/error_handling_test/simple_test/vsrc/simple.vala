@@ -5,7 +5,7 @@ public errordomain SomeErrorType {
 	SOME_ERROR,
 }
 
-internal class Orchard : None {
+internal class Orchard : Replicable {
 	txt mango;
 	internal Orchard() throws SomeErrorType {
 		mango = new txt.from_static("There are four mango trees.");
@@ -22,7 +22,7 @@ internal class Orchard : None {
 	}
 }
 
-class MainClass : None {
+class MainClass : Replicable {
 
 	public static int main() {
 		try {

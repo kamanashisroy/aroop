@@ -1,7 +1,7 @@
 
 using aroop;
 
-class MainClass : None {
+class MainClass : Replicable {
 
 	public static int main() {
 		int x = 10;

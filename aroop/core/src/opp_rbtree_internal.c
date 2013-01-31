@@ -38,7 +38,7 @@ int opp_lookup_table_init(opp_lookup_table_t *tree, unsigned long flags) {
 
 void*opp_lookup_table_search(const struct rb_table *tree
 		, SYNC_UWORD32_T hash
-		, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data)
+		, obj_comp_t compare_func, const void*compare_data)
 {
   const struct opp_object_ext *p;
 
@@ -53,7 +53,7 @@ void*opp_lookup_table_search(const struct rb_table *tree
         p = p->rb_link[1];
       else {/* |cmp == 0| */
         for(;p;p=p->sibling) {
-    	  if(!compare_func || !compare_func(p, compare_data)) {
+    	  if(!compare_func || !compare_func(compare_data, p)) {
         	return (struct opp_object_ext *)p;
     	  }
         }
@@ -65,14 +65,14 @@ void*opp_lookup_table_search(const struct rb_table *tree
 }
 
 
-static void opp_lookup_table_traverse_helper(struct opp_object_ext *p, int (*obj_do)(void*data, void*func_data), void*func_data, unsigned int if_flag
+static void opp_lookup_table_traverse_helper(struct opp_object_ext *p, obj_do_t obj_do, void*func_data, unsigned int if_flag
 		, unsigned int if_not_flag) {
 	// TODO make it nonrecursive ..
 	SYNC_ASSERT(p);
 	struct opp_object_ext *q;
 	for(q=p;q;q=q->sibling) {
 		if ((q->flag & if_flag) && !(q->flag & if_not_flag)) {
-			obj_do(q, func_data);
+			obj_do(func_data, q);
 		}
 	}
 	if(p->rb_link[0]) {
@@ -83,7 +83,7 @@ static void opp_lookup_table_traverse_helper(struct opp_object_ext *p, int (*obj
 	}
 }
 
-int opp_lookup_table_traverse(struct rb_table *tree, int (*obj_do)(void*data, void*func_data), void*func_data, unsigned int if_flag
+int opp_lookup_table_traverse(struct rb_table *tree, obj_do_t obj_do, void*func_data, unsigned int if_flag
 		, unsigned int if_not_flag) {
 	if(tree && tree->rb_root) {
 		opp_lookup_table_traverse_helper(tree->rb_root, obj_do, func_data, if_flag, if_not_flag);

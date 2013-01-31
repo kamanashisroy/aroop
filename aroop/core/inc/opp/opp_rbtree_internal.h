@@ -60,10 +60,10 @@ int opp_lookup_table_insert(opp_lookup_table_t *tree, struct opp_object_ext*node
 int opp_lookup_table_delete(opp_lookup_table_t *tree, struct opp_object_ext*node);
 void*opp_lookup_table_search(const struct rb_table *tree
 		, SYNC_UWORD32_T hash
-		, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data);
+		, obj_comp_t compare_func, const void*compare_data);
 void opp_lookup_table_verb (const opp_lookup_table_t *tree
 		, const char *title, void (*log)(void *log_data, const char*fmt, ...), void*log_data);
-int opp_lookup_table_traverse(struct rb_table *tree, int (*obj_do)(void*data, void*func_data), void*func_data, unsigned int if_flag
+int opp_lookup_table_traverse(struct rb_table *tree, obj_do_t obj_do, void*func_data, unsigned int if_flag
 		, unsigned int if_not_flag);
 
 C_CAPSULE_END

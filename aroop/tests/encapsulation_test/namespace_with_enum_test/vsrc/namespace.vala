@@ -11,7 +11,7 @@ struct test_struct {
 	someenum value;
 }
 
-class test_namespace : None {
+class test_namespace : Replicable {
 
 	public static int main() {
 		someenum i = someenum.VALUE;

@@ -6,6 +6,6 @@ static ArrayList<G> foo<G> () {
 }
 
 void main () {
-	var baz = foo<None> ();
+	var baz = foo<Replicable> ();
 }
 

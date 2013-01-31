@@ -3,7 +3,7 @@ using X;
 using aroop;
 
 
-class D : None {
+class D : Replicable {
 
 	public static int main() {
 		C c = 10;

@@ -1,7 +1,7 @@
 
 using aroop;
 
-internal class Mango : None {
+internal class Mango : Replicable {
 	public int id {public get;public set;}
 	public static int pid {public get;public set;}
 	public Mango() {
@@ -10,7 +10,7 @@ internal class Mango : None {
 	}
 }
 
-class test_array : None {
+class test_array : Replicable {
 
 	public static int main() {
 		Mango mg = new Mango();

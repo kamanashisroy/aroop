@@ -30,7 +30,7 @@ internal class Mango : Fruit,Tree {
 	}
 }
 
-class MainClass : None {
+class MainClass : Replicable {
 
 	public static int main() {
 		var mango = new Mango();

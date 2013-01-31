@@ -55,7 +55,7 @@ OPP_CB(hash_table_item) {
 	return 0;
 }
 
-static int match_hash(const void*data, const void*func_data) {
+static int match_hash(const void*func_data, const void*data) {
 	const struct opp_hash_table_item*item = data;
 	const aroop_txt*key = func_data;
 	if(key->len == item->key->len && !memcmp(key->str, item->key->str, key->len)) {
@@ -88,7 +88,7 @@ int opp_hash_table_set(struct opp_factory*ht, aroop_txt*key, void*obj_data) {
 		opp_set_hash(item, opp_get_hash_bin(item->key->str, item->key->len));
 	}
 
-	SYNC_LOG(SYNC_VERB, "set hash table value: %s\n", item->obj_data);
+	//SYNC_LOG(SYNC_VERB, "set hash table value: %s\n", item->obj_data);
 	return 0;
 }
 
