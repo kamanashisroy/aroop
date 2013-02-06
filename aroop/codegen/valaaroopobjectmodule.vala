@@ -31,7 +31,14 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 	
 	public override void generate_class_declaration (Class cl, CCodeFile decl_space) {
+		//print("%s is being declared\n", get_ccode_lower_case_name(cl));
+		//if(cl.base_class != null && cl.base_class.external_package && !decl_space.is_header) {
+			//print("Following ..\n");
+			//add_symbol_declaration(decl_space, cl.base_class, get_ccode_lower_case_name(cl.base_class));
+		//}
 		if(cl.external_package) {
+			//print("External ..\n");
+			add_symbol_declaration(decl_space, cl, get_ccode_lower_case_name(cl));
 			return;
 		}
 		if(!cl.is_internal_symbol() && !decl_space.is_header) {
@@ -255,6 +262,13 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
 		vdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(cl, of_class)));
 		cfile.add_type_member_declaration(vdecl);
+		if(of_class.external_package) {
+			var vbdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
+			vbdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(
+				of_class, of_class)));
+			vbdecl.modifiers |= CCodeModifiers.EXTERN;
+			cfile.add_type_member_declaration(vbdecl);
+		}	
 	}
 	
 	private void cpy_vtable_of_base_class(Class cl, Class of_class, CCodeBlock block) {
@@ -281,8 +295,11 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		var ifunc = new CCodeFunction ("%stype_system_init".printf (get_ccode_lower_case_prefix (cl)), "int");
 		push_function (ifunc); // XXX I do not know what push does 
 
-		cfile.add_function_declaration (ifunc);
-
+		if(cl.is_internal_symbol()) {
+			cfile.add_function_declaration (ifunc);
+		} else {
+			header_file.add_function_declaration (ifunc);
+		}
 		pop_function (); // XXX I do not know what pop does 
 
 		// Now add definition

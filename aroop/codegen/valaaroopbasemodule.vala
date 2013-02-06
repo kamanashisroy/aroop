@@ -367,9 +367,17 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		if (decl_space.add_declaration (name)) {
 			return true;
 		}
+		/*print("%s(%s) Something may happen(%s)\n"
+			, name
+			, sym.external_package?"External":"Internal"
+			, decl_space.is_header?"Headerfile":"C file");*/
 		if (sym.external_package || (!decl_space.is_header && CodeContext.get ().use_header && !sym.is_internal_symbol ())) {
 			// add appropriate include file
 			foreach (string header_filename in CCodeBaseModule.get_ccode_header_filenames (sym).split (",")) {
+				/*print("%s is being added for symbol %s in %s\n"
+					, header_filename
+					, name
+					, decl_space.is_header?"Headerfile":"C file");*/
 				decl_space.add_include (header_filename, !sym.external_package);
 			}
 			// declaration complete

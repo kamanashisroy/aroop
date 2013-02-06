@@ -19,7 +19,7 @@
  *  Created on: Jul 15, 2012
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
-
+using aroop;
 
 public abstract class aroop.Spindle : Replicable {
 	public Spindle() {
@@ -38,7 +38,7 @@ public abstract class aroop.Propeller : Spindle {
 	[CCode (cname = "TODO_HALT_STEPPING")]
 	public int halt_stepping();
 	[CCode (cname = "TODO_START_A_THREAD")]
-	public virtual int start();
+	//public virtual int start();
 	
 	public Propeller();/* {
 		msgs = new Queue((uchar)get_id());

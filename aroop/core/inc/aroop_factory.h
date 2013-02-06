@@ -90,6 +90,11 @@ typedef int (*aroop_iterator_cb)(void*func_data, void*data);
 // queue
 #define aroop_dequeue(x,y) ({*y = opp_dequeue(x);})
 
+// object 
+#define aroop_mark_searchable_ext(x,y) ({(x)->flag |= y;})
+#define aroop_unmark_searchable_ext(x,y) ({(x)->flag &= y;})
+#define aroop_test_searchable_ext(x,y) ({(x)->flag & y;})
+
 C_CAPSULE_END
 
 #endif // AROOP_FACTORY_H

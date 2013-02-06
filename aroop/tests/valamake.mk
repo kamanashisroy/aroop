@@ -6,7 +6,7 @@ VAPI= --vapidir $(VALA_HOME)/vapi --vapidir $(VALA_HOME)/aroop/vapi
 VSOURCES=$(wildcard vsrc/*.vala)
 VSOURCE_BASE=$(basename $(notdir $(VSOURCES)))
 CSOURCES=$(addprefix vsrc/, $(addsuffix .c,$(VSOURCE_BASE)))
-OBJECTS=$(addprefix vsrc/, $(addsuffix .o,$(VSOURCE_BASE)))
+OBJECTS+=$(addprefix vsrc/, $(addsuffix .o,$(VSOURCE_BASE)))
 
 INCLUDES+=-I$(VALA_HOME)/aroop/core/inc
 LIBS+=-L$(VALA_HOME)/aroop/core/ -laroop_core
@@ -33,6 +33,8 @@ genvapi:
 
 test.bin:$(OBJECTS)
 	$(CC) $(OBJECTS) $(LIBS) -o $@
+
+libs:$(OBJECTS)
 
 clean:
 	$(RM) $(CSOURCES)

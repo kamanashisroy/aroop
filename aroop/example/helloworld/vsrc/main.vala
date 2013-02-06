@@ -22,7 +22,7 @@
 
 using aroop;
 
-class Animal: None {
+class Animal: Replicable {
 	public virtual txt voice() {
 		return new txt("Hello world", 11);
 	}

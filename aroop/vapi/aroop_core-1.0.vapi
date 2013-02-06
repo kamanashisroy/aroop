@@ -67,6 +67,8 @@ public struct aroop.CountableSet {
 
 [CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_iterator_destroy")]
 public struct aroop.Iterator<G> {
+	[CCode (cname = "aroop_memclean_raw2")]
+	public Iterator.EMPTY();
 	[CCode (cname = "opp_iterator_create")]
 	public Iterator(aroop.Factory fac, uint if_flag, uint ifnflag, aroop_hash hash);
 	[CCode (cname = "aroop_iterator_next")]
@@ -137,7 +139,13 @@ struct aroop.hashable_ext {
 }
 
 [CCode (cname = "struct opp_object_ext", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
-struct aroop.searcable_ext {
+public struct aroop.searchable_ext {
+	[CCode (cname = "aroop_unmark_searchable_ext")]
+	public void unmark(ulong flg);
+	[CCode (cname = "aroop_mark_searchable_ext")]
+	public void mark(ulong flg);
+	[CCode (cname = "aroop_test_searchable_ext")]
+	public bool test(ulong flg);
 }
 
 [CCode (cname = "opp_callback_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
@@ -219,7 +227,7 @@ public abstract class aroop.Hashable : aroop.Replicable {
 
 [CCode (cname = "struct opp_object_ext", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
 public abstract class aroop.Searchable : aroop.Hashable {
-	private searcable_ext _ext;
+	private searchable_ext _ext;
 	[CCode (cname = "aroop_donothing")]
 	public Searchable();
 	[CCode (cname = "aroop_memclean")]
@@ -392,4 +400,18 @@ public class aroop.core {
 	public static Replicable memory_alloc(ulong size);
 	[CCode (cname = "aroop_memclean_raw")]
 	public static void memclean_raw(void*ptr, ulong size);
+}
+
+[CCode (cname = "struct rb_table", has_free_function = false)]
+public struct aroop.RBTreeLeaf {
+	/*void*opp_lookup_table_search(const struct rb_table *tree
+		, SYNC_UWORD32_T hash
+		, obj_comp_t compare_func, const void*compare_data);*/
+		
+	[CCode (cname = "opp_lookup_table_init")]
+	public int RBTreeLeaf(ulong control_flags = 0);
+	[CCode (cname = "opp_lookup_table_insert")]
+	public int insert(searchable_ext*node);
+	[CCode (cname = "opp_lookup_table_delete")]
+	public int remove(searchable_ext*node);
 }
