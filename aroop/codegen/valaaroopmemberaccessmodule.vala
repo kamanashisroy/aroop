@@ -273,7 +273,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 				result.cvalue = new CCodeMemberAccess (inst, get_ccode_name (f));
 			}
 		} else {
-			generate_field_declaration (f, cfile);
+			generate_field_declaration (f, cfile, false);
 
 			result.cvalue = new CCodeIdentifier (get_ccode_name (f));
 		}

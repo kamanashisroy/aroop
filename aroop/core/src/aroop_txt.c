@@ -111,6 +111,38 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len) {
 	return text;
 }
 
+#include <printf.h>
+static int print_etxt (FILE *stream,
+                   const struct printf_info *info,
+                   const void *const *args) {
+	int len = 0;
+	const aroop_txt *x = *((const aroop_txt **) (args[0]));
+	/* Pad to the minimum field width and print to the stream. */
+	len = fprintf (stream, "%s", x->str);
+	return len;
+}
+
+int print_etxt_arginfo (const struct printf_info *info, size_t n,
+                           int *argtypes)
+{
+	/* We always take exactly one argument and this is a pointer to the
+	  structure.. */
+	if (n > 0)
+	 argtypes[0] = PA_POINTER;
+	return 1;
+}
+
+int aroop_txt_printf_extra(aroop_txt*output, char* format, ...) {
+	va_list arg;
+	int done;
+
+	va_start (arg, format);
+	done = vsnprintf (output->str, output->size, format, arg);
+	va_end (arg);
+
+	return done;
+}
+
 OPP_CB(aroop_txt) {
 	aroop_txt*txt = (aroop_txt*)data;
 	switch(callback) {
@@ -133,6 +165,7 @@ void aroop_txt_system_init() {
 	BLANK_STRING = aroop_txt_new("", 0, NULL, 0);
 	ASTERISKS_STRING = aroop_txt_new("***********************************************", 30, NULL, 0);
 	DOT = aroop_txt_new(".", 1, NULL, 0);
+	register_printf_function ('T', print_etxt, print_etxt_arginfo);
 }
 
 void aroop_txt_system_deinit() {

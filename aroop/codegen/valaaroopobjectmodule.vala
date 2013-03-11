@@ -252,6 +252,19 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		decl_space.add_type_definition (vtable_struct);
 	}
 
+	private void add_vtable_ovrd_variables_external(Class cl, Class of_class) {
+		if(of_class.external_package && of_class.has_vtables) {
+			var vbdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
+			vbdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(
+				cl, of_class)));
+			vbdecl.modifiers |= CCodeModifiers.EXTERN;
+			cfile.add_type_member_declaration(vbdecl);
+			if(of_class.base_class != null) {
+				add_vtable_ovrd_variables_external(cl, of_class.base_class);
+			}
+		}
+	}
+
 	private void add_vtable_ovrd_variables(Class cl, Class of_class) {
 		if (of_class.base_class != null) {
 			add_vtable_ovrd_variables(cl, of_class.base_class);
@@ -262,13 +275,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
 		vdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(cl, of_class)));
 		cfile.add_type_member_declaration(vdecl);
-		if(of_class.external_package) {
-			var vbdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
-			vbdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(
-				of_class, of_class)));
-			vbdecl.modifiers |= CCodeModifiers.EXTERN;
-			cfile.add_type_member_declaration(vbdecl);
-		}	
+		add_vtable_ovrd_variables_external(of_class, of_class);
 	}
 	
 	private void cpy_vtable_of_base_class(Class cl, Class of_class, CCodeBlock block) {

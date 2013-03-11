@@ -96,7 +96,7 @@ public class aroop.container<G> : Hashable {
 [CCode (cname = "aroop_iterator_cb", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.iterator_cb(Replicable data);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Set<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_list_create")]
 	public Set(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
@@ -120,7 +120,7 @@ public struct aroop.SearchableSet<G> : aroop.Set<G> {
 	public container<G>? search(aroop_hash hash, iterator_cb compare_func);
 }
 
-[CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_destroy_function=true, destroy_function="opp_queue_deinit")]
+[CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_copy_function=false, copy_function="aroop_memcpy_strt2", has_destroy_function=true, destroy_function="opp_queue_deinit")]
 public struct aroop.Queue<G> {
 	[CCode (cname = "aroop_queue_init")]
 	public Queue(int scindex = 0);
@@ -336,6 +336,9 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_printf")]
 	[PrintfFormat]
 	public void printf(string format,...);
+	[CCode (cname = "aroop_txt_printf_extra")]
+	[PrintfFormat]
+	public void printf_extra(string format,...);
 	[CCode (cname = "aroop_txt_shift_token")]
 	public void shift_token(string delim, etxt*output);
 	[CCode (cname = "aroop_txt_char_at")]
@@ -396,7 +399,7 @@ public class aroop.core {
 	public static int libinit(int argc, char ** argv);
 	[CCode (cname = "aroop_deinit")]
 	public static void libdeinit();
-	[CCode (cname = "aroop_memory_alloc")]
+	[CCode (cname = "opp_str2_alloc")]
 	public static Replicable memory_alloc(ulong size);
 	[CCode (cname = "aroop_memclean_raw")]
 	public static void memclean_raw(void*ptr, ulong size);

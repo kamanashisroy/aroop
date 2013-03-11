@@ -477,11 +477,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 	}
 
-	public void generate_field_declaration (Field f, CCodeFile decl_space) {
-		if (add_symbol_declaration (decl_space, f, get_ccode_aroop_name (f))) {
+	public void generate_field_declaration (Field f, CCodeFile decl_space, bool force_cdecl) {
+		if (!force_cdecl && add_symbol_declaration (decl_space, f, get_ccode_aroop_name (f))) {
 			return;
 		}
-
 		generate_type_declaration (f.variable_type, decl_space);
 
 		string field_ctype = get_ccode_aroop_name (f.variable_type);
@@ -494,7 +493,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		if (f.is_internal_symbol ()) {
 			cdecl.modifiers = CCodeModifiers.STATIC;
 		} else {
-			cdecl.modifiers = CCodeModifiers.EXTERN;
+			if(!force_cdecl) {
+				cdecl.modifiers = CCodeModifiers.EXTERN;
+			}
 		}
 
 		if (f.get_attribute ("ThreadLocal") != null) {
@@ -506,38 +507,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public override void visit_field (Field f) {
 		if (f.binding == MemberBinding.STATIC)  {
-			generate_field_declaration (f, cfile);
+			generate_field_declaration (f, cfile, true);
 
 			if (!f.is_internal_symbol ()) {
-				generate_field_declaration (f, header_file);
+				generate_field_declaration (f, header_file, false);
 			}
-#if false
-			var var_decl = new CCodeVariableDeclarator (get_ccode_name (f));
-			var_decl.initializer = default_value_for_type (f.variable_type, true);
-
-			if (f.initializer != null) {
-				static_fields.add (f);
-			}
-
-			string field_ctype = get_ccode_aroop_name (f.variable_type);
-			if (f.is_volatile) {
-				field_ctype = "volatile " + field_ctype;
-			}
-
-			var var_def = new CCodeDeclaration (field_ctype);
-			var_def.add_declarator (var_decl);
-			if (!f.is_internal_symbol ()) {
-				var_def.modifiers = CCodeModifiers.EXTERN;
-			} else {
-				var_def.modifiers = CCodeModifiers.STATIC;
-			}
-
-			if (f.get_attribute ("ThreadLocal") != null) {
-				var_def.modifiers |= CCodeModifiers.THREAD_LOCAL;
-			}
-
-			cfile.add_type_member_declaration (var_def);
-#endif
 		}
 	}
 

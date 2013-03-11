@@ -80,8 +80,8 @@ typedef int xultb_bool_t;
 	(x)->size=(x)->len+1; \
 })
 
-#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}x->str;(x)->proto = (x)->str;})
-#define aroop_txt_embeded_stackbuffer(x,y) ({char x##buf##y[y];(x)->str = x##buf##y;(x)->size = y;})
+#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}(x)->str;(x)->proto = (x)->str;})
+#define aroop_txt_embeded_stackbuffer(x,y) ({char buf##y[y];(x)->str = buf##y;(x)->size = y;})
 #define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
 
 #if false
@@ -95,7 +95,7 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 
 #define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;((x) && (x)->len == (sizeof(static_y)-1) && !memcmp((x)->str, static_text,(x)->len));})
 #define aroop_txt_equals_chararray(x,y) ({((!(x) && !(y)) || ((x) && !(x)->str && !(y) )) || ((x) && !strcmp((x)->str, y));})
-#define aroop_txt_zero_terminate(x) ({if((x)->len < (x)->size) (x)->str[len] = '\0';})
+#define aroop_txt_zero_terminate(x) ({if((x)->len < (x)->size) (x)->str[(x)->len] = '\0';})
 
 #define aroop_txt_printf(x, ...) ({snprintf(x->str, x->size - 1, __VA_ARGS__);})
 
@@ -160,6 +160,8 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 // system 
 void aroop_txt_system_init();
 void aroop_txt_system_deinit();
+
+int aroop_txt_printf_extra(aroop_txt*output, char* format, ...);
 
 C_CAPSULE_END
 

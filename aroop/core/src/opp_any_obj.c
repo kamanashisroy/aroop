@@ -35,9 +35,9 @@ struct any_obj {
 	opp_callback_t cb;
 };
 
-static struct opp_factory objs;
+static struct opp_factory tiny_objs,gig_objs;
 void*opp_any_obj_alloc(int size, opp_callback_t cb, void*arg, ...) {
-	void*obj = opp_alloc4(&objs, size+sizeof(struct any_obj), 0, cb);
+	void*obj = opp_alloc4((size < 128)?&tiny_objs:&gig_objs, size+sizeof(struct any_obj), 0, cb);
 	va_list ap;
 	va_start(ap, arg);
 	cb(obj, OPPN_ACTION_INITIALIZE, arg, ap, size);
@@ -74,14 +74,20 @@ OPP_CB(any_obj) {
 
 void opp_any_obj_system_init() {
 	SYNC_ASSERT(!OPP_FACTORY_CREATE(
-		&objs
-		, 1,32
+		&tiny_objs
+		, 32,16
+		, OPP_CB_FUNC(any_obj))
+	);
+	SYNC_ASSERT(!OPP_FACTORY_CREATE(
+		&gig_objs
+		, 64,8
 		, OPP_CB_FUNC(any_obj))
 	);
 }
 
 void opp_any_obj_system_deinit() {
-	opp_factory_destroy(&objs);
+	opp_factory_destroy(&tiny_objs);
+	opp_factory_destroy(&gig_objs);
 }
 
 
