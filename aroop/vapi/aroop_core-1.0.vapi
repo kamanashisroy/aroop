@@ -90,7 +90,7 @@ public struct aroop.ArrayList<G> : aroop.CountableSet {
 [CCode (cname = "struct opp_list_item", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public class aroop.container<G> : Hashable {
 	[CCode (cname = "aroop_list_item_get")]
-	public G get();
+	public unowned G get();
 }
 
 [CCode (cname = "aroop_iterator_cb", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]

@@ -55,7 +55,7 @@ int aroop_deinit();
 #define aroop_iterator_next(x) ({opp_iterator_next(x) != NULL})
 #define aroop_iterator_get(x) ({x->data})
 #define aroop_factory_iterator_get(x,y,a,b,c) ({opp_iterator_create(y,x,a,b,c);})
-#define aroop_list_item_get(x) ({(x)->obj_data;})
+#define aroop_list_item_get(x,y) ({*(y) = ((x)->obj_data);})
 #define aroop_get_token(x) ({(x)->token;})
 #define aroop_donothing(x)
 #define aroop_donothing4(x,y,a,b)
