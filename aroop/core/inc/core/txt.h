@@ -34,7 +34,7 @@ struct aroop_txt {
 	int size;
 	int len;
 	char*str;
-};
+} typedef arptxt;
 
 typedef struct aroop_txt aroop_txt;
 typedef int xultb_bool_t;
@@ -81,7 +81,7 @@ typedef int xultb_bool_t;
 })
 
 #define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}(x)->str;(x)->proto = (x)->str;})
-#define aroop_txt_embeded_stackbuffer(x,y) ({char buf##y[y];(x)->str = buf##y;(x)->size = y;})
+#define aroop_txt_embeded_stackbuffer(x,y) ({char buf##y[y];(x)->str = buf##y;(x)->size = y;(x)->len = 0;(x)->proto = NULL;})
 #define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
 
 #if false
@@ -100,6 +100,7 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #define aroop_txt_printf(x, ...) ({snprintf(x->str, x->size - 1, __VA_ARGS__);})
 
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
+#define build_from_etxt(x,y) ({(x)->str = (((aroop_txt*)x)+1);(x)->size=(y)->len;(x)->len=(y)->len;(x)->hash = (y)->hash;(x)->proto = NULL;memcpy((x)->str,(y)->str,(x)->len);})
 #define aroop_txt_new_static(x) ({aroop_txt_new(x,sizeof(x)-1, NULL, 0);})
 aroop_txt*aroop_txt_clone(const char*content, int len, int scalability_index);
 aroop_txt*aroop_txtrim(aroop_txt*text);
@@ -111,6 +112,7 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_indexof_char(haystack, niddle) ({const char*haystack##pos = strchr((haystack)->str, niddle);int haystack##i = -1;if(haystack##pos && haystack##pos < ((haystack)->str+(haystack)->len))haystack##i = haystack##pos-(haystack)->str;haystack##i;})
 #define aroop_txt_size(x) ({(x)->size;})
 #define aroop_txt_length(x) ({(x)->len;})
+#define aroop_txt_trim_to_length(x,y) ({if(y < (x)->len)(x)->len = y;})
 #define aroop_txt_get_hash(x) ({((x)->hash != 0)?(x)->hash:((x)->hash = opp_get_hash_bin((x)->str, (x)->len));})
 #define aroop_txt_to_vala(x) ({(((x)&&(x)->str)?(x)->str:"(null)");})
 #define aroop_txt_to_int(x) ({((x) && (x)->str)?atoi((x)->str):0;})

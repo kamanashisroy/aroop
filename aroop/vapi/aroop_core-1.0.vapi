@@ -116,6 +116,10 @@ public struct aroop.Set<G> : aroop.CountableSet {
 
 [CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.SearchableSet<G> : aroop.Set<G> {
+	/*! \brief Searches set for any entry.
+	 *
+	 * @param [in] compare_func  A function reference that returns 0 on match.
+	 */
 	[CCode (cname = "aroop_search")]
 	public container<G>? search(aroop_hash hash, iterator_cb compare_func);
 }
@@ -277,7 +281,7 @@ public interface aroop.Replicable/*Possible alternatives Computable,Replicable /
 	public void shrink(int additional_size);
 }
 
-[CCode (cname = "struct aroop_txt", cheader_filename = "core/txt.h")]
+[CCode (cname = "arptxt", cheader_filename = "core/txt.h")]
 public struct aroop.etxt : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_embeded")]
 	public etxt(string content, Replicable?proto = null);
@@ -309,6 +313,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public int to_int();
 	[CCode (cname = "aroop_txt_length")]
 	public int length();
+	[CCode (cname = "aroop_txt_trim_to_length")]
+	public int trim_to_length(uint len);
 	[CCode (cname = "aroop_txt_get_hash")]
 	public aroop_hash get_hash();
 	[CCode (cname = "aroop_txt_to_vala_magical")]
@@ -342,7 +348,7 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_shift_token")]
 	public void shift_token(string delim, etxt*output);
 	[CCode (cname = "aroop_txt_char_at")]
-	public char char_at(int index);
+	public char char_at(uint index);
 	[CCode (cname = "aroop_txt_contains_char")]
 	public bool contains_char(char x);
 	/* "good".shift(1) will give "ood"
@@ -353,10 +359,12 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public void destroy();
 }
 
-[CCode (cname = "struct aroop_txt", cheader_filename = "core/txt.h", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+[CCode (cname = "arptxt", cheader_filename = "core/txt.h", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.txt : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
 	public txt(char*content, int len = 0, aroop.txt? proto = null, int scalability_index = 0);
+	[CCode (cname = "aroop_txt_build_from_etxt")]
+	public int build_from_etxt(etxt*src);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~txt();
 	[CCode (cname = "aroop_txt_new_static")]

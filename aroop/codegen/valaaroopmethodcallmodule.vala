@@ -22,6 +22,9 @@
 
 public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 
+	protected virtual CCodeExpression? generate_delegate_closure_argument(Expression arg) {
+		return null;
+	}
 	public override void visit_method_call (MethodCall expr) {
 		// the bare function call
 		var ccall = new CCodeFunctionCall (get_cvalue (expr.call));
@@ -168,30 +171,13 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 					}
 				}
 				if(arg.value_type is MethodType && param.variable_type is DelegateType) {					
-					Method? m22 = null;
-					var ma22 = arg as MemberAccess;
-					if(ma22 != null) {
-						m22 = ((MethodType) arg.value_type).method_symbol;
-						if (m22 != null && m22.binding == MemberBinding.INSTANCE) {
-							var instance22 = get_cvalue (ma22.inner);
-							var st22 = m22.parent_symbol as Struct;
-							if (st22 != null && !st22.is_simple_type ()) {
-								instance22 = generate_instance_cargument_for_struct(ma22, m22, instance22);
-							}
-							ccall.add_argument (cexpr);
-							cexpr = instance22;
-							i++;
-							params_it.next();
-						}
-					} else if(current_closure_block != null) {
-						Block b = current_closure_block;
+					CCodeExpression?dleg_expr = generate_delegate_closure_argument(arg);
+					if(dleg_expr != null) {
 						ccall.add_argument (cexpr);
-						cexpr = new CCodeUnaryExpression (
-							CCodeUnaryOperator.ADDRESS_OF, 
-							new CCodeIdentifier(generate_block_var_name(b))
-						);
+						cexpr = dleg_expr;
 						i++;
 						params_it.next();
+
 					}
 				}
 			}
