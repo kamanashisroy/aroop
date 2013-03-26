@@ -324,6 +324,21 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 		}
 	}
 	
+	protected CCodeExpression get_parameter_cvalue_for_block(Parameter p) {
+		// captured variables are stored on the heap
+		var block = p.parent_symbol as Block;
+		if (block == null) {
+			block = ((Method) p.parent_symbol).body;
+		}
+		
+		var cblock_val = get_variable_cexpression (generate_block_var_name (block));
+		if(block == current_closure_block && current_closure_block.parent_symbol == current_method) {
+			return new CCodeMemberAccess (cblock_val, get_variable_cname (p.name));
+		} else {
+			return new CCodeMemberAccess.pointer (cblock_val, get_variable_cname (p.name));
+		}
+	}
+	
 	protected CCodeExpression get_local_cvalue_for_block(LocalVariable local) {
 		// captured variables are stored on the heap
 		var block = (Block) local.parent_symbol;
