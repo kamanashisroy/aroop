@@ -143,7 +143,7 @@ int aroop_txt_printf_extra(aroop_txt*output, char* format, ...) {
 	return done;
 }
 
-OPP_CB(aroop_txt) {
+OPP_CB_NOSTATIC(aroop_txt) {
 	aroop_txt*txt = (aroop_txt*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:

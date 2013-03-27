@@ -136,8 +136,10 @@ struct opp_object_ext_tiny {
 
 #define OPP_FACTORY_USE_COUNT(q) ({(q)->use_count;})
 
-#define OPP_CB(x) \
-static int opp_##x##_callback(void*data, int callback, void*cb_data, va_list ap, int size)
+#define OPP_CB(x) static OPP_CB_NOSTATIC(x)
+#define OPP_CB_NOSTATIC(x) \
+int opp_##x##_callback(void*data, int callback, void*cb_data, va_list ap, int size)
+
 
 #define OPP_CB_FUNC(x) opp_##x##_callback
 
