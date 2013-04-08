@@ -52,9 +52,9 @@ enum {
 #define aroop_assert_factory_creation_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4, x5) == 0);})
 #define aroop_assert_factory_creation_for_type(x0, x1, x2, x3, x4) ({\
-	aroop_assert_factory_creation_full(x0, x2, sizeof(x1), x3 ,x4, x1##_pray);})
+	aroop_assert_factory_creation_full(x0, x2, x1(NULL, OPPN_ACTION_GET_SIZE, NULL, NULL, 0), x3 ,x4, x1);})
 #define aroop_assert_factory_creation_for_type_full(x0, x1, x2, x3, x4, x5) ({\
-	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1##_pray);})
+	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1);})
 #define aroop_factory_get_by_token(x,y,z) ({*z = opp_get(x,y);})
 typedef int (*aroop_iterator_cb)(void*func_data, void*data);
 
@@ -62,9 +62,9 @@ typedef int (*aroop_iterator_cb)(void*func_data, void*data);
 #define aroop_srcblefac_constr(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED, x5) == 0);})
 #define aroop_srcblefac_constr_4_type(x0, x1, x2, x3, x4) ({\
-	aroop_srcblefac_constr(x0, x2, sizeof(x1), x3, x4, x1##_pray);})
+	aroop_srcblefac_constr(x0, x2, x1(NULL, OPPN_ACTION_GET_SIZE, NULL, NULL, 0), x3, x4, x1);})
 #define aroop_srcblefac_constr_4_type_full(x0, x1, x2, x3, x4, x5) ({\
-	aroop_srcblefac_constr(x0, x2, x3 ,x4, x5, x1##_pray);})
+	aroop_srcblefac_constr(x0, x2, x3 ,x4, x5, x1);})
 #define aroop_searchable_type_system_init()
 // TODO set the hash while constructing searchable
 #define aroop_searchable_construct(x)

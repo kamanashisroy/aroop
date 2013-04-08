@@ -29,8 +29,10 @@
 #include "opp/opp_any_obj.h"
 #include "opp/opp_io.h"
 #include "aroop_core_type_conversion.h"
+#include "aroop_core_type_info.h"
 #include "aroop_error.h"
 #include "aroop_assignment.h"
+
 
 typedef void aroop_none;
 typedef int bool;

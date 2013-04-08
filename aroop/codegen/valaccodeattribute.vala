@@ -608,11 +608,11 @@ public class Vala.CCodeAttribute : AttributeCache {
 		} else if (node is ErrorType) {
 			return "aroop_wrong*";
 		} else if (node is GenericType) {
-			return "aroop_god*";
+			return "aroop_none*";
 		} else if (node is MethodType) {
 			return "gpointer";
 		} else if (node is NullType) {
-			return "aroop_god*";
+			return "aroop_none*";
 		} else if (node is PointerType) {
 			var type = (PointerType) node;
 			if (type.base_type.data_type != null && type.base_type.data_type.is_reference_type ()) {

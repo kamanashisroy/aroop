@@ -42,7 +42,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		generate_class_declaration (type_class, decl_space);
 
 #if false
-		var type_fun = new CCodeFunction ("%s_type_get".printf (get_ccode_lower_case_name (st)), "AroopType *");
+		var type_fun = new CCodeFunction ("%s_type_get".printf (get_ccode_lower_case_name (st)), get_aroop_type_cname());
 		if (st.is_internal_symbol ()) {
 			type_fun.modifiers = CCodeModifiers.STATIC;
 		}
@@ -51,7 +51,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 
 #if false
 		var type_init_fun = new CCodeFunction ("%s_type_init".printf (get_ccode_lower_case_name (st)));
-		type_init_fun.add_parameter (new CCodeParameter ("type", "AroopType *"));
+		type_init_fun.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
 		if (st.is_internal_symbol ()) {
 			type_init_fun.modifiers = CCodeModifiers.STATIC;
 		}
@@ -174,8 +174,8 @@ public class Vala.AroopValueModule : AroopObjectModule {
 	}
 
 	public override void visit_assignment (Assignment assignment) {
-		var generic_type = assignment.left.value_type as GenericType;
-		if (generic_type == null) {
+		//var generic_type = assignment.left.value_type as GenericType;
+		//if (generic_type == null) {
 #if false
 			// We are doing this for experimental purpose .. ..
 			var locate_myself = new CCodeFunctionCall(new CCodeIdentifier ("aroop_locate_myself"));
@@ -184,8 +184,8 @@ public class Vala.AroopValueModule : AroopObjectModule {
 			base.visit_assignment (assignment);
 #endif
 			return;
-		}
-
+		//}
+#if 0
 		var dest = assignment.left;
 		CCodeExpression cdest;
 		CCodeExpression dest_index = new CCodeConstant ("0");
@@ -243,6 +243,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		ccall.add_argument (csrc);
 		ccall.add_argument (src_index);
 		set_cvalue (assignment, ccall);
+#endif	
 	}
 
 	public override void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {

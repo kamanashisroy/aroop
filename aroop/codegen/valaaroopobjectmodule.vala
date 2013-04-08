@@ -68,14 +68,21 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		proto.generate_type_declaration(decl_space);
 		//decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
 
-		generate_vtable(cl, decl_space);
-
+		if(cl.has_vtables) {
+			generate_vtable(cl, decl_space);
+		}
+		
 		var class_struct = proto.definition;
 		if (cl.base_class != null) {
 			class_struct.add_field (get_ccode_aroop_definition(cl.base_class), "super_data");
 		}
 		foreach (Field f in cl.get_fields ()) {
 			generate_element_declaration(f, class_struct, decl_space);
+		}
+		int tparams = 0;
+		foreach (var type_parameter in cl.get_type_parameters ()) {
+			class_struct.add_field (get_aroop_type_cname(), get_generic_class_variable_cname(tparams));
+			tparams++;
 		}
 		if(cl.has_vtables) {
 			class_struct.add_field ("%s*".printf(get_ccode_vtable_struct (cl)), "vtable");
@@ -162,7 +169,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 	CCodeFunction create_set_value_equals_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_equals");
-		result.add_parameter (new CCodeParameter ("type", "AroopType *"));
+		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
 		result.add_parameter (new CCodeParameter ("(*function) (void *value, intptr_t value_index, void *other, intptr_t other_index)", "bool"));
 		if (decl_only) {
 			return result;
@@ -186,7 +193,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 	CCodeFunction create_set_value_hash_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_hash");
-		result.add_parameter (new CCodeParameter ("type", "AroopType *"));
+		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
 		result.add_parameter (new CCodeParameter ("(*function) (void *value, intptr_t value_index)", "uintptr_t"));
 		if (decl_only) {
 			return result;
@@ -212,7 +219,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 	CCodeFunction create_set_value_to_any_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_to_any");
-		result.add_parameter (new CCodeParameter ("type", "AroopType *"));
+		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
 		result.add_parameter (new CCodeParameter ("(*function) (void *value, intptr_t value_index)", "AroopObject *"));
 		if (decl_only) {
 			return result;
@@ -229,7 +236,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 	CCodeFunction create_set_value_from_any_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_from_any");
-		result.add_parameter (new CCodeParameter ("type", "AroopType *"));
+		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
 		result.add_parameter (new CCodeParameter ("(*function) (AroopObject *any, void *value, intptr_t value_index)", "void"));
 		if (decl_only) {
 			return result;
@@ -243,7 +250,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		result.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, "value_from_any"), new CCodeIdentifier ("function"))));
 		return result;
 	}
-
+	
 	private void generate_vtable(Class cl, CCodeFile decl_space) {
 		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl)));
 		foreach (Method m in cl.get_methods ()) {
@@ -408,7 +415,12 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		switch_stat.add_statement (new CCodeBreakStatement());
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_FINALIZE")));
+		// TODO may be we should call destructor function here *****~~~~~****!~~~!!!!!!|||(:>)
 		switch_stat.add_statement (new CCodeBreakStatement());
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_GET_SIZE")));
+		var sizeof_stat = new CCodeFunctionCall (new CCodeIdentifier("sizeof"));
+		sizeof_stat.add_argument(new CCodeIdentifier(get_ccode_aroop_name (cl)));
+		switch_stat.add_statement (new CCodeReturnStatement(sizeof_stat));
 		vblock.add_statement (switch_stat);
 
 		vblock.add_statement (new CCodeReturnStatement(new CCodeConstant ("0")));
@@ -554,7 +566,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			param_list += ")";
 
 			var override_func = new CCodeFunction ("%soverride_%s_%s".printf (get_ccode_lower_case_prefix (prop.parent_symbol), acc.readable ? "get" : "set", prop.name));
-			override_func.add_parameter (new CCodeParameter ("type", "AroopType *"));
+			override_func.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
 			override_func.add_parameter (new CCodeParameter ("(*function) %s".printf (param_list), acc.readable ? get_ccode_aroop_name (acc.value_type) : "void"));
 
 			decl_space.add_function_declaration (override_func);
@@ -674,6 +686,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			alloc_call.add_argument (new CCodeIdentifier("%spray".printf (get_ccode_lower_case_prefix (current_class))));
 			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("this"), new CCodeCastExpression (alloc_call, "%s *".printf (get_ccode_aroop_name (current_type_symbol))))));
 
+#if false
 			// allocate memory for fields of generic types
 			// this is only a temporary measure until this can be allocated inline at the end of the instance
 			// this also won't work for subclasses of classes that have fields of generic types
@@ -694,6 +707,23 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 				vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, f.name), calloc_call)));
 			}
+#else
+			foreach (var f in current_class.get_fields ()) {
+				if (f.binding != MemberBinding.INSTANCE || !(f.variable_type is GenericType)) {
+					continue;
+				}
+				
+				var generic_type = (GenericType) f.variable_type;
+				vblock.add_statement (
+					new CCodeExpressionStatement (
+						new CCodeAssignment (
+							get_type_id_expression(generic_type, false)
+							, new CCodeConstant("g_type")
+						)
+					)
+				);
+			}
+#endif
 
 			var vcall = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_real_name (m)));
 			vcall.add_argument (new CCodeIdentifier ("this"));
@@ -774,7 +804,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (m.parent_symbol is Class) {
 				var cl = (Class) m.parent_symbol;
 				foreach (TypeParameter type_param in cl.get_type_parameters ()) {
-					var cparam = new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType*");
+					var cparam = new CCodeParameter ("%s_type".printf (type_param.name.down ()), get_aroop_type_cname());
 					if (vcall != null) {
 						func.add_parameter (cparam);
 					}
@@ -782,7 +812,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			}
 		} else {
 			foreach (TypeParameter type_param in m.get_type_parameters ()) {
-				var cparam = new CCodeParameter ("%s_type".printf (type_param.name.down ()), "AroopType*");
+				var cparam = new CCodeParameter ("%s_type".printf (type_param.name.down ()), get_aroop_type_cname());
 				func.add_parameter (cparam);
 				if (vdeclarator != null) {
 					vdeclarator.add_parameter (cparam);

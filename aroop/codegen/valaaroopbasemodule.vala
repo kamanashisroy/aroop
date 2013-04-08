@@ -782,7 +782,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public CCodeExpression get_type_private_from_type (ObjectTypeSymbol type_symbol, CCodeExpression type_expression) {
 		if (type_symbol is Class) {
 			// class
-			return new CCodeCastExpression (new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (type_expression, "char *"), new CCodeIdentifier ("_%s_type_offset".printf (CCodeBaseModule.get_ccode_lower_case_name (type_symbol)))), "%sTypePrivate *".printf (get_ccode_aroop_name (type_symbol)));
+			return type_expression;/*CCodeIdentifier (get_ccode_aroop_name (type_symbol));*/
 		} else {
 			// interface
 			var get_interface = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_interface"));
@@ -791,17 +791,34 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			return new CCodeCastExpression (get_interface, "%sTypePrivate *".printf (CCodeBaseModule.get_ccode_name (type_symbol)));
 		}
 	}
+	
+	public string get_generic_class_variable_cname(int tparams = 0) {
+		return "_generic_type_%d".printf(tparams);
+	}
+	
+	public string get_aroop_type_cname() {
+		return "aroop_type_desc";
+	}
 
 	public CCodeExpression get_type_id_expression (DataType type, bool is_chainup = false) {
 		if (type is GenericType) {
 			string var_name = "%s_type".printf (type.type_parameter.name.down ());
 			if (is_in_generic_type (type) && !is_chainup) {
-				return new CCodeMemberAccess.pointer (get_type_private_from_type ((ObjectTypeSymbol) type.type_parameter.parent_symbol, new CCodeMemberAccess.pointer (new CCodeIdentifier ("this"), "type")), var_name);
+				return get_type_private_from_type (
+					(ObjectTypeSymbol) type.type_parameter.parent_symbol
+					, new CCodeMemberAccess.pointer (new CCodeIdentifier ("this"), get_generic_class_variable_cname()));
 			} else {
 				return new CCodeIdentifier (var_name);
 			}
 		} else {
-			return new CCodeIdentifier (get_ccode_aroop_name((ObjectTypeSymbol)type.data_type));
+			var ret = new CCodeIdentifier (get_ccode_aroop_name((ObjectTypeSymbol)type.data_type));
+			var cl = (ObjectTypeSymbol)type.data_type as Class;
+			if(cl != null) {			
+				var tmp = new CCodeFunctionCall(new CCodeIdentifier ("aroop_generic_type_for_class"));
+				tmp.add_argument(ret);
+				return tmp;
+			}
+			return ret;
 		}
 	}
 
@@ -1364,7 +1381,8 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public void add_generic_type_arguments (CCodeFunctionCall ccall, List<DataType> type_args, CodeNode expr, bool is_chainup = false) {
 		foreach (var type_arg in type_args) {
-			ccall.add_argument (get_type_id_expression (type_arg, is_chainup));
+			var targ = get_type_id_expression (type_arg, is_chainup);
+			ccall.add_argument (targ);
 		}
 	}
 
