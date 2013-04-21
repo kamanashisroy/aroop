@@ -719,12 +719,16 @@ public class Vala.CCodeAttribute : AttributeCache {
 
 	private string? get_default_ref_function () {
 		if (sym is Class) {
+#if false
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
 				return lower_case_prefix + "ref";
 			} else if (cl.base_class != null) {
 				return CCodeBaseModule.get_ccode_ref_function (cl.base_class);
 			}
+#else
+			return "OPPREF";
+#endif
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
 				var ref_func = CCodeBaseModule.get_ccode_ref_function ((ObjectTypeSymbol) prereq.data_type);
@@ -738,12 +742,16 @@ public class Vala.CCodeAttribute : AttributeCache {
 
 	private string? get_default_unref_function () {
 		if (sym is Class) {
+#if false			
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
 				return lower_case_prefix + "unref";
 			} else if (cl.base_class != null) {
 				return CCodeBaseModule.get_ccode_unref_function (cl.base_class);
 			}
+#else
+			return "OPPUNREF";
+#endif
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
 				string unref_func = CCodeBaseModule.get_ccode_unref_function ((ObjectTypeSymbol) prereq.data_type);

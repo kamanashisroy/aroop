@@ -2109,13 +2109,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public string get_ccode_ref_function (TypeSymbol node) {
-		return "OPPREF";
-		//return CCodeBaseModule.get_ccode_ref_function (node);
+		//return "OPPREF";
+		return CCodeBaseModule.get_ccode_ref_function (node);
 	}
 
 	public string get_ccode_unref_function (ObjectTypeSymbol node) {
-		return "OPPUNREF";
-		//return CCodeBaseModule.get_ccode_unref_function (node);
+		//return "OPPUNREF";
+		return CCodeBaseModule.get_ccode_unref_function (node);
 	}
 
 	public string get_ccode_free_function (TypeSymbol node) {

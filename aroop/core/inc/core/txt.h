@@ -80,6 +80,13 @@ typedef int xultb_bool_t;
 	(x)->size=(x)->len+1; \
 })
 
+#define aroop_txt_embeded_same_same(x,y) ({ \
+	*(x) = *(y); \
+	if((x)->proto) { \
+		OPPREF((x)->proto); \
+	} \
+}) 
+
 #define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}(x)->str;(x)->proto = (x)->str;})
 #define aroop_txt_embeded_stackbuffer(x,y) ({char buf##y[y];(x)->str = buf##y;(x)->size = y;(x)->len = 0;(x)->proto = NULL;})
 #define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
@@ -127,12 +134,28 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 // TODO optimize this shift code
 #define aroop_txt_shift_token(x,s,y) ({ \
 	aroop_txt_destroy(y); \
+	char*_p = (x)->str; \
 	(y)->str = strsep(&((x)->str),s); \
 	if((y)->str){ \
 		(y)->len = strlen(((y)->str)); \
 		if((x)->proto){(y)->proto = OPPREF(((x)->proto));} \
 	} \
 	(x)->len = (x)->str?strlen(((x)->str)):0; \
+	(x)->size = (x)->str?((x)->size - ((x)->str - _p)):(x)->len; \
+})
+
+#define aroop_txt_move_to(x,y) ({ \
+	if((x)->str && (y)->str){ \
+		memmove((y)->str, (x)->str, (x)->len); \
+		(y)->len = (x)->len; \
+		(x)->size = (y)->size; \
+		if((x)->proto) { \
+			OPPUNREF((x)->proto); \
+		} \
+		if((y)->proto) { \
+			(x)->proto = OPPREF((y)->proto); \
+		} \
+	} \
 })
 
 // char operation

@@ -299,6 +299,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public etxt.dup_etxt(aroop.etxt*proto);
 	[CCode (cname = "aroop_txt_embeded_dup_string")]
 	public etxt.dup_string(string src);
+	[CCode (cname = "aroop_txt_embeded_same_same")]
+	public etxt.same_same(aroop.etxt*other);
 	[CCode (cname = "aroop_txt_embeded_buffer")]
 	public bool buffer(int size);
 	[CCode (cname = "aroop_txt_embeded_stackbuffer")]
@@ -347,6 +349,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public void printf_extra(string format,...);
 	[CCode (cname = "aroop_txt_shift_token")]
 	public void shift_token(string delim, etxt*output);
+	[CCode (cname = "aroop_txt_move_to")]
+	public void move_to(etxt*space);
 	[CCode (cname = "aroop_txt_char_at")]
 	public char char_at(uint index);
 	[CCode (cname = "aroop_txt_contains_char")]
