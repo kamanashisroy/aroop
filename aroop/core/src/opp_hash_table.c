@@ -66,7 +66,7 @@ static int match_hash(const void*func_data, const void*data) {
 
 void*opp_hash_table_get(struct opp_factory*ht, aroop_txt*key) {
 	unsigned long hash = opp_get_hash_bin(key->str, key->len);
-	struct opp_hash_table_item*item = opp_search(ht, hash, match_hash, key);
+	struct opp_hash_table_item*item = opp_search(ht, hash, match_hash, key, NULL);
 	if(!item) {
 		return NULL;
 	}
@@ -76,7 +76,7 @@ void*opp_hash_table_get(struct opp_factory*ht, aroop_txt*key) {
 }
 
 int opp_hash_table_set(struct opp_factory*ht, aroop_txt*key, void*obj_data) {
-	struct opp_hash_table_item*item = opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash, key);
+	struct opp_hash_table_item*item = opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash, key, NULL);
 	if(item) {
 		if(item->obj_data) {
 			OPPUNREF(item->obj_data);

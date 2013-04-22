@@ -1057,14 +1057,18 @@ int opp_hijack(void**src, void*dest, const char*filename, int lineno) {
 #endif
 
 #define CHECK_WEAK_OBJ(x) ({if(!x->refcount){bsv &= ~( 1 << bit_idx);continue;}})
-void*opp_search(struct opp_factory*obuff, opp_hash_t hash, obj_comp_t compare_func, const void*compare_data) {
-	void*ret;
+void*opp_search(struct opp_factory*obuff
+	, opp_hash_t hash, obj_comp_t compare_func, const void*compare_data, void**rval) {
+	void*ret = NULL;
 	SYNC_ASSERT(obuff->property & OPPF_SEARCHABLE);
 	OPP_LOCK(obuff);
 	if((ret = opp_lookup_table_search(&obuff->tree, hash, compare_func, compare_data))) {
 		OPPREF(ret);
 	}
 	OPP_UNLOCK(obuff);
+	if(rval != NULL) {
+		*rval = ret;
+	}
 	return ret;
 }
 

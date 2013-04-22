@@ -12,6 +12,7 @@ TARGET_O=libaroop_core.o
 TARGET_AR=libaroop_core.a
 
 CC+=-ggdb3
+#CC+=-O2
 
 all:$(TARGET_AR)
 

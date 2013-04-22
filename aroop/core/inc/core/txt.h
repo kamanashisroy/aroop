@@ -104,7 +104,7 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #define aroop_txt_equals_chararray(x,y) ({((!(x) && !(y)) || ((x) && !(x)->str && !(y) )) || ((x) && !strcmp((x)->str, y));})
 #define aroop_txt_zero_terminate(x) ({if((x)->len < (x)->size) (x)->str[(x)->len] = '\0';})
 
-#define aroop_txt_printf(x, ...) ({snprintf(x->str, x->size - 1, __VA_ARGS__);})
+#define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
 #define build_from_etxt(x,y) ({(x)->str = (((aroop_txt*)x)+1);(x)->size=(y)->len;(x)->len=(y)->len;(x)->hash = (y)->hash;(x)->proto = NULL;memcpy((x)->str,(y)->str,(x)->len);})

@@ -407,6 +407,8 @@ public class aroop.mem {
 public class aroop.core {
 	[CCode (cname = "aroop_assert")]
 	public static void assert(bool value);
+	[CCode (cname = "aroop_assert_no_error", cheader_filename="errno.h")]
+	public static void assert_no_error();
 	[CCode (cname = "aroop_init")]
 	public static int libinit(int argc, char ** argv);
 	[CCode (cname = "aroop_deinit")]

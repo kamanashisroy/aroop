@@ -1,4 +1,4 @@
-/*
+/**
  * This file part of aroop.
  *
  * Copyright (C) 2012  Kamanashis Roy
@@ -66,6 +66,7 @@ int aroop_deinit();
 #define aroop_memclean_raw(x,y) ({memset(x, 0, y);})
 // TODO remove all the SYNC_ prefix things ..
 #define aroop_assert(x)	SYNC_ASSERT(x)
+#define aroop_assert_no_error() ({if(errno){printf("%s", strerror(errno));SYNC_ASSERT(0);};})
 #define aroop_memcpy_struct(x,nouse,y,nouse2) ({ \
 	if(x) { \
 		if(y) { \
@@ -90,7 +91,7 @@ int aroop_deinit();
 		destroy_func(x); \
 	};0;})
 
-#define aroop_search(a,h,cb,cbp,ret) ({*(ret) = opp_search(a, h, cb, cbp);})
+#define aroop_search(a,h,cb,cbp,ret) ({opp_search(a, h, cb, cbp, ret);})
 
 C_CAPSULE_END
 

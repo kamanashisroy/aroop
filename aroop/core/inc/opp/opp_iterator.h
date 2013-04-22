@@ -61,7 +61,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, obj_comp_t compare_f
 	, const void*compare_data, unsigned int if_flag, unsigned int if_not_flag, opp_hash_t hash, int shouldref);
 
 void*opp_search(struct opp_factory*obuff, opp_hash_t hash, obj_comp_t compare_func
-	, const void*compare_data);
+	, const void*compare_data, void**rval);
 
 C_CAPSULE_END
 

@@ -42,7 +42,7 @@ OPP_CB(list_item) {
 }
 
 void*opp_indexed_list_get(struct opp_factory*olist, int index) {
-	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL);
+	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL, NULL);
 	void*ret = NULL;
 	if(holder) {
 		ret = holder->obj_data;
@@ -57,7 +57,7 @@ void*opp_indexed_list_get(struct opp_factory*olist, int index) {
 int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data) {
 	int ret = 0;
 	opp_factory_lock_donot_use(olist);
-	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL);
+	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL, NULL);
 	if(holder) {
 		opp_set_flag(holder, OPPN_ZOMBIE);
 		void*tmp = holder;
