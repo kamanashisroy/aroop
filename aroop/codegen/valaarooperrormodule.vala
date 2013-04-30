@@ -127,7 +127,7 @@ public class Vala.AroopErrorModule : AroopDelegateModule {
 		// return something
 		if (current_method is CreationMethod && current_method.parent_symbol is Class) {
 			var cl = (Class) current_method.parent_symbol;
-			ccode.add_expression (destroy_value (new GLibValue (new ObjectType (cl), new CCodeIdentifier ("this"), true)));
+			ccode.add_expression (destroy_value (new GLibValue (new ObjectType (cl), new CCodeIdentifier (self_instance), true)));
 			ccode.add_return ();
 		} else if (is_in_coroutine ()) {
 			ccode.add_return (new CCodeConstant ("FALSE"));

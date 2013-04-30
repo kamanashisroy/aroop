@@ -42,7 +42,7 @@ public class Vala.AroopCCodegenImpl : AroopErrorModule {
 		if (current_method is CreationMethod && current_method.parent_symbol is Class) {
 			var cl = current_method.parent_symbol as Class;
 			var unref_call = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_unref_function (cl)));
-			unref_call.add_argument (new CCodeIdentifier ("this"));
+			unref_call.add_argument (new CCodeIdentifier (self_instance));
 			ccode.add_expression (unref_call);
 			ccode.add_return ();
 		} else if (current_return_type is VoidType) {

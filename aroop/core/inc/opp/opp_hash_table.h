@@ -24,7 +24,9 @@
 #define OPP_HASH_TABLE_H_
 
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
+#endif
 
 C_CAPSULE_START
 

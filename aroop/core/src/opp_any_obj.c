@@ -21,11 +21,13 @@
  */
 
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
 #include "opp/opp_any_obj.h"
 #include "opp/opp_factory.h"
 #include "opp/opp_type.h"
 #include "opp/opp_io.h"
+#endif
 
 C_CAPSULE_START
 
@@ -37,7 +39,7 @@ struct any_obj {
 
 static struct opp_factory tiny_objs,gig_objs;
 void*opp_any_obj_alloc(int size, opp_callback_t cb, void*arg, ...) {
-	void*obj = opp_alloc4((size < 128)?&tiny_objs:&gig_objs, size+sizeof(struct any_obj), 0, cb);
+	void*obj = opp_alloc4((size < 128)?&tiny_objs:&gig_objs, size+sizeof(struct any_obj), 0, (void*)cb);
 	va_list ap;
 	va_start(ap, arg);
 	cb(obj, OPPN_ACTION_INITIALIZE, arg, ap, size);
@@ -50,21 +52,21 @@ OPP_CB(any_obj) {
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 	{
-		struct any_obj*cb = (data+size);
+		struct any_obj*cb = (struct any_obj*)pointer_arith_add_byte(data,size);
 		cb--;
-		cb->cb = cb_data;
+		cb->cb = (opp_callback_t)cb_data;
 //		obj->vtable->oppcb = cb_data;
 		break;
 	}
 	case OPPN_ACTION_FINALIZE:
 	{
-		struct any_obj*cb = (data+size);
+		struct any_obj*cb = (struct any_obj*)pointer_arith_add_byte(data,size);
 		cb--;
 		return cb->cb(obj, OPPN_ACTION_FINALIZE, NULL, ap, size - sizeof(struct any_obj));
 	}
 	case OPPN_ACTION_DESCRIBE:
 	{
-		struct any_obj*cb = (data+size);
+		struct any_obj*cb = (struct any_obj*)pointer_arith_add_byte(data,size);
 		cb--;
 		return cb->cb(obj, OPPN_ACTION_DESCRIBE, NULL, ap, size - sizeof(struct any_obj));
 	}

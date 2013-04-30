@@ -20,12 +20,14 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/txt.h"
 #include "opp/opp_factory.h"
 #include "opp/opp_iterator.h"
 #include "opp/opp_hash_table.h"
 #include "opp/opp_hash.h"
 #include "core/logger.h"
+#endif
 
 C_CAPSULE_START
 
@@ -40,7 +42,7 @@ OPP_CB(hash_table_item) {
 
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
-		item->key = (void*)cb_data;
+		item->key = (aroop_txt*)cb_data;
 		OPPREF(item->key);
 		item->obj_data = va_arg(ap, void*);
 		OPPREF(item->obj_data);
@@ -56,8 +58,8 @@ OPP_CB(hash_table_item) {
 }
 
 static int match_hash(const void*func_data, const void*data) {
-	const struct opp_hash_table_item*item = data;
-	const aroop_txt*key = func_data;
+	const struct opp_hash_table_item*item = (const struct opp_hash_table_item*)data;
+	const aroop_txt*key = (const aroop_txt*)func_data;
 	if(key->len == item->key->len && !memcmp(key->str, item->key->str, key->len)) {
 		return 0;
 	}
@@ -66,7 +68,7 @@ static int match_hash(const void*func_data, const void*data) {
 
 void*opp_hash_table_get(struct opp_factory*ht, aroop_txt*key) {
 	unsigned long hash = opp_get_hash_bin(key->str, key->len);
-	struct opp_hash_table_item*item = opp_search(ht, hash, match_hash, key, NULL);
+	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, hash, match_hash, key, NULL);
 	if(!item) {
 		return NULL;
 	}
@@ -76,7 +78,7 @@ void*opp_hash_table_get(struct opp_factory*ht, aroop_txt*key) {
 }
 
 int opp_hash_table_set(struct opp_factory*ht, aroop_txt*key, void*obj_data) {
-	struct opp_hash_table_item*item = opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash, key, NULL);
+	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash, key, NULL);
 	if(item) {
 		if(item->obj_data) {
 			OPPUNREF(item->obj_data);
@@ -84,7 +86,7 @@ int opp_hash_table_set(struct opp_factory*ht, aroop_txt*key, void*obj_data) {
 		item->obj_data = OPPREF(obj_data);
 		OPPUNREF(item);
 	} else {
-		item = opp_alloc4(ht, 0, 0, key, obj_data);
+		item = (struct opp_hash_table_item*)opp_alloc4(ht, 0, 0, key, obj_data);
 		opp_set_hash(item, opp_get_hash_bin(item->key->str, item->key->len));
 	}
 

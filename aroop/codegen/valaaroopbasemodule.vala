@@ -81,6 +81,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 	}
 
+	public string self_instance {
+		get {return "self_data";}
+		set {}
+	}
+
 	public CodeContext context { get; set; }
 
 	public Symbol root_symbol;
@@ -273,6 +278,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		// reserved for Vala naming conventions
 		reserved_identifiers.add ("result");
 		reserved_identifiers.add ("this");
+		reserved_identifiers.add (self_instance);
 	}
 
 	public override void emit (CodeContext context) {
@@ -507,7 +513,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public override void visit_field (Field f) {
 		if (f.binding == MemberBinding.STATIC)  {
-			generate_field_declaration (f, cfile, true);
+			generate_field_declaration (f, cfile, f.is_internal_symbol ()?false:true);
 
 			if (!f.is_internal_symbol ()) {
 				generate_field_declaration (f, header_file, false);
@@ -652,6 +658,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public CCodeExpression get_variable_cexpression (string name) {
+		if(name == "this") {
+			return new CCodeIdentifier (self_instance);
+		}
 		return new CCodeIdentifier (get_variable_cname (name));
 	}
 
@@ -806,7 +815,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			if (is_in_generic_type (type) && !is_chainup) {
 				return get_type_private_from_type (
 					(ObjectTypeSymbol) type.type_parameter.parent_symbol
-					, new CCodeMemberAccess.pointer (new CCodeIdentifier ("this"), get_generic_class_variable_cname()));
+					, new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname()));
 			} else {
 				return new CCodeIdentifier (var_name);
 			}
@@ -822,7 +831,8 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 	}
 
-	public virtual CCodeExpression? get_dup_func_expression (DataType type, SourceReference? source_reference, bool is_chainup = false) {
+	public virtual CCodeExpression? get_dup_func_expression (DataType type
+		, SourceReference? source_reference, bool is_chainup = false) {
 		if (type.data_type != null) {
 			string dup_function = "";
 			if (is_reference_counting (type.data_type)) {
@@ -926,14 +936,15 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 
 		ccall.add_argument (cvar);
-
+		
 		/* set freed references to NULL to prevent further use */
 		var ccomma = new CCodeCommaExpression ();
 
 		ccomma.append_expression (ccall);
 		ccomma.append_expression (new CCodeConstant ("NULL"));
 
-		var cassign = new CCodeAssignment (cvar, ccomma);
+		var castexpr = new CCodeCastExpression (ccomma, get_ccode_aroop_name (type));
+		var cassign = new CCodeAssignment (cvar, castexpr);
 
 		return new CCodeConditionalExpression (cisnull, new CCodeConstant ("NULL"), cassign);
 	}
@@ -1194,7 +1205,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public override void visit_base_access (BaseAccess expr) {
 		generate_type_declaration (expr.value_type, cfile);
-		set_cvalue (expr, new CCodeCastExpression (new CCodeIdentifier ("this"), get_ccode_aroop_name (expr.value_type)));
+		set_cvalue (expr, new CCodeCastExpression (new CCodeIdentifier (self_instance), get_ccode_aroop_name (expr.value_type)));
 	}
 
 	public override void visit_postfix_expression (PostfixExpression expr) {
@@ -1335,7 +1346,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			// expression is non-null
 			ccall.add_argument (get_cvalue (expr));
 
-			return ccall;
+			return new CCodeCastExpression(ccall, get_ccode_aroop_name (expression_type));
 		} else {
 			var decl = get_temp_variable (expression_type, false, node);
 			emit_temp_var (decl);
@@ -1355,7 +1366,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			ccomma.append_expression (new CCodeAssignment (ctemp, cexpr));
 
 			var cifnull = new CCodeConstant ("NULL");
-			ccomma.append_expression (new CCodeConditionalExpression (cisnull, cifnull, ccall));
+			ccomma.append_expression (new CCodeConditionalExpression (cisnull, cifnull, new CCodeCastExpression(ccall, get_ccode_aroop_name (expression_type))));
 
 			// repeat temp variable at the end of the comma expression
 			// if the ref function returns void
@@ -1929,7 +1940,8 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		if (expression_type is ArrayType && target_type is PointerType) {
 			var array_type = (ArrayType) expression_type;
 			if (!array_type.inline_allocated) {
-				return new CCodeMemberAccess (cexpr, "data");
+				//return new CCodeMemberAccess (cexpr, "data");
+				return cexpr;
 			}
 		}
 
@@ -2107,7 +2119,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public string get_ccode_dup_function (TypeSymbol node) {
 		return CCodeBaseModule.get_ccode_dup_function (node);
 	}
-
+	
 	public string get_ccode_ref_function (TypeSymbol node) {
 		//return "OPPREF";
 		return CCodeBaseModule.get_ccode_ref_function (node);

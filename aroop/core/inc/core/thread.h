@@ -23,16 +23,24 @@
 #ifndef SYNC_THREAD_H_
 #define SYNC_THREAD_H_
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "config.h"
+#endif
 
 #ifdef HAS_THREAD
 #ifdef ASTERISK_CHANNEL
+#ifndef AROOP_CONCATENATED_FILE
 #include "ast_thread.h"
+#endif
 #else
 #ifdef QT
+#ifndef AROOP_CONCATENATED_FILE
 #include "qt_thread.h"
+#endif
 #else
+#ifndef AROOP_CONCATENATED_FILE
 #include "linux_thread.h"
+#endif
 #endif
 #endif
 #else

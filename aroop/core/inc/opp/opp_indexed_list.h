@@ -23,7 +23,9 @@
 #ifndef OPP_INDEXED_LIST_H
 #define OPP_INDEXED_LIST_H
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
+#endif
 
 C_CAPSULE_START
 

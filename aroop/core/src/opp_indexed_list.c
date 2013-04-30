@@ -20,14 +20,16 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
 #include "opp/opp_indexed_list.h"
 #include "opp/opp_iterator.h"
 #include "opp/opp_list.h"
+#endif
 
 C_CAPSULE_START
 
-OPP_CB(list_item) {
+OPP_CB(indexed_list_item) {
 	struct opp_list_item*item = (struct opp_list_item*)data;
 	switch(callback) {
 	case OPPN_ACTION_FINALIZE:
@@ -80,7 +82,7 @@ int opp_indexed_list_create2(struct opp_factory*olist, int pool_size) {
 	return opp_factory_create_full(olist, pool_size
 			, sizeof(struct opp_list_item)
 			, 1, OPPF_SEARCHABLE | OPPF_EXTENDED | OPPF_SWEEP_ON_UNREF
-			, OPP_CB_FUNC(list_item));
+			, OPP_CB_FUNC(indexed_list_item));
 }
 
 C_CAPSULE_END

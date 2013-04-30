@@ -21,8 +21,10 @@
  */
 
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
 #include "opp/opp_thread_main.h"
+#endif
 
 C_CAPSULE_START
 
@@ -46,7 +48,7 @@ int opp_destroy_all() { // TODO call the function before application exit
 
 int opp_thread_main(opp_thread_func_t func, int*argc, char*args[]) { // always call it in new thread ..
 	opp_thread_init();
-	__opp_context_id = opp_alloc4(&threads, 0, 0, NULL);
+	__opp_context_id = (struct opp_context*)opp_alloc4(&threads, 0, 0, NULL);
 	func(argc, args);
 	OPPUNREF(__opp_context_id);
 	return 0;

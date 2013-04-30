@@ -121,6 +121,26 @@ public class Vala.CCodeFile {
 
 		return define.str;
 	}
+	
+	void before_include(CCodeWriter?writer, CCodeOnceSection?once = null) {
+		if(writer != null) {
+			writer.write_string("#ifndef AROOP_CONCATENATED_FILE");
+			writer.write_newline ();
+		}
+		if(once != null) {
+			once.append (new CCodeIdentifier ("#ifndef AROOP_CONCATENATED_FILE"));
+		}
+	}
+	
+	void after_include(CCodeWriter?writer, CCodeOnceSection?once = null) {
+		if(writer != null) {
+			writer.write_newline ();
+			writer.write_string("#endif //AROOP_CONCATENATED_FILE");
+		}
+		if(once != null) {
+			once.append (new CCodeIdentifier ("#endif //AROOP_CONCATENATED_FILE"));
+		}
+	}
 
 	public bool store (string filename, string? source_filename, bool write_version, bool line_directives, string? begin_decls = null, string? end_decls = null) {
 		var writer = new CCodeWriter (filename, source_filename);
@@ -133,7 +153,9 @@ public class Vala.CCodeFile {
 
 			comments.write (writer);
 			writer.write_newline ();
+			before_include(writer);
 			include_directives.write (writer);
+			after_include(writer);
 			writer.write_newline ();
 			type_declaration.write_combined (writer);
 			writer.write_newline ();
@@ -152,7 +174,9 @@ public class Vala.CCodeFile {
 
 			var once = new CCodeOnceSection (get_define_for_filename (writer.filename));
 			once.append (new CCodeNewline ());
+			before_include(null, once);
 			once.append (include_directives);
+			after_include(null, once);
 			once.append (new CCodeNewline ());
 
 			if (begin_decls != null) {

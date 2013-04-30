@@ -20,7 +20,9 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_hash.h"
+#endif
 
 C_CAPSULE_START
 
@@ -72,7 +74,7 @@ unsigned long opp_get_hash(const char *z){
 
 unsigned long opp_get_hash_bin(const void*data, int size) {
   unsigned long h = 0, n = size;
-  const unsigned char*z = data;
+  const unsigned char*z = (const unsigned char*)data;
 #ifdef FNV
 	h = 20; // FNV ofset basis
 #endif

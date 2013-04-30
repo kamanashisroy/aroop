@@ -31,41 +31,14 @@
  * that object.
  */
 
-#include "core/config.h"
-#include "core/thread.h"
-
-#ifdef SYNC_HAS_ATOMIC_OPERATION
-#define OPP_VOLATILE_VAR volatile
-#else
-#define OPP_VOLATILE_VAR
+#ifndef AROOP_CONCATENATED_FILE
+#include "opp/opp_factory_types.h"
 #endif
-
-#ifndef C_CAPSULE_START
-#ifdef __cplusplus
-#define C_CAPSULE_START extern "C" {
-#define C_CAPSULE_END }
-#else
-#define C_CAPSULE_START
-#define C_CAPSULE_END
-#endif
-#endif
-
-C_CAPSULE_START
-
-typedef SYNC_UWORD32_T opp_hash_t;
-#define OPP_OBJECT_EXT_TINY() opp_hash_t hash;OPP_VOLATILE_VAR SYNC_UWORD16_T flag,token;
-#define OPP_RBTREE
-#ifndef OBJ_COMP_T
-#define OBJ_COMP_T
-typedef int (*obj_do_t)(void*func_data, void*data);
-typedef int (*obj_comp_t)(const void*func_data, const void*data);
-#endif
-
-
-C_CAPSULE_END
 
 #ifdef OPP_RBTREE
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_rbtree_internal.h"
+#endif
 #endif
 
 C_CAPSULE_START

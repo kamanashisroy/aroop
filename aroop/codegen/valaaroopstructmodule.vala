@@ -90,7 +90,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 			return false;
 		}
 		//print("[%s]member access identifier:%s\n", instanceType.name, cid.name);
-		return (instanceType == current_type_symbol && (cid.name) == "this");
+		return (instanceType == current_type_symbol && (cid.name) == self_instance);
 	}
 	
 	public CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
@@ -152,7 +152,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 		if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
 			// use return value
 		} else {
-			returnparam = new CCodeParameter ("this", get_ccode_aroop_name (this_type)+"*");
+			returnparam = new CCodeParameter (self_instance, get_ccode_aroop_name (this_type)+"*");
 			//returnparam = new CCodeUnaryExpression((CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)));
 		}
 		return returnparam;
@@ -170,7 +170,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 					if ((unary = cexpr as CCodeUnaryExpression) != null) {
 						if(unary.operator == CCodeUnaryOperator.ADDRESS_OF 
 							&& unary.inner is CCodeIdentifier 
-							&& ((CCodeIdentifier)unary.inner).name == "this") {// &this => this
+							&& ((CCodeIdentifier)unary.inner).name == self_instance) {// &this => this
 							//print("working with1 : %s\n", param.name);
 							return unary.inner;
 						} else { 

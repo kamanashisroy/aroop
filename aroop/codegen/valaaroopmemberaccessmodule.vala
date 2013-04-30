@@ -195,13 +195,13 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 	public TargetValue get_parameter_cvalue (Parameter p) {
 		var result = new AroopValue (p.variable_type);
 
-		if (p.name == "this") {
+		if (p.name == self_instance) {
 			if (current_method != null && current_method.coroutine) {
 				// use closure
-				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), "this");
+				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), self_instance);
 			} else {
 				var st = current_type_symbol as Struct;
-				result.cvalue = new CCodeIdentifier ("this");
+				result.cvalue = new CCodeIdentifier (self_instance);
 			}
 		} else {
 			if (p.captured) {

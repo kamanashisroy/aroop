@@ -68,9 +68,9 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 			var cl = (Class) m.parent_symbol;
 
 			if (cl == current_class) {
-				ccall.add_argument (new CCodeIdentifier ("this"));
+				ccall.add_argument (new CCodeIdentifier (self_instance));
 			} else {
-				ccall.add_argument (new CCodeCastExpression (new CCodeIdentifier ("this"), get_ccode_aroop_name (cl) + "*"));
+				ccall.add_argument (new CCodeCastExpression (new CCodeIdentifier (self_instance), get_ccode_aroop_name (cl) + "*"));
 			}
 		} else if (m != null) {
 			if (m.binding == MemberBinding.INSTANCE) {

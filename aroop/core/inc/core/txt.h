@@ -23,13 +23,16 @@
 #ifndef XULTB_STRING_H_
 #define XULTB_STRING_H_
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
+#include "aroop_core.h"
+#endif
 
 C_CAPSULE_START
 
 // TODO build an immutable txt ..
 struct aroop_txt {
-	struct aroop_txt*proto;
+	aroop_none*proto;
 	int hash;
 	int size;
 	int len;
@@ -121,7 +124,7 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_length(x) ({(x)->len;})
 #define aroop_txt_trim_to_length(x,y) ({if(y < (x)->len)(x)->len = y;})
 #define aroop_txt_get_hash(x) ({((x)->hash != 0)?(x)->hash:((x)->hash = opp_get_hash_bin((x)->str, (x)->len));})
-#define aroop_txt_to_vala(x) ({(((x)&&(x)->str)?(x)->str:"(null)");})
+#define aroop_txt_to_vala(x) ({(char*)(((x)&&(x)->str)?(x)->str:"(null)");})
 #define aroop_txt_to_int(x) ({((x) && (x)->str)?atoi((x)->str):0;})
 #define aroop_txt_to_vala_magical(x) ({(((x)&&(x)->str&&(x)->len!=0)?(x)->str:"(null)");})
 #define aroop_txt_is_empty(x) ({(!((x)->str) || ((x)->len == 0));})

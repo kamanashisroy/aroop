@@ -1,7 +1,9 @@
 #ifndef AROOP_ERROR_H
 #define AROOP_ERROR_H
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
+#endif
 
 C_CAPSULE_START
 

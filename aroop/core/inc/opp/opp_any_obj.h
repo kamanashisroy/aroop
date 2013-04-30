@@ -24,8 +24,10 @@
 #define OPP_ANY_OBJ_H_
 
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
 #include "opp/opp_factory.h"
+#endif
 
 C_CAPSULE_START
 

@@ -93,7 +93,7 @@ public class aroop.container<G> : Hashable {
 	public unowned G get();
 }
 
-[CCode (cname = "aroop_iterator_cb", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "obj_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.iterator_cb(Replicable data);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
@@ -104,9 +104,9 @@ public struct aroop.Set<G> : aroop.CountableSet {
 	//public int create(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_list_add")]
 	public bool add(G item);
-	[CCode (cname = "opp_factory_do_full")]
+	[CCode (cname = "aroop_factory_do_full")]
 	public int visit_each_hacked(iterator_cb do_func, uint if_flag, uint if_not_flag, aroop_hash hash);
-	[CCode (cname = "opp_factory_list_do_full")]
+	[CCode (cname = "aroop_factory_list_do_full")]
 	public int visit_each(iterator_cb callback
 		, uint if_list_flag, uint if_not_list_flag, uint if_flag, uint if_not_flag
 		, aroop_hash list_hash, aroop_hash hash);
@@ -169,7 +169,7 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	public G? alloc_full(uint16 size = 0, int doubleref = 0, void*init_data = null);
 	[CCode (cname = "aroop_factory_get_by_token")]
 	public G? get(uint token);
-	[CCode (cname = "opp_factory_do_full")]
+	[CCode (cname = "aroop_factory_do_full")]
 	public int visit_each(iterator_cb do_func, uint if_flag = Replica_flags.ALL, uint if_not_flag = 0, aroop_hash hash = 0);
 	[CCode (cname = "opp_factory_lock_donot_use")]
 	public int lock_donot_use();
@@ -177,7 +177,7 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	public int unlock_donot_use();
 	[CCode (cname = "aroop_factory_iterator_get")]
 	public int iterator(aroop.Iterator<G> it, uint if_flag, uint ifnflag, aroop_hash hash);
-	[CCode (cname = "opp_factory_do_full")]
+	[CCode (cname = "aroop_factory_do_full")]
 	public int verb(iterator_cb do_func, factory_log log, void*log_data);
 }
 

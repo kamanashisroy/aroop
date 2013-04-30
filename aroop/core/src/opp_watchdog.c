@@ -20,11 +20,13 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_queue.h"
 #include "opp/opp_str2.h"
 #include "opp/opp_watchdog.h"
 //#include "core/net.h"
 #include "core/logger.h"
+#endif
 
 #ifdef HAS_WATCHDOG
 struct watchdog {

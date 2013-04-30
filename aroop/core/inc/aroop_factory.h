@@ -24,12 +24,14 @@
 #ifndef AROOP_FACTORY_H
 #define AROOP_FACTORY_H
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
 #include "opp/opp_factory.h"
 #include "opp/opp_any_obj.h"
 #include "opp/opp_io.h"
 #include "opp/opp_indexed_list.h"
 #include "opp/opp_list.h"
+#endif
 
 typedef struct opp_factory opp_factory_t;
 typedef struct opp_pool opp_pool_t;
@@ -48,7 +50,7 @@ enum {
 };
 
 // Factory
-#define aroop_alloc_full(x0,x1,x2,x3,x4) ({*(x4)=opp_alloc4(x0,x1,x2,x3);})
+#define aroop_alloc_full(x0,x1,x2,x3,x4) ({*(x4)=(typeof((*x4)))opp_alloc4(x0,x1,x2,x3);})
 #define aroop_assert_factory_creation_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4, x5) == 0);})
 #define aroop_assert_factory_creation_for_type(x0, x1, x2, x3, x4) ({\
@@ -56,7 +58,10 @@ enum {
 #define aroop_assert_factory_creation_for_type_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1);})
 #define aroop_factory_get_by_token(x,y,z) ({*z = opp_get(x,y);})
-typedef int (*aroop_iterator_cb)(void*func_data, void*data);
+//typedef int (*aroop_iterator_cb)(void*func_data, void*data);
+#define aroop_factory_do_full(x,a,ax,b,c,d) ({opp_factory_do_full(x,(obj_do_t)a,ax,b,c,d);})
+#define aroop_factory_list_do_full(x,a,ax,b,c,d,e,f,g) ({opp_factory_list_do_full(x,(obj_do_t)a,ax,b,c,d,e,f,g);})
+
 
 // searchable
 #define aroop_srcblefac_constr(x0, x1, x2, x3, x4, x5) ({\
@@ -68,6 +73,7 @@ typedef int (*aroop_iterator_cb)(void*func_data, void*data);
 #define aroop_searchable_type_system_init()
 // TODO set the hash while constructing searchable
 #define aroop_searchable_construct(x)
+#define aroop_search(a,h,cb,cbp,ret) ({(typeof((*ret)))opp_search(a, h, (obj_comp_t)cb, cbp, (void**)ret);})
 
 
 

@@ -77,7 +77,7 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 				new CCodeIdentifier(generate_block_var_name(b))
 			);
 		} else if(current_method != null && current_method.binding == MemberBinding.INSTANCE) {
-			dleg_expr = new CCodeIdentifier("this"); // will it cause security exception ?
+			dleg_expr = new CCodeIdentifier(self_instance); // will it cause security exception ?
 		} else {
 			dleg_expr = new CCodeIdentifier("NULL");
 		}

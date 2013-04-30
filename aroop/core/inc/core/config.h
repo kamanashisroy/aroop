@@ -28,15 +28,25 @@
 #define XULTB_PLATFORM_WALK(x) x
 
 #ifdef ASTERISK_CHANNEL
+#ifndef AROOP_CONCATENATED_FILE
 #include "ast_config.h"
+#endif
 #elif defined(QTGUI_LIBRARY)
+#ifndef AROOP_CONCATENATED_FILE
 #include "qt_config.h"
+#endif
 #elif defined(__EPOC32__)
+#ifndef AROOP_CONCATENATED_FILE
 #include "symb_config.h"
+#endif
 #elif defined(WIN)
+#ifndef AROOP_CONCATENATED_FILE
 #include "win_config.h"
+#endif
 #elif defined(ANDROID_XULTB)
+#ifndef AROOP_CONCATENATED_FILE
 #include "android_config.h"
+#endif
 #else // ANDROID_XULTB
 #include <unistd.h>
 #include <string.h>
@@ -57,6 +67,11 @@ typedef int32_t SYNC_SWORD32_T;
 #define SYNC_ASSERT(x) assert(x)
 #endif // ifdef ANDROID else
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/decorator.h"
+#endif
+
+#define pointer_arith_add_byte(x,y) ({((SYNC_UWORD8_T*)x)+y;})
+#define pointer_arith_sub_byte(x,y) ({((SYNC_UWORD8_T*)x)-y;})
 
 #endif //XULTB_CONFIG_H

@@ -23,7 +23,9 @@
 #ifndef SYNC_MEMORY_H
 #define SYNC_MEMORY_H
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
+#endif
 
 #ifdef __EPOC32___CLIENT
 #if 0

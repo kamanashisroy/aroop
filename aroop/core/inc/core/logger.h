@@ -23,7 +23,9 @@
 #ifndef SYNC_LOGGER_H_
 #define SYNC_LOGGER_H_
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
+#endif
 
 C_CAPSULE_START
 
@@ -46,21 +48,33 @@ C_CAPSULE_END
 #define SYNC_LOG_OPP(x)
 #else
 #ifdef ASTERISK_CHANNEL
+#ifndef AROOP_CONCATENATED_FILE
 #include "ast_logger.h"
+#endif
 #else
 #ifdef __EPOC32__
+#ifndef AROOP_CONCATENATED_FILE
 #include "symb_logger.h"
+#endif
 #else
 #ifdef  QTGUI_LIBRARY
+#ifndef AROOP_CONCATENATED_FILE
 #include "qt_logger.h"
+#endif
 #else
 #ifdef  WIN
+#ifndef AROOP_CONCATENATED_FILE
 #include "win_logger.h"
+#endif
 #else
 #ifdef ANDROID_XULTB
+#ifndef AROOP_CONCATENATED_FILE
 #include "android_logger.h"
+#endif
 #else
+#ifndef AROOP_CONCATENATED_FILE
 #include "linux_logger.h"
+#endif
 #endif // ANDROID_XULTB
 #endif // WIN
 #endif // QT

@@ -572,7 +572,7 @@ public class Vala.CCodeAttribute : AttributeCache {
 				var st = (Struct) sym;
 				if (st.is_boolean_type ()) {
 					// typedef for boolean types
-					return "bool";
+					return "aroop_bool";
 				} else if (st.is_integer_type ()) {
 					// typedef for integral types
 					return "%sint%d_t".printf (st.signed ? "" : "u", st.width);
@@ -727,7 +727,7 @@ public class Vala.CCodeAttribute : AttributeCache {
 				return CCodeBaseModule.get_ccode_ref_function (cl.base_class);
 			}
 #else
-			return "OPPREF";
+			return "aroop_object_ref";
 #endif
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
@@ -750,7 +750,7 @@ public class Vala.CCodeAttribute : AttributeCache {
 				return CCodeBaseModule.get_ccode_unref_function (cl.base_class);
 			}
 #else
-			return "OPPUNREF";
+			return "aroop_object_unref";
 #endif
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {

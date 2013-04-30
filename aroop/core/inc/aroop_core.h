@@ -24,6 +24,7 @@
 #ifndef AROOP_CORE_H_
 #define AROOP_CORE_H_
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
 #include "opp/opp_factory.h"
 #include "opp/opp_any_obj.h"
@@ -32,10 +33,11 @@
 #include "aroop_core_type_info.h"
 #include "aroop_error.h"
 #include "aroop_assignment.h"
+#endif
 
 
 typedef void aroop_none;
-typedef int bool;
+typedef int aroop_bool;
 
 #define true 1
 #define false 0
@@ -91,7 +93,8 @@ int aroop_deinit();
 		destroy_func(x); \
 	};0;})
 
-#define aroop_search(a,h,cb,cbp,ret) ({opp_search(a, h, cb, cbp, ret);})
+#define aroop_object_ref(x) ({OPPREF(x);x;})
+#define aroop_object_unref(x) ({OPPUNREF(x);x;})
 
 C_CAPSULE_END
 

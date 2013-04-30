@@ -79,8 +79,8 @@ public abstract class Vala.AroopMethodModule : AroopBlockModule {
 				push_function (function);
 
 				if(m.overrides || (m.base_interface_method != null && !m.is_abstract && !m.is_virtual)) {
-					ccode.add_declaration("%s *".printf (get_ccode_aroop_name(current_class)), new CCodeVariableDeclarator ("this"));
-					var lop = new CCodeIdentifier ("this");
+					ccode.add_declaration("%s *".printf (get_ccode_aroop_name(current_class)), new CCodeVariableDeclarator (self_instance));
+					var lop = new CCodeIdentifier (self_instance);
 					var rop = new CCodeCastExpression (new CCodeIdentifier ("base_instance"), "%s *".printf (get_ccode_aroop_name(current_class)));
 					ccode.add_assignment (lop, rop);
 				}
@@ -148,10 +148,10 @@ public abstract class Vala.AroopMethodModule : AroopBlockModule {
 				var st = m.parent_symbol as Struct;
 				if (m is CreationMethod && st != null && (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ())) {
 					var cdecl = new CCodeDeclaration (get_ccode_aroop_name (st));
-					cdecl.add_declarator (new CCodeVariableDeclarator ("this", new CCodeConstant ("0")));
+					cdecl.add_declarator (new CCodeVariableDeclarator (self_instance, new CCodeConstant ("0")));
 					ccode.add_statement (cdecl);
 
-					ccode.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("this")));
+					ccode.add_statement (new CCodeReturnStatement (new CCodeIdentifier (self_instance)));
 				}				
 				cfile.add_function (function);
 			}

@@ -21,10 +21,12 @@
  */
 
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "aroop_core.h"
 #include "core/thread.h"
 #include "opp/opp_factory.h"
 #include "opp/opp_any_obj.h"
+#endif
 
 OPP_VOLATILE_VAR SYNC_UWORD16_T core_users = 0; // TODO make it thread safe where 
 

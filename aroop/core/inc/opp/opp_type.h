@@ -23,7 +23,9 @@
 #ifndef OPP_TYPE_H_
 #define OPP_TYPE_H_
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
+#endif
 
 C_CAPSULE_START
 

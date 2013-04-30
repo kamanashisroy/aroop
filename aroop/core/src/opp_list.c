@@ -20,9 +20,11 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
 #include "opp/opp_list.h"
 #include "opp/opp_iterator.h"
+#endif
 
 C_CAPSULE_START
 

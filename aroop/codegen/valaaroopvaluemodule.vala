@@ -116,7 +116,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 				}
 
 				if (requires_destroy (f.variable_type))  {
-					var this_access = new MemberAccess.simple ("this");
+					var this_access = new MemberAccess.simple (self_instance);
 					this_access.value_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
 					set_cvalue (this_access, new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, dest));
 					var ma = new MemberAccess (this_access, f.name);
@@ -153,7 +153,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 					}
 
 					if (requires_copy (f.variable_type))  {
-						var this_access = new MemberAccess.simple ("this");
+						var this_access = new MemberAccess.simple (self_instance);
 						this_access.value_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
 						set_cvalue (this_access, new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, src));
 						var ma = new MemberAccess (this_access, f.name);
@@ -233,7 +233,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_value_copy"));
 		if (generic_type.type_parameter.parent_symbol is TypeSymbol) {
 			// generic type
-			ccall.add_argument (new CCodeMemberAccess.pointer (get_type_private_from_type ((ObjectTypeSymbol) generic_type.type_parameter.parent_symbol, new CCodeMemberAccess.pointer (new CCodeIdentifier ("this"), "type")), "%s_type".printf (generic_type.type_parameter.name.down ())));
+			ccall.add_argument (new CCodeMemberAccess.pointer (get_type_private_from_type ((ObjectTypeSymbol) generic_type.type_parameter.parent_symbol, new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), "type")), "%s_type".printf (generic_type.type_parameter.name.down ())));
 		} else {
 			// generic method
 			ccall.add_argument (new CCodeIdentifier ("%s_type".printf (generic_type.type_parameter.name.down ())));
@@ -256,7 +256,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_value_copy"));
 		if (generic_type.type_parameter.parent_symbol is TypeSymbol) {
 			// generic type
-			ccall.add_argument (new CCodeMemberAccess.pointer (get_type_private_from_type ((ObjectTypeSymbol) generic_type.type_parameter.parent_symbol, new CCodeMemberAccess.pointer (new CCodeIdentifier ("this"), "type")), "%s_type".printf (generic_type.type_parameter.name.down ())));
+			ccall.add_argument (new CCodeMemberAccess.pointer (get_type_private_from_type ((ObjectTypeSymbol) generic_type.type_parameter.parent_symbol, new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), "type")), "%s_type".printf (generic_type.type_parameter.name.down ())));
 		} else {
 			// generic method
 			ccall.add_argument (new CCodeIdentifier ("%s_type".printf (generic_type.type_parameter.name.down ())));

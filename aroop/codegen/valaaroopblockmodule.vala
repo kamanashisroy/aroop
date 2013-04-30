@@ -81,16 +81,16 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 
 		} else if ((current_method != null && current_method.binding == MemberBinding.INSTANCE) ||
 				   (current_property_accessor != null && current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
-			block_struct.add_field ("%s *".printf (get_ccode_aroop_name (current_class)), "this");
+			block_struct.add_field ("%s *".printf (get_ccode_aroop_name (current_class)), self_instance);
 
-			var ma = new MemberAccess.simple ("this");
+			var ma = new MemberAccess.simple (self_instance);
 			ma.symbol_reference = current_class;
 			free_block.add_statement (
 				new CCodeExpressionStatement (get_unref_expression (
 				new CCodeMemberAccess.pointer (
 				new CCodeIdentifier (
 					generate_block_var_name(b)
-				), "this"), new ObjectType (current_class), ma)));
+				), self_instance), new ObjectType (current_class), ma)));
 		}
 		foreach (var local in local_vars) {
 			if (local.captured) {
@@ -173,7 +173,7 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 			//var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_alloc"));
 			//alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (generate_block_name(b))));
 			//alloc_call.add_argument (new CCodeIdentifier("%spray".printf (generate_block_name(b))));
-			//vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("this"), new CCodeCastExpression (alloc_call, "%s *".printf (get_ccode_aroop_name (current_type_symbol))))));
+			//vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (get_ccode_aroop_name (current_type_symbol))))));
 			
 			var data_decl = new CCodeDeclaration (generate_block_name(b));
 			data_decl.add_declarator (new CCodeVariableDeclarator (generate_block_var_name(b)));
@@ -184,9 +184,9 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 			} else if ((current_method != null && current_method.binding == MemberBinding.INSTANCE) ||
 			           (current_property_accessor != null && current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
 				var ref_call = new CCodeFunctionCall (get_dup_func_expression (new ObjectType (current_class), b.source_reference));
-				ref_call.add_argument (new CCodeIdentifier ("this"));
+				ref_call.add_argument (new CCodeIdentifier (self_instance));
 
-				ccode.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess (get_variable_cexpression (generate_block_var_name(b)), "this"), ref_call)));
+				ccode.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess (get_variable_cexpression (generate_block_var_name(b)), self_instance), ref_call)));
 			}
 
 			if (b.parent_symbol is Method) {
@@ -316,9 +316,9 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 		if(populate_self) {
 			var cself = new CCodeMemberAccess.pointer (
 				new CCodeIdentifier (generate_block_var_name(closure_block))
-				, "this");
+				, self_instance);
 			var cdecl = new CCodeDeclaration ("%s *".printf (get_ccode_aroop_name (current_class)));
-			cdecl.add_declarator (new CCodeVariableDeclarator ("this", cself));
+			cdecl.add_declarator (new CCodeVariableDeclarator (self_instance, cself));
 
 			decl_space.add_statement (cdecl);
 		}

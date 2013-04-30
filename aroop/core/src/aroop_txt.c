@@ -20,9 +20,11 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
+#ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
 #include "opp/opp_io.h"
 #include "core/txt.h"
+#endif
 
 aroop_txt*DOT;
 aroop_txt*BLANK_STRING;
@@ -30,7 +32,7 @@ aroop_txt*ASTERISKS_STRING;
 static struct opp_factory txt_pool;
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index) {
 	if(content) {
-		aroop_txt*str = opp_alloc4(&txt_pool, 0, 0, NULL);
+		aroop_txt*str = (aroop_txt*)opp_alloc4(&txt_pool, 0, 0, NULL);
 		XULTB_ASSERT_RETURN(str, NULL);
 		str->size = str->len = len;
 		str->str = content;
@@ -38,7 +40,7 @@ aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_
 		str->proto = proto?OPPREF(proto):NULL;
 		return str;
 	} else {
-		aroop_txt*str = opp_alloc4(&txt_pool, sizeof(aroop_txt)+len+1, 0, NULL);
+		aroop_txt*str = (aroop_txt*)opp_alloc4(&txt_pool, sizeof(aroop_txt)+len+1, 0, NULL);
 		XULTB_ASSERT_RETURN(str, NULL);
 		str->str = (char*)(str+1);
 		*str->str = '\0';
@@ -52,7 +54,7 @@ aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_
 
 aroop_txt*aroop_txt_clone(const char*content, int len, int scalability_index) {
 	XULTB_ASSERT_RETURN(content && len, NULL);
-	aroop_txt*str = opp_alloc4(&txt_pool, sizeof(aroop_txt)+len+1, 0, NULL);
+	aroop_txt*str = (aroop_txt*)opp_alloc4(&txt_pool, sizeof(aroop_txt)+len+1, 0, NULL);
 	str->hash = 0;
 	XULTB_ASSERT_RETURN(str, NULL);
 	str->size = len+1;
@@ -165,7 +167,9 @@ void aroop_txt_system_init() {
 	BLANK_STRING = aroop_txt_new("", 0, NULL, 0);
 	ASTERISKS_STRING = aroop_txt_new("***********************************************", 30, NULL, 0);
 	DOT = aroop_txt_new(".", 1, NULL, 0);
+#ifndef AROOP_BASIC
 	register_printf_function ('T', print_etxt, print_etxt_arginfo);
+#endif
 }
 
 void aroop_txt_system_deinit() {

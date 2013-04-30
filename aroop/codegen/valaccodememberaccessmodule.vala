@@ -395,7 +395,7 @@ public abstract class Vala.CCodeMemberAccessModule : CCodeControlFlowModule {
 			result.value_type.value_owned = true;
 		}
 
-		if (param.name == "this") {
+		if (param.name == "self_data") {
 			if (is_in_coroutine ()) {
 				// use closure
 				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("_data_"), "self");
@@ -694,7 +694,7 @@ public abstract class Vala.CCodeMemberAccessModule : CCodeControlFlowModule {
 			// special handling for types such as va_list
 			use_temp = false;
 		}
-		if (variable is Parameter && variable.name == "this") {
+		if (variable is Parameter && variable.name == "self_data") {
 			use_temp = false;
 		}
 		if (variable.single_assignment && !result.value_type.is_real_non_null_struct_type ()) {
@@ -727,9 +727,9 @@ public abstract class Vala.CCodeMemberAccessModule : CCodeControlFlowModule {
 		return load_variable (param, get_parameter_cvalue (param));
 	}
 
-	/* Convenience method returning access to "this" */
+	/* Convenience method returning access to "self_data" */
 	public override TargetValue load_this_parameter (TypeSymbol sym) {
-		var param = new Parameter ("this", get_data_type_for_symbol (sym));
+		var param = new Parameter ("self_data", get_data_type_for_symbol (sym));
 		return load_parameter (param);
 	}
 
