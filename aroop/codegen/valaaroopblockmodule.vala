@@ -63,7 +63,8 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 	}
 		
 	private void generate_block_declaration (Block b, CCodeFile decl_space) {
-		if (add_symbol_declaration (decl_space, b, get_ccode_name (b))) {
+		// XXX multiple block is not working with add_symbol_declaration :((
+		if (add_symbol_declaration (decl_space, b, get_ccode_name (b)) && false) {
 			return;
 		}
 		var parent_block = next_closure_block (b.parent_symbol);

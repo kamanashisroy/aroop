@@ -580,8 +580,10 @@ public class Vala.CCodeAttribute : AttributeCache {
 					// typedef for floating types
 					return st.width == 64 ? "double" : "float";
 				} else {
-					return CCodeBaseModule.get_ccode_lower_case_name (sym);
+					return "aroop_st_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
 				}
+			} else if(sym is Class && !sym.external) {
+				return "aroop_cl_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
 			} else {
 				return CCodeBaseModule.get_ccode_lower_case_name (sym);
 			}

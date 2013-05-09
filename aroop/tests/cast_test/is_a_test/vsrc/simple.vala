@@ -14,9 +14,9 @@ internal class Mango : Fruit {
 class MainClass : Replicable {
 
 	public static int main() {
-		var mango = new Mango();
-		if(mango is Fruit) {
-			mango = null;
+		var mg = new Mango();
+		if(mg is Fruit) {
+			mg = null;
 		}
 		return 0;
 	}

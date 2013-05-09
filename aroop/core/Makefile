@@ -23,7 +23,8 @@ AROOP_CONCATENATED_FILE=single_file_aroop_core.c
 #./platform/linux/inc/linux_config.h \
 ./platform/linux/inc/linux_graphics.h
 
-SINGLE_FILE_HEADER_SEQUENCE=./inc/aroop_core_type_conversion.h \
+SINGLE_FILE_HEADER_SEQUENCE= \
+./inc/aroop_core_type_conversion.h \
 ./inc/core/decorator.h \
 ./platform/linux/inc/linux_logger.h \
 ./inc/core/config.h \
