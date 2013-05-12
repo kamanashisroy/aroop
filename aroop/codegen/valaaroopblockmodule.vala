@@ -42,10 +42,10 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 	void block_add_parameter(Block b, Parameter param, CCodeStruct block_struct, CCodeBlock free_block) {
 		generate_type_declaration (param.variable_type, cfile);
 		var param_type = param.variable_type.copy ();
-		param_type.value_owned = true;
+		//param_type.value_owned = true;
 		block_struct.add_field (get_ccode_aroop_name (param_type), get_variable_cname (param.name));
 
-		if (requires_destroy (param_type)) {
+		if (param.captured && requires_copy (param_type) && !param_type.value_owned && requires_destroy (param_type)) {
 			var ma = new MemberAccess.simple (param.name);
 			ma.symbol_reference = param;
 			ma.value_type = param_type.copy ();
@@ -236,7 +236,11 @@ public abstract class Vala.AroopBlockModule : AroopStructModule {
 				if (!param.captured && requires_destroy (param.variable_type) && param.direction == ParameterDirection.IN) {
 					var ma = new MemberAccess.simple (param.name);
 					ma.symbol_reference = param;
-					ccode.add_statement (new CCodeExpressionStatement (get_unref_expression (get_variable_cexpression (param.name), param.variable_type, ma)));
+					ccode.add_statement (
+						new CCodeExpressionStatement (
+							get_unref_expression (get_variable_cexpression (param.name)
+								, param.variable_type
+								, ma)));
 				}
 			}
 		}

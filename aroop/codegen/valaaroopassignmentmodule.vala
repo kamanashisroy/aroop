@@ -45,10 +45,8 @@ public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
 			var temp_decl = get_temp_variable (assignment.left.value_type);
 			emit_temp_var (temp_decl);
 			ccode.add_assignment (get_variable_cexpression (temp_decl.name), rhs);
-			if (unref_old) {
-				/* unref old value */
-				ccode.add_expression (get_unref_expression (lhs, assignment.left.value_type, assignment.left));
-			}
+			/* unref old value */
+			ccode.add_expression (get_unref_expression (lhs, assignment.left.value_type, assignment.left));
 
 			rhs = get_variable_cexpression (temp_decl.name);
 #else
