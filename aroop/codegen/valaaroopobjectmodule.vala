@@ -170,7 +170,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	CCodeFunction create_set_value_equals_function (bool decl_only = false) {
 		var result = new CCodeFunction ("aroop_type_set_value_equals");
 		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
-		result.add_parameter (new CCodeParameter ("(*function) (void *value, intptr_t value_index, void *other, intptr_t other_index)", "bool"));
+		result.add_parameter (
+			new CCodeParameter ("(*function) (void *value, intptr_t value_index, void *other, intptr_t other_index)"
+			, get_ccode_aroop_name(bool_type)));
 		if (decl_only) {
 			return result;
 		}

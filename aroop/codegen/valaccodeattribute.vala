@@ -568,7 +568,7 @@ public class Vala.CCodeAttribute : AttributeCache {
 				}
 			} else if (sym is Signal) {
 				return Symbol.camel_case_to_lower_case (sym.name);
-			} else if (sym is Struct && !sym.external) {
+			} else if (sym is Struct/* && !sym.external*/) {
 				var st = (Struct) sym;
 				if (st.is_boolean_type ()) {
 					// typedef for boolean types
@@ -582,7 +582,7 @@ public class Vala.CCodeAttribute : AttributeCache {
 				} else {
 					return "aroop_st_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
 				}
-			} else if(sym is Class && !sym.external) {
+			} else if(sym is Class/* && !sym.external*/) {
 				return "aroop_cl_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
 			} else {
 				return CCodeBaseModule.get_ccode_lower_case_name (sym);
@@ -636,6 +636,9 @@ public class Vala.CCodeAttribute : AttributeCache {
 			if (type.nullable) {
 				return "%s*".printf (cname);
 			} else {
+				if(cname == "bool") {
+					return "aroop_bool";
+				}
 				return cname;
 			}
 		} else if (node is CType) {
