@@ -580,10 +580,10 @@ public class Vala.CCodeAttribute : AttributeCache {
 					// typedef for floating types
 					return st.width == 64 ? "double" : "float";
 				} else {
-					return "aroop_st_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
+					return "aroop_st_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
 				}
 			} else if(sym is Class && !sym.external) {
-				return "aroop_cl_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
+				return "aroop_cl_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
 			} else {
 				return CCodeBaseModule.get_ccode_lower_case_name (sym);
 			}
@@ -690,12 +690,17 @@ public class Vala.CCodeAttribute : AttributeCache {
 				return "";
 			} else {
 				return "%s%s_".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), Symbol.camel_case_to_lower_case (sym.name));
+
 			}
 		} else if (sym is Method) {
 			// for lambda expressions
 			return "";
 		} else {
+#if false
 			return "%s_".printf (CCodeBaseModule.get_ccode_lower_case_name (sym));
+#else
+			return "%s_".printf(get_default_name());
+#endif			
 		}
 	}
 
