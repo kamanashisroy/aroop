@@ -740,12 +740,16 @@ public class Vala.CCodeAttribute : AttributeCache {
 			return "aroop_object_ref";
 #endif
 		} else if (sym is Interface) {
+#if false
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
 				var ref_func = CCodeBaseModule.get_ccode_ref_function ((ObjectTypeSymbol) prereq.data_type);
 				if (ref_func != null) {
 					return ref_func;
 				}
 			}
+#else
+			return "aroop_object_ref";
+#endif
 		}
 		return null;
 	}
@@ -763,12 +767,16 @@ public class Vala.CCodeAttribute : AttributeCache {
 			return "aroop_object_unref";
 #endif
 		} else if (sym is Interface) {
+#if false
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
 				string unref_func = CCodeBaseModule.get_ccode_unref_function ((ObjectTypeSymbol) prereq.data_type);
 				if (unref_func != null) {
 					return unref_func;
 				}
 			}
+#else
+			return "aroop_object_unref";
+#endif
 		}
 		return null;
 	}
