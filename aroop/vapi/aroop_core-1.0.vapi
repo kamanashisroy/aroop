@@ -367,8 +367,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 public class aroop.txt : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
 	public txt(char*content, int len = 0, aroop.txt? proto = null, int scalability_index = 0);
-	[CCode (cname = "aroop_txt_build_from_etxt")]
-	public int build_from_etxt(etxt*src);
+	[CCode (cname = "aroop_txt_memcopy_from_etxt")]
+	public int memcopy_from_etxt(etxt*src);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~txt();
 	[CCode (cname = "aroop_txt_new_static")]
