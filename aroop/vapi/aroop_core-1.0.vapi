@@ -211,6 +211,9 @@ public enum aroop.prayer {
 	DEEP_COPY,
 	SHRINK,
 	VIEW,
+	GET_SIZE,
+	IS_EQUAL,
+	SET_GENERIC_TYPES,
 	DESCRIBE,
 }
 
@@ -417,6 +420,11 @@ public class aroop.core {
 	public static Replicable memory_alloc(ulong size);
 	[CCode (cname = "aroop_memclean_raw")]
 	public static void memclean_raw(void*ptr, ulong size);
+}
+
+public class aroop.generihack<G,H> {
+	[CCode (cname = "aroop_build_generics")]
+	public static void build_generics(Replicable obj);
 }
 
 [CCode (cname = "struct rb_table", has_free_function = false)]

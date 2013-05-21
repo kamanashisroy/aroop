@@ -95,6 +95,8 @@ int aroop_deinit();
 
 #define aroop_object_ref(x) ({OPPREF(x);x;})
 #define aroop_object_unref(x) ({OPPUNREF(x);x;})
+#define aroop_build_generics(x,y,obj) ({x(obj,OPPN_ACTION_SET_GENERIC_TYPES,y,0,0);})
+
 
 C_CAPSULE_END
 
