@@ -201,11 +201,11 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 
 			var temp_var = get_temp_variable (expr.value_type);
 			emit_temp_var (temp_var);
-			if (expr.value_type is GenericType) {
-				ccall.add_argument (get_variable_cexpression (temp_var.name));
-			} else {
+			//if (expr.value_type is GenericType) {
+				//ccall.add_argument (get_variable_cexpression (temp_var.name));
+			//} else {
 				ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_variable_cexpression (temp_var.name)));
-			}
+			//}
 
 			// call function
 			ccomma.append_expression (ccall_expr);

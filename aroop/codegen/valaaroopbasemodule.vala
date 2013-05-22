@@ -1002,6 +1002,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			// pointer temp variables
 			// used to avoid side-effects in assignments
 		} else if (local.variable_type is GenericType) {
+#if false
 			var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
 			value_size.add_argument (get_type_id_expression (local.variable_type));
 
@@ -1015,6 +1016,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 			vardecl.initializer = memset_call;
 			vardecl.init0 = true;
+#else
+			vardecl.initializer = new CCodeConstant("NULL");
+			vardecl.init0 = true;
+#endif
 		} else if (!local.variable_type.nullable &&
 		           (st != null && st.get_fields ().size > 0) ||
 		           array_type != null) {
@@ -1112,13 +1117,16 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public override void visit_return_statement (ReturnStatement stmt) {
 		// free local variables
 		append_local_free (current_symbol);
-		var holder = new CCodeIdentifier ("result");
+		CCodeExpression holder = new CCodeIdentifier ("result");
 
 		var rexpr = stmt.return_expression;
 		if(rexpr != null) {
+			if(current_return_type is GenericType) {
+				holder = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, new CCodeIdentifier ("result"));
+			}
 			ccode.add_assignment (holder, get_cvalue(rexpr));
 		}
-		ccode.add_return ((current_return_type is VoidType) ? null : holder);
+		ccode.add_return ((current_return_type is VoidType || current_return_type is GenericType) ? null : holder);
 	}
 
 	public override void visit_delete_statement (DeleteStatement stmt) {

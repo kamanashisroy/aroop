@@ -370,6 +370,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 public class aroop.txt : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
 	public txt(char*content, int len = 0, aroop.txt? proto = null, int scalability_index = 0);
+	[CCode (cname = "aroop_txt_clone")]
+	public txt.memcopy(char*content, int len = 0, int scalability_index = 0);
 	[CCode (cname = "aroop_txt_memcopy_from_etxt")]
 	public int memcopy_from_etxt(etxt*src);
 	//[CCode (cname = "aroop_txt_destroy")]
@@ -396,6 +398,8 @@ public class aroop.txt : aroop.Replicable {
 	public bool equals_string(string other);
 	[CCode (cname = "aroop_txt_equals")]
 	public bool equals(aroop.txt other);
+	[CCode (cname = "aroop_txt_char_at")]
+	public char char_at(uint index);
 }
 
 [Compact]

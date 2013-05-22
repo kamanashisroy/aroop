@@ -935,9 +935,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			func.return_type = get_ccode_aroop_name (((Class) m.parent_symbol)) + "*";
 		} else {
 			if (m.return_type is GenericType) {
-				func.add_parameter (new CCodeParameter ("result", "void *"));
+				func.add_parameter (new CCodeParameter ("result", "void **"));
 				if (vdeclarator != null) {
-					vdeclarator.add_parameter (new CCodeParameter ("result", "void *"));
+					vdeclarator.add_parameter (new CCodeParameter ("result", "void **"));
 				}
 			} else {
 				var st = m.parent_symbol as Struct;
