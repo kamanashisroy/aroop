@@ -21,7 +21,7 @@ typedef struct _aroop_wrong aroop_wrong;
 
 #define aroop_throw_exception(x) ({*_err = x;})
 
-#define aroop_free_error(x) ({x=NULL;})
+#define aroop_free_error(unused1,unused2,x) ({x=NULL;})
 
 C_CAPSULE_END
 

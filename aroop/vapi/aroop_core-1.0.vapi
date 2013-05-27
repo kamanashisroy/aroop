@@ -214,6 +214,8 @@ public enum aroop.prayer {
 	GET_SIZE,
 	IS_EQUAL,
 	SET_GENERIC_TYPES,
+	REF,
+	UNREF,
 	DESCRIBE,
 }
 
@@ -429,6 +431,8 @@ public class aroop.core {
 public class aroop.generihack<G,H> {
 	[CCode (cname = "aroop_build_generics")]
 	public static void build_generics(Replicable obj);
+	[CCode (cname = "aroop_easy_swap2")]
+	public static void swap(G a, G b);
 }
 
 [CCode (cname = "struct rb_table", has_free_function = false)]

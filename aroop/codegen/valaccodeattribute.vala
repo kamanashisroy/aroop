@@ -728,7 +728,9 @@ public class Vala.CCodeAttribute : AttributeCache {
 	}
 
 	private string? get_default_ref_function () {
-		if (sym is Class) {
+		if (sym is GenericType) {
+			return "aroop_generic_object_ref";
+		} else if (sym is Class) {
 #if false
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
@@ -755,7 +757,9 @@ public class Vala.CCodeAttribute : AttributeCache {
 	}
 
 	private string? get_default_unref_function () {
-		if (sym is Class) {
+		if (sym is GenericType) {
+			return "aroop_generic_object_unref";
+		} else if (sym is Class) {
 #if false			
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {

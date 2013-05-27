@@ -681,6 +681,17 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public abstract void initialize_local_variable_in_block(LocalVariable local, CCodeExpression rhs, CCodeFunction decl_space);
 
+	bool has_simple_struct_initializer (LocalVariable local) {
+		var st = local.variable_type.data_type as Struct;
+		var initializer = local.initializer as ObjectCreationExpression;
+		if (st != null && (!st.is_simple_type () || get_ccode_name (st) == "va_list") && !local.variable_type.nullable &&
+		    initializer != null && initializer.get_object_initializer ().size == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public override void visit_local_variable (LocalVariable local) {
 		if (local.initializer != null) {
 			local.initializer.emit (this);
@@ -700,7 +711,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				initialize_local_variable_in_block(local, rhs, ccode);
 			}
 		} else {
-			var cvar = new CCodeVariableDeclarator (get_variable_cname (local.name), rhs, get_ccode_declarator_suffix (local.variable_type), generate_declarator_suffix_cexpr(local.variable_type));
+			var cvar = new CCodeVariableDeclarator (get_variable_cname (local.name), has_simple_struct_initializer (local)?rhs:null, get_ccode_declarator_suffix (local.variable_type), generate_declarator_suffix_cexpr(local.variable_type));
 
 			var cdecl = new CCodeDeclaration (get_ccode_aroop_name (local.variable_type));
 			cdecl.add_declarator (cvar);
@@ -714,6 +725,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			}
 		}
 
+		if (rhs != null) {
+			if (!has_simple_struct_initializer (local)) {
+				store_local (local, local.initializer.target_value, true);
+			}
+		}
 		if (local.initializer != null && local.initializer.tree_can_fail) {
 			add_simple_check (local.initializer);
 		}
@@ -860,7 +876,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public CCodeExpression? get_destroy_func_expression (DataType type, bool is_chainup = false) {
-		if (type.data_type != null) {
+		if (type is GenericType || type.type_parameter is GenericType) {
+			return new CCodeIdentifier ("aroop_generic_object_unref");
+		} else if (type.data_type != null) {
 			string unref_function;
 			if (type is ReferenceType) {
 				if (is_reference_counting (type.data_type)) {
@@ -880,7 +898,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				}
 			}
 			if (unref_function == null) {
-				return new CCodeConstant ("NULL");
+				return new CCodeConstant ("aroop_no_unref");
 			}
 			return new CCodeIdentifier (unref_function);
 		} else if (type.type_parameter != null && current_type_symbol is Class) {
@@ -917,6 +935,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			return ccall;
 		}
 
+#if false
 		/* (foo == NULL ? NULL : foo = (unref (foo), NULL)) */
 
 		/* can be simplified to
@@ -934,9 +953,19 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			var cunrefisnull = new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, get_destroy_func_expression (type), new CCodeConstant ("NULL"));
 			cisnull = new CCodeBinaryExpression (CCodeBinaryOperator.OR, cisnull, cunrefisnull);
 		}
-
+#else
+		ccall.add_argument (new CCodeIdentifier(get_ccode_aroop_name(type)));
+		if(type is ClassType) {
+			ccall.add_argument (new CCodeConstant("NULL"));
+		} else if(type is GenericType) {
+			ccall.add_argument(new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname()));
+		} else {
+			ccall.add_argument (new CCodeConstant("NULL"));
+		}
+#endif
 		ccall.add_argument (cvar);
 		
+#if false
 		/* set freed references to NULL to prevent further use */
 		var ccomma = new CCodeCommaExpression ();
 
@@ -947,6 +976,15 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		var cassign = new CCodeAssignment (cvar, castexpr);
 
 		return new CCodeConditionalExpression (cisnull, new CCodeConstant ("NULL"), cassign);
+#else
+#if false
+		var castexpr = new CCodeCastExpression (ccall, get_ccode_aroop_name (type));
+		var cassign = new CCodeAssignment (cvar, castexpr);
+		return cassign;
+#else
+		return new CCodeAssignment (cvar, ccall);
+#endif
+#endif
 	}
 
 	public override void visit_end_full_expression (Expression expr) {
@@ -1116,7 +1154,6 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public override void visit_return_statement (ReturnStatement stmt) {
 		// free local variables
-		append_local_free (current_symbol);
 		CCodeExpression holder = new CCodeIdentifier ("result");
 
 		var rexpr = stmt.return_expression;
@@ -1126,6 +1163,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			}
 			ccode.add_assignment (holder, get_cvalue(rexpr));
 		}
+		append_local_free (current_symbol);
 		ccode.add_return ((current_return_type is VoidType || current_return_type is GenericType) ? null : holder);
 	}
 

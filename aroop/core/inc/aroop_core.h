@@ -82,8 +82,8 @@ int aroop_deinit();
 #define aroop_mem_copy(x,y,z) ({memcpy(x,y,z);})
 #define aroop_mem_shift(x,y) ({((char*)x+y);})
 #define aroop_queue_init(x,y,z) ({opp_queue_init2(x,z);})
+#define aroop_easy_swap2(unused1,unused2,a,b) ({aroop_none*__x = b;b=a,a=__x;})
 
-//#define aroop_unref(x) ({OPPUNREF(x);NULL;})
 #define any_is_a(x,y) 1
 
 #define aroop_struct_cpy_or_destroy(x,y,destroy_func) ({\
@@ -94,8 +94,12 @@ int aroop_deinit();
 	};0;})
 
 #define aroop_object_ref(x) ({OPPREF(x);x;})
-#define aroop_object_unref(x) ({OPPUNREF(x);x;})
+#define aroop_generic_object_ref(x) ({OPPREF(x);x;})
+#define aroop_object_unref(targ,gt_unused,x) ({OPPUNREF(x);(targ)x;})
+#define aroop_generic_object_unref(targ,gt,obj) ({gt(&obj, OPPN_ACTION_UNREF, NULL,0,0);obj;})
+#define aroop_no_unref(targ,gt_unused,x)
 #define aroop_build_generics(x,y,obj) ({x(obj,OPPN_ACTION_SET_GENERIC_TYPES,y,0,0);})
+
 
 
 C_CAPSULE_END

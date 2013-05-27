@@ -168,92 +168,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return false;
 	}
 
-	CCodeFunction create_set_value_equals_function (bool decl_only = false) {
-		var result = new CCodeFunction ("aroop_type_set_value_equals");
-		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
-		result.add_parameter (
-			new CCodeParameter ("(*function) (void *value, intptr_t value_index, void *other, intptr_t other_index)"
-			, get_ccode_aroop_name(bool_type)));
-		if (decl_only) {
-			return result;
-		}
-
-		result.block = new CCodeBlock ();
-
-		var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("DOVA_TYPE_GET_PRIVATE"));
-		priv_call.add_argument (new CCodeIdentifier ("type"));
-
-		result.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, "value_equals"), new CCodeIdentifier ("function"))));
-		return result;
-	}
-
-	public void declare_set_value_equals_function (CCodeFile decl_space) {
-		if (add_symbol_declaration (decl_space, type_class, "aroop_type_set_value_equals")) {
-			return;
-		}
-		decl_space.add_function_declaration (create_set_value_equals_function (true));
-	}
-
-	CCodeFunction create_set_value_hash_function (bool decl_only = false) {
-		var result = new CCodeFunction ("aroop_type_set_value_hash");
-		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
-		result.add_parameter (new CCodeParameter ("(*function) (void *value, intptr_t value_index)", "uintptr_t"));
-		if (decl_only) {
-			return result;
-		}
-
-		result.block = new CCodeBlock ();
-
-		var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("DOVA_TYPE_GET_PRIVATE"));
-		priv_call.add_argument (new CCodeIdentifier ("type"));
-
-		result.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, "value_hash"), new CCodeIdentifier ("function"))));
-		return result;
-	}
-
-#if false
-	public void declare_set_value_hash_function (CCodeFile decl_space) {
-		if (add_symbol_declaration (decl_space, type_class, "aroop_type_set_value_hash")) {
-			return;
-		}
-		decl_space.add_function_declaration (create_set_value_hash_function (true));
-	}
-#endif
-
-	CCodeFunction create_set_value_to_any_function (bool decl_only = false) {
-		var result = new CCodeFunction ("aroop_type_set_value_to_any");
-		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
-		result.add_parameter (new CCodeParameter ("(*function) (void *value, intptr_t value_index)", "AroopObject *"));
-		if (decl_only) {
-			return result;
-		}
-
-		result.block = new CCodeBlock ();
-
-		var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("DOVA_TYPE_GET_PRIVATE"));
-		priv_call.add_argument (new CCodeIdentifier ("type"));
-
-		result.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, "value_to_any"), new CCodeIdentifier ("function"))));
-		return result;
-	}
-
-	CCodeFunction create_set_value_from_any_function (bool decl_only = false) {
-		var result = new CCodeFunction ("aroop_type_set_value_from_any");
-		result.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
-		result.add_parameter (new CCodeParameter ("(*function) (AroopObject *any, void *value, intptr_t value_index)", "void"));
-		if (decl_only) {
-			return result;
-		}
-
-		result.block = new CCodeBlock ();
-
-		var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("DOVA_TYPE_GET_PRIVATE"));
-		priv_call.add_argument (new CCodeIdentifier ("type"));
-
-		result.block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, "value_from_any"), new CCodeIdentifier ("function"))));
-		return result;
-	}
-	
 	private void generate_vtable(Class cl, CCodeFile decl_space) {
 		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl)));
 		foreach (Method m in cl.get_methods ()) {
@@ -491,6 +405,18 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		}
 		switch_stat.add_statement (new CCodeBreakStatement());
 
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_REF")));
+		var ref_case = new CCodeFunctionCall (new CCodeIdentifier("OPPREF"));
+		ref_case.add_argument(obj_arg_var);
+		switch_stat.add_statement (new CCodeExpressionStatement (ref_case));
+		switch_stat.add_statement (new CCodeBreakStatement());
+
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_UNREF")));
+		var unref_case = new CCodeFunctionCall (new CCodeIdentifier("OPPUNREF2"));
+		unref_case.add_argument(obj_arg_var);
+		switch_stat.add_statement (new CCodeExpressionStatement (unref_case));
+		switch_stat.add_statement (new CCodeBreakStatement());
+
 		vblock.add_statement (switch_stat);
 		vblock.add_statement (new CCodeReturnStatement(new CCodeConstant ("0")));
 
@@ -722,10 +648,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 			decl_space.add_function_declaration (function);
 		}
-	}
-
-	CCodeExpression get_type_from_instance (CCodeExpression instance_expression) {
-		return new CCodeMemberAccess.pointer (new CCodeCastExpression (instance_expression, "AroopObject *"), "type");
 	}
 
 	public override void visit_creation_method (CreationMethod m) {

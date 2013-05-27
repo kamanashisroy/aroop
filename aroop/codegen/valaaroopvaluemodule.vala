@@ -41,37 +41,6 @@ public class Vala.AroopValueModule : AroopObjectModule {
 
 		generate_class_declaration (type_class, decl_space);
 
-#if false
-		var type_fun = new CCodeFunction ("%s_type_get".printf (get_ccode_lower_case_name (st)), get_aroop_type_cname());
-		if (st.is_internal_symbol ()) {
-			type_fun.modifiers = CCodeModifiers.STATIC;
-		}
-		decl_space.add_function_declaration (type_fun);
-#endif
-
-#if false
-		var type_init_fun = new CCodeFunction ("%s_type_init".printf (get_ccode_lower_case_name (st)));
-		type_init_fun.add_parameter (new CCodeParameter ("type", get_aroop_type_cname()));
-		if (st.is_internal_symbol ()) {
-			type_init_fun.modifiers = CCodeModifiers.STATIC;
-		}
-		decl_space.add_function_declaration (type_init_fun);
-#endif
-
-#if false
-		var function = new CCodeFunction (get_ccode_copy_function (st), "void");
-		if (st.is_internal_symbol ()) {
-			function.modifiers = CCodeModifiers.STATIC;
-		}
-
-		function.add_parameter (new CCodeParameter ("dest", get_ccode_name (st) + "*"));
-		function.add_parameter (new CCodeParameter ("dest_index", "intptr_t"));
-		function.add_parameter (new CCodeParameter ("src", get_ccode_name (st) + "*"));
-		function.add_parameter (new CCodeParameter ("src_index", "intptr_t"));
-
-		decl_space.add_function_declaration (function);
-#endif
-
 		var func_macro = new CCodeMacroReplacement("%s(dst,dst_index,src,src_index)".printf(get_ccode_copy_function(st)), "({aroop_struct_cpy_or_destroy(dst,src,%s);})".printf(CCodeBaseModule.get_ccode_destroy_function(st)));
 		decl_space.add_type_declaration (func_macro);
 
@@ -174,80 +143,12 @@ public class Vala.AroopValueModule : AroopObjectModule {
 	}
 
 	public override void visit_assignment (Assignment assignment) {
-		//var generic_type = assignment.left.value_type as GenericType;
-		//if (generic_type == null) {
-#if false
-			// We are doing this for experimental purpose .. ..
-			var locate_myself = new CCodeFunctionCall(new CCodeIdentifier ("aroop_locate_myself"));
-			set_cvalue (assignment, locate_myself);
-#else
-			base.visit_assignment (assignment);
-#endif
-			return;
-		//}
-#if 0
-		var dest = assignment.left;
-		CCodeExpression cdest;
-		CCodeExpression dest_index = new CCodeConstant ("0");
-		var src = assignment.right;
-		CCodeExpression csrc;
-		CCodeExpression src_index = new CCodeConstant ("0");
-
-		if (src is NullLiteral) {
-			// TODO destroy dest
-			set_cvalue (assignment, new CCodeConstant ("0"));
-			return;
-		}
-
-		var dest_ea = dest as ElementAccess;
-		var src_ea = src as ElementAccess;
-
-		if (dest_ea != null) {
-			dest = dest_ea.container;
-
-			var array_type = dest.value_type as ArrayType;
-			if (array_type != null && !array_type.inline_allocated) {
-				cdest = new CCodeMemberAccess ((CCodeExpression) get_ccodenode (dest), "data");
-			} else {
-				cdest = (CCodeExpression) get_ccodenode (dest);
-			}
-			dest_index = (CCodeExpression) get_ccodenode (dest_ea.get_indices ().get (0));
-		} else {
-			cdest = (CCodeExpression) get_ccodenode (dest);
-		}
-
-		if (src_ea != null) {
-			src = src_ea.container;
-
-			var array_type = src.value_type as ArrayType;
-			if (array_type != null && !array_type.inline_allocated) {
-				csrc = new CCodeMemberAccess ((CCodeExpression) get_ccodenode (src), "data");
-			} else {
-				csrc = (CCodeExpression) get_ccodenode (src);
-			}
-			src_index = (CCodeExpression) get_ccodenode (src_ea.get_indices ().get (0));
-		} else {
-			csrc = (CCodeExpression) get_ccodenode (src);
-		}
-
-		var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_value_copy"));
-		if (generic_type.type_parameter.parent_symbol is TypeSymbol) {
-			// generic type
-			ccall.add_argument (new CCodeMemberAccess.pointer (get_type_private_from_type ((ObjectTypeSymbol) generic_type.type_parameter.parent_symbol, new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), "type")), "%s_type".printf (generic_type.type_parameter.name.down ())));
-		} else {
-			// generic method
-			ccall.add_argument (new CCodeIdentifier ("%s_type".printf (generic_type.type_parameter.name.down ())));
-		}
-		ccall.add_argument (cdest);
-		ccall.add_argument (dest_index);
-		ccall.add_argument (csrc);
-		ccall.add_argument (src_index);
-		set_cvalue (assignment, ccall);
-#endif	
+		base.visit_assignment (assignment);
+		return;
 	}
 
 	public override void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {
-		var generic_type = lvalue.value_type as GenericType;
+		var generic_type = (lvalue.value_type as GenericType);
 		if (generic_type == null) {
 			base.store_variable (variable, lvalue, value, initializer);
 			return;
@@ -256,7 +157,7 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_value_copy"));
 		if (generic_type.type_parameter.parent_symbol is TypeSymbol) {
 			// generic type
-			ccall.add_argument (new CCodeMemberAccess.pointer (get_type_private_from_type ((ObjectTypeSymbol) generic_type.type_parameter.parent_symbol, new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), "type")), "%s_type".printf (generic_type.type_parameter.name.down ())));
+			ccall.add_argument (new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname()));
 		} else {
 			// generic method
 			ccall.add_argument (new CCodeIdentifier ("%s_type".printf (generic_type.type_parameter.name.down ())));
