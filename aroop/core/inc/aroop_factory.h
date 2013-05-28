@@ -85,6 +85,7 @@ enum {
 // Set
 #define aroop_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3);})
 #define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL;})
+#define aroop_searchable_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED);})
 
 #define aroop_factory_cpy_or_destroy(x,nouse,y,nouse2) ({\
 	if((x) && (y)){ \

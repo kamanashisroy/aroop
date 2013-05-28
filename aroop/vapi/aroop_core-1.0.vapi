@@ -114,8 +114,10 @@ public struct aroop.Set<G> : aroop.CountableSet {
 	public int iterator_hacked(aroop.Iterator<container<G>>*it, uint if_flag, uint ifnflag, aroop_hash hash);
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.SearchableSet<G> : aroop.Set<G> {
+	[CCode (cname = "aroop_searchable_list_create")]
+	public SearchableSet(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	/*! \brief Searches set for any entry.
 	 *
 	 * @param [in] compare_func  A function reference that returns 0 on match.

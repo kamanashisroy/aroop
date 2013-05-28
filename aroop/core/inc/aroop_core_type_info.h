@@ -15,3 +15,5 @@ typedef opp_callback_t aroop_type_desc;
 
 #define aroop_type_value_equals(tx,x,unused1,y,unused2) ({tx(x, OPPN_ACTION_IS_EQUAL, y, 0, 0);})
 #define aroop_type_get_value_size(tx) ({tx(NULL, OPPN_ACTION_GET_SIZE, NULL, 0, 0);})
+
+#define aroop_generic_type_init_val(tx) NULL

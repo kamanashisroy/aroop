@@ -1040,24 +1040,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			// pointer temp variables
 			// used to avoid side-effects in assignments
 		} else if (local.variable_type is GenericType) {
-#if false
-			var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
-			value_size.add_argument (get_type_id_expression (local.variable_type));
+			var gen_init = new CCodeFunctionCall (new CCodeIdentifier ("aroop_generic_type_init_val"));
+			gen_init.add_argument (get_type_id_expression (local.variable_type));
 
-			var alloca_call = new CCodeFunctionCall (new CCodeIdentifier ("alloca"));
-			alloca_call.add_argument (value_size);
-
-			var memset_call = new CCodeFunctionCall (new CCodeIdentifier ("memset"));
-			memset_call.add_argument (alloca_call);
-			memset_call.add_argument (new CCodeConstant ("0"));
-			memset_call.add_argument (value_size);
-
-			vardecl.initializer = memset_call;
+			vardecl.initializer = gen_init;
 			vardecl.init0 = true;
-#else
-			vardecl.initializer = new CCodeConstant("NULL");
-			vardecl.init0 = true;
-#endif
 		} else if (!local.variable_type.nullable &&
 		           (st != null && st.get_fields ().size > 0) ||
 		           array_type != null) {
@@ -2101,18 +2088,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		var st = type.data_type as Struct;
 		var array_type = type as ArrayType;
 		if (type is GenericType) {
-			var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
-			value_size.add_argument (get_type_id_expression (type));
-
-			var alloca_call = new CCodeFunctionCall (new CCodeIdentifier ("alloca"));
-			alloca_call.add_argument (value_size);
-
-			var memset_call = new CCodeFunctionCall (new CCodeIdentifier ("memset"));
-			memset_call.add_argument (alloca_call);
-			memset_call.add_argument (new CCodeConstant ("0"));
-			memset_call.add_argument (value_size);
-
-			return memset_call;
+			var gen_init = new CCodeFunctionCall (new CCodeIdentifier ("aroop_generic_type_init_val"));
+			gen_init.add_argument (get_type_id_expression (type));
+			return gen_init;
 		} else if (initializer_expression && !type.nullable &&
 		    ((st != null && st.get_fields ().size > 0) ||
 		     array_type != null)) {
