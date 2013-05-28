@@ -300,6 +300,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public etxt.from_txt(aroop.txt proto);
 	[CCode (cname = "aroop_txt_embeded_reuse_embeded")]
 	public etxt.from_etxt(aroop.etxt*proto);
+	[CCode (cname = "aroop_txt_embeded_share_embeded")]
+	public etxt.share_etxt(aroop.etxt*proto);
 	[CCode (cname = "aroop_memclean_raw2")]
 	public etxt.EMPTY();
 	[CCode (cname = "aroop_txt_embeded_dup_embeded")]
@@ -312,6 +314,10 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public bool buffer(int size);
 	[CCode (cname = "aroop_txt_embeded_stackbuffer")]
 	public etxt.stack(int size);
+	[CCode (cname = "aroop_txt_embeded_stackbuffer_from_txt")]
+	public etxt.stack_from_txt(aroop.txt proto);
+	[CCode (cname = "aroop_txt_embeded_stackbuffer_from_txt")]
+	public etxt.stack_from_etxt(aroop.etxt*proto);
 	[CCode (cname = "aroop_txt_embeded_with_length")]
 	public void set_string_full(string content, int len, Replicable?proto=null);
 	[CCode (cname = "aroop_txt_size")]
