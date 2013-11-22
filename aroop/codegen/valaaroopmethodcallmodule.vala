@@ -170,7 +170,7 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 						cexpr = new CCodeCastExpression (cexpr, CCodeBaseModule.get_ccode_type (param));
 					}
 				}
-				if(arg.value_type is MethodType && param.variable_type is DelegateType) {					
+				if(/*arg.value_type is MethodType &&*/ param.variable_type is DelegateType) {					
 					CCodeExpression?dleg_expr = generate_delegate_closure_argument(arg);
 					if(dleg_expr != null) {
 						ccall.add_argument (cexpr);

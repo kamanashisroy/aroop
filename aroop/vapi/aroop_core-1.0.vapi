@@ -96,6 +96,9 @@ public class aroop.container<G> : Hashable {
 [CCode (cname = "obj_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.iterator_cb(Replicable data);
 
+[CCode (cname = "obj_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
+public delegate int aroop.container_iterator_cb<G>(container<G> data);
+
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Set<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_list_create")]
@@ -104,6 +107,10 @@ public struct aroop.Set<G> : aroop.CountableSet {
 	//public int create(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_list_add")]
 	public bool add(G item);
+	[CCode (cname = "aroop_list_add_container")]
+	public container<G> add_container(G item, aroop_hash hash = 0, uint flag = 0);
+	//[CCode (cname = "aroop_list_remove")]
+	//public void remove(G item);
 	[CCode (cname = "aroop_factory_do_full")]
 	public int visit_each_hacked(iterator_cb do_func, uint if_flag, uint if_not_flag, aroop_hash hash);
 	[CCode (cname = "aroop_factory_list_do_full")]
@@ -122,8 +129,10 @@ public struct aroop.SearchableSet<G> : aroop.Set<G> {
 	 *
 	 * @param [in] compare_func  A function reference that returns 0 on match.
 	 */
-	[CCode (cname = "aroop_search")]
-	public container<G>? search(aroop_hash hash, iterator_cb compare_func);
+	[CCode (cname = "aroop_searchable_list_prune")]
+	public void prune(aroop_hash hash, G item);
+	[CCode (cname = "aroop_search_no_ret_arg")]
+	public container<G>? search(aroop_hash hash, container_iterator_cb<G> compare_func);
 }
 
 [CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_copy_function=false, copy_function="aroop_memcpy_strt2", has_destroy_function=true, destroy_function="opp_queue_deinit")]
@@ -424,6 +433,8 @@ public class aroop.mem {
 public class aroop.core {
 	[CCode (cname = "aroop_assert")]
 	public static void assert(bool value);
+	[CCode (cname = "aroop_assert")]
+	public static void die(string x);
 	[CCode (cname = "aroop_assert_no_error", cheader_filename="errno.h")]
 	public static void assert_no_error();
 	[CCode (cname = "aroop_init")]

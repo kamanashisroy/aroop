@@ -74,7 +74,7 @@ enum {
 // TODO set the hash while constructing searchable
 #define aroop_cl_aroop_aroop_searchable_construct(x)
 #define aroop_search(a,h,cb,cbp,ret) ({(typeof((*ret)))opp_search(a, h, (obj_comp_t)cb, cbp, (void**)ret);})
-
+#define aroop_search_no_ret_arg(a,h,cb,cbp) ({opp_search(a, h, (obj_comp_t)cb, cbp, NULL);})
 
 
 // ArrayList
@@ -85,6 +85,8 @@ enum {
 // Set
 #define aroop_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3);})
 #define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL;})
+#define aroop_list_add_container(x,y,hash,flag) ({void*__mem = NULL;if((__mem = opp_alloc4(x,0,0,y)) != NULL){if(flag)opp_set_flag(__mem, flag);if(hash)opp_set_hash(__mem,hash);};__mem;})
+#define aroop_searchable_list_prune(ls,h,x) ({opp_list_search_and_prune(ls, h, x);})
 #define aroop_searchable_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED);})
 
 #define aroop_factory_cpy_or_destroy(x,nouse,y,nouse2) ({\

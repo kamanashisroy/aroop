@@ -58,29 +58,35 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 	
 	protected override CCodeExpression? generate_delegate_closure_argument(Expression arg) {
 		CCodeExpression?dleg_expr = null;
-		Method? m22 = null;
-		var ma22 = arg as MemberAccess;
-		if(ma22 != null) {
-			m22 = ((MethodType) arg.value_type).method_symbol;
-			if (m22 != null && m22.binding == MemberBinding.INSTANCE) {
-				var instance22 = get_cvalue (ma22.inner);
-				var st22 = m22.parent_symbol as Struct;
-				if (st22 != null && !st22.is_simple_type ()) {
-					instance22 = generate_instance_cargument_for_struct(ma22, m22, instance22);
-				}
-				dleg_expr = instance22;
+		do {
+			var cast_expr = arg as CastExpression;
+			if(cast_expr != null) {
+				return generate_delegate_closure_argument(cast_expr.inner);
 			}
-		} else if(current_closure_block != null) {
-			Block b = current_closure_block;
-			dleg_expr = new CCodeUnaryExpression (
-				CCodeUnaryOperator.ADDRESS_OF, 
-				new CCodeIdentifier(generate_block_var_name(b))
-			);
-		} else if(current_method != null && current_method.binding == MemberBinding.INSTANCE) {
-			dleg_expr = new CCodeIdentifier(self_instance); // will it cause security exception ?
-		} else {
-			dleg_expr = new CCodeIdentifier("NULL");
-		}
+			Method? m22 = null;
+			var ma22 = arg as MemberAccess;
+			if(ma22 != null) {
+				m22 = ((MethodType) arg.value_type).method_symbol;
+				if (m22 != null && m22.binding == MemberBinding.INSTANCE) {
+					var instance22 = get_cvalue (ma22.inner);
+					var st22 = m22.parent_symbol as Struct;
+					if (st22 != null && !st22.is_simple_type ()) {
+						instance22 = generate_instance_cargument_for_struct(ma22, m22, instance22);
+					}
+					dleg_expr = instance22;
+				}
+			} else if(current_closure_block != null) {
+				Block b = current_closure_block;
+				dleg_expr = new CCodeUnaryExpression (
+					CCodeUnaryOperator.ADDRESS_OF, 
+					new CCodeIdentifier(generate_block_var_name(b))
+				);
+			} else if(current_method != null && current_method.binding == MemberBinding.INSTANCE) {
+				dleg_expr = new CCodeIdentifier(self_instance); // will it cause security exception ?
+			} else {
+				dleg_expr = new CCodeIdentifier("NULL");
+			}
+		} while(false);
 		return dleg_expr;
 	}
 

@@ -41,6 +41,7 @@ struct opp_list_item*opp_list_add_noref(struct opp_factory*olist, void*obj_data)
 int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_not_flag, int hash);
 int opp_list_create2(struct opp_factory*olist, int pool_size, unsigned int flag);
 int opp_list_find_from_factory(struct opp_factory*obuff, struct opp_factory*olist, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data);
+int opp_list_search_and_prune(struct opp_factory*obuff, opp_hash_t hash, const void*target);
 
 C_CAPSULE_END
 
