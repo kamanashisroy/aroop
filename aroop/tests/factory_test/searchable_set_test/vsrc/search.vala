@@ -40,7 +40,6 @@ internal class Orchard : Replicable {
 		for(i=10;i != 0;i--) {
 			Mango x = tree.alloc_full(4, 0, null);
 			core.assert(x != null);
-      //x.pin();
 			x.build(i);
 			buscket.add_container(x, i);
 		}

@@ -318,7 +318,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	
 	private void add_pray_function (Class cl) {
 		var function = new CCodeFunction ("%spray".printf (get_ccode_lower_case_prefix (cl)), "int");
-		function.modifiers = CCodeModifiers.STATIC;
+		if(cl.is_internal_symbol()) {
+			function.modifiers = CCodeModifiers.STATIC;
+		}
 
 		function.add_parameter (new CCodeParameter ("data", "void*"));
 		function.add_parameter (new CCodeParameter ("callback", "int"));

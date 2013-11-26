@@ -65,16 +65,20 @@ public struct aroop.CountableSet {
 	public int destroy();
 }
 
-[CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, has_destroy_function=true, destroy_function="opp_iterator_destroy")]
+[CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, copy_function="aroop_iterator_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_iterator_destroy")]
 public struct aroop.Iterator<G> {
 	[CCode (cname = "aroop_memclean_raw2")]
 	public Iterator.EMPTY();
-	[CCode (cname = "opp_iterator_create")]
-	public Iterator(aroop.Factory fac, uint if_flag, uint ifnflag, aroop_hash hash);
+	[CCode (cname = "aroop_iterator_create")]
+	public Iterator(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag, aroop_hash hash);
 	[CCode (cname = "aroop_iterator_next")]
 	public bool next ();
 	[CCode (cname = "aroop_iterator_get")]
 	public G? get ();
+	[CCode (cname = "aroop_iterator_get_unowned")]
+	public unowned G? get_unowned ();
+	[CCode (cname = "opp_iterator_destroy")]
+	public void destroy();
 }
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
@@ -132,7 +136,7 @@ public struct aroop.SearchableSet<G> : aroop.Set<G> {
 	[CCode (cname = "aroop_searchable_list_prune")]
 	public void prune(aroop_hash hash, G item);
 	[CCode (cname = "aroop_search_no_ret_arg")]
-	public container<G>? search(aroop_hash hash, container_iterator_cb<G> compare_func);
+	public container<G>? search(aroop_hash hash, container_iterator_cb<G>? compare_func);
 }
 
 [CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_copy_function=false, copy_function="aroop_memcpy_strt2", has_destroy_function=true, destroy_function="opp_queue_deinit")]
@@ -391,6 +395,8 @@ public class aroop.txt : aroop.Replicable {
 	public txt(char*content, int len = 0, aroop.txt? proto = null, int scalability_index = 0);
 	[CCode (cname = "aroop_txt_clone")]
 	public txt.memcopy(char*content, int len = 0, int scalability_index = 0);
+	[CCode (cname = "aroop_txt_clone_etxt")]
+	public txt.memcopy_etxt(etxt*src);
 	[CCode (cname = "aroop_txt_memcopy_from_etxt")]
 	public int memcopy_from_etxt(etxt*src);
 	//[CCode (cname = "aroop_txt_destroy")]

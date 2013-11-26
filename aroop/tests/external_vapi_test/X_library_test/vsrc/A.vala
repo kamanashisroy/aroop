@@ -1,4 +1,5 @@
 using X;
+using aroop;
 
 public struct X.B {
 	public C c;
@@ -15,6 +16,15 @@ public class X.A {
 		b.c = arg;
 	}
 	public static int test(B unused) {
+		return 0;
+	}
+}
+
+public class X.ASimple : Replicable {
+	int i;
+	public ASimple() {
+	}
+	public int do() {
 		return 0;
 	}
 }

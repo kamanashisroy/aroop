@@ -152,6 +152,7 @@ aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_
 })
 #define aroop_txt_new_static(x) ({aroop_txt_new(x,sizeof(x)-1, NULL, 0);})
 aroop_txt*aroop_txt_clone(const char*content, int len, int scalability_index);
+#define aroop_txt_clone_etxt(x) aroop_txt_clone((x)->str, (x)->len, 0)
 aroop_txt*aroop_txtrim(aroop_txt*text);
 
 aroop_txt*aroop_txt_cat(aroop_txt*text, aroop_txt*suffix);

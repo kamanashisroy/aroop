@@ -85,7 +85,7 @@ enum {
 // Set
 #define aroop_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3);})
 #define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL;})
-#define aroop_list_add_container(x,y,hash,flag) ({void*__mem = NULL;if((__mem = opp_alloc4(x,0,0,y)) != NULL){if(flag)opp_set_flag(__mem, flag);if(hash)opp_set_hash(__mem,hash);};__mem;})
+#define aroop_list_add_container(x,y,hash,flag) ({void*__mem = NULL;if((__mem = opp_alloc4(x,0,0,y)) != NULL){if(flag)opp_set_flag(__mem, flag);if(hash)opp_set_hash(__mem,hash);aroop_object_ref(__mem);};__mem;})
 #define aroop_searchable_list_prune(ls,h,x) ({opp_list_search_and_prune(ls, h, x);})
 #define aroop_searchable_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED);})
 
@@ -103,6 +103,19 @@ enum {
 #define aroop_mark_searchable_ext(x,y) ({(x)->flag |= y;})
 #define aroop_unmark_searchable_ext(x,y) ({(x)->flag &= y;})
 #define aroop_test_searchable_ext(x,y) ({(x)->flag & y;})
+
+// iterator
+#define aroop_iterator_create(x,targ,y,a,b,c) ({opp_iterator_create(x,y,a,b,c);})
+#define aroop_iterator_next(x) ({opp_iterator_next(x) != NULL;})
+#define aroop_iterator_get_unowned(x,y) ({*(y)=(x)->data;})
+#define aroop_iterator_get(x,y) ({*(y)=(x)->data;(x)->data=NULL;})
+#define aroop_iterator_cpy_or_destroy(x,nouse,y,nouse2) ({\
+	if((x) && (y)){ \
+		memcpy(x,y,sizeof(*(x))); \
+	} else { \
+		opp_iterator_destroy(x); \
+	};0;})
+
 
 C_CAPSULE_END
 

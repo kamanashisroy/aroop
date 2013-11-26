@@ -56,8 +56,6 @@ int aroop_deinit();
 #define aroop_none_describe(x) opp_callback(x, OPPN_ACTION_DESCRIBE, NULL)
 #define aroop_none_is_same(x,y) ({(x && y && x == y);})
 #define aroop_none_shrink(x,y) ({opp_shrink(x,sizeof(*x)+y);})
-#define aroop_iterator_next(x) ({opp_iterator_next(x) != NULL})
-#define aroop_iterator_get(x) ({x->data})
 #define aroop_factory_iterator_get(x,y,a,b,c) ({opp_iterator_create(y,x,a,b,c);})
 #define aroop_list_item_get(x,y) ({*(y) = ((x)->obj_data);})
 #define aroop_get_token(x) ({(x)->token;})
