@@ -330,8 +330,12 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		push_function (function); // XXX I do not know what push does 
 
-		cfile.add_function_declaration (function);
-
+		if(cl.is_internal_symbol()) {
+			cfile.add_function_declaration (function);
+		} else {
+			header_file.add_function_declaration (function);
+		}
+		
 		pop_function (); // XXX I do not know what pop does 
 
 		// Now add definition

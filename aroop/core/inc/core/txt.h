@@ -235,6 +235,8 @@ int aroop_txt_printf_extra(aroop_txt*output, char* format, ...);
 OPP_CB_NOSTATIC(aroop_txt);
 #define arptxt_pray OPP_CB_FUNC(aroop_txt)
 
+extern aroop_txt*BLANK_STRING;
+
 C_CAPSULE_END
 
 #endif /* XULTB_STRING_H_ */

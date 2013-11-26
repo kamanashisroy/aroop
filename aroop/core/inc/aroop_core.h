@@ -98,8 +98,6 @@ int aroop_deinit();
 #define aroop_no_unref(targ,gt_unused,x)
 #define aroop_build_generics(x,y,obj) ({x(obj,OPPN_ACTION_SET_GENERIC_TYPES,y,0,0);})
 
-
-
 C_CAPSULE_END
 
 #endif // AROOP_CORE_H_

@@ -20,6 +20,11 @@ public class X.A {
 	}
 }
 
+public abstract class X.AAbstract : Replicable {
+	int i;
+	public AAbstract() {
+	}
+}
 public class X.ASimple : Replicable {
 	int i;
 	public ASimple() {
