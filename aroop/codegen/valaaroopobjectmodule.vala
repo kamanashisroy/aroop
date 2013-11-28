@@ -727,12 +727,11 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 			var vcall = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_real_name (m)));
 			vcall.add_argument (new CCodeIdentifier (self_instance));
+			vblock.add_statement (new CCodeExpressionStatement (vcall));
+			generate_cparameters (m, cfile, vfunc, null, vcall);
 			if(m.tree_can_fail) {
 				vcall.add_argument (new CCodeIdentifier ("_err"));
 			}
-			vblock.add_statement (new CCodeExpressionStatement (vcall));
-
-			generate_cparameters (m, cfile, vfunc, null, vcall);
 			CCodeStatement cstmt = new CCodeReturnStatement (new CCodeIdentifier (self_instance));
 			cstmt.line = vfunc.line;
 			vblock.add_statement (cstmt);

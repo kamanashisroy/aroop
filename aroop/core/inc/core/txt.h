@@ -65,6 +65,21 @@ typedef int xultb_bool_t;
 	(x)->size=(x)->len+1; \
 })
 
+
+#define aroop_txt_embeded_share_txt(x,y) ({ \
+	aroop_memclean_raw2(x); \
+	if((y)->proto) { \
+		(x)->proto = OPPREF((y)->proto); \
+		(x)->str = (y)->str; \
+	} else { \
+		(x)->str = (y)->str; \
+		(x)->proto = OPPREF(y); \
+	} \
+	(x)->hash = (y)->hash; \
+	(x)->len = (y)->len; \
+	(x)->size=(x)->len+1; \
+})
+
 #define aroop_txt_embeded_share_embeded(x,y) ({ \
 	aroop_memclean_raw2(x); \
 	if((y)->proto) { \

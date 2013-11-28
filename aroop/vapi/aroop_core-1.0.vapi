@@ -309,7 +309,7 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public etxt.given_length(string content, int len, Replicable?proto = null);
 	[CCode (cname = "aroop_txt_embeded_static")]
 	public etxt.from_static(string content);
-	[CCode (cname = "aroop_txt_create")]
+	[CCode (cname = "aroop_txt_embeded_share_txt")]
 	public etxt.from_txt(aroop.txt proto);
 	[CCode (cname = "aroop_txt_embeded_reuse_embeded")]
 	public etxt.from_etxt(aroop.etxt*proto);
