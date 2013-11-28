@@ -620,7 +620,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			int count = m.get_parameters().size;
 			var macro_function = "%s(x".printf(get_ccode_name(m));
 			var macro_body = "((%s*)x)->vtable->%s(x".printf(get_ccode_aroop_name((Class) m.parent_symbol), m.name);
-			if(count != 0) {
+			if(count != 0 || m.get_error_types().size != 0) {
 				macro_function += ", ...";
 				macro_body += ", __VA_ARGS__";
 			}
