@@ -24,6 +24,9 @@ public abstract class X.AAbstract : Replicable {
 	int i;
 	public AAbstract() {
 	}
+	public virtual int go() {
+		return 0;
+	}
 }
 public class X.ASimple : Replicable {
 	int i;

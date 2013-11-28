@@ -1,5 +1,5 @@
-TESTVAPI=--vapidir ../X_library_test/vapi --pkg Y --vapidir ../X_library_test/vsrc/
-INCLUDES+=-I../X_library_test/include
+TESTVAPI=--vapidir ../X_library_test/vsrc --pkg XX
+INCLUDES+=-I../X_library_test/vsrc
 OBJECTS+=../X_library_test/vsrc/A.o
 
 export TESTVAPI

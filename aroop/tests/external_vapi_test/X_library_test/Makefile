@@ -1,8 +1,8 @@
 
 TESTVAPI=vsrc/X.vapi
-VHEADER_FILE=include/A.h 
-VLIBRARY_FILE=vapi/Y
-INCLUDES+=-Iinclude
+VHEADER_FILE=vsrc/A.h 
+VLIBRARY_FILE=vsrc/XX
+INCLUDES+=-Ivsrc
 
 export TESTVAPI
 export VLIBRARY_FILE

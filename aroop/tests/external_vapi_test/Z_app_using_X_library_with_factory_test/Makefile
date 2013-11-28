@@ -1,5 +1,5 @@
 
-TESTVAPI=--vapidir ../X_library_test/vapi --pkg Y --vapidir ../X_library_test/vsrc/
+TESTVAPI=--vapidir ../X_library_test/vsrc --pkg XX
 
 export TESTVAPI
 
