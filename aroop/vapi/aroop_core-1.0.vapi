@@ -385,6 +385,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	 * "good".shift(-1) will give "goo" */
 	[CCode (cname = "aroop_txt_shift")]
 	public bool shift(int inc);
+	[CCode (cname = "aroop_txt_concat")]
+	public bool concat(etxt*other);
 	[CCode (cname = "aroop_txt_destroy")]
 	public void destroy();
 }
