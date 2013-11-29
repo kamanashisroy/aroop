@@ -87,7 +87,7 @@ typedef int xultb_bool_t;
 		(x)->str = (y)->str; \
 	} else { \
 		(x)->str = (y)->str; \
-		(x)->proto = (x)->str; \
+		(x)->proto = NULL; \
 	} \
 	(x)->hash = (y)->hash; \
 	(x)->len = (y)->len; \
