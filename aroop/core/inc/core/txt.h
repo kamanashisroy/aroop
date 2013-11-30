@@ -135,6 +135,7 @@ typedef int xultb_bool_t;
 	(x)->str = __buf; \
 	(x)->size = (y)->len; \
 	(x)->len = (y)->len; \
+	(x)->str[(x)->len] = '\0'; \
 	(x)->proto = NULL; \
 	(x)->hash = (y)->hash; \
 })
@@ -153,6 +154,7 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #define aroop_txt_equals_static(x,static_y) ({char static_text[] = static_y;((x) && (x)->len == (sizeof(static_y)-1) && !memcmp((x)->str, static_text,(x)->len));})
 #define aroop_txt_equals_chararray(x,y) ({((!(x) && !(y)) || ((x) && !(x)->str && !(y) )) || ((x) && !strcmp((x)->str, y));})
 #define aroop_txt_zero_terminate(x) ({if((x)->len < (x)->size && (x)->str != NULL) (x)->str[(x)->len] = '\0';})
+#define aroop_txt_is_zero_terminated(x) ({((x)->len < (x)->size && (x)->str != NULL && (x)->str[(x)->len] == '\0');})
 
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
@@ -244,7 +246,7 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 #define aroop_txt_concat(x,y) { \
 	int __ret = (y) && (y)->str && ((x)->len+(y)->len <= (x)->size); \
 	if(__ret) { \
-		memcpy((x)->str+(x)->len, (y)->str, (y)->len); \
+		memmove((x)->str+(x)->len, (y)->str, (y)->len); \
 		(x)->hash = 0; \
 		(x)->len += (y)->len; \
 	} \

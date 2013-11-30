@@ -367,6 +367,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public bool equals_static_string(string other);
 	[CCode (cname = "aroop_txt_zero_terminate")]
 	public void zero_terminate();
+	[CCode (cname = "aroop_txt_is_zero_terminated")]
+	public bool is_zero_terminated();
 	[CCode (cname = "aroop_txt_printf")]
 	[PrintfFormat]
 	public void printf(string format,...);
@@ -427,6 +429,8 @@ public class aroop.txt : aroop.Replicable {
 	public bool equals(aroop.txt other);
 	[CCode (cname = "aroop_txt_char_at")]
 	public char char_at(uint index);
+	[CCode (cname = "aroop_txt_to_int")]
+	public int to_int();
 }
 
 [Compact]
