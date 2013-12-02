@@ -73,6 +73,8 @@ enum {
 #define aroop_cl_aroop_aroop_searchable_type_system_init()
 // TODO set the hash while constructing searchable
 #define aroop_cl_aroop_aroop_searchable_construct(x)
+#define aroop_cl_aroop_aroop_hashable_construct(x)
+#define aroop_cl_aroop_aroop_hashable_type_system_init()
 #define aroop_search(a,h,cb,cbp,ret) ({(typeof((*ret)))opp_search(a, h, (obj_comp_t)cb, cbp, (void**)ret);})
 #define aroop_search_no_ret_arg(a,h,cb,cbp) ({opp_search(a, h, (obj_comp_t)cb, cbp, NULL);})
 

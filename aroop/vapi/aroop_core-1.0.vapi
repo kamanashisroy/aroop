@@ -234,7 +234,7 @@ public enum aroop.prayer {
 	DESCRIBE,
 }
 
-[CCode (cname = "struct opp_object_ext_tiny", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "struct opp_object_ext_tiny", cheader_filename = "aroop_factory.h", destroy_function = "")]
 public abstract class aroop.Hashable : aroop.Replicable {
 	private hashable_ext _ext;
 	[CCode (cname = "aroop_donothing")]
