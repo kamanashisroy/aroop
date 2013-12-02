@@ -725,6 +725,42 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			}
 #endif
 
+			foreach (var f in current_class.get_fields ()) {
+				if (f.binding == MemberBinding.INSTANCE)  {
+					CCodeExpression fieldexp = new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_ccode_name (f));
+					if (requires_destroy (f.variable_type)) {
+						var bless_function = "aroop_cleanup_in_countructor_function";
+						if (f.variable_type.data_type is Struct) {
+							bless_function = "aroop_cleanup_in_countructor_function_for_struct";
+						}
+						var cleanupfields = new CCodeFunctionCall (new CCodeIdentifier (bless_function));
+						cleanupfields.add_argument (fieldexp);
+						vblock.add_statement (new CCodeExpressionStatement (cleanupfields));
+					}
+				}
+			}
+
+#if false
+			// TODO *** chain up to cleanup function of the base class
+			foreach (DataType base_type in current_class.get_base_types ()) {
+				var object_type = (ObjectType) base_type;
+				if (object_type.type_symbol is Class) {
+					foreach (var f in current_class.get_fields ()) {
+						if (f.binding == MemberBinding.INSTANCE)  {
+							CCodeExpression fieldexp = new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_ccode_name (f));
+							var bless_function = "aroop_cleanup_in_countructor_function";
+							if (f.variable_type.data_type is Struct) {
+								bless_function = "aroop_cleanup_in_countructor_function_for_struct";
+							}
+							var cleanupfields = new CCodeFunctionCall (new CCodeIdentifier (bless_function));
+							cleanupfields.add_argument (fieldexp);
+							vblock.add_statement (new CCodeExpressionStatement (cleanupfields));
+						}
+					}
+				}
+			}
+#endif
+
 			var vcall = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_real_name (m)));
 			vcall.add_argument (new CCodeIdentifier (self_instance));
 			vblock.add_statement (new CCodeExpressionStatement (vcall));

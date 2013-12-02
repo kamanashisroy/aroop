@@ -99,6 +99,9 @@ int aroop_deinit();
 #define aroop_no_unref(targ,gt_unused,x)
 #define aroop_build_generics(x,y,obj) ({x(obj,OPPN_ACTION_SET_GENERIC_TYPES,y,0,0);})
 
+#define aroop_cleanup_in_countructor_function(x) ({x=NULL;})
+#define aroop_cleanup_in_countructor_function_for_struct(x)
+
 C_CAPSULE_END
 
 #endif // AROOP_CORE_H_
