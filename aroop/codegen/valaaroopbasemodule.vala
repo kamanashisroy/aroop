@@ -1241,7 +1241,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public override void visit_base_access (BaseAccess expr) {
 		generate_type_declaration (expr.value_type, cfile);
-		set_cvalue (expr, new CCodeCastExpression (new CCodeIdentifier (self_instance), get_ccode_aroop_name (expr.value_type)));
+		//set_cvalue (expr, new CCodeCastExpression (new CCodeIdentifier (self_instance), get_ccode_aroop_name (expr.value_type)));
+		var aroop_base_access = new CCodeFunctionCall (new CCodeIdentifier ("aroop_base_access"));
+		aroop_base_access.add_argument (new CCodeConstant(get_ccode_aroop_name (expr.value_type)));
+		aroop_base_access.add_argument (new CCodeIdentifier (self_instance));
+		set_cvalue (expr, aroop_base_access);
 	}
 
 	public override void visit_postfix_expression (PostfixExpression expr) {

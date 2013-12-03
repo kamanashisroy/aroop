@@ -64,12 +64,15 @@ public abstract class Vala.AroopMethodModule : AroopBlockModule {
 
 		generate_cparameters (m, cfile, function);
 
-
 		// generate *_real_* functions for virtual methods
 		if (!m.is_abstract) {
 			if (m.base_method != null || m.base_interface_method != null) {
 				// declare *_real_* function
+#if true
 				function.modifiers |= CCodeModifiers.STATIC;
+#else
+				header_file.add_function_declaration(function);
+#endif
 				cfile.add_function_declaration (function);
 			} else if (m.is_internal_symbol ()) {
 				function.modifiers |= CCodeModifiers.STATIC;

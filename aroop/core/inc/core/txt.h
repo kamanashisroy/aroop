@@ -252,6 +252,15 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 	} \
 	__ret; \
 }
+#define aroop_txt_concat_char(x,y) { \
+	int __ret = (((x)->len+1) < (x)->size); \
+	if(__ret) { \
+		(x)->str[(x)->len] = (y); \
+		(x)->hash = 0; \
+		(x)->len++; \
+	} \
+	__ret; \
+}
 
 // system 
 void aroop_txt_system_init();
