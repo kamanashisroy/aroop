@@ -10,7 +10,7 @@ internal abstract class Fruit : Organ {
 	internal Fruit(int id) {
 		pid = id;
 	}
-	public virtual int get() {
+	public override int get() {
 		return pid;
 	}
 }

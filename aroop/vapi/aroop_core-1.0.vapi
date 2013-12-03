@@ -67,7 +67,7 @@ public struct aroop.CountableSet {
 
 [CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, copy_function="aroop_iterator_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_iterator_destroy")]
 public struct aroop.Iterator<G> {
-	[CCode (cname = "aroop_memclean_raw2")]
+	[CCode (cname = "aroop_memclean_raw_2args")]
 	public Iterator.EMPTY();
 	[CCode (cname = "aroop_iterator_create")]
 	public Iterator(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag, aroop_hash hash);
@@ -82,19 +82,24 @@ public struct aroop.Iterator<G> {
 }
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
-public struct aroop.ArrayList<G> : aroop.CountableSet {
+public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	[CCode (cname = "aroop_array_list_create")]
 	public ArrayList(int inc = 16);
 	[CCode (cname = "aroop_indexed_list_get")]
 	public G? get(int index);
 	[CCode (cname = "aroop_indexed_list_set")]
 	public void set(int index, G item);
+	// TODO support marking mark() unmark()
 }
 
 [CCode (cname = "struct opp_list_item", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public class aroop.container<G> : Hashable {
 	[CCode (cname = "aroop_list_item_get")]
 	public unowned G get();
+	[CCode (cname = "opp_unset_flag")]
+	public void unmark(ulong flg);
+	[CCode (cname = "opp_set_flag")]
+	public void mark(ulong flg);
 }
 
 [CCode (cname = "obj_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
@@ -216,6 +221,7 @@ public enum aroop.Replica_flags {
 	INTERNAL_1 = 1<<14,
 	INTERNAL_2 = 1<<13,
 	ZOMBIE = 1<<12,
+	// you can use 1, 1<<1, 1<<2 etc .
 }
 
 [CCode (lower_case_cprefix = "OPPN_ACTION_", cprefix = "OPPN_ACTION_", cname = "int")]

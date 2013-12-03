@@ -51,10 +51,9 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			}
 
 			if (expr.inner is BaseAccess) {
-				if (m.base_method != null && !m.base_method.is_abstract) {
-					var base_class = (Class) m.base_method.parent_symbol;
+				if (m.base_method != null/* && !m.base_method.is_abstract*/) {
 
-					set_cvalue (expr, new CCodeIdentifier (get_ccode_real_name (m.base_method)));
+					set_cvalue (expr, new CCodeIdentifier (get_ccode_base_name (m.base_method)));
 					return;
 				} else if (m.base_interface_method != null) {
 					var base_iface = (Interface) m.base_interface_method.parent_symbol;

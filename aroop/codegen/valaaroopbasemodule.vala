@@ -2129,6 +2129,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public string get_ccode_real_name (Method node) {
 		return CCodeBaseModule.get_ccode_real_name (node);
 	}
+	public string get_ccode_base_name (Method node) {
+		return "_base_access_%s".printf(CCodeBaseModule.get_ccode_real_name (node));
+	}
 
 	public virtual string get_error_module_lower_case_name (CodeNode node, string? infix = null) {
 		return "";

@@ -167,12 +167,21 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		}
 		return false;
 	}
+	
+	string get_base_vtable_name() {
+		return "_base_vtable";
+	}
 
 	private void generate_vtable(Class cl, CCodeFile decl_space) {
 		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl)));
 		foreach (Method m in cl.get_methods ()) {
 			generate_virtual_method_declaration (m, decl_space, vtable_struct);
 		}
+		//if(cl.base_class != null && cl.base_class.has_vtables) {
+			var basevtable = new CCodeDeclaration ("%s*".printf(get_ccode_vtable_struct (cl)));
+			basevtable.add_declarator (new CCodeVariableDeclarator (get_base_vtable_name()));
+			vtable_struct.add_declaration (basevtable);
+		//}
 		decl_space.add_type_definition (vtable_struct);
 	}
 
@@ -217,6 +226,16 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				)
 			)
 		);
+		//if(of_class.base_class != null) {
+			block.add_statement (
+				new CCodeExpressionStatement (
+					new CCodeAssignment (
+						new CCodeIdentifier (
+							"%s.%s".printf(
+							get_ccode_vtable_var(cl, of_class)
+							, get_base_vtable_name()))
+						, new CCodeIdentifier ( "&%s".printf(get_ccode_vtable_var(cl.base_class, of_class)) ))));
+		//}
 	}
 
 	private void add_class_system_init_function(Class cl) {
@@ -625,6 +644,15 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				macro_body += ", __VA_ARGS__";
 			}
 			var func_macro = new CCodeMacroReplacement(macro_function + ")", macro_body + ")");
+			decl_space.add_type_declaration (func_macro);
+			// for base
+			macro_function = "%s(x".printf(get_ccode_base_name(m));
+			macro_body = "((%s*)x)->vtable->_base_vtable->%s(x".printf(get_ccode_aroop_name((Class) m.parent_symbol), m.name);
+			if(count != 0 || m.get_error_types().size != 0) {
+				macro_function += ", ...";
+				macro_body += ", __VA_ARGS__";
+			}
+			func_macro = new CCodeMacroReplacement(macro_function + ")", macro_body + ")");
 			decl_space.add_type_declaration (func_macro);
 		} else {
 			var function = new CCodeFunction (get_ccode_name (m));
