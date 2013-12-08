@@ -130,7 +130,7 @@ typedef int xultb_bool_t;
 })
 
 #define aroop_txt_embeded_stackbuffer_from_txt(x,y) ({ \
-	char*__buf = alloca((y)->len+1)/*char buf##y[(y)->len+1]*/; \
+	char*__buf = (char*)alloca((y)->len+1)/*char buf##y[(y)->len+1]*/; \
 	memcpy(__buf,(y)->str,(y)->len); \
 	(x)->str = __buf; \
 	(x)->size = (y)->len; \
@@ -159,7 +159,7 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
-#define aroop_txt_memcopy_from_etxt(x,y) ({ \
+#define aroop_txt_memcopy_from_etxt_what_the_hell(x,y) ({ \
 	(x)->str = (((aroop_txt*)x)+1); \
 	(x)->size=(y)->len; \
 	(x)->len=(y)->len; \
@@ -204,11 +204,12 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 	(x)->size = (x)->str?((x)->size - ((x)->str - _p)):(x)->len; \
 })
 
-#define aroop_txt_move_to(x,y) ({ \
-	if((x)->str && (y)->str){ \
+#define aroop_txt_move_to_what_the_hell(x,y) ({ \
+	if((x)->str && (y)->str && (x)->len <= (y)->size){ \
 		memmove((y)->str, (x)->str, (x)->len); \
 		(y)->len = (x)->len; \
 		(x)->size = (y)->size; \
+		(x)->str = (y)->str; \
 		if((x)->proto) { \
 			OPPUNREF((x)->proto); \
 		} \

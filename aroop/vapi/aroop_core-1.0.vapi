@@ -383,8 +383,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public void printf_extra(string format,...);
 	[CCode (cname = "aroop_txt_shift_token")]
 	public void shift_token(string delim, etxt*output);
-	[CCode (cname = "aroop_txt_move_to")]
-	public void move_to(etxt*space);
+	[CCode (cname = "aroop_txt_move_to_what_the_hell")]
+	public void move_to_may_be_you_are_doing_wrong(etxt*space);
 	[CCode (cname = "aroop_txt_char_at")]
 	public char char_at(uint index);
 	[CCode (cname = "aroop_txt_contains_char")]
@@ -409,8 +409,8 @@ public class aroop.txt : aroop.Replicable {
 	public txt.memcopy(char*content, int len = 0, int scalability_index = 0);
 	[CCode (cname = "aroop_txt_clone_etxt")]
 	public txt.memcopy_etxt(etxt*src);
-	[CCode (cname = "aroop_txt_memcopy_from_etxt")]
-	public int memcopy_from_etxt(etxt*src);
+	[CCode (cname = "aroop_txt_memcopy_from_etxt_what_the_hell")]
+	public int build_by_memcopy_from_etxt_unsafe_no_length_check(etxt*src);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~txt();
 	[CCode (cname = "aroop_txt_new_static")]
@@ -441,13 +441,17 @@ public class aroop.txt : aroop.Replicable {
 	public int to_int();
 }
 
+/**
+ * Most of the time it is kind of hack, so you may want to use unowned variable to avoid object reference.
+ *
+ */
 [Compact]
 [CCode (cname = "char", has_free_function = false)]
 public class aroop.mem {
 	[CCode (cname = "aroop_mem_copy")]
 	public bool copy_from(aroop.mem other, uint len);
 	[CCode (cname = "aroop_mem_shift")]
-	public aroop.mem shift(int inc);
+	public unowned aroop.mem shift(int inc);
 }
 
 public class aroop.core {
