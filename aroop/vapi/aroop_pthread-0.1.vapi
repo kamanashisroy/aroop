@@ -13,16 +13,16 @@ public struct aroop.aroop_mutex {
 	public int destroy();
 }
 
-[CCode (cname = "sync_pthread_t", has_destroy_function=false)]
+[CCode (cname = "aroop_pthread_t", has_destroy_function=false)]
 public struct aroop.aroop_pthread {
 	[CCode (cname = "aroop_donothing")]
-	aroop_pthread();
-	[CCode (cname = "sync_pthread_kill")]
+	public aroop_pthread();
+	[CCode (cname = "aroop_pthread_kill")]
 	public int kill(int fillme);
-	[CCode (cname = "sync_pthread_join")]
+	[CCode (cname = "aroop_pthread_join")]
 	public int join(int fillme);
-	[CCode (cname = "sync_pthread_create_background")]
-	public int create(int fillme);
+	[CCode (cname = "aroop_pthread_create_background")]
+	public int create_and_go(int fillme);
 }
 
 

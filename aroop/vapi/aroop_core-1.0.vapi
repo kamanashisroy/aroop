@@ -81,7 +81,7 @@ public struct aroop.Iterator<G> {
 	public void destroy();
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, free_function="aroop_factory_free_function", copy_function="aroop_factory_cpy_or_destroy", has_free_function = false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	[CCode (cname = "aroop_array_list_create")]
 	public ArrayList(int inc = 16);
