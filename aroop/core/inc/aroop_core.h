@@ -81,7 +81,6 @@ int aroop_deinit();
 #define aroop_memcpy_strt2(x,nouse,y,nouse2) ({if(x){if(y){memcpy(x,y,sizeof(*(x)));}else{memset(x,0,sizeof(*(x)));}}})
 #define aroop_mem_copy(x,y,z) ({memcpy(x,y,z);})
 #define aroop_mem_shift(x,y) ({((char*)x+y);})
-#define aroop_queue_init(x,y,z) ({opp_queue_init2(x,z);})
 #define aroop_easy_swap2(unused1,unused2,a,b) ({aroop_none*__x = b;b=a,a=__x;})
 
 #define any_is_a(x,y) 1

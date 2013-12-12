@@ -101,6 +101,7 @@ enum {
 
 // queue
 #define aroop_dequeue(x,y) ({*y = opp_dequeue(x);})
+#define aroop_queue_init(x,y,z) ({opp_queue_init2(x,z);})
 
 // object 
 #define aroop_mark_searchable_ext(x,y) ({(x)->flag |= y;})

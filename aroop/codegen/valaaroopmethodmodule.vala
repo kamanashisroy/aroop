@@ -224,15 +224,18 @@ public abstract class Vala.AroopMethodModule : AroopBlockModule {
 				main_call.add_argument (new CCodeIdentifier ("args"));
 			}
 
+			var aroop_deinit_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_deinit"));
 			if (m.return_type is VoidType) {
 				// method returns void, always use 0 as exit code
 				var main_stmt = new CCodeExpressionStatement (main_call);
 				main_stmt.line = cmain.line;
 				ccode.add_statement (main_stmt);
+				ccode.add_statement (new CCodeExpressionStatement (aroop_deinit_call));
 			} else {
 				var main_stmt = new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier ("result"), main_call));
 				main_stmt.line = cmain.line;
 				ccode.add_statement (main_stmt);
+				ccode.add_statement (new CCodeExpressionStatement (aroop_deinit_call));
 			}
 
 			

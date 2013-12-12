@@ -48,6 +48,7 @@ int aroop_init(int argc, char ** argv) {
 		opp_any_obj_system_init();
 		aroop_txt_system_init();
 		opp_str2system_init();
+		opp_queuesystem_init();
 	}
 }
 
@@ -69,5 +70,6 @@ int aroop_deinit() {
 		opp_any_obj_system_deinit();
 		aroop_txt_system_deinit();
 		opp_str2system_deinit();
+		opp_queuesystem_deinit();
 	}
 }

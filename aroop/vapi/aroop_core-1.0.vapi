@@ -146,13 +146,13 @@ public struct aroop.SearchableSet<G> : aroop.Set<G> {
 
 [CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_copy_function=false, copy_function="aroop_memcpy_strt2", has_destroy_function=true, destroy_function="opp_queue_deinit")]
 public struct aroop.Queue<G> {
-	[CCode (cname = "aroop_queue_init")]
+	[CCode (cname = "aroop_queue_init", cheader_filename = "aroop_factory.h")]
 	public Queue(int scindex = 0);
 	[CCode (cname = "opp_queue_deinit")]
 	public int destroy();
 	[CCode (cname = "opp_enqueue")]
 	public int enqueue(G data);
-	[CCode (cname = "aroop_dequeue")]
+	[CCode (cname = "aroop_dequeue", cheader_filename = "aroop_factory.h")]
 	public G? dequeue();
 	[CCode (cname = "OPP_QUEUE_SIZE")]
 	public int count_unsafe();
