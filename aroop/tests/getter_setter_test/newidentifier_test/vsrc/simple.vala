@@ -2,7 +2,7 @@
 using aroop;
 
 internal class Mango : Replicable {
-	public int id {public get{return this.hidid;}}
+	public int id {public get{return hidid;}}
 	public int hidid;
 	public Mango() {
 		hidid = 10;

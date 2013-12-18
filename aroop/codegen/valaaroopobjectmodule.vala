@@ -93,11 +93,11 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 	public void generate_getter_setter_declaration(Class cl, CCodeFile decl_space) {
 		foreach (Property prop in cl.get_properties ()) {
-            if (prop.is_abstract && prop.is_virtual) {
-            	// say we do not support that
+			if (prop.is_abstract && prop.is_virtual) {
+				// say we do not support that
 				Report.error (prop.source_reference, "virtual or abstract property is not supported");
-            }
-            generate_type_declaration (prop.property_type, decl_space);
+			}
+			generate_type_declaration (prop.property_type, decl_space);
 			var prop_name = get_ccode_name (prop.field) + get_ccode_declarator_suffix (prop.field.variable_type);
 			var prop_accessor = "";
 			var get_params = "";
@@ -108,23 +108,44 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				set_params = "x,y";
 			}
 			if (prop.get_accessor != null) {
+#if true
+				CCodeFunction gfunc = new CCodeFunction (
+					"%sget_%s".printf (
+						CCodeBaseModule.get_ccode_lower_case_prefix (cl)
+						, prop.name
+					)
+					, get_ccode_aroop_name(prop.property_type)
+				);
+				if(prop.binding == MemberBinding.INSTANCE) {
+					gfunc.add_parameter (new CCodeParameter (self_instance, get_ccode_aroop_name (cl) + "*"));
+				}
+				push_function (gfunc);
+				if(prop.is_internal_symbol()) {
+					cfile.add_function_declaration (gfunc);
+				} else {
+					header_file.add_function_declaration (gfunc);
+				}
+				visit_property_accessor2(prop.get_accessor);
+				pop_function ();
+				cfile.add_function(gfunc);
+#else
 				var macro_function = "%sget_%s(%s)".printf (CCodeBaseModule.get_ccode_lower_case_prefix (cl)
 				                                            , prop.name, get_params);
 				var macro_body = "({%s%s;})".printf(prop_accessor, prop_name);
 				
 				var func_macro = new CCodeMacroReplacement(macro_function, macro_body);
 				decl_space.add_type_declaration (func_macro);
-            }
-            if (prop.set_accessor != null) {
+#endif
+			}
+			if (prop.set_accessor != null) {
 				// TODO define it in local file if it is not public 
 				var macro_function = "%sset_%s(%s)".printf (CCodeBaseModule.get_ccode_lower_case_prefix (cl)
-				                                            , prop.name, set_params);
+																										, prop.name, set_params);
 				var macro_body = "({%s%s = y;})".printf(prop_accessor, prop_name);
 				var func_macro = new CCodeMacroReplacement(macro_function, macro_body);
 				decl_space.add_type_declaration (func_macro);
-            }
-        }
-
+			}
+		}
 	}
 
 	void generate_virtual_method_declaration (Method m, CCodeFile decl_space, CCodeStruct type_struct) {
@@ -594,6 +615,16 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 #endif
 
+	public void visit_property_accessor2 (PropertyAccessor acc) {
+		//push_context (new EmitContext (acc));
+		if (acc.result_var != null) {
+			acc.result_var.accept (this);
+		}
+		if(acc.body != null) {
+			ccode.add_declaration (get_ccode_name (acc.value_type), new CCodeVariableDeclarator ("result"));
+			acc.body.emit (this);
+		}
+	}
 	public override void visit_property_accessor (PropertyAccessor acc) {
 	}
 
