@@ -103,7 +103,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				set_params = "x,y";
 			}
 			if (prop.get_accessor != null) {
-#if true
+#if USE_MACRO_GETTER_SETTER
 				CCodeFunction gfunc = new CCodeFunction (
 					"%sget_%s".printf (
 						CCodeBaseModule.get_ccode_lower_case_prefix (cl)
@@ -616,6 +616,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 #endif
 
+#if USE_MACRO_GETTER_SETTER
 	public void visit_property_accessor2 (PropertyAccessor acc) {
 		//push_context (new EmitContext (acc));
 		if (acc.result_var != null) {
@@ -626,6 +627,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			acc.body.emit (this);
 		}
 	}
+#endif
 	public override void visit_property_accessor (PropertyAccessor acc) {
 	}
 
