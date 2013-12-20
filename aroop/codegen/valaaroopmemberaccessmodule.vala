@@ -23,6 +23,24 @@
 using GLib;
 
 public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
+	protected string get_ccode_vtable_var(Class cl, Class of_class) {
+		return "vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl)
+			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));
+	}
+
+	string get_vtable_var(Class cl, Class of_class) {
+		print("%s grephere %s\n", get_ccode_aroop_name(cl), get_ccode_aroop_name(of_class));
+		if(of_class == null) {
+			return "unknown";
+		}
+		if(of_class.base_class != null) {
+			return get_vtable_var(cl, of_class.base_class);
+		}
+		if(of_class.has_vtables) {
+			return get_ccode_vtable_var(cl, of_class);
+		}
+		return "unknown";
+	}
 	public override void visit_member_access (MemberAccess expr) {
 		CCodeExpression pub_inst = null;
 		DataType base_type = null;
@@ -53,7 +71,19 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			if (expr.inner is BaseAccess) {
 				if (m.base_method != null/* && !m.base_method.is_abstract*/) {
 
-					set_cvalue (expr, new CCodeIdentifier (get_ccode_base_name (m.base_method)));
+					//generate_type_declaration (m.base_method.parent_symbol, cfile);
+					var mb_class = (Class) m.base_method.parent_symbol;
+					var b_class = (Class) current_class.base_class;
+					assert(b_class != null);
+					if(b_class.base_class != null) {
+						//b_class = b_class.base_class;
+					}
+					var aroop_base_method_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_base_method_call"));
+					aroop_base_method_call.add_argument (new CCodeConstant(get_vtable_var (b_class, mb_class)));
+					//aroop_base_method_call.add_argument (new CCodeConstant(m.base_method.name));
+					aroop_base_method_call.add_argument (new CCodeConstant(get_ccode_vfunc_name(m)));
+					set_cvalue (expr, aroop_base_method_call);
+					//set_cvalue (expr, new CCodeIdentifier (get_ccode_base_name (m.base_method)));
 					return;
 				} else if (m.base_interface_method != null) {
 					var base_iface = (Interface) m.base_interface_method.parent_symbol;

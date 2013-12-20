@@ -25,11 +25,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return "struct aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl));
 	}
 	
-	private string get_ccode_vtable_var(Class cl, Class of_class) {
-		return "vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl)
-			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));
-	}
-	
 	public override void generate_class_declaration (Class cl, CCodeFile decl_space) {
 		//print("%s is being declared\n", get_ccode_lower_case_name(cl));
 		//if(cl.base_class != null && cl.base_class.external_package && !decl_space.is_header) {
@@ -189,20 +184,24 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		return false;
 	}
 	
+#if false
 	string get_base_vtable_name() {
 		return "_base_vtable";
 	}
+#endif
 
 	private void generate_vtable(Class cl, CCodeFile decl_space) {
 		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl)));
 		foreach (Method m in cl.get_methods ()) {
 			generate_virtual_method_declaration (m, decl_space, vtable_struct);
 		}
+#if false
 		//if(cl.base_class != null && cl.base_class.has_vtables) {
 			var basevtable = new CCodeDeclaration ("%s*".printf(get_ccode_vtable_struct (cl)));
 			basevtable.add_declarator (new CCodeVariableDeclarator (get_base_vtable_name()));
 			vtable_struct.add_declaration (basevtable);
 		//}
+#endif
 		decl_space.add_type_definition (vtable_struct);
 	}
 
@@ -247,6 +246,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 				)
 			)
 		);
+#if false
 		//if(of_class.base_class != null) {
 			block.add_statement (
 				new CCodeExpressionStatement (
@@ -257,6 +257,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 							, get_base_vtable_name()))
 						, new CCodeIdentifier ( "&%s".printf(get_ccode_vtable_var(cl.base_class, of_class)) ))));
 		//}
+#endif
 	}
 
 	private void add_class_system_init_function(Class cl) {
@@ -677,6 +678,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			var func_macro = new CCodeMacroReplacement(macro_function + ")", macro_body + ")");
 			decl_space.add_type_declaration (func_macro);
 			// for base
+#if false
 			macro_function = "%s(x".printf(get_ccode_base_name(m));
 			macro_body = "((%s*)x)->vtable->_base_vtable->%s(x".printf(get_ccode_aroop_name((Class) m.parent_symbol), m.name);
 			if(count != 0 || m.get_error_types().size != 0) {
@@ -685,6 +687,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			}
 			func_macro = new CCodeMacroReplacement(macro_function + ")", macro_body + ")");
 			decl_space.add_type_declaration (func_macro);
+#endif
 		} else {
 			var function = new CCodeFunction (get_ccode_name (m));
 

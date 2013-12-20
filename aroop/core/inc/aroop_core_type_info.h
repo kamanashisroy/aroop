@@ -18,3 +18,4 @@ typedef opp_callback_t aroop_type_desc;
 
 #define aroop_generic_type_init_val(tx) NULL
 #define aroop_base_access(x,y) ((x)y)
+#define aroop_base_method_call(x,y) (x.y)
