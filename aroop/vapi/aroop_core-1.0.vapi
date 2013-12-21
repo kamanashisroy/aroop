@@ -65,6 +65,18 @@ public struct aroop.CountableSet {
 	public int destroy();
 }
 
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+public struct aroop.HashTable<G> : aroop.CountableSet {
+	[CCode (cname = "aroop_hash_table_create")]
+	public HashTable(int inc = 16, uchar mark = 0);
+	[CCode (cname = "opp_hash_table_set")]
+	public int set(etxt*key, G val);
+	[CCode (cname = "aroop_hash_table_get")]
+	public unowned G? get(etxt*key);
+	[CCode (cname = "opp_factory_destroy")]
+	public int destroy();
+}
+
 [CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, copy_function="aroop_iterator_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_iterator_destroy")]
 public struct aroop.Iterator<G> {
 	[CCode (cname = "aroop_memclean_raw_2args")]

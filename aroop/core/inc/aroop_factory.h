@@ -120,6 +120,9 @@ enum {
 		opp_iterator_destroy(x); \
 	};0;})
 
+// hashtable
+#define aroop_hash_table_create(x0, x1, x2, x3) ({opp_hash_table_create(x0, x2, x3);})
+#define aroop_hash_table_get(x,y,z) ({*z = opp_hash_table_get(x, y);})
 
 C_CAPSULE_END
 
