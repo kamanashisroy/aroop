@@ -112,6 +112,8 @@ public class aroop.container<G> : Hashable {
 	public void unmark(ulong flg);
 	[CCode (cname = "opp_set_flag")]
 	public void mark(ulong flg);
+	[CCode (cname = "opp_test_flag")]
+	public bool isMarked(ulong flg);
 }
 
 [CCode (cname = "obj_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
@@ -314,7 +316,7 @@ public interface aroop.Replicable/*Possible alternatives Computable,Replicable /
 	[CCode (cname = "opp_set_flag")]
 	public void mark(ulong flg);
 	[CCode (cname = "opp_test_flag")]
-	public bool test(ulong flg);
+	public bool isMarked(ulong flg);
 	[CCode (cname = "aroop_none_shrink")]
 	public void shrink(int additional_size);
 }
@@ -421,8 +423,13 @@ public class aroop.txt : aroop.Replicable {
 	public txt.memcopy(char*content, int len = 0, int scalability_index = 0);
 	[CCode (cname = "aroop_txt_clone_etxt")]
 	public txt.memcopy_etxt(etxt*src);
-	[CCode (cname = "aroop_txt_memcopy_from_etxt_what_the_hell")]
-	public int build_by_memcopy_from_etxt_unsafe_no_length_check(etxt*src);
+	/**
+	 * For example,
+	 * txt kw = myTxtFactory.alloc_full(sizeof(txt)+src.length()+1)
+				.factory_build_by_memcopy_from_etxt_unsafe_no_length_check(&src);
+	 */
+	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
+	public int factory_build_by_memcopy_from_etxt_unsafe_no_length_check(etxt*src);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~txt();
 	[CCode (cname = "aroop_txt_new_static")]

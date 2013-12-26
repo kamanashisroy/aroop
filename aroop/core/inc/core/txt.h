@@ -159,7 +159,7 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
 aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
-#define aroop_txt_memcopy_from_etxt_what_the_hell(x,y) ({ \
+#define aroop_txt_memcopy_from_etxt_factory_build(x,y) ({ \
 	(x)->str = (((aroop_txt*)x)+1); \
 	(x)->size=(y)->len; \
 	(x)->len=(y)->len; \
