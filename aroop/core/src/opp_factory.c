@@ -788,6 +788,18 @@ void opp_set_flag(void*data, unsigned int flag) {
 #endif
 }
 
+void opp_force_memclean(void*data) {
+	struct opp_object*obj = data_to_opp_object(data);
+	struct opp_object_ext*ext = (struct opp_object_ext*)data;
+	struct opp_factory*obuff = obj->obuff;
+	int sz = obj->slots * obuff->obj_size - sizeof(struct opp_object);
+	if(obuff->property & OPPF_EXTENDED) {
+		memset(ext+1, 0, sz - sizeof(struct opp_object_ext));
+	} else {
+		memset(data, 0, sz);
+	}
+}
+
 void opp_set_hash(void*data, opp_hash_t hash) {
 	struct opp_object*obj = data_to_opp_object(data);
 	struct opp_object_ext*ext = (struct opp_object_ext*)data;

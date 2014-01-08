@@ -62,7 +62,6 @@ enum {
 #define aroop_factory_do_full(x,a,ax,b,c,d) ({opp_factory_do_full(x,(obj_do_t)a,ax,b,c,d);})
 #define aroop_factory_list_do_full(x,a,ax,b,c,d,e,f,g) ({opp_factory_list_do_full(x,(obj_do_t)a,ax,b,c,d,e,f,g);})
 
-
 // searchable
 #define aroop_srcblefac_constr(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED, x5) == 0);})

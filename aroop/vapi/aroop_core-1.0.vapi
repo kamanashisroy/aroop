@@ -319,6 +319,8 @@ public interface aroop.Replicable/*Possible alternatives Computable,Replicable /
 	public bool isMarked(ulong flg);
 	[CCode (cname = "aroop_none_shrink")]
 	public void shrink(int additional_size);
+	[CCode (cname = "opp_force_memclean")]
+	protected void memclean_raw();
 }
 
 [CCode (cname = "arptxt", cheader_filename = "core/txt.h")]
