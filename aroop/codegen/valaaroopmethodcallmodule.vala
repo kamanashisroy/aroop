@@ -177,7 +177,8 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 						cexpr = dleg_expr;
 						i++;
 						params_it.next();
-
+					} else {
+						assert("Delegate closure block/object cannot be null\n" == null);
 					}
 				}
 			}

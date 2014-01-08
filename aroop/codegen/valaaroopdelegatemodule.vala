@@ -63,9 +63,9 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 			if(cast_expr != null) {
 				return generate_delegate_closure_argument(cast_expr.inner);
 			}
-			Method? m22 = null;
 			var ma22 = arg as MemberAccess;
 			if(ma22 != null) {
+				Method? m22 = null;
 				m22 = ((MethodType) arg.value_type).method_symbol;
 				if (m22 != null && m22.binding == MemberBinding.INSTANCE) {
 					var instance22 = get_cvalue (ma22.inner);
@@ -85,6 +85,13 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 				dleg_expr = new CCodeIdentifier(self_instance); // will it cause security exception ?
 			} else {
 				dleg_expr = new CCodeIdentifier("NULL");
+			}
+			if(dleg_expr == null) {
+				Parameter? pm = (Parameter)arg;
+				if(pm != null)
+					dleg_expr = new CCodeIdentifier(pm.to_string() + "_closure_data");
+				else
+					dleg_expr = new CCodeIdentifier("NULL");
 			}
 		} while(false);
 		return dleg_expr;
