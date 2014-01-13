@@ -415,6 +415,18 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public bool concat_char(uchar c);
 	[CCode (cname = "aroop_txt_destroy")]
 	public void destroy();
+	/**
+	 * For example,
+	 * htxt kw = myTxtFactory.alloc_full(sizeof(txt)+src.length()+1);
+	 * htxt.tdata.factory_build_by_memcopy_from_etxt_unsafe_no_length_check(&src);
+	 */
+	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
+	public int factory_build_by_memcopy_from_etxt_unsafe_no_length_check(etxt*src);
+}
+
+[CCode (cname = "struct aroop_hashable_txt*", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+public class aroop.htxt : aroop.Hashable {
+	public etxt tdata;
 }
 
 [CCode (cname = "arptxt", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]

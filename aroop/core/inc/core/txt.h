@@ -39,6 +39,11 @@ struct aroop_txt {
 	char*str;
 } typedef arptxt;
 
+struct aroop_hashable_txt {
+	OPP_OBJECT_EXT_TINY();
+	struct aroop_txt tdata;
+};
+
 typedef struct aroop_txt aroop_txt;
 typedef int xultb_bool_t;
 
