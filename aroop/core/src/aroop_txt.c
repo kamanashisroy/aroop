@@ -148,6 +148,9 @@ int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...) {
 OPP_CB_NOSTATIC(aroop_searchable_txt) {
 	aroop_searchable_txt_t*stxt = (aroop_searchable_txt_t*)data;
 	switch(callback) {
+	//case OPPN_ACTION_INITIALIZE:
+		//memset(stxt, 0, sizeof(struct opp_object_ext));
+		//return 0;
 	case OPPN_ACTION_FINALIZE:
 		aroop_txt_destroy((&stxt->tdata));
 		break;
