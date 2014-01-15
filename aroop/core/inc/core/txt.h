@@ -37,15 +37,16 @@ struct aroop_txt {
 	int size;
 	int len;
 	char*str;
-} typedef arptxt;
+} typedef aroop_txt_t;
 
-struct aroop_hashable_txt {
-	OPP_OBJECT_EXT_TINY();
+struct aroop_searchable_txt {
+	struct opp_object_ext _ext;
 	struct aroop_txt tdata;
-};
+} typedef aroop_searchable_txt_t;
 
-typedef struct aroop_txt aroop_txt;
 typedef int xultb_bool_t;
+
+#define aroop_searchable_string_rehash(y) ({opp_set_hash(y, aroop_txt_get_hash(&(y)->tdata));})
 
 #define aroop_txt_embeded_new_with_length(x,y,z,p) ({ \
 	(x)->proto = NULL, \
@@ -148,7 +149,7 @@ typedef int xultb_bool_t;
 #define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
 
 #if false
-aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
+aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
 #endif
 #define xultb_subtxt(src,off,width,dest) ({(dest)->str = (src)->str+off;(dest)->len = width;(dest)->hash=0;dest;})
 
@@ -163,9 +164,9 @@ aroop_txt*xultb_subtxt(aroop_txt*src, int off, int width, aroop_txt*dest);
 
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
-aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_index);
+aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index);
 #define aroop_txt_memcopy_from_etxt_factory_build(x,y) ({ \
-	(x)->str = (((aroop_txt*)x)+1); \
+	(x)->str = (((aroop_txt_t*)x)+1); \
 	(x)->size=(y)->len; \
 	(x)->len=(y)->len; \
 	(x)->hash = (y)->hash; \
@@ -173,14 +174,14 @@ aroop_txt*aroop_txt_new(char*content, int len, aroop_txt*proto, int scalability_
 	memcpy((x)->str,(y)->str,(x)->len); \
 })
 #define aroop_txt_new_static(x) ({aroop_txt_new(x,sizeof(x)-1, NULL, 0);})
-aroop_txt*aroop_txt_clone(const char*content, int len, int scalability_index);
+aroop_txt_t*aroop_txt_clone(const char*content, int len, int scalability_index);
 #define aroop_txt_clone_etxt(x) aroop_txt_clone((x)->str, (x)->len, 0)
-aroop_txt*aroop_txtrim(aroop_txt*text);
+aroop_txt_t*aroop_txtrim(aroop_txt_t*text);
 
-aroop_txt*aroop_txt_cat(aroop_txt*text, aroop_txt*suffix);
-aroop_txt*aroop_txt_cat_char(aroop_txt*text, char c);
-aroop_txt*aroop_txt_cat_static(aroop_txt*text, char*suffix);
-aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
+aroop_txt_t*aroop_txt_cat(aroop_txt_t*text, aroop_txt_t*suffix);
+aroop_txt_t*aroop_txt_cat_char(aroop_txt_t*text, char c);
+aroop_txt_t*aroop_txt_cat_static(aroop_txt_t*text, char*suffix);
+aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 #define aroop_txt_indexof_char(haystack, niddle) ({const char*haystack##pos = strchr((haystack)->str, niddle);int haystack##i = -1;if(haystack##pos && haystack##pos < ((haystack)->str+(haystack)->len))haystack##i = haystack##pos-(haystack)->str;haystack##i;})
 #define aroop_txt_size(x) ({(x)->size;})
 #define aroop_txt_length(x) ({(x)->len;})
@@ -272,12 +273,14 @@ aroop_txt*aroop_txt_set_len(aroop_txt*text, int len);
 void aroop_txt_system_init();
 void aroop_txt_system_deinit();
 
-int aroop_txt_printf_extra(aroop_txt*output, char* format, ...);
+int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...);
 
 OPP_CB_NOSTATIC(aroop_txt);
-#define arptxt_pray OPP_CB_FUNC(aroop_txt)
+OPP_CB_NOSTATIC(aroop_searchable_txt);
+#define aroop_txt_t_pray OPP_CB_FUNC(aroop_txt)
+#define aroop_searchable_txt_t_pray OPP_CB_FUNC(aroop_searchable_txt)
 
-extern aroop_txt*BLANK_STRING;
+extern aroop_txt_t*BLANK_STRING;
 
 C_CAPSULE_END
 

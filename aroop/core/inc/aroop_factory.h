@@ -51,6 +51,7 @@ enum {
 
 // Factory
 #define aroop_alloc_full(x0,x1,x2,x3,x4) ({*(x4)=(typeof((*x4)))opp_alloc4(x0,x1,x2,x3);})
+#define aroop_alloc_added_size(x0,x1,x2) ({*(x2)=(typeof((*x2)))opp_alloc4(x0,(x0)->obj_size+x1,0,0);})
 #define aroop_assert_factory_creation_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4, x5) == 0);})
 #define aroop_assert_factory_creation_for_type(x0, x1, x2, x3, x4) ({\
@@ -122,6 +123,7 @@ enum {
 // hashtable
 #define aroop_hash_table_create(x0, x1, x2, x3) ({opp_hash_table_create(x0, x2, x3);})
 #define aroop_hash_table_get(x,y,z) ({*z = opp_hash_table_get(x, y);})
+
 
 C_CAPSULE_END
 

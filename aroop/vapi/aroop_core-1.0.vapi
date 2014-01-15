@@ -201,6 +201,8 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	public Factory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_alloc_full")]
 	public G? alloc_full(uint16 size = 0, int doubleref = 0, void*init_data = null);
+	[CCode (cname = "aroop_alloc_added_size")]
+	public G? alloc_added_size(uint16 addedSize = 0);
 	[CCode (cname = "aroop_factory_get_by_token")]
 	public G? get(uint token);
 	[CCode (cname = "aroop_factory_do_full")]
@@ -218,11 +220,11 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
 	[CCode (cname = "aroop_srcblefac_constr")]
-	private SearchableFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED, aroop.factory_cb callback);
+	private SearchableFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE, aroop.factory_cb callback);
 	[CCode (cname = "aroop_srcblefac_constr_4_type_full")]
-	public SearchableFactory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED);
+	public SearchableFactory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE);
 	[CCode (cname = "aroop_srcblefac_constr_4_type")]
-	public SearchableFactory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED);
+	public SearchableFactory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE);
 	[CCode (cname = "aroop_search")]
 	public G? search(aroop_hash hash, iterator_cb compare_func);
 	[CCode (cname = "opp_factory_do_pre_order")]
@@ -323,7 +325,7 @@ public interface aroop.Replicable/*Possible alternatives Computable,Replicable /
 	protected void memclean_raw();
 }
 
-[CCode (cname = "arptxt", cheader_filename = "core/txt.h")]
+[CCode (cname = "aroop_txt_t", cheader_filename = "core/txt.h")]
 public struct aroop.etxt : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_embeded")]
 	public etxt(string content, Replicable?proto = null);
@@ -417,19 +419,22 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public void destroy();
 	/**
 	 * For example,
-	 * htxt kw = myTxtFactory.alloc_full(sizeof(txt)+src.length()+1);
-	 * htxt.tdata.factory_build_by_memcopy_from_etxt_unsafe_no_length_check(&src);
+	 * SearchableString x = myTxtFactory.alloc_added_size(src.length()+1);
+	 * x.tdata.factory_build_by_memcopy_from_etxt_unsafe_no_length_check(&src);
 	 */
 	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
 	public int factory_build_by_memcopy_from_etxt_unsafe_no_length_check(etxt*src);
 }
 
-[CCode (cname = "struct aroop_hashable_txt*", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
-public class aroop.htxt : aroop.Hashable {
+[CCode (cname = "aroop_searchable_txt_t", cheader_filename = "aroop_core.h", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+public class aroop.SearchableString : aroop.Searchable {
+	[CCode (cname = "tdata")]
 	public etxt tdata;
+	[CCode (cname = "aroop_searchable_string_rehash")]
+	public void rehash();
 }
 
-[CCode (cname = "arptxt", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+[CCode (cname = "aroop_txt_t", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.txt : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
 	public txt(char*content, int len = 0, aroop.txt? proto = null, int scalability_index = 0);

@@ -33,7 +33,7 @@ C_CAPSULE_START
 
 struct opp_hash_table_item {
 	struct opp_object_ext _ext;
-	aroop_txt*key;
+	aroop_txt_t*key;
 	void*obj_data;
 };
 
@@ -42,7 +42,7 @@ OPP_CB(hash_table_item) {
 
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
-		item->key = (aroop_txt*)cb_data;
+		item->key = (aroop_txt_t*)cb_data;
 		OPPREF(item->key);
 		item->obj_data = va_arg(ap, void*);
 		OPPREF(item->obj_data);
@@ -59,14 +59,14 @@ OPP_CB(hash_table_item) {
 
 static int match_hash(const void*func_data, const void*data) {
 	const struct opp_hash_table_item*item = (const struct opp_hash_table_item*)data;
-	const aroop_txt*key = (const aroop_txt*)func_data;
+	const aroop_txt_t*key = (const aroop_txt_t*)func_data;
 	if(key->len == item->key->len && !memcmp(key->str, item->key->str, key->len)) {
 		return 0;
 	}
 	return -1;
 }
 
-void*opp_hash_table_get(struct opp_factory*ht, aroop_txt*key) {
+void*opp_hash_table_get(struct opp_factory*ht, aroop_txt_t*key) {
 	unsigned long hash = opp_get_hash_bin(key->str, key->len);
 	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, hash, match_hash, key, NULL);
 	if(!item) {
@@ -77,7 +77,7 @@ void*opp_hash_table_get(struct opp_factory*ht, aroop_txt*key) {
 	return ret;
 }
 
-int opp_hash_table_set(struct opp_factory*ht, aroop_txt*key, void*obj_data) {
+int opp_hash_table_set(struct opp_factory*ht, aroop_txt_t*key, void*obj_data) {
 	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash, key, NULL);
 	if(item) {
 		if(item->obj_data) {
