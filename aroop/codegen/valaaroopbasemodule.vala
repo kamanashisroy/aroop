@@ -1311,6 +1311,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			return false;
 		}
 
+		var deleg_type = type as DelegateType;
+		if(deleg_type != null) {
+			return false;
+		}
+
 		var array_type = type as ArrayType;
 		if (array_type != null && array_type.inline_allocated) {
 			return requires_destroy (array_type.element_type);
@@ -1340,6 +1345,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public virtual CCodeExpression? get_ref_cexpression (DataType expression_type, CCodeExpression cexpr, Expression? expr, CodeNode node) {
+		if(!requires_destroy (expression_type)) {
+			//return get_cvalue (expr);
+			return cexpr;
+		}
+
 		if (expression_type is ValueType && !expression_type.nullable) {
 			// normal value type, no null check
 			// (copy (&temp, 0, &expr, 0), temp)
