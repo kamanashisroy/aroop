@@ -102,6 +102,10 @@ int aroop_deinit();
 #define aroop_cleanup_in_countructor_function(x) ({x=NULL;})
 #define aroop_cleanup_in_countructor_function_for_struct(x)
 
+#define aroop_assign_closure_of_delegate(x,y) ({x##_closure_data=y##_closure_data;})
+#define aroop_assign_closure_as_it_is_of_delegate(x,y) ({x##_closure_data=y;})
+#define NULL_closure_data NULL
+
 C_CAPSULE_END
 
 #endif // AROOP_CORE_H_

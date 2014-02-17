@@ -618,7 +618,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 	}
 	
-	public void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space) {
+	public virtual void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space) {
 		if (f.binding != MemberBinding.INSTANCE)  {
 			return;
 		}
@@ -691,6 +691,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			return false;
 		}
 	}
+
 
 	public override void visit_local_variable (LocalVariable local) {
 		if (local.initializer != null) {
@@ -869,7 +870,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		} else if (type is ArrayType) {
 			return new CCodeIdentifier ("aroop_object_ref");
 		} else if (type is DelegateType) {
-			return new CCodeIdentifier ("aroop_object_ref");
+			return null;
 		} else if (type is PointerType) {
 			var pointer_type = (PointerType) type;
 			return get_dup_func_expression (pointer_type.base_type, source_reference);
@@ -1735,6 +1736,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		} else {
 			set_cvalue (expr, new CCodeCastExpression (get_cvalue (expr.inner), get_ccode_aroop_name (expr.type_reference)));
 		}
+		if (expr.type_reference is DelegateType) {
+			set_cvalue(expr, generate_method_to_delegate_cast_expression(get_cvalue(expr.inner), expr.inner.value_type, expr.type_reference, expr.inner));
+		}
 	}
 
 	public override void visit_pointer_indirection (PointerIndirection expr) {
@@ -1913,6 +1917,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		return cexpr;
 	}
 
+	public virtual CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
+		return source_cexpr;
+	}
+
 	public virtual CCodeExpression get_implicit_cast_expression (CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr = null) {
 		var cexpr = source_cexpr;
 
@@ -1929,6 +1937,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				return array;
 			}
 
+			if (target_type is DelegateType) {
+				return generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
+			}
 			// null literal, no cast required when not converting to generic type pointer
 			return cexpr;
 		}
@@ -1961,7 +1972,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		generate_type_declaration (target_type, cfile);
 
 		if (target_type is DelegateType && expression_type is MethodType) {
-			return source_cexpr;
+			return generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
 		}
 
 		var cl = target_type.data_type as Class;
@@ -2064,8 +2075,14 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			return clist;
 		} else if ((type.data_type != null && type.data_type.is_reference_type ())
 		           || type.nullable
-		           || type is PointerType || type is DelegateType) {
+		           || type is PointerType) {
 			return new CCodeConstant ("NULL");
+		} else if ((type.data_type != null && type.data_type.is_reference_type ())
+		           || type is DelegateType) {
+			var clist = new CCodeInitializerList ();
+			clist.append (new CCodeConstant ("0"));
+			clist.append (new CCodeConstant ("0"));
+			return clist;
 		} else if (type.data_type != null && get_ccode_default_value (type.data_type) != "") {
 			return new CCodeConstant (get_ccode_default_value (type.data_type));
 		}

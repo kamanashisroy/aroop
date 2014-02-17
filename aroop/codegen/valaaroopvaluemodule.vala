@@ -142,10 +142,12 @@ public class Vala.AroopValueModule : AroopObjectModule {
 		cfile.add_function (function);
 	}
 
+#if false
 	public override void visit_assignment (Assignment assignment) {
 		base.visit_assignment (assignment);
 		return;
 	}
+#endif
 
 	public override void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {
 		var generic_type = (lvalue.value_type as GenericType);

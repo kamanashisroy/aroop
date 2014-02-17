@@ -31,20 +31,32 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 		if (add_symbol_declaration (decl_space, d, get_ccode_aroop_name (d))) {
 			return;
 		}
+		var proto = new CCodeStructPrototype (get_ccode_aroop_name (d));
+		if(d.is_internal_symbol() && decl_space.is_header) {
+			// declare prototype	
+			decl_space.add_type_definition (proto);
+			proto.generate_type_declaration(decl_space);
+			return;
+		}
 		var return_type = "int ";
 		if (d.return_type is GenericType) {
 			return_type = "void *";
 		} else {
 			return_type = get_ccode_name (d.return_type);
 		}
-		decl_space.add_type_declaration (
-		  new CCodeTypeDefinition (
+		var cb_type = new CCodeTypeDefinition (
 		    return_type
-		    , generate_invoke_function (d, decl_space)));
+		    , generate_invoke_function (d, decl_space));
+		decl_space.add_type_definition (cb_type);
+		var instance_struct = proto.definition;
+		instance_struct.add_field ("void*", "aroop_closure_data", null);
+		instance_struct.add_field (get_ccode_aroop_name (d)+"_aroop_delegate_cb", "aroop_cb", null);
+		proto.generate_type_declaration(decl_space);
+		decl_space.add_type_definition (instance_struct);
 	}
 
 	CCodeFunctionDeclarator generate_invoke_function (Delegate d, CCodeFile decl_space) {
-		var function = new CCodeFunctionDeclarator (get_ccode_aroop_name (d));
+		var function = new CCodeFunctionDeclarator (get_ccode_aroop_name (d)+"_aroop_delegate_cb");
 		
 		function.add_parameter (new CCodeParameter ("_closure_data", "void*"));
 		
@@ -55,6 +67,23 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 		}
 		return function;
 	}
+
+#if false
+	public override void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space) {
+		if (f.binding != MemberBinding.INSTANCE)  {
+			return;
+		}
+		base.generate_element_declaration(f,container,decl_space);
+		if(f.variable_type is DelegateType) {
+			string field_ctype_cdata =  "void*";
+			if (f.is_volatile) {
+				field_ctype_cdata = "volatile " + field_ctype_cdata;
+			}
+			container.add_field (field_ctype_cdata, "%s_closure_data".printf(get_ccode_name (f)
+				+ get_ccode_declarator_suffix (f.variable_type)), null, generate_declarator_suffix_cexpr(f.variable_type));
+		}
+	}
+#endif
 	
 	protected override CCodeExpression? generate_delegate_closure_argument(Expression arg) {
 		CCodeExpression?dleg_expr = null;
@@ -107,4 +136,67 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 		}
 	}
 	
+#if false
+	public override void visit_local_variable (LocalVariable local) {
+		if(local.variable_type is DelegateType) {
+			//LocalVariable closure_var = new LocalVariable(new PointerType(new VoidType()), "%s_closure_data".printf(local.name), local.initializer, local.source_reference);
+			LocalVariable closure_var = new LocalVariable(new PointerType(new VoidType()), "%s_closure_data".printf(local.name), null, null);
+			/*if (local.is_volatile) {
+				closure_var.is_volatile = true;
+			}*/
+			base.visit_local_variable(closure_var);
+		}
+		base.visit_local_variable(local);
+	}
+#endif
+
+#if false
+	public override void store_delegate (Variable variable, TargetValue?pinstance, Expression exp, bool initializer) {
+		var deleg_arg = generate_delegate_closure_argument(exp);
+		var closure_exp = new CCodeFunctionCall(new CCodeIdentifier("aroop_assign_closure_as_it_is_of_delegate"));
+		if(variable is LocalVariable) {
+			closure_exp.add_argument(get_cvalue_(get_local_cvalue ((LocalVariable)variable)));
+		} else if(variable is Field) {
+			closure_exp.add_argument(get_cvalue_(get_field_cvalue ((Field)variable,pinstance)));
+		} else {
+			assert("I do not know this!" == null);
+		}
+#if false
+		if(value.value_type is MethodType) {
+			closure_exp.add_argument(new CCodeConstant("NULL"));
+		} else {
+			closure_exp.add_argument(get_cvalue_ (value));
+		}
+#endif
+		closure_exp.add_argument(deleg_arg);
+		ccode.add_expression(closure_exp);
+		base.store_delegate(variable, pinstance, exp, initializer);
+	}
+#endif
+
+	public override CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
+		if (expression_type is DelegateType) {
+			return source_cexpr;
+		}
+		if (source_cexpr is CCodeCastExpression) {
+			CCodeCastExpression cast_expr = (CCodeCastExpression)source_cexpr;
+			if(cast_expr.type_name == get_ccode_aroop_name(target_type) && cast_expr.inner is CCodeInitializerList) {
+				return source_cexpr;
+			}
+		}
+		print("%s\n",expression_type.to_string());
+		var clist = new CCodeInitializerList ();
+		if (expression_type is NullType) {
+			clist.append (source_cexpr);
+		} else {
+			clist.append (generate_delegate_closure_argument(expr));
+		}
+		clist.append (source_cexpr);
+		return new CCodeCastExpression(clist, get_ccode_aroop_name(target_type));
+	}
+	protected override CCodeFunctionCall? generate_delegate_method_call_ccode (MethodCall expr) {
+		var ccall = new CCodeFunctionCall (new CCodeMemberAccess(get_cvalue(expr.call),"aroop_cb"));
+		ccall.add_argument (new CCodeMemberAccess(get_cvalue(expr.call),"aroop_closure_data"));
+		return ccall;
+	}
 }

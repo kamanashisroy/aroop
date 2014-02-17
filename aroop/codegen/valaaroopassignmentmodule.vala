@@ -28,6 +28,15 @@ public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
 		CCodeExpression rhs = get_cvalue (assignment.right);
 		CCodeExpression lhs = (CCodeExpression) get_ccodenode (assignment.left);
 
+#if false
+		var dtvar = assignment.left.value_type as DelegateType;
+		if(dtvar != null) {
+			var closure_exp = new CCodeFunctionCall(new CCodeIdentifier("aroop_assign_closure_of_delegate"));
+			closure_exp.add_argument(lhs);
+			closure_exp.add_argument(rhs);
+			ccode.add_expression(closure_exp);
+		}
+#endif
 		bool unref_old = requires_destroy (assignment.left.value_type);
 
 		if (unref_old) {
@@ -144,6 +153,19 @@ public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
 		}
 
 		ccode.add_assignment (get_cvalue_ (lvalue), get_cvalue_ (value));
+#if false
+		var dtvar = lvalue.value_type as DelegateType;
+		if(dtvar != null) {
+			var closure_exp = new CCodeFunctionCall(new CCodeIdentifier("aroop_assign_closure_of_delegate"));
+			closure_exp.add_argument(get_cvalue_ (lvalue));
+			//if(value.value_type is MethodType) {
+				//closure_exp.add_argument(new CCodeConstant("NULL"));
+			//} else {
+				closure_exp.add_argument(get_cvalue_ (value));
+			//}
+			ccode.add_expression(closure_exp);
+		}
+#endif
 	}
 
 	public override void store_local (LocalVariable local, TargetValue value, bool initializer) {
@@ -157,4 +179,16 @@ public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
 	public override void store_field (Field field, TargetValue? instance, TargetValue value) {
 		store_variable (field, get_field_cvalue (field, instance), value, false);
 	}
+#if false
+	public virtual void store_delegate (Variable variable, TargetValue? pinstance, Expression exp, bool initializer) {
+		if(variable is LocalVariable) {
+			store_local((LocalVariable)variable, exp.target_value, initializer);
+		} else if(variable is Field) {
+			store_field((Field)variable, pinstance, exp.target_value);
+		} else {
+			assert("I do not know this!" == null);
+			//store_variable(variable, lvalue, value, initializer);
+		}
+	}
+#endif
 }

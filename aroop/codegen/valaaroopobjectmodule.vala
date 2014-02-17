@@ -942,6 +942,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			if (vdeclarator != null) {
 				vdeclarator.add_parameter (cparam);
 			}
+#if false
 			if (param.variable_type is DelegateType) {
 				CCodeParameter xparam = new CCodeParameter (get_variable_cname (param.name)+"_closure_data", "void*");
 				func.add_parameter (xparam);
@@ -949,6 +950,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 					vdeclarator.add_parameter (xparam);
 				}
 			}
+#endif
 			
 			
 			if (vcall != null) {
