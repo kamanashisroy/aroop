@@ -116,10 +116,10 @@ public class aroop.container<G> : Hashable {
 	public bool isMarked(ulong flg);
 }
 
-[CCode (cname = "obj_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "aroop_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.iterator_cb(Replicable data);
 
-[CCode (cname = "obj_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "aroop_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.container_iterator_cb<G>(container<G> data);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]

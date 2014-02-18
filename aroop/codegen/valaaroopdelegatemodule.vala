@@ -174,6 +174,18 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 	}
 #endif
 
+	public override CCodeExpression? generate_method_to_delegate_cast_expression_as_comma(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr, CCodeCommaExpression ccomma) {
+		if (expression_type is DelegateType) {
+			return null;
+		}
+		CCodeExpression delegate_expr = generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
+		var assign_temp_var = get_temp_variable (target_type);
+		emit_temp_var (assign_temp_var);
+		ccomma.append_expression(new CCodeAssignment(get_variable_cexpression (assign_temp_var.name), delegate_expr));
+		ccomma.append_expression(get_variable_cexpression(assign_temp_var.name));
+		return get_variable_cexpression(assign_temp_var.name);
+	}
+
 	public override CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
 		if (expression_type is DelegateType) {
 			return source_cexpr;
@@ -184,7 +196,6 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 				return source_cexpr;
 			}
 		}
-		print("%s\n",expression_type.to_string());
 		var clist = new CCodeInitializerList ();
 		if (expression_type is NullType) {
 			clist.append (source_cexpr);
@@ -198,5 +209,12 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 		var ccall = new CCodeFunctionCall (new CCodeMemberAccess(get_cvalue(expr.call),"aroop_cb"));
 		ccall.add_argument (new CCodeMemberAccess(get_cvalue(expr.call),"aroop_closure_data"));
 		return ccall;
+	}
+
+	public override CCodeExpression? generate_delegate_init_expr() {
+			var clist = new CCodeInitializerList ();
+			clist.append (new CCodeConstant ("0"));
+			clist.append (new CCodeConstant ("0"));
+			return clist;
 	}
 }

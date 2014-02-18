@@ -38,6 +38,12 @@ typedef struct opp_pool opp_pool_t;
 
 C_CAPSULE_START
 
+typedef struct {
+	void*aroop_closure_data;
+	obj_do_t aroop_cb;
+} aroop_do_t;
+
+
 enum {
 	AROOP_FLAG_HAS_LOCK = OPPF_HAS_LOCK,
 	AROOP_FLAG_SWEEP_ON_UNREF = OPPF_SWEEP_ON_UNREF,
@@ -48,7 +54,6 @@ enum {
 	AROOP_FLAG_HAS_LOCK = OPPF_COPY_OBJ_HASH_TO_LIST_ITEM = 1<<5,
 #endif
 };
-
 // Factory
 #define aroop_alloc_full(x0,x1,x2,x3,x4) ({*(x4)=(typeof((*x4)))opp_alloc4(x0,x1,x2,x3);})
 #define aroop_alloc_added_size(x0,x1,x2) ({*(x2)=(typeof((*x2)))opp_alloc4(x0,(x0)->obj_size+x1,0,0);})
@@ -60,8 +65,8 @@ enum {
 	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1);})
 #define aroop_factory_get_by_token(x,y,z) ({*z = opp_get(x,y);})
 //typedef int (*aroop_iterator_cb)(void*func_data, void*data);
-#define aroop_factory_do_full(x,a,ax,b,c,d) ({opp_factory_do_full(x,(obj_do_t)a,ax,b,c,d);})
-#define aroop_factory_list_do_full(x,a,ax,b,c,d,e,f,g) ({opp_factory_list_do_full(x,(obj_do_t)a,ax,b,c,d,e,f,g);})
+#define aroop_factory_do_full(x,a,b,c,d) ({opp_factory_do_full(x,(obj_do_t)(a).aroop_cb,(a).aroop_closure_data,b,c,d);})
+#define aroop_factory_list_do_full(x,a,b,c,d,e,f,g) ({opp_factory_list_do_full(x,(obj_do_t)(a).aroop_cb,(a).aroop_closure_data,b,c,d,e,f,g);})
 
 // searchable
 #define aroop_srcblefac_constr(x0, x1, x2, x3, x4, x5) ({\
@@ -75,8 +80,8 @@ enum {
 #define aroop_cl_aroop_aroop_searchable_construct(x)
 #define aroop_cl_aroop_aroop_hashable_construct(x)
 #define aroop_cl_aroop_aroop_hashable_type_system_init()
-#define aroop_search(a,h,cb,cbp,ret) ({(typeof((*ret)))opp_search(a, h, (obj_comp_t)cb, cbp, (void**)ret);})
-#define aroop_search_no_ret_arg(a,h,cb,cbp) ({opp_search(a, h, (obj_comp_t)cb, cbp, NULL);})
+#define aroop_search(a,h,cb,ret) ({(typeof((*ret)))opp_search(a, h, (obj_do_t)(cb).aroop_cb,(cb).aroop_closure_data, (void**)ret);})
+#define aroop_search_no_ret_arg(a,h,cb) ({opp_search(a, h, (obj_do_t)(cb).aroop_cb,(cb).aroop_closure_data, NULL);})
 
 
 // ArrayList

@@ -184,30 +184,40 @@ public class Vala.AroopMethodCallModule : AroopAssignmentModule {
 					}
 
 					if (CCodeBaseModule.get_ccode_type (param) != null) {
-						if(param.variable_type is DelegateType) {					
-							cexpr = generate_method_to_delegate_cast_expression(cexpr, arg.value_type, param.variable_type, arg);
+						if(param.variable_type is DelegateType) {
+#if false
+							var deleg_comma = new CCodeCommaExpression();
+							var deleg_temp_var = generate_method_to_delegate_cast_expression_as_comma(cexpr, arg.value_type, param.variable_type, arg, deleg_comma);
+							if(deleg_temp_var == null) { 
+								cexpr = generate_method_to_delegate_cast_expression(cexpr, arg.value_type, param.variable_type, arg);
+							} else {
+								deleg_comma.append_expression(ccall_expr);
+								ccall_expr = deleg_comma;
+								cexpr = deleg_temp_var;
+							}
+#endif
 						} else {
 							cexpr = new CCodeCastExpression (cexpr, CCodeBaseModule.get_ccode_type (param));
 						}
 					}
-				}
-#if true
-				if(/*arg.value_type is MethodType &&*/ param.variable_type is DelegateType) {					
-					CCodeExpression?dleg_expr = generate_delegate_closure_argument(arg);
+				} else if(/*arg.value_type is MethodType &&*/ param.variable_type is DelegateType) {					
 #if false
-					if(dleg_expr != null) {
-						ccall.add_argument (cexpr);
-						cexpr = dleg_expr;
-						i++;
-						params_it.next();
-					} else {
-						assert("Delegate closure block/object cannot be null\n" == null);
-					}
-#else
+					CCodeExpression?dleg_expr = generate_delegate_closure_argument(arg);
 					cexpr = generate_method_to_delegate_cast_expression(cexpr, arg.value_type, param.variable_type, arg);
+#else
+#if false
+							var deleg_comma = new CCodeCommaExpression();
+							var deleg_temp_var = generate_method_to_delegate_cast_expression_as_comma(cexpr, arg.value_type, param.variable_type, arg, deleg_comma);
+							if(deleg_temp_var == null) { 
+								cexpr = generate_method_to_delegate_cast_expression(cexpr, arg.value_type, param.variable_type, arg);
+							} else {
+								deleg_comma.append_expression(ccall_expr);
+								ccall_expr = deleg_comma;
+								cexpr = deleg_temp_var;
+							}
+#endif
 #endif
 				}
-#endif
 			}
 
 			ccall.add_argument (cexpr);

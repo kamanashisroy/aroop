@@ -1029,6 +1029,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		temp_ref_vars.clear ();
 	}
 
+	public virtual CCodeExpression? generate_delegate_init_expr() {
+		return null;
+	}
+
 	public void emit_temp_var (LocalVariable local) {
 		var cdecl = new CCodeDeclaration (get_ccode_aroop_name (local.variable_type));
 
@@ -1043,6 +1047,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			// initialization is not needed for these special
 			// pointer temp variables
 			// used to avoid side-effects in assignments
+		} else if (local.variable_type is DelegateType) {
+			vardecl.initializer = generate_delegate_init_expr();
+			vardecl.init0 = ((vardecl.initializer == null) ? false : true);
 		} else if (local.variable_type is GenericType) {
 			var gen_init = new CCodeFunctionCall (new CCodeIdentifier ("aroop_generic_type_init_val"));
 			gen_init.add_argument (get_type_id_expression (local.variable_type));
@@ -1737,7 +1744,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			set_cvalue (expr, new CCodeCastExpression (get_cvalue (expr.inner), get_ccode_aroop_name (expr.type_reference)));
 		}
 		if (expr.type_reference is DelegateType) {
-			set_cvalue(expr, generate_method_to_delegate_cast_expression(get_cvalue(expr.inner), expr.inner.value_type, expr.type_reference, expr.inner));
+			set_cvalue(expr, generate_method_to_delegate_cast_expression_as_comma_2(get_cvalue(expr.inner), expr.inner.value_type, expr.type_reference, expr.inner));
 		}
 	}
 
@@ -1917,6 +1924,17 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		return cexpr;
 	}
 
+	public virtual CCodeExpression? generate_method_to_delegate_cast_expression_as_comma(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr, CCodeCommaExpression ccomma) {
+		return null;
+	}
+	public CCodeExpression? generate_method_to_delegate_cast_expression_as_comma_2(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
+		var deleg_comma = new CCodeCommaExpression();
+		var deleg_temp_var = generate_method_to_delegate_cast_expression_as_comma(source_cexpr, expression_type, target_type, expr, deleg_comma);
+		if(deleg_temp_var == null) { 
+			return generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
+		}
+		return deleg_comma;
+	}
 	public virtual CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
 		return source_cexpr;
 	}
@@ -1938,7 +1956,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			}
 
 			if (target_type is DelegateType) {
-				return generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
+				return generate_method_to_delegate_cast_expression_as_comma_2(source_cexpr, expression_type, target_type, expr);
 			}
 			// null literal, no cast required when not converting to generic type pointer
 			return cexpr;
@@ -1972,7 +1990,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		generate_type_declaration (target_type, cfile);
 
 		if (target_type is DelegateType && expression_type is MethodType) {
-			return generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
+			return generate_method_to_delegate_cast_expression_as_comma_2(source_cexpr, expression_type, target_type, expr);
 		}
 
 		var cl = target_type.data_type as Class;
@@ -2079,10 +2097,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			return new CCodeConstant ("NULL");
 		} else if ((type.data_type != null && type.data_type.is_reference_type ())
 		           || type is DelegateType) {
-			var clist = new CCodeInitializerList ();
-			clist.append (new CCodeConstant ("0"));
-			clist.append (new CCodeConstant ("0"));
-			return clist;
+			return generate_delegate_init_expr();
 		} else if (type.data_type != null && get_ccode_default_value (type.data_type) != "") {
 			return new CCodeConstant (get_ccode_default_value (type.data_type));
 		}
