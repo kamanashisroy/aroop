@@ -211,6 +211,39 @@ public class Vala.AroopDelegateModule : AroopValueModule {
 		return ccall;
 	}
 
+	public CCodeExpression get_delegate_cb(Expression expr) {
+		if(expr.value_type is DelegateType) {
+			return new CCodeMemberAccess(get_cvalue(expr), "aroop_cb");
+		}
+		return get_cvalue(expr);
+	}
+
+	public CCodeExpression get_delegate_cb_closure(Expression expr) {
+		if(expr.value_type is DelegateType) {
+			return new CCodeMemberAccess(get_cvalue(expr), "aroop_closure_data");
+		}
+		return generate_delegate_closure_argument(expr);
+	}
+
+	public override void visit_binary_expression (BinaryExpression expr) {
+		if((!(expr.left.value_type is DelegateType) && !(expr.right.value_type is DelegateType)) || (expr.operator != BinaryOperator.EQUALITY && expr.operator != BinaryOperator.INEQUALITY) ) {
+			base.visit_binary_expression(expr);
+			return;
+		}
+		
+		var cbleft = get_delegate_cb(expr.left);
+		var cbright = get_delegate_cb(expr.right);
+		var cbbinary = new CCodeBinaryExpression(expr.operator == BinaryOperator.EQUALITY?CCodeBinaryOperator.EQUALITY:CCodeBinaryOperator.INEQUALITY, cbright, cbleft);
+		if(expr.left.value_type is NullType || expr.right.value_type is NullType) {
+			set_cvalue(expr, cbbinary);
+			return;
+		}
+		var closure_left = get_delegate_cb_closure(expr.left);
+		var closure_right = get_delegate_cb_closure(expr.right);
+		var closure_binary = new CCodeBinaryExpression(expr.operator == BinaryOperator.EQUALITY?CCodeBinaryOperator.EQUALITY:CCodeBinaryOperator.INEQUALITY, closure_right, closure_left);
+		set_cvalue(expr, new CCodeBinaryExpression(CCodeBinaryOperator.AND, cbbinary, closure_binary));
+	}
+
 	public override CCodeExpression? generate_delegate_init_expr() {
 			var clist = new CCodeInitializerList ();
 			clist.append (new CCodeConstant ("0"));
