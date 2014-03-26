@@ -29,6 +29,7 @@
 #include "core/logger.h"
 #include "opp/opp_watchdog.h"
 #include "opp/opp_iterator.h"
+#include "opp/opp_factory_profiler.h"
 #endif
 
 C_CAPSULE_START
@@ -42,7 +43,7 @@ enum {
 	BITSTRING_MASK = 0xFFFFFFFF
 };
 #define BITSTRING_TYPE SYNC_UWORD32_T
-#define OPP_NORMALIZE_SIZE(x) ({(x+3)&~3;})
+#define OPP_NORMALIZE_SIZE(x) ({(x+3)&~3;}) // multiple of 4
 #define BIT_PER_STRING 32
 #define OPP_INDEX_TO_BITSTRING_INDEX(x) (x>>5)
 #define BITSTRING_IDX_TO_BITS(x) (x<<5)
@@ -107,7 +108,7 @@ enum {
 		sync_usleep(1); \
 	} \
 }while(0)
-#endif
+#endif // TEST_OBJ_FACTORY_UTILS
 
 #ifdef SYNC_HAS_ATOMIC_OPERATION
 #define BINARY_AND_HELPER(xtype,x,y) ({volatile xtype old,new;do{old=*x;new=old&y;}while(!sync_do_compare_and_swap(x,old,new));})
@@ -115,7 +116,7 @@ enum {
 #else
 #define BINARY_AND_HELPER(xtype,x,y) ({*x &= y;})
 #define BINARY_OR_HELPER(xtype,x,y) ({*x |= y;})
-#endif
+#endif // SYNC_HAS_ATOMIC_OPERATION
 
 
 #define OPP_UNLOCK(x) do { \
@@ -126,6 +127,8 @@ enum {
 #else
 #define OPP_LOCK(x)
 #define OPP_UNLOCK(x)
+#define BINARY_AND_HELPER(xtype,x,y) ({*x &= y;})
+#define BINARY_OR_HELPER(xtype,x,y) ({*x |= y;})
 #endif
 
 #ifdef OPP_DEBUG
@@ -168,7 +171,7 @@ enum {
 })
 
 enum {
-	OPP_POOL_FREEABLE,
+	OPP_POOL_FREEABLE = 1,
 };
 struct opp_pool {
 	SYNC_UWORD16_T idx;
@@ -337,7 +340,8 @@ int opp_factory_create_full(struct opp_factory*obuff
 struct opp_pool*opp_factory_create_pool_donot_use(struct opp_factory*obuff, struct opp_pool*addpoint, void*nofreememory) {
 	// allocate a block of memory
 	struct opp_pool*pool = (struct opp_pool*)nofreememory;
-	if(!pool && !(pool = (struct opp_pool*)sync_malloc(obuff->memory_chunk_size))) {
+	opp_factory_profiler_checkleak();
+	if(!pool && !(pool = (struct opp_pool*)profiler_replace_malloc(obuff->memory_chunk_size))) {
 		SYNC_LOG(SYNC_ERROR, "Out of memory\n");
 		return NULL;
 	}
@@ -358,6 +362,7 @@ struct opp_pool*opp_factory_create_pool_donot_use(struct opp_factory*obuff, stru
 	}
 
 	obuff->pool_count++;
+	opp_factory_profiler_checkleak();
 
 	SYNC_UWORD8_T*ret = (SYNC_UWORD8_T*)(pool+1);
 	// clear memory
@@ -890,6 +895,16 @@ void*opp_ref(void*data, const char*filename, int lineno) {
 	return data;
 }
 
+#if 0
+int opp_assert_ref_count(void*data, int refcount, const char*filename, int lineno) {
+	struct opp_object*obj = data_to_opp_object(*data);
+	SYNC_ASSERT(data);
+	CHECK_OBJ(obj);
+	SYNC_ASSERT(obj->refcount == refcount);
+	return 0;
+}
+#endif
+
 //#ifdef OPP_BUFFER_HAS_LOCK
 void opp_unref_unlocked(void**data, const char*filename, int lineno) {
 	struct opp_object*obj = data_to_opp_object(*data);
@@ -1287,6 +1302,7 @@ static void opp_factory_gc_nolock(struct opp_factory*obuff) {
 	SYNC_UWORD16_T bit_idx,obj_idx;
 	struct opp_object*obj;
 	struct opp_pool*pool,*prev_pool,*next;
+	opp_factory_profiler_checkleak();
 	for(pool = obuff->pools, prev_pool = NULL;pool;pool = next) {
 		use_count = 0;
 
@@ -1322,18 +1338,17 @@ static void opp_factory_gc_nolock(struct opp_factory*obuff) {
 				obuff->pools = pool->next;
 			}
 			if(pool->flags & OPP_POOL_FREEABLE) {
-				sync_free(pool);
+				//sync_free(pool);
+				profiler_replace_free(pool, obuff->memory_chunk_size);
 			}
 			pool = NULL;
 			obuff->pool_count--;
-
+			opp_factory_profiler_checkleak();
 		} else {
 			prev_pool = pool;
 		}
-
-
-
 	}
+	opp_factory_profiler_checkleak();
 }
 
 int opp_exists(struct opp_factory*obuff, const void*data) {

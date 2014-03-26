@@ -35,11 +35,12 @@ struct opp_list_item {
 };
 
 struct opp_list_item*opp_list_add_noref(struct opp_factory*olist, void*obj_data);
-#define OPP_LIST_CREATE(olist, x) ({opp_list_create2(olist, x, OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF);})
-#define OPP_LIST_CREATE_NOLOCK(olist, x) ({opp_list_create2(olist, x, OPPF_SWEEP_ON_UNREF);})
-#define OPP_LIST_CREATE_NOLOCK_EXT(olist, x) ({opp_list_create2(olist, x, OPPF_SWEEP_ON_UNREF | OPPF_EXTENDED);})
+#define OPP_LIST_CREATE(olist, x) ({opp_list_create2_and_profile(olist, x, OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF, __FILE__, __LINE__, "aroop");})
+#define OPP_LIST_CREATE_NOLOCK(olist, x) ({opp_list_create2_and_profile(olist, x, OPPF_SWEEP_ON_UNREF, __FILE__, __LINE__, "aroop");})
+#define OPP_LIST_CREATE_NOLOCK_EXT(olist, x) ({opp_list_create2_and_profile(olist, x, OPPF_SWEEP_ON_UNREF | OPPF_EXTENDED, __FILE__, __LINE__, "aroop");})
 int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_not_flag, int hash);
-int opp_list_create2(struct opp_factory*olist, int pool_size, unsigned int flag);
+#define OPP_PLIST_CREATE_FULL(olist, _psize, _flag) ({opp_list_create2_and_profile(olist, _psize, _flag, __FILE__, __LINE__, "aroop");})
+int opp_list_create2_and_profile(struct opp_factory*olist, int pool_size, unsigned int flag, char*source_file, int source_line, char*module_name);
 int opp_list_find_from_factory(struct opp_factory*obuff, struct opp_factory*olist, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data);
 int opp_list_search_and_prune(struct opp_factory*obuff, opp_hash_t hash, const void*target);
 

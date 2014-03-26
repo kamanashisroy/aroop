@@ -23,6 +23,7 @@
 #ifndef AROOP_CONCATENATED_FILE
 #include "core/txt.h"
 #include "opp/opp_factory.h"
+#include "opp/opp_factory_profiler.h"
 #include "opp/opp_iterator.h"
 #include "opp/opp_hash_table.h"
 #include "opp/opp_hash.h"
@@ -94,11 +95,13 @@ int opp_hash_table_set(struct opp_factory*ht, aroop_txt_t*key, void*obj_data) {
 	return 0;
 }
 
-int opp_hash_table_create(struct opp_factory*ht, int pool_size, unsigned int flag) {
-	return opp_factory_create_full(ht, pool_size
+int opp_hash_table_create_and_profile(struct opp_factory*ht, int pool_size, unsigned int flag
+		, char*source_file, int source_line, char*module_name) {
+	return opp_factory_create_full_and_profile(ht, pool_size
 			, sizeof(struct opp_hash_table_item)
 			, 1, flag | OPPF_SWEEP_ON_UNREF | OPPF_EXTENDED | OPPF_SEARCHABLE
-			, OPP_CB_FUNC(hash_table_item));
+			, OPP_CB_FUNC(hash_table_item)
+			, source_file, source_line, module_name);
 }
 
 C_CAPSULE_END

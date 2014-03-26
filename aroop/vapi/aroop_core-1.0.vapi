@@ -492,6 +492,8 @@ public class aroop.mem {
 	public unowned aroop.mem shift(int inc);
 }
 
+[CCode (cname = "aroop_write_output_stream_t", cheader_filename = "aroop_memory_profiler.h", has_copy_function=false, has_destroy_function=false)]
+public delegate int aroop.writeOutputStream(etxt*buf);
 public class aroop.core {
 	[CCode (cname = "aroop_assert")]
 	public static void assert(bool value);
@@ -507,6 +509,8 @@ public class aroop.core {
 	public static Replicable memory_alloc(ulong size);
 	[CCode (cname = "aroop_memclean_raw")]
 	public static void memclean_raw(void*ptr, ulong size);
+	[CCode (cname = "aroop_memory_profiler_dump")]
+	public static void memory_profiler_dump(writeOutputStream dump);
 }
 
 public class aroop.generihack<G,H> {

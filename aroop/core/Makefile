@@ -35,6 +35,7 @@ SINGLE_FILE_HEADER_SEQUENCE= \
 ./inc/opp/opp_rbtree_internal.h \
 ./inc/opp/opp_factory.h \
 ./inc/opp/opp_iterator.h \
+./inc/opp/opp_factory_profiler.h \
 ./inc/opp/opp_salt.h \
 ./inc/opp/opp_indexed_list.h \
 ./inc/aroop_core.h \
@@ -52,7 +53,8 @@ SINGLE_FILE_HEADER_SEQUENCE= \
 ./inc/aroop_error.h \
 ./inc/aroop_assignment.h \
 ./inc/aroop_factory.h \
-./inc/aroop_core_type_info.h
+./inc/aroop_memory_profiler.h \
+./inc/aroop_core_type_info.h 
 
 
 CC+=-ggdb3

@@ -35,7 +35,7 @@ static int initiated = 0; // TODO make it volatile
 static int opp_thread_init() {
 	// TODO make it atomic 
 	if(!initiated) {
-		opp_factory_create_full(&threads, 8, sizeof(struct opp_context), 0, OPPF_HAS_LOCK | OPPF_EXTENDED, NULL);
+		OPP_PFACTORY_CREATE_FULL(&threads, 8, sizeof(struct opp_context), 0, OPPF_HAS_LOCK | OPPF_EXTENDED, NULL);
 	}
 	return 0;
 }

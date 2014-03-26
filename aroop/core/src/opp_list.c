@@ -22,6 +22,7 @@
 
 #ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
+#include "opp/opp_factory_profiler.h"
 #include "opp/opp_list.h"
 #include "opp/opp_iterator.h"
 #endif
@@ -56,11 +57,13 @@ struct opp_list_item*opp_list_add_noref(struct opp_factory*olist, void*obj_data)
 	return item;
 }
 
-int opp_list_create2(struct opp_factory*olist, int pool_size, unsigned int flag) {
-	return opp_factory_create_full(olist, pool_size
+int opp_list_create2_and_profile(struct opp_factory*olist, int pool_size, unsigned int flag
+		, char*source_file, int source_line, char*module_name) {
+	return opp_factory_create_full_and_profile(olist, pool_size
 			, sizeof(struct opp_list_item)
 			, 1, flag | OPPF_SWEEP_ON_UNREF
-			, OPP_CB_FUNC(list_item));
+			, OPP_CB_FUNC(list_item)
+			, source_file, source_line, module_name);
 }
 
 struct opp_find_list_helper {

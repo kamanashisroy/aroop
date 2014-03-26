@@ -31,7 +31,8 @@ C_CAPSULE_START
 
 void*opp_indexed_list_get(struct opp_factory*olist, int index);
 int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data);
-int opp_indexed_list_create2(struct opp_factory*olist, int pool_size);
+#define OPP_INDEXED_LIST_CREATE2(olist, pool_size) ({opp_indexed_list_create2_and_profile(olist, pool_size, __FILE__, __LINE__, "aroop");})
+int opp_indexed_list_create2_and_profile(struct opp_factory*olist, int pool_size, char*source_file, int source_line, char*module_name);
 C_CAPSULE_END
 
 #endif

@@ -22,6 +22,7 @@
 
 #ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
+#include "opp/opp_factory_profiler.h"
 #include "opp/opp_str2.h"
 #endif
 
@@ -143,7 +144,7 @@ void opp_str2system_init() {
 	// XXX this is not thread safe
 	if(!initialized) {
 #endif
-		OPP_FACTORY_CREATE(&str2_factory, OPP_STR2_BUFFER_INC, 32, NULL);
+		OPP_PFACTORY_CREATE(&str2_factory, OPP_STR2_BUFFER_INC, 32, NULL);
 #ifdef OPP_ALLOW_UNSAFE_MULTIPLE_INIT
 		initialized = 1; // TODO make it atomic
 	}

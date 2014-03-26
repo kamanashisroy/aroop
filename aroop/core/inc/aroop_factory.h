@@ -26,7 +26,10 @@
 
 #ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
+#include "core/txt.h"
 #include "opp/opp_factory.h"
+#include "opp/opp_factory_profiler.h"
+#include "opp/opp_hash_table.h"
 #include "opp/opp_any_obj.h"
 #include "opp/opp_io.h"
 #include "opp/opp_indexed_list.h"
@@ -58,7 +61,7 @@ enum {
 #define aroop_alloc_full(x0,x1,x2,x3,x4) ({*(x4)=(typeof((*x4)))opp_alloc4(x0,x1,x2,x3);})
 #define aroop_alloc_added_size(x0,x1,x2) ({*(x2)=(typeof((*x2)))opp_alloc4(x0,(x0)->obj_size+x1,0,0);})
 #define aroop_assert_factory_creation_full(x0, x1, x2, x3, x4, x5) ({\
-	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4, x5) == 0);})
+	aroop_assert(OPP_PFACTORY_CREATE_FULL(x0, x1, x2, x3 ,x4, x5) == 0);})
 #define aroop_assert_factory_creation_for_type(x0, x1, x2, x3, x4) ({\
 	aroop_assert_factory_creation_full(x0, x2, x1(NULL, OPPN_ACTION_GET_SIZE, NULL, NULL, 0), x3 ,x4, x1);})
 #define aroop_assert_factory_creation_for_type_full(x0, x1, x2, x3, x4, x5) ({\
@@ -70,7 +73,7 @@ enum {
 
 // searchable
 #define aroop_srcblefac_constr(x0, x1, x2, x3, x4, x5) ({\
-	aroop_assert(opp_factory_create_full(x0, x1, x2, x3 ,x4 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED, x5) == 0);})
+	aroop_assert(OPP_PFACTORY_CREATE_FULL(x0, x1, x2, x3 ,x4 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED, x5) == 0);})
 #define aroop_srcblefac_constr_4_type(x0, x1, x2, x3, x4) ({\
 	aroop_srcblefac_constr(x0, x2, x1(NULL, OPPN_ACTION_GET_SIZE, NULL, NULL, 0), x3, x4, x1);})
 #define aroop_srcblefac_constr_4_type_full(x0, x1, x2, x3, x4, x5) ({\
@@ -85,17 +88,17 @@ enum {
 
 
 // ArrayList
-#define aroop_array_list_create(x,y,z) ({aroop_assert(opp_indexed_list_create2(x,z) == 0);})
+#define aroop_array_list_create(x,y,z) ({aroop_assert(OPP_INDEXED_LIST_CREATE2(x,z) == 0);})
 #define aroop_indexed_list_get(x,y,z) ({*z = opp_indexed_list_get(x, y);})
 #define aroop_indexed_list_set(x,y,z) ({opp_indexed_list_set(x, y, z);})
 #define aroop_factory_free_function(unused1,unused2,x) opp_factory_destroy(x)
 
 // Set
-#define aroop_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3);})
+#define aroop_list_create(x0, x1, x2, x3) ({OPP_PLIST_CREATE_FULL(x0, x2, x3);})
 #define aroop_list_add(x,y) ({opp_alloc4(x,0,0,y) != NULL;})
 #define aroop_list_add_container(x,y,hash,flag) ({void*__mem = NULL;if((__mem = opp_alloc4(x,0,0,y)) != NULL){if(flag)opp_set_flag(__mem, flag);if(hash)opp_set_hash(__mem,hash);aroop_object_ref(__mem);};__mem;})
 #define aroop_searchable_list_prune(ls,h,x) ({opp_list_search_and_prune(ls, h, x);})
-#define aroop_searchable_list_create(x0, x1, x2, x3) ({opp_list_create2(x0, x2, x3 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED);})
+#define aroop_searchable_list_create(x0, x1, x2, x3) ({OPP_PLIST_CREATE_FULL(x0, x2, x3 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED);})
 
 #define aroop_factory_cpy_or_destroy(x,nouse,y,nouse2) ({\
 	if((x) && (y)){ \

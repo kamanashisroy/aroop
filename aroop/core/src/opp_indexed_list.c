@@ -22,6 +22,7 @@
 
 #ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
+#include "opp/opp_factory_profiler.h"
 #include "opp/opp_indexed_list.h"
 #include "opp/opp_iterator.h"
 #include "opp/opp_list.h"
@@ -78,11 +79,13 @@ int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data) {
 	return ret;
 }
 
-int opp_indexed_list_create2(struct opp_factory*olist, int pool_size) {
-	return opp_factory_create_full(olist, pool_size
+int opp_indexed_list_create2_and_profile(struct opp_factory*olist, int pool_size
+		, char*source_file, int source_line, char*module_name) {
+	return opp_factory_create_full_and_profile(olist, pool_size
 			, sizeof(struct opp_list_item)
 			, 1, OPPF_SEARCHABLE | OPPF_EXTENDED | OPPF_SWEEP_ON_UNREF
-			, OPP_CB_FUNC(indexed_list_item));
+			, OPP_CB_FUNC(indexed_list_item)
+			, source_file, source_line, module_name);
 }
 
 C_CAPSULE_END

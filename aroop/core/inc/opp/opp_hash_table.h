@@ -32,7 +32,8 @@ C_CAPSULE_START
 
 void*opp_hash_table_get(struct opp_factory*ht, aroop_txt_t*key);
 int opp_hash_table_set(struct opp_factory*ht, aroop_txt_t*key, void*obj_data);
-int opp_hash_table_create(struct opp_factory*ht, int pool_size, unsigned int flag);
+#define opp_hash_table_create(x,y,z) ({opp_hash_table_create_and_profile(x,y,z, __FILE__, __LINE__, "aroop");})
+int opp_hash_table_create_and_profile(struct opp_factory*ht, int pool_size, unsigned int flag, char*source_file, int source_line, char*module_name);
 C_CAPSULE_END
 
 

@@ -127,8 +127,6 @@ int opp_factory_create_full(struct opp_factory*obuff
 		, SYNC_UWORD16_T obj_size
 		, int token_offset
 		, unsigned char property
-//		, int(*initialize)(void*data, const void*init_data, unsigned short size)
-//		, int(*finalize)(void*data)
 		, opp_callback_t callback
 	);
 void opp_factory_gc_donot_use(struct opp_factory*obuff);
@@ -189,6 +187,12 @@ int opp_dump(const void*data, void (*log)(void *log_data, const char*fmt, ...), 
 #endif
 
 #define EXTOBJ_TEST_FLAG(o,f) ((o)->_ext.flag & f)
+
+#define OPP_FACTORY_DUMP_HEADER_FMT() "%-10.10s %-10.10s %-10.10s %-10.10s %-10.10s %-10.10s %-10.10s"
+#define OPP_FACTORY_DUMP_HEADER_ARG() "pools","allocated","used","objects","slots","bitstring size","pool size"
+#define OPP_FACTORY_DUMP_FMT() "%10d %10d %10d %10d %10d %10d %10d"
+#define OPP_FACTORY_DUMP_ARG(x) (x)->pool_count, (int)((x)->pool_count*(x)->memory_chunk_size), (int)((x)->slot_use_count*(x)->obj_size) \
+	, (x)->use_count , (x)->slot_use_count , (int)(x)->bitstring_size , (int)(x)->pool_size
 
 C_CAPSULE_END
 

@@ -55,6 +55,7 @@
 #include <assert.h>
 #include <inttypes.h>
 #include <stdarg.h>
+#include <time.h>
 
 typedef uint8_t SYNC_UWORD8_T;
 typedef uint16_t SYNC_UWORD16_T;
@@ -71,7 +72,7 @@ typedef int32_t SYNC_SWORD32_T;
 #include "core/decorator.h"
 #endif
 
-#define pointer_arith_add_byte(x,y) ({((SYNC_UWORD8_T*)x)+y;})
-#define pointer_arith_sub_byte(x,y) ({((SYNC_UWORD8_T*)x)-y;})
+#define pointer_arith_add_byte(x,y) ({((SYNC_UWORD8_T*)(x))+y;})
+#define pointer_arith_sub_byte(x,y) ({((SYNC_UWORD8_T*)(x))-y;})
 
 #endif //XULTB_CONFIG_H

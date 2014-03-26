@@ -25,6 +25,7 @@
 #include "core/config.h"
 #include "opp/opp_any_obj.h"
 #include "opp/opp_factory.h"
+#include "opp/opp_factory_profiler.h"
 #include "opp/opp_type.h"
 #include "opp/opp_io.h"
 #endif
@@ -75,12 +76,12 @@ OPP_CB(any_obj) {
 }
 
 void opp_any_obj_system_init() {
-	SYNC_ASSERT(!OPP_FACTORY_CREATE(
+	SYNC_ASSERT(!OPP_PFACTORY_CREATE(
 		&tiny_objs
 		, 32,16
 		, OPP_CB_FUNC(any_obj))
 	);
-	SYNC_ASSERT(!OPP_FACTORY_CREATE(
+	SYNC_ASSERT(!OPP_PFACTORY_CREATE(
 		&gig_objs
 		, 64,8
 		, OPP_CB_FUNC(any_obj))
