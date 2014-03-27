@@ -392,7 +392,7 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, vo
 			size += sizeof(struct opp_object);
 			slots = size / obuff->obj_size + ((size % obuff->obj_size)?1:0);
 			if(slots > BIT_PER_STRING || slots > obuff->pool_size) {
-				SYNC_LOG(SYNC_ERROR, "Too big allocation request\n");
+				SYNC_LOG(SYNC_ERROR, "Too big allocation request %d\n", size);
 				break;
 			}
 		}

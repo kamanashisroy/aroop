@@ -56,7 +56,7 @@ typedef int xultb_bool_t;
 	(x)->size=(x)->len+1; \
 })
 #define aroop_txt_embeded_with_length(x,y,z,p) ({aroop_txt_destroy(x);aroop_txt_embeded_new_with_length(x,y,z,p);})
-#define aroop_txt_embeded(x,y,p) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
+#define aroop_txt_embeded(x,y,p) ({(x)->proto = NULL,(x)->str = (y),(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
 #define aroop_txt_embeded_reuse_embeded(x,y) ({ \
 	aroop_memclean_raw2(x); \
 	if((y)->proto) { \

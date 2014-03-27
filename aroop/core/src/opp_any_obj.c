@@ -38,9 +38,10 @@ struct any_obj {
 	opp_callback_t cb;
 };
 
-static struct opp_factory tiny_objs,gig_objs;
+static struct opp_factory deca_objs,hecto_objs,kilo_objs;
+#define SELECT_ANY_OBJ(x) ((x) > 1024 ? &kilo_objs : ((x) > 128 ? &hecto_objs : &deca_objs))
 void*opp_any_obj_alloc(int size, opp_callback_t cb, void*arg, ...) {
-	void*obj = opp_alloc4((size < 128)?&tiny_objs:&gig_objs, size+sizeof(struct any_obj), 0, (void*)cb);
+	void*obj = opp_alloc4(SELECT_ANY_OBJ(size), size+sizeof(struct any_obj), 0, (void*)cb);
 	va_list ap;
 	va_start(ap, arg);
 	cb(obj, OPPN_ACTION_INITIALIZE, arg, ap, size);
@@ -77,20 +78,26 @@ OPP_CB(any_obj) {
 
 void opp_any_obj_system_init() {
 	SYNC_ASSERT(!OPP_PFACTORY_CREATE(
-		&tiny_objs
-		, 32,16
+		&deca_objs
+		, 64,32
 		, OPP_CB_FUNC(any_obj))
 	);
 	SYNC_ASSERT(!OPP_PFACTORY_CREATE(
-		&gig_objs
-		, 64,8
+		&hecto_objs
+		, 32,128
+		, OPP_CB_FUNC(any_obj))
+	);
+	SYNC_ASSERT(!OPP_PFACTORY_CREATE(
+		&kilo_objs
+		, 8,1024
 		, OPP_CB_FUNC(any_obj))
 	);
 }
 
 void opp_any_obj_system_deinit() {
-	opp_factory_destroy(&tiny_objs);
-	opp_factory_destroy(&gig_objs);
+	opp_factory_destroy(&deca_objs);
+	opp_factory_destroy(&hecto_objs);
+	opp_factory_destroy(&kilo_objs);
 }
 
 
