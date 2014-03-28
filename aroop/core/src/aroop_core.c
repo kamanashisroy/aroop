@@ -53,6 +53,7 @@ int aroop_init(int argc, char ** argv) {
 		aroop_txt_system_init();
 		opp_str2system_init();
 		opp_queuesystem_init();
+		opp_watchdog_init();
 	}
 }
 
@@ -71,6 +72,7 @@ int aroop_deinit() {
 	SYNC_UWORD16_T newval = --core_users;
 #endif
 	if(newval == 0) {
+		opp_watchdog_deinit();
 		opp_any_obj_system_deinit();
 		aroop_txt_system_deinit();
 		opp_str2system_deinit();
