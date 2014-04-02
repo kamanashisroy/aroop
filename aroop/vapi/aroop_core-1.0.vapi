@@ -280,6 +280,7 @@ public abstract class aroop.Searchable : aroop.Hashable {
 	protected void memclean(ulong size);
 }
 
+[CCode (cname = "aroop_none")]
 public struct aroop.Substance { // We can call it, Substance(in religion) 
 	//[CCode (cname = "aroop_none_pray")]
 	//public void pray(int callback, void*cb_data = null);
