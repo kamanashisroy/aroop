@@ -413,6 +413,8 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	public bool shift(int inc);
 	[CCode (cname = "aroop_txt_concat")]
 	public bool concat(etxt*other);
+	[CCode (cname = "aroop_txt_concat_string")]
+	public bool concat_string(string*other);
 	[CCode (cname = "aroop_txt_concat_char")]
 	public bool concat_char(uchar c);
 	[CCode (cname = "aroop_txt_destroy")]
