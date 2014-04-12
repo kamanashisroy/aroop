@@ -106,6 +106,9 @@ int aroop_deinit();
 #define aroop_assign_closure_as_it_is_of_delegate(x,y) ({x##_closure_data=y;})
 #define NULL_closure_data NULL
 
+#define aroop_get_source_file() __FILE__
+#define aroop_get_source_lineno() __LINE__
+
 C_CAPSULE_END
 
 #endif // AROOP_CORE_H_

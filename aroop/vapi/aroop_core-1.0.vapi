@@ -480,6 +480,9 @@ public class aroop.txt : aroop.Replicable {
 	public char char_at(uint index);
 	[CCode (cname = "aroop_txt_to_int")]
 	public int to_int();
+	[CCode (cname = "aroop_txt_printf")]
+	[PrintfFormat]
+	public void printf(string format,...);
 }
 
 /**
@@ -514,6 +517,10 @@ public class aroop.core {
 	public static void memclean_raw(void*ptr, ulong size);
 	[CCode (cname = "aroop_memory_profiler_dump")]
 	public static void memory_profiler_dump(writeOutputStream dump);
+	[CCode (cname = "aroop_get_source_file")]
+	public static unowned string sourceFileName();
+	[CCode (cname = "aroop_get_source_lineno")]
+	public static int sourceLineNo();
 }
 
 public class aroop.generihack<G,H> {
