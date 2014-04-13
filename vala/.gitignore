@@ -1,1 +1,4 @@
+Makefile
+*.h
+*.c
 vala.vapi

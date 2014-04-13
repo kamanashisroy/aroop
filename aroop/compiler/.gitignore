@@ -1,1 +1,4 @@
 valac
+*.h
+*.c
+Makefile

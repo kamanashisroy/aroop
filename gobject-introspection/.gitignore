@@ -8,3 +8,5 @@ scannerparser.h
 scannerlexer.c
 
 gen-introspect
+
+Makefile

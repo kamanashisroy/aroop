@@ -1,0 +1,5 @@
+*.o
+*.lo
+*.la
+*.a
+single_file_aroop_core.c
