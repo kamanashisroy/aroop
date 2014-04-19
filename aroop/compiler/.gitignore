@@ -1,4 +1,5 @@
 valac
+aroopc
 *.h
 *.c
 Makefile
