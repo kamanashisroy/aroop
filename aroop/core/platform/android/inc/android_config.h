@@ -16,46 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Aroop.  If not, see <http://www.gnu.org/licenses/>.
  *
- *      Author: Kamanashis Roy
+ *  Created on: Jun 29, 2011
+ *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 
-#ifndef XULTB_CORE_CONFIG_H
-#define XULTB_CORE_CONFIG_H
+#ifndef AROOP_ANDROID_CONFIG_H
+#define AROOP_ANDROID_CONFIG_H
 
-#define COMPONENT_SCALABILITY 2
-
-#define XULTB_PLATFORM_ENTER(x) x
-#define XULTB_PLATFORM_WALK(x) x
-
-#ifdef ASTERISK_CHANNEL
-#ifndef AROOP_CONCATENATED_FILE
-#include "ast_config.h"
-#endif
-#elif defined(QTGUI_LIBRARY)
-#ifndef AROOP_CONCATENATED_FILE
-#include "qt_config.h"
-#endif
-#elif defined(__EPOC32__)
-#ifndef AROOP_CONCATENATED_FILE
-#include "symb_config.h"
-#endif
-#elif defined(WIN)
-#ifndef AROOP_CONCATENATED_FILE
-#include "win_config.h"
-#endif
-#elif defined(AROOP_ANDROID)
-#ifndef AROOP_CONCATENATED_FILE
-#include "android_config.h"
-#endif
-#else // ANDROID_XULTB
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
 #include <inttypes.h>
+#include "unistd.h"
+#include "string.h"
+#include "stdlib.h"
+#include <assert.h>
 #include <stdarg.h>
 #include <time.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef uint8_t SYNC_UWORD8_T;
 typedef uint16_t SYNC_UWORD16_T;
@@ -66,13 +44,10 @@ typedef int16_t SYNC_SWORD16_T;
 typedef int32_t SYNC_SWORD32_T;
 
 #define SYNC_ASSERT(x) assert(x)
-#endif // ifdef ANDROID else
 
-#ifndef AROOP_CONCATENATED_FILE
-#include "core/decorator.h"
+#ifdef __cplusplus
+}
 #endif
 
-#define pointer_arith_add_byte(x,y) ({((SYNC_UWORD8_T*)(x))+y;})
-#define pointer_arith_sub_byte(x,y) ({((SYNC_UWORD8_T*)(x))-y;})
+#endif //AROOP_ANDROID_CONFIG_H
 
-#endif //XULTB_CONFIG_H

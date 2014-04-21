@@ -1,0 +1,6 @@
+
+How to build
+=============
+ You need to do like following,
+
+ ndk-build

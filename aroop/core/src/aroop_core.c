@@ -27,6 +27,7 @@
 #include "opp/opp_factory.h"
 #include "opp/opp_factory_profiler.h"
 #include "opp/opp_any_obj.h"
+#include "opp/opp_watchdog.h"
 #include "core/memory.h"
 #include "aroop_memory_profiler.h"
 #endif

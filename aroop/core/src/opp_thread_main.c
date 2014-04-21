@@ -28,6 +28,8 @@
 
 C_CAPSULE_START
 
+#ifndef AROOP_BASIC
+
 __thread struct opp_context*__opp_context_id = NULL;
 static struct opp_factory threads;
 static int initiated = 0; // TODO make it volatile
@@ -53,5 +55,7 @@ int opp_thread_main(opp_thread_func_t func, int*argc, char*args[]) { // always c
 	OPPUNREF(__opp_context_id);
 	return 0;
 }
+
+#endif // AROOP_BASIC
 
 C_CAPSULE_END

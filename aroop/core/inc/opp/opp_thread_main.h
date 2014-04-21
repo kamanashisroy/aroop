@@ -30,6 +30,7 @@
 
 C_CAPSULE_START
 
+#ifndef AROOP_BASIC
 struct opp_context {
 	OPP_OBJECT_EXT_TINY();
 	struct opp_factory objs;
@@ -37,6 +38,7 @@ struct opp_context {
 
 typedef int (*opp_thread_func_t) (int*argc, char*args[]);
 int opp_thread_main(opp_thread_func_t func, int*argc, char*args[]);
+#endif
 
 C_CAPSULE_END
 

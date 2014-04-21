@@ -67,7 +67,7 @@ C_CAPSULE_END
 #include "win_logger.h"
 #endif
 #else
-#ifdef ANDROID_XULTB
+#ifdef AROOP_ANDROID
 #ifndef AROOP_CONCATENATED_FILE
 #include "android_logger.h"
 #endif

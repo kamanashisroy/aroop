@@ -1,0 +1,3 @@
+vsrc/*.c
+include/*.h
+vapi/*.vapi

@@ -114,6 +114,7 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len) {
 	return text;
 }
 
+#ifndef AROOP_BASIC
 #include <printf.h>
 static int print_etxt (FILE *stream,
                    const struct printf_info *info,
@@ -134,6 +135,7 @@ int print_etxt_arginfo (const struct printf_info *info, size_t n,
 	 argtypes[0] = PA_POINTER;
 	return 1;
 }
+#endif
 
 int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...) {
 	va_list arg;
