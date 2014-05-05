@@ -32,3 +32,4 @@ coverage
 lcov.info
 .version.h
 *~
+/Makefile

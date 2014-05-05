@@ -39,13 +39,14 @@ C_CAPSULE_START
 #endif
 
 /* A red-black tree node. */
-struct opp_object_ext
+typedef struct opp_object_ext
   {
 	OPP_OBJECT_EXT_TINY();
     struct opp_object_ext *rb_link[2];   /* Subtrees. */
     struct opp_object_ext *sibling;
     unsigned char rb_color;       /* Color. */
-  };
+  } opp_object_ext_t;
+
 
 /* Tree data structure. */
 struct rb_table

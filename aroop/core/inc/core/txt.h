@@ -125,7 +125,7 @@ typedef int xultb_bool_t;
 	} \
 })
 
-#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->str = opp_str2_alloc(y))) {(x)->size = y;}(x)->str;(x)->proto = (x)->str;})
+#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->proto = opp_str2_alloc(y))) {(x)->size = y;}(x)->str = (x)->proto;})
 #define aroop_txt_embeded_stackbuffer(x,y) ({ \
 	char*__buf = alloca(y+1)/*char buf##y[y]*/; \
 	(x)->str = __buf; \
@@ -194,7 +194,7 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 #define aroop_txt_is_empty_magical(x) ({(!(x) || !((x)->str) || ((x)->len == 0));})
 #define aroop_txt_string_or(x,y) ({((x)->str&&(x)->len!=0)?x:y;})
 #define aroop_txt_string_or_magical(x,y) ({((x)&&(x)->str&&(x)->len!=0)?x:y;})
-#define aroop_txt_destroy(x) ({if((x)->proto)OPPUNREF((x)->proto);(x)->str = NULL;(x)->len = 0;(x)->hash = 0;(x)->size = 0;})
+#define aroop_txt_destroy(x) ({if((x)->proto){OPPUNREF((x)->proto);}(x)->str = NULL;(x)->len = 0;(x)->hash = 0;(x)->size = 0;})
 
 // string play
 // TODO optimize this shift code

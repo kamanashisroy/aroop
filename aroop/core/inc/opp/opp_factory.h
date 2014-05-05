@@ -108,9 +108,9 @@ struct opp_factory {
 	opp_lookup_table_t tree;
 };
 
-struct opp_object_ext_tiny {
+typedef struct opp_object_ext_tiny {
 	OPP_OBJECT_EXT_TINY();
-};
+}opp_object_ext_tiny_t;
 
 #define OPP_FACTORY_USE_COUNT(q) ({(q)->use_count;})
 

@@ -100,7 +100,7 @@ int aroop_deinit();
 #define aroop_build_generics(x,y,obj) ({x(obj,OPPN_ACTION_SET_GENERIC_TYPES,y,0,0);})
 
 #define aroop_cleanup_in_countructor_function(x) ({x=NULL;})
-#define aroop_cleanup_in_countructor_function_for_struct(x)
+#define aroop_cleanup_in_countructor_function_for_struct(x) memset(&x,0,sizeof(x))
 
 #define aroop_assign_closure_of_delegate(x,y) ({x##_closure_data=y##_closure_data;})
 #define aroop_assign_closure_as_it_is_of_delegate(x,y) ({x##_closure_data=y;})
