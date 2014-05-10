@@ -672,7 +672,10 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		if (m.is_abstract || m.is_virtual) {
 			// TODO remove the __VA_ARGS__ for single argument function
-			int count = m.get_parameters().size;
+			int count = m.get_parameters().size; // get the number of parameters
+			if (m.return_type is GenericType) {
+				count++;
+			}
 			var macro_function = "%s(x".printf(get_ccode_name(m));
 			var macro_body = "((%s*)x)->vtable->%s(x".printf(get_ccode_aroop_name((Class) m.parent_symbol), m.name);
 			if(count != 0 || m.get_error_types().size != 0) {
