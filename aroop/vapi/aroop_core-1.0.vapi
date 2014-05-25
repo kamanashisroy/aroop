@@ -297,7 +297,7 @@ public struct aroop.aroop_wrong : aroop.Substance {
 
 /* Nothing is that which fills no space. - Leonardo da Vinci */
 [CCode (cname = "aroop_none")]
-public interface aroop.Replicable/*Possible alternatives Computable,Replicable /*/ { // We can call it, Omnipresent(in religion)
+public interface aroop.Replicable {
 #if NOREFFF
 	[CCode (cname = "OPPREF")]
 	public static void ref();
