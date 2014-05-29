@@ -41,7 +41,7 @@ struct any_obj {
 static struct opp_factory deca_objs,hecto_objs,kilo_objs;
 #define SELECT_ANY_OBJ(x) ((x) > 1024 ? &kilo_objs : ((x) > 128 ? &hecto_objs : &deca_objs))
 void*opp_any_obj_alloc(int size, opp_callback_t cb, void*arg, ...) {
-	void*obj = opp_alloc4(SELECT_ANY_OBJ(size), size+sizeof(struct any_obj), 0, (void*)cb);
+	void*obj = opp_alloc4(SELECT_ANY_OBJ(size), size+sizeof(struct any_obj), 0, 0, (void*)cb);
 	va_list ap;
 	va_start(ap, arg);
 	cb(obj, OPPN_ACTION_INITIALIZE, arg, ap, size);

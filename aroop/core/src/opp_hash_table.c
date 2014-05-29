@@ -87,7 +87,7 @@ int opp_hash_table_set(struct opp_factory*ht, aroop_txt_t*key, void*obj_data) {
 		item->obj_data = OPPREF(obj_data);
 		OPPUNREF(item);
 	} else {
-		item = (struct opp_hash_table_item*)opp_alloc4(ht, 0, 0, key, obj_data);
+		item = (struct opp_hash_table_item*)opp_alloc4(ht, 0, 0, 0, key, obj_data);
 		opp_set_hash(item, opp_get_hash_bin(item->key->str, item->key->len));
 	}
 

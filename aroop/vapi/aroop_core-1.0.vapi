@@ -52,7 +52,7 @@ enum aroop.factory_flags {
 	SWEEP_ON_UNREF = 1<<1,
 	EXTENDED = 1<<2,
 	SEARCHABLE = 1<<3,
-	INITIALIZE = 1<<4,
+	FAST_INITIALIZE = 1<<4,
 }
 
 //public delegate void aroop.verb_func(Replicable data, void*func_data);
@@ -200,7 +200,7 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_assert_factory_creation_for_type")]
 	public Factory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_alloc_full")]
-	public G? alloc_full(uint16 size = 0, int doubleref = 0, void*init_data = null);
+	public G? alloc_full(uint16 size = 0, int doubleref = 0, bool mclean = false, void*init_data = null);
 	[CCode (cname = "aroop_alloc_added_size")]
 	public G? alloc_added_size(uint16 addedSize = 0);
 	[CCode (cname = "aroop_factory_get_by_token")]

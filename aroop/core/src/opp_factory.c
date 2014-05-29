@@ -379,7 +379,7 @@ struct opp_pool*opp_factory_create_pool_donot_use(struct opp_factory*obuff, stru
 	return pool;
 }
 
-void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, void*init_data, ...) {
+void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, int require_clean, void*init_data, ...) {
 	SYNC_UWORD8_T*ret = NULL;
 	SYNC_UWORD8_T slots = 1;
 	
@@ -562,6 +562,9 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, vo
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
 #else
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
+		if(require_clean && !(obuff->property & OPPF_FAST_INITIALIZE)) {
+			memset(ret, 0, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object));
+		}
 		if(!(obuff->property & OPPF_FAST_INITIALIZE)
 				&& obuff->callback
 				&& obuff->callback(ret, OPPN_ACTION_INITIALIZE
@@ -588,6 +591,9 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, vo
 
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
+	if(ret && require_clean && (obuff->property & OPPF_FAST_INITIALIZE)) {
+		memset(ret, 0, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object));
+	}
 	if(ret && (obuff->property & OPPF_FAST_INITIALIZE) && obuff->callback && obuff->callback(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, ap, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object))) {
 		void*dup = ret;
 		OPPUNREF(ret);
