@@ -53,6 +53,7 @@ enum aroop.factory_flags {
 	EXTENDED = 1<<2,
 	SEARCHABLE = 1<<3,
 	FAST_INITIALIZE = 1<<4,
+	MEMORY_CLEAN = 1<<5,
 }
 
 //public delegate void aroop.verb_func(Replicable data, void*func_data);

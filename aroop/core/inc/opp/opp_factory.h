@@ -56,6 +56,7 @@ enum {
 	OPPF_EXTENDED = 1<<2,
 	OPPF_SEARCHABLE = 1<<3,
 	OPPF_FAST_INITIALIZE = 1<<4,
+	OPPF_MEMORY_CLEAN = 1<<5,
 #if 0
 	OPPF_COPY_OBJ_HASH_TO_LIST_ITEM = 1<<5,
 #endif
@@ -147,7 +148,7 @@ void opp_factory_verb(struct opp_factory*obuff, opp_verb_t verb_obj, const void*
 // obj api
 #define OPP_ALLOC1(x) ({opp_alloc4(x, 0, 0, 0, NULL);})
 #define OPP_ALLOC2(x, y) ({opp_alloc4(x, 0, 0, 0, y);})
-void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, int require_clean, void*init_data, ...);
+void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, SYNC_UWORD8_T doubleref, SYNC_UWORD8_T require_clean, void*init_data, ...);
 void opp_force_memclean(void*data);
 void opp_shrink(void*data, int size);
 void opp_set_hash(void*data, opp_hash_t hash);

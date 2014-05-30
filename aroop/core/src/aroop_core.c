@@ -58,6 +58,15 @@ int aroop_init(int argc, char ** argv) {
 	}
 }
 
+#define PROFILER_CRASH_DEBUG
+#ifdef PROFILER_CRASH_DEBUG
+static int profiler_logger_debug(void*log_data, struct aroop_txt*content) {
+	printf("%s\n", content->str);
+	return 0;
+}
+#endif
+
+
 int aroop_deinit() {
 #ifdef SYNC_HAS_ATOMIC_OPERATION
 	volatile SYNC_UWORD16_T oldval,newval;
@@ -78,6 +87,10 @@ int aroop_deinit() {
 		aroop_txt_system_deinit();
 		opp_str2system_deinit();
 		opp_queuesystem_deinit();
+#ifdef PROFILER_CRASH_DEBUG
+		aroop_write_output_stream_t log = {NULL, profiler_logger_debug};
+		aroop_memory_profiler_dump(log);
+#endif
 		opp_factory_profiler_deinit();
 	}
 }

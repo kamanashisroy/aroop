@@ -32,7 +32,7 @@ internal class Orchard : Replicable {
   static void buildall() {
 		int i = 0;
 		for(i=10;i != 0;i--) {
-			Mango x = mangoes.alloc_full(4, 0, null);
+			Mango x = mangoes.alloc_full(4, 0, false, null);
 			core.assert(x != null);
       x.pin();
 			x.build(i);
