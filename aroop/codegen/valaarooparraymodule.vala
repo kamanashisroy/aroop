@@ -33,6 +33,7 @@ public class Vala.AroopArrayModule : AroopMethodCallModule {
 		if (array_type != null && array_type.fixed_length) {
 			// no heap allocation for fixed-length arrays
 
+#if false
 			var temp_var = get_temp_variable (array_type, true, expr);
 			var name_cnode = new CCodeIdentifier (temp_var.name);
 			int i = 0;
@@ -42,6 +43,16 @@ public class Vala.AroopArrayModule : AroopMethodCallModule {
 			append_initializer_list (name_cnode, expr.initializer_list, ref i);
 
 			set_cvalue (expr, name_cnode);
+#else
+			var array_new = new CCodeFunctionCall (new CCodeIdentifier ("aroop_fixedlen_array_create"));
+			array_new.add_argument (new CCodeIdentifier(get_ccode_name (array_type.element_type)));
+			int i = 0;
+			foreach (Expression e in expr.initializer_list.get_initializers ()) {
+				array_new.add_argument (get_cvalue (e));
+				i++;
+			}
+			set_cvalue (expr, array_new);
+#endif
 
 			return;
 		}

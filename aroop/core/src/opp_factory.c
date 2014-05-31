@@ -276,6 +276,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 
 	if(obuff->sign == OPPF_INITIALIZED_INTERNAL) {
 		SYNC_LOG(SYNC_ERROR, "obj is already initiated\n");
+		SYNC_ASSERT(!"obj is already initiated\n");
 		return 0;
 	}
 	obuff->sign = OPPF_INITIALIZED_INTERNAL;
@@ -564,26 +565,25 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, SYNC_UWORD8_T dou
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
 #else
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
-		if(!(obuff->property & OPPF_FAST_INITIALIZE) && obuff->callback) {
-			if(require_clean) {
-				opp_force_memclean(ret);
-				require_clean = 0;
-			}
-				
-			if(obuff->callback(ret, OPPN_ACTION_INITIALIZE
-						, (void*)init_data
-						, ap, obj->slots*obuff->obj_size - sizeof(struct opp_object))) {
-				void*dup = ret;
-				OPPUNREF(ret);
-				if(doubleref) {
-					OPPUNREF(dup);
-				}
-				break;
-			}
-		}
 #endif
 	} while(0);
 
+	if(ret && !(obuff->property & OPPF_FAST_INITIALIZE) && obuff->callback) {
+		if(require_clean) {
+			opp_force_memclean(ret);
+			require_clean = 0;
+		}
+				
+		if(obuff->callback(ret, OPPN_ACTION_INITIALIZE
+					, (void*)init_data
+					, ap, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object))) {
+			void*dup = ret;
+			OPPUNREF(ret);
+			if(doubleref) {
+				OPPUNREF(dup);
+			}
+		}
+	}
 #ifdef OPP_DEBUG
 	if(obuff->pools && obuff->pools->bitstring) {
 		BITSTRING_TYPE*bitstring;

@@ -33,6 +33,7 @@
 #include "aroop_core_type_info.h"
 #include "aroop_error.h"
 #include "aroop_assignment.h"
+#include "aroop_array.h"
 #endif
 
 

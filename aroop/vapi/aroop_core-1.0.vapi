@@ -83,7 +83,7 @@ public struct aroop.Iterator<G> {
 	[CCode (cname = "aroop_memclean_raw_2args")]
 	public Iterator.EMPTY();
 	[CCode (cname = "aroop_iterator_create")]
-	public Iterator(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag, aroop_hash hash);
+	public Iterator(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_iterator_next")]
 	public bool next ();
 	[CCode (cname = "aroop_iterator_get")]

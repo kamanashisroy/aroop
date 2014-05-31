@@ -40,7 +40,7 @@ public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
 		bool unref_old = requires_destroy (assignment.left.value_type);
 
 		if (unref_old) {
-#if true
+#if false
 			if (!is_pure_ccode_expression (lhs)) {
 				/* Assign lhs to temp var to avoid repeating side effect */
 				var lhs_value_type = assignment.left.value_type.copy ();
@@ -59,10 +59,8 @@ public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
 
 			rhs = get_variable_cexpression (temp_decl.name);
 #else
-			var assign_n_unref = new CCodeFunctionCall(new CCodeIdentifier ("where am I?"));
-			assign_n_unref.add_argument(lhs);
-			assign_n_unref.add_argument(get_unref_expression (lhs, assignment.left.value_type, assignment.left));
-			lhs = assign_n_unref;
+			/* unref old value */
+			ccode.add_expression (get_unref_expression (lhs, assignment.left.value_type, assignment.left));
 #endif
 		}
 	

@@ -1476,6 +1476,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			var temp_decl = get_temp_variable (expr.type_reference, false, expr);
 			emit_temp_var (temp_decl);
 
+			// TODO omit the following line of code
+			var memclean = new CCodeFunctionCall(new CCodeIdentifier("aroop_memclean_raw2"));
+			var temp_ref = get_variable_cexpression (temp_decl.name);
+			memclean.add_argument(new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, temp_ref));
+			ccode.add_expression (memclean); // XXX doing costly memory cleanup
 			instance = get_variable_cexpression (get_variable_cname (temp_decl.name));
 		}
 
