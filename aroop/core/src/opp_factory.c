@@ -214,10 +214,16 @@ enum {
 	OPPF_INITIALIZED_INTERNAL = 0x3428,
 };
 
+#ifdef LOW_MEMORY
+#define refcount_t OPP_VOLATILE_VAR SYNC_UWORD16_T
+#else
+#define refcount_t OPP_VOLATILE_VAR SYNC_UWORD32_T
+#endif
+
 struct opp_object {
 	SYNC_UWORD8_T bit_idx;
 	SYNC_UWORD8_T slots;
-	OPP_VOLATILE_VAR SYNC_UWORD16_T refcount;
+	refcount_t refcount;
 #ifdef FACTORY_OBJ_SIGN
 	SYNC_UWORD32_T signature;
 #endif
@@ -230,7 +236,7 @@ struct opp_object {
 	struct {
 		const char *filename;
 		SYNC_UWORD16_T lineno;
-		SYNC_UWORD16_T refcount;
+		refcount_t refcount;
 		char op;
 		char flags[3];
 	}ref_trace[OPP_TRACE_SIZE];
@@ -879,7 +885,7 @@ void*opp_ref(void*data, const char*filename, int lineno) {
 #endif
 
 	do {
-		volatile SYNC_UWORD16_T oldval,newval;
+		refcount_t oldval,newval;
 		oldval = obj->refcount;
 		newval = oldval+1;
 		if(!oldval || newval > 40000) {
@@ -945,7 +951,7 @@ void opp_unref_unlocked(void**data, const char*filename, int lineno) {
 	*data = NULL;
 	SYNC_ASSERT(obj->refcount);
 #ifdef SYNC_HAS_ATOMIC_OPERATION
-	volatile SYNC_UWORD16_T oldval,newval;
+	refcount_t oldval,newval;
 	do {
 		oldval = obj->refcount;
 		newval = oldval - 1;
@@ -997,7 +1003,7 @@ void opp_unref(void**data, const char*filename, int lineno) {
 
 	*data = NULL;
 #ifdef SYNC_HAS_ATOMIC_OPERATION
-	volatile SYNC_UWORD16_T oldval,newval;
+	refcount_t oldval,newval;
 	struct opp_factory*obuff = NULL;
 	do {
 		oldval = obj->refcount;

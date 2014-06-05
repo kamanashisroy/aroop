@@ -95,7 +95,7 @@ int aroop_deinit();
 
 #define aroop_object_ref(x) ({OPPREF(x);x;})
 #define aroop_generic_object_ref(x) ({OPPREF(x);x;})
-#define aroop_object_unref(targ,gt_unused,x) ({if(x)OPPUNREF(x);(targ)x;})
+#define aroop_object_unref(targ,gt_unused,x) ({OPPUNREF(x);(targ)x;})
 #define aroop_generic_object_unref(targ,gt,obj) ({gt(&obj, OPPN_ACTION_UNREF, NULL,0,0);obj;})
 #define aroop_no_unref(targ,gt_unused,x)
 #define aroop_build_generics(x,y,obj) ({x(obj,OPPN_ACTION_SET_GENERIC_TYPES,y,0,0);})
