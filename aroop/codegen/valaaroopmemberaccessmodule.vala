@@ -28,6 +28,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));
 	}
 
+#if false
 	string get_vtable_var(Class cl, Class of_class) {
 		print("%s grephere %s\n", get_ccode_aroop_name(cl), get_ccode_aroop_name(of_class));
 		if(of_class == null) {
@@ -41,6 +42,25 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 		}
 		return "unknown";
 	}
+#endif
+
+	string get_vtable_var_for_method(Class cl, Class of_class, Method m) {
+		print("%s grephere %s\n", get_ccode_aroop_name(cl), get_ccode_aroop_name(of_class));
+		if(of_class == null) {
+			return "unknown";
+		}
+		if(of_class.base_class != null) {
+			if(of_class.base_class.has_vtables && of_class.base_class.get_methods().contains(m) ) {
+				return get_vtable_var_for_method(cl, of_class.base_class, m);
+			}
+			return get_ccode_vtable_var(cl, of_class);
+		}
+		if(of_class.has_vtables) {
+			return get_ccode_vtable_var(cl, of_class);
+		}
+		return "unknown";
+	}
+
 	public override void visit_member_access (MemberAccess expr) {
 		CCodeExpression pub_inst = null;
 		DataType base_type = null;
@@ -79,7 +99,7 @@ public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
 						//b_class = b_class.base_class;
 					}
 					var aroop_base_method_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_base_method_call"));
-					aroop_base_method_call.add_argument (new CCodeConstant(get_vtable_var (b_class, mb_class)));
+					aroop_base_method_call.add_argument (new CCodeConstant(get_vtable_var_for_method (b_class, mb_class, m)));
 					//aroop_base_method_call.add_argument (new CCodeConstant(m.base_method.name));
 					aroop_base_method_call.add_argument (new CCodeConstant(get_ccode_vfunc_name(m)));
 					set_cvalue (expr, aroop_base_method_call);
