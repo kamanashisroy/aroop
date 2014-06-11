@@ -1130,7 +1130,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, obj_comp_t compare_f
 	SYNC_UWORD16_T bit_idx, obj_idx;
 	void *retval = NULL;
 	const struct opp_object *obj = NULL;
-	const struct opp_list_item*item = NULL;
+	const opp_pointer_ext_t*item = NULL;
 #ifdef OPTIMIZE_OBJ_LOOP
 	int use_count = 0, iteration_count = 0;
 #endif
@@ -1171,7 +1171,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, obj_comp_t compare_f
 					obj = (struct opp_object*)(pool->head + obj_idx*obuff->obj_size);
 					CHECK_OBJ(obj);
 					CHECK_WEAK_OBJ(obj);
-					item = (struct opp_list_item*)(obj+1);
+					item = (opp_pointer_ext_t*)(obj+1);
 					obj = data_to_opp_object(item->obj_data);
 					CHECK_OBJ(obj);
 					CHECK_WEAK_OBJ(obj);
@@ -1412,7 +1412,7 @@ void opp_factory_list_do_full(struct opp_factory*obuff, obj_do_t obj_do, void*fu
 	SYNC_UWORD16_T oflag;
 	SYNC_UWORD16_T bit_idx, obj_idx;
 	const struct opp_object *obj = NULL;
-	struct opp_list_item*item = NULL;
+	opp_pointer_ext_t*item = NULL;
 #ifdef OPTIMIZE_OBJ_LOOP
 	int use_count = 0, iteration_count = 0;
 #endif
@@ -1482,7 +1482,7 @@ void opp_factory_list_do_full(struct opp_factory*obuff, obj_do_t obj_do, void*fu
 					obj = (struct opp_object*)(pool->head + obj_idx*obuff->obj_size);
 					CHECK_WEAK_OBJ(obj);
 					CHECK_OBJ(obj);
-					item = (struct opp_list_item*)(obj+1);
+					item = (opp_pointer_ext_t*)(obj+1);
 					if(obuff->property & OPPF_EXTENDED) {
 						oflag = ((struct opp_object_ext*)(obj+1))->flag;
 						if(!(oflag & if_flag) || (oflag & if_not_flag)) {
@@ -1937,7 +1937,7 @@ static int obj_utils_test_helper(int inc, struct pencil_logger*logger) {
 	struct pencil*pen;
 	struct pencil hijacked;
 	struct opp_factory list;
-	struct opp_list_item*item = NULL;
+	opp_pointer_ext_t*item = NULL;
 	int count = 0;
 	int color = 3;
 	int idx = 0;

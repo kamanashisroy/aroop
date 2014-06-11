@@ -63,6 +63,10 @@ enum {
 };
 
 enum {
+	OPPL_POINTER_NOREF = 1<<7,
+};
+
+enum {
 	OPPN_ACTION_INITIALIZE = 512,
 	OPPN_ACTION_FINALIZE,
 	OPPN_ACTION_REUSE,
@@ -98,7 +102,7 @@ struct opp_factory {
 	SYNC_UWORD16_T obj_size;
 	SYNC_UWORD16_T bitstring_size;
 	SYNC_UWORD32_T memory_chunk_size;
-	SYNC_UWORD8_T property;
+	opp_property_t property;
 #ifdef OPP_BUFFER_HAS_LOCK
 	sync_mutex_t lock;
 #endif
@@ -127,7 +131,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 		, SYNC_UWORD16_T inc
 		, SYNC_UWORD16_T obj_size
 		, int token_offset
-		, unsigned char property
+		, opp_property_t property
 		, opp_callback_t callback
 	);
 void opp_factory_gc_donot_use(struct opp_factory*obuff);

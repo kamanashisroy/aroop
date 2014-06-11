@@ -89,7 +89,7 @@ enum {
 
 
 // ArrayList
-#define aroop_array_list_create(x,y,z) ({aroop_assert(OPP_INDEXED_LIST_CREATE2(x,z) == 0);})
+#define aroop_array_list_create(x,y,z) ({aroop_assert(OPP_INDEXED_LIST_CREATE2(x,z,0) == 0);})
 #define aroop_indexed_list_get(x,y,z) ({*z = opp_indexed_list_get(x, y);})
 #define aroop_indexed_list_set(x,y,z) ({opp_indexed_list_set(x, y, z);})
 #define aroop_factory_free_function(unused1,unused2,x) opp_factory_destroy(x)

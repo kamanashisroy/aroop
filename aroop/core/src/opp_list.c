@@ -29,8 +29,11 @@
 
 C_CAPSULE_START
 
+#define OPPREF_CONTENT(x,y) ({if(!((x)->property & OPPL_POINTER_NOREF))OPPREF(y);})
+#define OPPUNREF_CONTENT(x,y) ({if(!((x)->property & OPPL_POINTER_NOREF))OPPUNREF(y);})
+
 OPP_CB(list_item) {
-	struct opp_list_item*item = (struct opp_list_item*)data;
+	opp_pointer_ext_t*item = (opp_pointer_ext_t*)data;
 
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
@@ -41,28 +44,38 @@ OPP_CB(list_item) {
 		OPPUNREF(item->obj_data);
 		break;
 	}
-
-
 	return 0;
 }
 
-struct opp_list_item*opp_list_add_noref(struct opp_factory*olist, void*obj_data) {
-	struct opp_list_item*item = (struct opp_list_item*)OPP_ALLOC2(olist, obj_data);
+OPP_CB(list_item_noref) {
+	opp_pointer_ext_t*item = (opp_pointer_ext_t*)data;
+
+	switch(callback) {
+	case OPPN_ACTION_INITIALIZE:
+		item->obj_data = (void*)cb_data;
+		break;
+	}
+	return 0;
+}
+
+
+opp_pointer_ext_t*opp_list_add_noref(struct opp_factory*olist, void*obj_data) {
+	opp_pointer_ext_t*item = (opp_pointer_ext_t*)OPP_ALLOC2(olist, obj_data);
 	// link
 	if(!item) {
 		return NULL;
 	}
 
-	OPPUNREF(obj_data);
+	OPPUNREF_CONTENT(olist, obj_data);
 	return item;
 }
 
-int opp_list_create2_and_profile(struct opp_factory*olist, int pool_size, unsigned int flag
+int opp_list_create2_and_profile(struct opp_factory*olist, int pool_size, opp_property_t flag
 		, char*source_file, int source_line, char*module_name) {
 	return opp_factory_create_full_and_profile(olist, pool_size
-			, sizeof(struct opp_list_item)
+			, sizeof(opp_pointer_ext_t)
 			, 1, flag | OPPF_SWEEP_ON_UNREF
-			, OPP_CB_FUNC(list_item)
+			, (flag & OPPL_POINTER_NOREF) ? OPP_CB_FUNC(list_item_noref) : OPP_CB_FUNC(list_item)
 			, source_file, source_line, module_name);
 }
 
@@ -85,7 +98,7 @@ static int opp_factory_list_compare(void*func_data, void*data) {
 }
 
 static int opp_list_prune_helper(void*data, void*target) {
-	if(((struct opp_list_item*)data)->obj_data == target) {
+	if(((opp_pointer_ext_t*)data)->obj_data == target) {
 		OPPUNREF(data);
 	}
 	return 0;
@@ -97,7 +110,7 @@ int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_no
 }
 
 static int opp_list_search_and_prune_comparator(const void*data, const void*target) {
-	if(((struct opp_list_item*)data)->obj_data == target) {
+	if(((opp_pointer_ext_t*)data)->obj_data == target) {
 		OPPUNREF(data);
 	}
 	return -1;

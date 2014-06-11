@@ -30,8 +30,11 @@
 
 C_CAPSULE_START
 
+#define OPPREF_CONTENT(x,y) ({if(!((x)->property & OPPL_POINTER_NOREF))OPPREF(y);})
+#define OPPUNREF_CONTENT(x,y) ({if(!((x)->property & OPPL_POINTER_NOREF))OPPUNREF(y);})
+
 OPP_CB(indexed_list_item) {
-	struct opp_list_item*item = (struct opp_list_item*)data;
+	opp_pointer_ext_t*item = (opp_pointer_ext_t*)data;
 	switch(callback) {
 	case OPPN_ACTION_FINALIZE:
 		OPPUNREF(item->obj_data);
@@ -44,13 +47,27 @@ OPP_CB(indexed_list_item) {
 	return 0;
 }
 
+
+OPP_CB(indexed_list_item_noref) {
+	opp_pointer_ext_t*item = (opp_pointer_ext_t*)data;
+	switch(callback) {
+	case OPPN_ACTION_FINALIZE:
+		break;
+	case OPPN_ACTION_INITIALIZE:
+		item->obj_data = (void*)cb_data;
+		break;
+	}
+	return 0;
+}
+
+
 void*opp_indexed_list_get(struct opp_factory*olist, int index) {
-	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL, NULL);
+	opp_pointer_ext_t*holder = (opp_pointer_ext_t*)opp_search(olist, index, NULL, NULL, NULL);
 	void*ret = NULL;
 	if(holder) {
 		ret = holder->obj_data;
 		if(ret) {
-			OPPREF(ret);
+			OPPREF_CONTENT(olist,ret);
 		}
 		OPPUNREF(holder);
 	}
@@ -60,7 +77,7 @@ void*opp_indexed_list_get(struct opp_factory*olist, int index) {
 int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data) {
 	int ret = 0;
 	opp_factory_lock_donot_use(olist);
-	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL, NULL);
+	opp_pointer_ext_t*holder = (opp_pointer_ext_t*)opp_search(olist, index, NULL, NULL, NULL);
 	if(holder) {
 		opp_set_flag(holder, OPPN_ZOMBIE);
 		void*tmp = holder;
@@ -68,7 +85,7 @@ int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data) {
 		OPPUNREF(tmp);
 	}
 	if(obj_data) {
-		struct opp_list_item*item = (struct opp_list_item*)OPP_ALLOC2(olist, obj_data);
+		opp_pointer_ext_t*item = (opp_pointer_ext_t*)OPP_ALLOC2(olist, obj_data);
 		if(!item) {
 			ret = -1;
 		} else {
@@ -80,11 +97,11 @@ int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data) {
 }
 
 int opp_indexed_list_create2_and_profile(struct opp_factory*olist, int pool_size
-		, char*source_file, int source_line, char*module_name) {
+		, unsigned char property, char*source_file, int source_line, char*module_name) {
 	return opp_factory_create_full_and_profile(olist, pool_size
-			, sizeof(struct opp_list_item)
-			, 1, OPPF_SEARCHABLE | OPPF_EXTENDED | OPPF_SWEEP_ON_UNREF
-			, OPP_CB_FUNC(indexed_list_item)
+			, sizeof(opp_pointer_ext_t)
+			, 1, property | OPPF_SEARCHABLE | OPPF_EXTENDED | OPPF_SWEEP_ON_UNREF
+			, (property & OPPL_POINTER_NOREF) ? OPP_CB_FUNC(indexed_list_item_noref) : OPP_CB_FUNC(indexed_list_item)
 			, source_file, source_line, module_name);
 }
 

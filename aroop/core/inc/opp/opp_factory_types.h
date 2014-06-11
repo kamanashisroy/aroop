@@ -54,6 +54,7 @@
 
 C_CAPSULE_START
 
+typedef SYNC_UWORD8_T opp_property_t;
 typedef SYNC_UWORD32_T opp_hash_t;
 #define OPP_OBJECT_EXT_TINY() opp_hash_t hash;OPP_VOLATILE_VAR SYNC_UWORD16_T flag,token;
 #define OPP_RBTREE

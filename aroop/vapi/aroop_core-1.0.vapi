@@ -105,7 +105,7 @@ public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	// TODO support marking mark() unmark()
 }
 
-[CCode (cname = "struct opp_list_item", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_pointer_ext_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public class aroop.container<G> : Hashable {
 	[CCode (cname = "aroop_list_item_get")]
 	public unowned G get();
