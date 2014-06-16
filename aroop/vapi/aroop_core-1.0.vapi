@@ -524,6 +524,15 @@ public class aroop.core {
 	public static int sourceLineNo();
 }
 
+[Compact]
+[CCode (cname = "char", has_free_function = false)]
+public struct aroop.genericValueHack<G,H> {
+	[CCode (cname = "aroop_donothing")]
+	public void genericValueHack();
+	[CCode (cname = "aroop_value_set")]
+	public void set(G*a, H*b);
+}
+
 public class aroop.generihack<G,H> {
 	[CCode (cname = "aroop_build_generics")]
 	public static void build_generics(Replicable obj);

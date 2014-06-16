@@ -111,6 +111,9 @@ int aroop_deinit();
 #define aroop_get_source_lineno() __LINE__
 #define aroop_array(x,y) (x)
 
+// value
+#define aroop_value_set(nouse,x,y) ({x=y;})
+
 C_CAPSULE_END
 
 #endif // AROOP_CORE_H_
