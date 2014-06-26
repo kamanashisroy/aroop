@@ -1072,7 +1072,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			vardecl.init0 = true;
 		}
 
-		ccode.add_statement (cdecl);
+		//if(!local.is_imaginary) {
+			ccode.add_statement (cdecl);
+		//}
 	}
 
 	public override void visit_expression_statement (ExpressionStatement stmt) {

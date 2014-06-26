@@ -37,6 +37,8 @@ public class Vala.LocalVariable : Variable {
 
 	public bool no_init { get; set; }
 
+	public bool is_imaginary {get;set;}
+
 	/**
 	 * Creates a new local variable.
 	 *
