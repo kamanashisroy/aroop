@@ -99,9 +99,9 @@ public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	[CCode (cname = "aroop_array_list_create")]
 	public ArrayList(int inc = 16);
 	[CCode (cname = "aroop_indexed_list_get")]
-	public G? get(int index);
+	public G? get(aroop_hash index);
 	[CCode (cname = "aroop_indexed_list_set")]
-	public void set(int index, G item);
+	public void set(aroop_hash index, G item);
 	// TODO support marking mark() unmark()
 }
 
