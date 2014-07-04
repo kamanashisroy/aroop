@@ -67,6 +67,15 @@ static int match_hash(const void*func_data, const void*data) {
 	return -1;
 }
 
+static int match_hash_and_delete(const void*func_data, const void*data) {
+	const struct opp_hash_table_item*item = (const struct opp_hash_table_item*)data;
+	const aroop_txt_t*key = (const aroop_txt_t*)func_data;
+	if(key->len == item->key->len && !memcmp(key->str, item->key->str, key->len)) {
+		OPPUNREF(item);
+	}
+	return -1;
+}
+
 void*opp_hash_table_get(struct opp_factory*ht, aroop_txt_t*key) {
 	unsigned long hash = opp_get_hash_bin(key->str, key->len);
 	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, hash, match_hash, key, NULL);
@@ -79,6 +88,9 @@ void*opp_hash_table_get(struct opp_factory*ht, aroop_txt_t*key) {
 }
 
 int opp_hash_table_set(struct opp_factory*ht, aroop_txt_t*key, void*obj_data) {
+	if(!obj_data) {
+		opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash_and_delete, key, NULL);return 0;
+	}
 	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, opp_get_hash_bin(key->str, key->len), match_hash, key, NULL);
 	if(item) {
 		if(item->obj_data) {
