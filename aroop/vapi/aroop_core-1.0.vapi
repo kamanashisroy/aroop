@@ -370,7 +370,7 @@ public struct aroop.etxt : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_trim_to_length")]
 	public int trim_to_length(uint len);
 	[CCode (cname = "aroop_txt_get_hash")]
-	public aroop_hash get_hash();
+	public aroop_hash getStringHash();
 	[CCode (cname = "aroop_txt_to_vala_magical")]
 	public string to_string_magical();
 	[CCode (cname = "aroop_txt_string_or_magical")]
@@ -464,7 +464,7 @@ public class aroop.txt : aroop.Replicable {
 	[CCode (cname = "BLANK_STRING")]
 	public static aroop.txt BLANK_STRING;
 	[CCode (cname = "aroop_txt_get_hash")]
-	public aroop_hash get_hash();
+	public aroop_hash getStringHash();
 	[CCode (cname = "aroop_txt_to_vala_magical")]
 	public string to_string_magical();
 	[CCode (cname = "aroop_txt_string_or_magical")]
