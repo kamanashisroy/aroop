@@ -56,7 +56,6 @@ aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalabil
 aroop_txt_t*aroop_txt_clone(const char*content, int len, int scalability_index) {
 	XULTB_ASSERT_RETURN(content && len, NULL);
 	aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(&txt_pool, sizeof(aroop_txt_t)+len+1, 0, 0, NULL);
-	str->hash = 0;
 	XULTB_ASSERT_RETURN(str, NULL);
 	str->size = len+1;
 	str->len = len;

@@ -165,6 +165,7 @@ aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
 aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index);
+#define aroop_txt_clone_from_zero_terminated_string(x) aroop_txt_clone(x, strlen(x), 0)
 #define aroop_txt_memcopy_from_etxt_factory_build(x,y) ({ \
 	(x)->str = (((aroop_txt_t*)x)+1); \
 	(x)->size=(y)->len; \

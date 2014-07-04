@@ -446,6 +446,8 @@ public class aroop.txt : aroop.Replicable {
 	public txt.memcopy(char*content, int len = 0, int scalability_index = 0);
 	[CCode (cname = "aroop_txt_clone_etxt")]
 	public txt.memcopy_etxt(etxt*src);
+	[CCode (cname = "aroop_txt_clone_from_zero_terminated_string")]
+	public txt.memcopy_zero_terminated_string(string*content);
 	/**
 	 * For example,
 	 * txt kw = myTxtFactory.alloc_full(sizeof(txt)+src.length()+1)
