@@ -55,7 +55,7 @@ static unsigned char UpperToLower[] = {
 ** This function computes a hash on the name of a keyword.
 ** Case is not significant.
 */
-unsigned long opp_get_hash(const char *z){
+opp_hash_t opp_get_hash(const char *z){
   unsigned long h = 0, n = 0;
 #ifdef FNV
 	h = 20; // FNV ofset basis
@@ -72,7 +72,7 @@ unsigned long opp_get_hash(const char *z){
   return  h;
 }
 
-unsigned long opp_get_hash_bin(const void*data, int size) {
+opp_hash_t opp_get_hash_bin(const void*data, int size) {
   unsigned long h = 0, n = size;
   const unsigned char*z = (const unsigned char*)data;
 #ifdef FNV

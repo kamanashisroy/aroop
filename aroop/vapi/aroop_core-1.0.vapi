@@ -149,12 +149,12 @@ public struct aroop.Set<G> : aroop.CountableSet {
 public struct aroop.SearchableSet<G> : aroop.Set<G> {
 	[CCode (cname = "aroop_searchable_list_create")]
 	public SearchableSet(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	[CCode (cname = "aroop_searchable_list_prune")]
+	public void prune(aroop_hash hash, G item);
 	/*! \brief Searches set for any entry.
 	 *
 	 * @param [in] compare_func  A function reference that returns 0 on match.
 	 */
-	[CCode (cname = "aroop_searchable_list_prune")]
-	public void prune(aroop_hash hash, G item);
 	[CCode (cname = "aroop_search_no_ret_arg")]
 	public container<G>? search(aroop_hash hash, container_iterator_cb<G>? compare_func);
 }

@@ -28,8 +28,9 @@
 #endif
 
 C_CAPSULE_START
-unsigned long opp_get_hash(const char *z);
-unsigned long opp_get_hash_bin(const void*data, int size);
+
+opp_hash_t opp_get_hash(const char *z);
+opp_hash_t opp_get_hash_bin(const void*data, int size);
 
 #if 0
 int hash_test();

@@ -26,6 +26,7 @@
 #ifndef AROOP_CONCATENATED_FILE
 #include "core/config.h"
 #include "aroop_core.h"
+#include "opp/opp_hash.h"
 #endif
 
 C_CAPSULE_START
@@ -33,7 +34,7 @@ C_CAPSULE_START
 // TODO build an immutable txt ..
 struct aroop_txt {
 	aroop_none*proto;
-	int hash;
+	opp_hash_t hash;
 	int size;
 	int len;
 	char*str;
