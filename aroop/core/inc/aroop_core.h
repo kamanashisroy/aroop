@@ -114,6 +114,9 @@ int aroop_deinit();
 // value
 #define aroop_value_set(nouse,x,y) ({x=y;})
 
+int aroop_get_argc();
+char**aroop_get_argv();
+
 C_CAPSULE_END
 
 #endif // AROOP_CORE_H_

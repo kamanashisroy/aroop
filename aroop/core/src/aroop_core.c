@@ -34,7 +34,18 @@
 
 OPP_VOLATILE_VAR SYNC_UWORD16_T core_users = 0; // TODO make it thread safe where 
 
+static int _aroop_argc;static char**_aroop_argv;
+int aroop_get_argc() {
+	return _aroop_argc;
+}
+
+char**aroop_get_argv() {
+	return _aroop_argv;
+}
+
 int aroop_init(int argc, char ** argv) {
+	_aroop_argc = argc;
+	_aroop_argv = argv;
 #ifdef SYNC_HAS_ATOMIC_OPERATION
 	do {
 		volatile SYNC_UWORD16_T oldval,newval;
@@ -58,7 +69,7 @@ int aroop_init(int argc, char ** argv) {
 	}
 }
 
-#define PROFILER_CRASH_DEBUG
+//#define PROFILER_CRASH_DEBUG
 #ifdef PROFILER_CRASH_DEBUG
 static int profiler_logger_debug(void*log_data, struct aroop_txt*content) {
 	printf("%s\n", content->str);

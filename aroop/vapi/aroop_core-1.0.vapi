@@ -524,6 +524,10 @@ public class aroop.core {
 	public static unowned string sourceFileName();
 	[CCode (cname = "aroop_get_source_lineno")]
 	public static int sourceLineNo();
+	[CCode (cname = "aroop_get_argc")]
+	public static int argc();
+	[CCode (cname = "aroop_get_argv")]
+	public static unowned string[] argv();
 }
 
 [Compact]
