@@ -10,7 +10,7 @@ internal class Life : Replicable {
 }
 
 class MainClass : Replicable {
-	internal void test(txt meaning) {
+	internal void test(str meaning) {
 		Life mylife = new Life();
 		mylife.do(() => {
 				meaning.describe();
@@ -20,7 +20,7 @@ class MainClass : Replicable {
 	}
 
 	public static int main() {
-		txt meaning = new txt.from_static("Survive");
+		str meaning = new str.copy_string("Survive");
 		(new MainClass()).test(meaning);
 		return 0;
 	}

@@ -2,14 +2,14 @@
 using aroop;
 
 internal struct Orchard {
-	etxt tree;
-	internal Orchard(etxt plant) {
+	estr tree;
+	internal Orchard(estr plant) {
 		plant.to_string();
 		filter(&plant);
 	}
-	private void filter(etxt*plant) {
+	private void filter(estr*plant) {
 		plant.to_string();
-		tree = etxt(plant.to_string());
+		tree = estr.set_string(plant.to_string());
 	}
 	internal void calltest(Orchard*other) {
 		tree = other.tree;
@@ -32,7 +32,7 @@ internal struct Orchard {
 class MainClass : Replicable {
 
 	public static int main() {
-		etxt plant = etxt.from_static("There are four mango trees.");
+		estr plant = estr.set_static_string("There are four mango trees.");
 		Orchard orchard = Orchard(plant);
 		return 0;
 	}

@@ -29,6 +29,8 @@
 #include "opp/opp_hash.h"
 #endif
 
+// TODO remove dead code
+
 C_CAPSULE_START
 
 // TODO build an immutable txt ..
@@ -48,6 +50,7 @@ struct aroop_searchable_txt {
 typedef int xultb_bool_t;
 
 #define aroop_searchable_string_rehash(y) ({opp_set_hash(y, aroop_txt_get_hash(&(y)->tdata));})
+#define aroop_txt_to_embeded_pointer(x) (x)
 
 #define aroop_txt_embeded_new_with_length(x,y,z,p) ({ \
 	(x)->proto = NULL, \
@@ -58,7 +61,7 @@ typedef int xultb_bool_t;
 })
 #define aroop_txt_embeded_with_length(x,y,z,p) ({aroop_txt_destroy(x);aroop_txt_embeded_new_with_length(x,y,z,p);})
 #define aroop_txt_embeded(x,y,p) ({(x)->proto = NULL,(x)->str = (y),(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
-#define aroop_txt_embeded_reuse_embeded(x,y) ({ \
+#define aroop_txt_embeded_copy_on_demand(x,y) ({ \
 	aroop_memclean_raw2(x); \
 	if((y)->proto) { \
 		(x)->proto = OPPREF((y)->proto); \
@@ -73,7 +76,7 @@ typedef int xultb_bool_t;
 })
 
 
-#define aroop_txt_embeded_share_txt(x,y) ({ \
+#define aroop_txt_embeded_txt_copy_shallow(x,y) ({ \
 	aroop_memclean_raw2(x); \
 	if((y)->proto) { \
 		(x)->proto = OPPREF((y)->proto); \
@@ -87,7 +90,15 @@ typedef int xultb_bool_t;
 	(x)->size=(x)->len+1; \
 })
 
-#define aroop_txt_embeded_share_embeded(x,y) ({ \
+#if 1
+#define aroop_txt_embeded_copy_shallow(x,y) ({ \
+	*(x) = *(y); \
+	if((x)->proto) { \
+		OPPREF((x)->proto); \
+	} \
+})
+#else
+#define aroop_txt_embeded_copy_shallow(x,y) ({ \
 	aroop_memclean_raw2(x); \
 	if((y)->proto) { \
 		(x)->proto = OPPREF((y)->proto); \
@@ -100,8 +111,9 @@ typedef int xultb_bool_t;
 	(x)->len = (y)->len; \
 	(x)->size=(x)->len+1; \
 })
+#endif
 
-#define aroop_txt_embeded_dup_embeded(x,y) ({\
+#define aroop_txt_embeded_copy_deep(x,y) ({\
 	aroop_memclean_raw2(x); \
 	opp_str2_dup2(&(x)->str, (y)->str); \
 	(x)->proto = (x)->str; \
@@ -109,8 +121,17 @@ typedef int xultb_bool_t;
 	(x)->len = (y)->len; \
 	(x)->size=(x)->len+1; \
 })
+#define aroop_txt_embeded_copy_static_string(x,y) ({\
+	aroop_memclean_raw2(x); \
+	opp_str2_dup2(&(x)->str, y); \
+	(x)->proto = (x)->str; \
+	(x)->hash = 0; \
+	(x)->len = sizeof(y)-1; \
+	(x)->size=(x)->len+1; \
+})
 
-#define aroop_txt_embeded_dup_string(x,y) ({\
+
+#define aroop_txt_embeded_copy_string(x,y) ({\
 	aroop_memclean_raw2(x); \
 	opp_str2_dup2(&(x)->str, y); \
 	(x)->proto = (x)->str; \
@@ -119,12 +140,6 @@ typedef int xultb_bool_t;
 	(x)->size=(x)->len+1; \
 })
 
-#define aroop_txt_embeded_same_same(x,y) ({ \
-	*(x) = *(y); \
-	if((x)->proto) { \
-		OPPREF((x)->proto); \
-	} \
-})
 
 #define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->proto = opp_str2_alloc(y))) {(x)->size = y;}(x)->str = (x)->proto;})
 #define aroop_txt_embeded_stackbuffer(x,y) ({ \
@@ -166,7 +181,11 @@ aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
 aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index);
-#define aroop_txt_clone_from_zero_terminated_string(x) aroop_txt_clone(x, strlen(x), 0)
+#define aroop_txt_new_alloc(x,y) aroop_txt_new(null, x, NULL, y)
+#define aroop_txt_new_copy_on_demand(x,y,sc) ({((x)->proto)?aroop_txt_new(x->str,x->len,x->proto,sc):aroop_txt_clone(x->str,x->len,sc);})
+#define aroop_txt_new_copy_deep(x) aroop_txt_clone((x)->str, (x)->len, 0)
+#define aroop_txt_new_copy_shallow(x) aroop_txt_new((x)->str, (x)->len, (x)->proto, 0)
+#define aroop_txt_copy_string(x) aroop_txt_clone(x, strlen(x), 0)
 #define aroop_txt_memcopy_from_etxt_factory_build(x,y) ({ \
 	(x)->str = (((aroop_txt_t*)x)+1); \
 	(x)->size=(y)->len; \
@@ -175,9 +194,8 @@ aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalabil
 	(x)->proto = NULL; \
 	memcpy((x)->str,(y)->str,(x)->len); \
 })
-#define aroop_txt_new_static(x) ({aroop_txt_new(x,sizeof(x)-1, NULL, 0);})
+#define aroop_txt_copy_static_string(x) ({aroop_txt_clone(x,sizeof(x)-1, 0);})
 aroop_txt_t*aroop_txt_clone(const char*content, int len, int scalability_index);
-#define aroop_txt_clone_etxt(x) aroop_txt_clone((x)->str, (x)->len, 0)
 aroop_txt_t*aroop_txtrim(aroop_txt_t*text);
 
 aroop_txt_t*aroop_txt_cat(aroop_txt_t*text, aroop_txt_t*suffix);

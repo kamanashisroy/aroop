@@ -18,7 +18,7 @@ class test_array : Replicable {
 		int something_else[(configuration.COLLECTION_SIZE)];
 		list[0] = 10;
 		something_else[0] = 20;
-		(new txt.from_static("Fine")).pray(prayer.DESCRIBE);
+		(new str.copy_string("Fine")).pray(prayer.DESCRIBE);
 		return 0;
 	}
 }

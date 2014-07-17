@@ -6,9 +6,9 @@ public errordomain SomeErrorGroup.SomeErrorType {
 }
 
 internal class Orchard : Replicable {
-	txt mango;
+	str mango;
 	internal Orchard() throws SomeErrorGroup.SomeErrorType {
-		mango = new txt.from_static("There are four mango trees.");
+		mango = new str.copy_string("There are four mango trees.");
 		throw new SomeErrorGroup.SomeErrorType.SOME_ERROR("Bad day");
 	}
 	internal void describe() {

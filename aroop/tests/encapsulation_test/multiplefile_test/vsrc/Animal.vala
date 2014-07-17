@@ -2,11 +2,11 @@
 using aroop;
 
 public class Animal : Replicable {
-	etxt vc;
+	estr vc;
 	public Animal() {
-		vc = etxt.from_static("Time is tiny, women are many.");
+		vc = estr.set_string("Time is tiny, women are many.");
 	}
-	public virtual etxt*voice() {
+	public virtual estr*voice() {
 		return &vc;
 	}
 	public virtual void describe() {

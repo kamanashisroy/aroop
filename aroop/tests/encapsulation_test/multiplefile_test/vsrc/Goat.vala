@@ -2,11 +2,11 @@
 using aroop;
 
 internal class Goat : Mamal {
-	etxt vc;
+	estr vc;
 	public Goat() {
-		vc = etxt.from_static("maahamaahamaahalo");
+		vc = estr.set_string("maahamaahamaahalo");
 	}
-	public override etxt*voice() {
+	public override estr*voice() {
 		return &vc;
 	}
 	public override void describe() {

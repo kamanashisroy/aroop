@@ -1,13 +1,12 @@
 
 using aroop;
 
-
 class test_array : Replicable {
 
 	public static int main() {
-		ArrayList<txt> list = ArrayList<txt>(16);
-		txt str = new txt.from_static("Fine");
-		list[0] = str;
+		ArrayList<str> list = ArrayList<str>(16);
+		str x = new str.copy_string("Fine");
+		list[0] = x;
 		list[0].pray(prayer.DESCRIBE);
 		return 0;
 	}

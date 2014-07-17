@@ -11,8 +11,8 @@ class D : Replicable {
 		Factory<ASimple> fac = Factory<ASimple>.for_type();
 		ASimple smpl = fac.alloc_full();
 		smpl.do();
-		txt str = new txt.from_static("Fine");
-		str.pray(prayer.DESCRIBE);
+		str s = new str.copy_string("Fine");
+		s.pray(prayer.DESCRIBE);
 		return 0;
 	}
 }

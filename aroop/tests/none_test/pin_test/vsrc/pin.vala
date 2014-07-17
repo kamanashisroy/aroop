@@ -2,11 +2,11 @@
 using aroop;
 
 internal class Orchard : Replicable {
-	txt mango;
-	txt jackfruit;
+	str mango;
+	str jackfruit;
 	internal Orchard() {
-		mango = new txt.from_static("There are four mango trees.");
-		jackfruit = new txt.from_static("There are four jackfruit trees.");
+		mango = new str.copy_static_string("There are four mango trees.");
+		jackfruit = new str.copy_static_string("There are four jackfruit trees.");
 	}
 }
 

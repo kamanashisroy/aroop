@@ -18,8 +18,8 @@ class ContainerThing<G> : Replicable {
 class MainClass : Replicable {
 
 	public static int main() {
-		txt msg = new txt.from_static("I am fine");
-		ContainerThing<txt> b = new ContainerThing<txt>(msg);  
+		str msg = new str.copy_static_string("I am fine");
+		ContainerThing<str> b = new ContainerThing<str>(msg);  
 		return 0;
 	}
 }

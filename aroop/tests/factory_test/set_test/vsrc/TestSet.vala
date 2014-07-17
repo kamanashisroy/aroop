@@ -3,13 +3,13 @@ using aroop;
 
 
 class TestSet : Replicable {
-	static Set<txt> chain;
-	static SearchableSet<txt> searchable_chain;
+	static Set<str> chain;
+	static SearchableSet<str> searchable_chain;
 
 	public static int main() {
-		chain = Set<txt>();
+		chain = Set<str>();
 		chain.destroy();
-		searchable_chain = SearchableSet<txt>();
+		searchable_chain = SearchableSet<str>();
 		searchable_chain.destroy();
 		return 0;
 	}

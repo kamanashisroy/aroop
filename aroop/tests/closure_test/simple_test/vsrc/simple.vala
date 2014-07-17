@@ -11,7 +11,7 @@ internal class Life : Replicable {
 
 class MainClass : Replicable {
 	public static int main() {
-		txt meaning = new txt.from_static("Survive");
+		str meaning = new str.copy_string("Survive");
 		Life mylife = new Life();
 		meaning.describe();
 		mylife.do(() => {
