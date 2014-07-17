@@ -365,6 +365,8 @@ public struct aroop.estr : aroop.Substance { // embeded txt
 	public bool buffer(int size);
 	[CCode (cname = "aroop_txt_embeded_with_length")]
 	public void set_string_full(string content, int len, Replicable?proto=null);
+	[CCode (cname = "aroop_txt_embeded_rebuild_copy_on_demand")]
+	public void rebuild_and_copy_on_demand(aroop.estr*proto);
 	[CCode (cname = "aroop_txt_size")]
 	public int size();
 	[CCode (cname = "aroop_txt_to_vala")]

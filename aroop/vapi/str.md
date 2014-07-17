@@ -1,5 +1,5 @@
 
-Aroop contains special support for strings. The aroop strings has suport for,
+Aroop contains special support for strings. The aroop strings has support for,
 
 - Embeded/stack allocated container.
 - Stack allocated string.
@@ -27,6 +27,14 @@ The above code will keep the string totally in stack memory. You may also alloca
 ```vala
 estr hello = new estr.stack(128);
 hello.concat_string("hello");
+```
+
+Now suppose you want to pass by value and set the estr parameter to a method. You can do that like the following.
+
+```vala
+	public void getAs(estr*content) {
+                content.rebuild_and_copy_on_demand(&cache);
+        }
 ```
 
 
