@@ -71,7 +71,7 @@ public struct aroop.HashTable<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_hash_table_create")]
 	public HashTable(int inc = 16, uchar mark = 0);
 	[CCode (cname = "opp_hash_table_set")]
-	public int set(estr*key, G val);
+	public int set(str key, G val);
 	[CCode (cname = "aroop_hash_table_get")]
 	public unowned G? get(estr*key);
 	[CCode (cname = "opp_factory_destroy")]
