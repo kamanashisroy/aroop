@@ -343,7 +343,7 @@ public struct aroop.estr : aroop.Substance { // embeded txt
 	public estr.set_string(string content, Replicable?proto = null);
 	[CCode (cname = "aroop_txt_embeded_static")]
 	public estr.set_static_string(string content);
-	[CCode (cname = "aroop_txt_embeded_new_with_length")]
+	[CCode (cname = "aroop_txt_embeded_set_content")]
 	public estr.set_content(string content, int len, Replicable?proto = null);
 	[CCode (cname = "aroop_txt_embeded_txt_copy_shallow")]
 	public estr.str_copy_shallow(aroop.str proto);
@@ -360,13 +360,17 @@ public struct aroop.estr : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_embeded_stackbuffer")]
 	public estr.stack(int size);
 	[CCode (cname = "aroop_txt_embeded_stackbuffer_from_txt")]
-	public estr.stack_copy_estr(aroop.estr*proto);
+	public estr.stack_copy_deep(aroop.estr*proto);
 	[CCode (cname = "aroop_txt_embeded_buffer")]
 	public bool buffer(int size);
-	[CCode (cname = "aroop_txt_embeded_with_length")]
-	public void set_string_full(string content, int len, Replicable?proto=null);
+	[CCode (cname = "aroop_txt_embeded_rebuild_and_set_content")]
+	public void rebuild_and_set_content(string content, int len, Replicable?proto=null);
+	[CCode (cname = "aroop_txt_embeded_rebuild_and_set_static_string")]
+	public estr.rebuild_and_set_static_string(string content);
 	[CCode (cname = "aroop_txt_embeded_rebuild_copy_on_demand")]
 	public void rebuild_and_copy_on_demand(aroop.estr*proto);
+	[CCode (cname = "aroop_txt_embeded_rebuild_copy_shallow")]
+	public void rebuild_and_copy_shallow(aroop.estr*proto);
 	[CCode (cname = "aroop_txt_size")]
 	public int size();
 	[CCode (cname = "aroop_txt_to_vala")]
@@ -429,11 +433,6 @@ public struct aroop.estr : aroop.Substance { // embeded txt
 	public bool concat_char(uchar c);
 	[CCode (cname = "aroop_txt_destroy")]
 	public void destroy();
-	/**
-	 * For example,
-	 * SearchableString x = myTxtFactory.alloc_added_size(src.length()+1);
-	 * x.tdata.factory_build_by_memcopy_from_etxt_unsafe_no_length_check(&src);
-	 */
 	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
 	public int factory_build_by_memcopy_from_estr_unsafe_no_length_check(estr*src);
 }
@@ -470,6 +469,13 @@ public class aroop.str : aroop.Replicable {
 	public estr*ecast();
 	[CCode (cname = "BLANK_STRING")]
 	public static aroop.str BLANK_STRING;
+	/**
+	 * For example,
+	 * SearchableString x = myTxtFactory.alloc_added_size(src.length()+1);
+	 * x.tdata.factory_build_by_memcopy_from_etxt_unsafe_no_length_check(&src);
+	 */
+	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
+	public int factory_build_by_memcopy_from_estr_unsafe_no_length_check(estr*src);
 }
 
 

@@ -1,4 +1,7 @@
 
+String types
+==============
+
 Aroop contains special support for strings. The aroop strings has support for,
 
 - Embeded/stack allocated container.
@@ -6,6 +9,9 @@ Aroop contains special support for strings. The aroop strings has support for,
 - Heap allocated string.
 - A hash value and precalculated length value.
 - There are plans to implement immutable strings.
+
+Declaration
+=============
 
 The strings can be referenced in your code when it is allocated in heap. You can avoid memory copy by just referencing the heap string. For example, if you have a string named `hello`, you may define it like the following.
 
@@ -23,18 +29,39 @@ estr hello = new estr.set_static_string("hello");
 
 The above code will keep the string totally in stack memory. You may also allocate stack memory if you want like the following.
 
-
 ```vala
 estr hello = new estr.stack(128);
 hello.concat_string("hello");
 ```
 
+Coping
+=======
+
 Now suppose you want to pass by value and set the estr parameter to a method. You can do that like the following.
 
 ```vala
-	public void getAs(estr*content) {
-                content.rebuild_and_copy_on_demand(&cache);
-        }
+public void getAs(estr*content) {
+	content.rebuild_and_copy_on_demand(&cache);
+}
+```
+
+Sandbox
+========
+You can copy a string into stack for processing.
+
+```vala
+estr sandbox = estr.stack_copy_estr(immutablestr);
+```
+
+Factory
+========
+
+You can also create factory for string and build them.
+
+```vala
+SearchableFactory<str> myTxtFactory = SearchableFactory<str>.for_type(); // XXX should we memclean the memory ?
+SearchableString x = myTxtFactory.alloc_added_size(src.length()+1);
+x.tdata.factory_build_by_memcopy_from_estr_unsafe_no_length_check(&src);
 ```
 
 

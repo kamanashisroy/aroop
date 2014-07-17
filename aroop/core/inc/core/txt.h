@@ -52,14 +52,14 @@ typedef int xultb_bool_t;
 #define aroop_searchable_string_rehash(y) ({opp_set_hash(y, aroop_txt_get_hash(&(y)->tdata));})
 #define aroop_txt_to_embeded_pointer(x) (x)
 
-#define aroop_txt_embeded_new_with_length(x,y,z,p) ({ \
+#define aroop_txt_embeded_set_content(x,y,z,p) ({ \
 	(x)->proto = NULL, \
 	(x)->str = y, \
 	(x)->hash = 0, \
 	(x)->len = z; \
 	(x)->size=(x)->len+1; \
 })
-#define aroop_txt_embeded_with_length(x,y,z,p) ({aroop_txt_destroy(x);aroop_txt_embeded_new_with_length(x,y,z,p);})
+#define aroop_txt_embeded_rebuild_and_set_content(x,y,z,p) ({aroop_txt_destroy(x);aroop_txt_embeded_set_content(x,y,z,p);})
 #define aroop_txt_embeded(x,y,p) ({(x)->proto = NULL,(x)->str = (y),(x)->hash = 0,(x)->len = strlen(y);(x)->size=(x)->len+1;})
 #define aroop_txt_embeded_copy_on_demand_helper(x,y) ({ \
 	if((y)->proto) { \
@@ -83,8 +83,16 @@ typedef int xultb_bool_t;
 	aroop_txt_embeded_copy_on_demand_helper(x,y); \
 })
 
+#define aroop_txt_embeded_rebuild_copy_shallow(x,y) ({ \
+	aroop_txt_destroy(x); \
+	aroop_txt_embeded_txt_copy_shallow_helper(x,y); \
+})
+
 #define aroop_txt_embeded_txt_copy_shallow(x,y) ({ \
 	aroop_memclean_raw2(x); \
+	aroop_txt_embeded_copy_shallow_helper(x,y); \
+})
+#define aroop_txt_embeded_txt_copy_shallow_helper(x,y) ({ \
 	if((y)->proto) { \
 		(x)->proto = OPPREF((y)->proto); \
 		(x)->str = (y)->str; \
@@ -170,6 +178,7 @@ typedef int xultb_bool_t;
 })
 
 #define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
+#define aroop_txt_embeded_rebuild_and_set_static_string(x,y) ({aroop_txt_destroy(x);aroop_txt_embeded_static(x,y);})
 
 #if false
 aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
@@ -189,8 +198,8 @@ aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
 
 aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index);
 #define aroop_txt_new_alloc(x,y) aroop_txt_new(null, x, NULL, y)
-#define aroop_txt_new_copy_on_demand(x,y,sc) ({((x)->proto)?aroop_txt_new(x->str,x->len,x->proto,sc):aroop_txt_clone(x->str,x->len,sc);})
-#define aroop_txt_new_copy_deep(x) aroop_txt_clone((x)->str, (x)->len, 0)
+#define aroop_txt_new_copy_on_demand(x,sc) ({((x)->proto)?aroop_txt_new((x)->str,(x)->len,(x)->proto,sc):aroop_txt_clone((x)->str,(x)->len,sc);})
+#define aroop_txt_new_copy_deep(x,y) aroop_txt_clone((x)->str, (x)->len, y)
 #define aroop_txt_new_copy_shallow(x) aroop_txt_new((x)->str, (x)->len, (x)->proto, 0)
 #define aroop_txt_copy_string(x) aroop_txt_clone(x, strlen(x), 0)
 #define aroop_txt_memcopy_from_etxt_factory_build(x,y) ({ \
