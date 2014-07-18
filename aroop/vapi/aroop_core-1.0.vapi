@@ -456,6 +456,8 @@ public class aroop.xtring : aroop.Replicable {
 	public xtring.copy_string(string*content);
 	[CCode (cname = "aroop_txt_copy_static_string")]
 	public xtring.copy_static_string(string*content);
+	[CCode (cname = "aroop_txt_set_static_string")]
+	public xtring.set_static_string(string*content);
 	/**
 	 * For example,
 	 * txt kw = myTxtFactory.alloc_full(sizeof(txt)+src.length()+1)

@@ -211,6 +211,7 @@ aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalabil
 	memcpy((x)->str,(y)->str,(x)->len); \
 })
 #define aroop_txt_copy_static_string(x) ({aroop_txt_clone(x,sizeof(x)-1, 0);})
+#define aroop_txt_set_static_string(x) ({aroop_txt_new(x,sizeof(x)-1,NULL, 0);})
 aroop_txt_t*aroop_txt_clone(const char*content, int len, int scalability_index);
 aroop_txt_t*aroop_txtrim(aroop_txt_t*text);
 

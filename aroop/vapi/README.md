@@ -5,7 +5,7 @@ This api provides the following classes,
 
 - Replicable 
 - [xtring](xtring.md)
-- estr
+- extring
 - HashTable
 - Set
 - SearchableSet
