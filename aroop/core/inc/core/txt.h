@@ -85,12 +85,12 @@ typedef int xultb_bool_t;
 
 #define aroop_txt_embeded_rebuild_copy_shallow(x,y) ({ \
 	aroop_txt_destroy(x); \
-	aroop_txt_embeded_txt_copy_shallow_helper(x,y); \
+	aroop_txt_embeded_copy_shallow(x,y); \
 })
 
 #define aroop_txt_embeded_txt_copy_shallow(x,y) ({ \
 	aroop_memclean_raw2(x); \
-	aroop_txt_embeded_copy_shallow_helper(x,y); \
+	aroop_txt_embeded_txt_copy_shallow_helper(x,y); \
 })
 #define aroop_txt_embeded_txt_copy_shallow_helper(x,y) ({ \
 	if((y)->proto) { \
