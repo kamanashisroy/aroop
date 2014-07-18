@@ -4,7 +4,7 @@ Aroop core API
 This api provides the following classes,
 
 - Replicable 
-- [str](str.md)
+- [xtring](xtring.md)
 - estr
 - HashTable
 - Set

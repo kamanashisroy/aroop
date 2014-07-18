@@ -366,7 +366,7 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_embeded_rebuild_and_set_content")]
 	public void rebuild_and_set_content(string content, int len, Replicable?proto=null);
 	[CCode (cname = "aroop_txt_embeded_rebuild_and_set_static_string")]
-	public extring.rebuild_and_set_static_string(string content);
+	public void rebuild_and_set_static_string(string content);
 	[CCode (cname = "aroop_txt_embeded_rebuild_copy_on_demand")]
 	public void rebuild_and_copy_on_demand(aroop.extring*proto);
 	[CCode (cname = "aroop_txt_embeded_rebuild_copy_shallow")]
@@ -402,7 +402,7 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_equals_chararray")]
 	public bool equals_string(string other);
 	[CCode (cname = "aroop_txt_equals_static")]
-	public bool equals_static_string(string other);
+	public bool bug_fix_me_equals_static_string(string other);
 	[CCode (cname = "aroop_txt_zero_terminate")]
 	public void zero_terminate();
 	[CCode (cname = "aroop_txt_is_zero_terminated")]
