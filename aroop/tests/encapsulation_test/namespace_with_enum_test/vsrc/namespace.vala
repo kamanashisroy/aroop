@@ -16,7 +16,7 @@ class test_namespace : Replicable {
 	public static int main() {
 		someenum i = someenum.VALUE;
 		if(i == someenum.VALUE) {
-			(new str.copy_string("fine")).pray(prayer.DESCRIBE);
+			(new xtring.copy_string("fine")).pray(prayer.DESCRIBE);
 		}
 		return 0;
 	}

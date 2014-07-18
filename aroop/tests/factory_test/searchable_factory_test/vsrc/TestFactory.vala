@@ -7,9 +7,9 @@ class TestFactory : Replicable {
 
 	public static int main() {
 		fac = SearchableFactory<SearchableString>.for_type();
-		estr fine = estr.set_string("It is working fine");
+		extring fine = extring.set_string("It is working fine");
 		SearchableString?elem = fac.alloc_added_size((uint16)(fine.length()+1));
-		elem.tdata.factory_build_by_memcopy_from_estr_unsafe_no_length_check(&fine);
+		elem.tdata.factory_build_and_copy_on_tail_no_length_check(&fine);
 		elem.rehash();
 		elem.pin();
 		elem = null;

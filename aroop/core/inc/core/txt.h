@@ -177,7 +177,7 @@ typedef int xultb_bool_t;
 	(x)->hash = (y)->hash; \
 })
 
-#define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL,(x)->str = y,(x)->hash = 0,(x)->len = sizeof(y) - 1;(x)->size=(x)->len+1;})
+#define aroop_txt_embeded_static(x,y) ({(x)->proto = NULL;(x)->str = y;(x)->hash = 0;(x)->size = sizeof(y);(x)->len=(x)->size+1;(x);})
 #define aroop_txt_embeded_rebuild_and_set_static_string(x,y) ({aroop_txt_destroy(x);aroop_txt_embeded_static(x,y);})
 
 #if false

@@ -7,8 +7,8 @@ class AnyObject<G> : Replicable {
   internal AnyObject() {
   }
 	internal int my_cb_impl(G val) {
-		//if(val instanceof str) {
-			str mytxt = (str)val;
+		//if(val instanceof xtring) {
+			xtring mytxt = (xtring)val;
 			core.assert(mytxt.ecast().equals_string("fine"));
     	print("Working : %s\n", mytxt.ecast().to_string());
 		//}
@@ -23,9 +23,9 @@ class Simple<G> : Replicable {
   }
 
 	public static int main() {
-    Simple<str> obj = new Simple<str>();
-		str fine = new str.copy_string("fine");
-		obj.do_it((my_cb<G>)(new AnyObject<str>()).my_cb_impl, fine);
+    Simple<xtring> obj = new Simple<xtring>();
+		xtring fine = new xtring.copy_string("fine");
+		obj.do_it((my_cb<G>)(new AnyObject<xtring>()).my_cb_impl, fine);
 		return 0;
 	}
 }

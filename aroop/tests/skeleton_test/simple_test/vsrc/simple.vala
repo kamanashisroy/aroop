@@ -2,7 +2,7 @@
 using aroop;
 
 internal class Orchard : Replicable {
-	str mango;
+	xtring mango;
 }
 
 class MainClass : Replicable {

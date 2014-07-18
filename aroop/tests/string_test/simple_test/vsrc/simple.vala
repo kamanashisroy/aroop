@@ -2,9 +2,9 @@
 using aroop;
 
 internal class Orchard : Replicable {
-	public int add(estr garden) {
-		estr mango = estr();
-		estr field = estr.copy_shallow(&garden);
+	public int add(extring garden) {
+		extring mango = extring();
+		extring field = extring.copy_shallow(&garden);
 		print("field:%s\n", field.to_string());
 		field.shift_token(":", &mango); // mango
 		print("mango:%s\n", mango.to_string());
@@ -20,7 +20,7 @@ internal class Orchard : Replicable {
 class MainClass : Replicable {
 	public static int main() {
 		Orchard heaven = new Orchard();
-		estr nandan = estr.copy_static_string("mango:16,pineapple:18");
+		extring nandan = extring.copy_static_string("mango:16,pineapple:18");
 		heaven.add(nandan);
 		return 0;
 	}

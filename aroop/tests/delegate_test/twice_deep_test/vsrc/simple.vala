@@ -17,11 +17,11 @@ internal class TwiceDeep : Replicable {
 }
 
 internal class SimpleDelegate : Replicable {
-	estr val;
+	extring val;
 	int k;
 	public SimpleDelegate() {
 		k = 99;
-		val = estr.set_string("Successful\n");
+		val = extring.set_string("Successful\n");
 	}
 		
 	public int cb_impl(int value) {

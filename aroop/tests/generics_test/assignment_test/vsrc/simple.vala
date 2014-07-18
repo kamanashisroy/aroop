@@ -19,8 +19,8 @@ class ContainerThing<G> : Replicable {
 class MainClass : Replicable {
 
 	public static int main() {
-		str msg = new str.copy_string("I am fine");
-		ContainerThing<str> b = new ContainerThing<str>(msg);  
+		xtring msg = new xtring.copy_string("I am fine");
+		ContainerThing<xtring> b = new ContainerThing<xtring>(msg);  
 		return 0;
 	}
 }
