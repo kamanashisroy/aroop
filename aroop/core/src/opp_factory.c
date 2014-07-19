@@ -34,7 +34,23 @@
 
 C_CAPSULE_START
 
+// set 64 bit if __i686__ is defined
 #ifndef SYNC_BIT64
+#ifdef __i686__
+#define SYNC_BIT64
+#endif
+#endif
+
+// set 64 bit if __x86_64__ is defined
+#ifndef SYNC_BIT64
+#ifdef __x86_64__
+#define SYNC_BIT64
+#endif
+#endif
+
+#ifdef SYNC_BIT64
+#warning "Building 64 bit binary"
+#else
 #define SYNC_BIT32
 #endif
 
