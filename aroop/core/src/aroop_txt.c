@@ -30,6 +30,8 @@
 aroop_txt_t*DOT;
 aroop_txt_t*BLANK_STRING;
 aroop_txt_t*ASTERISKS_STRING;
+opp_equals_t aroop_txt_equals_cb;
+opp_hash_function_t aroop_txt_get_hash_cb;
 static struct opp_factory txt_pool;
 aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index) {
 	if(content) {
@@ -147,6 +149,18 @@ int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...) {
 	return done;
 }
 
+static int aroop_txt_equals_cb_impl(void*cb_data, const void*xarg, const void*otherarg) {
+	const aroop_txt_t*x = xarg;
+	const aroop_txt_t*other = otherarg;
+	return aroop_txt_equals(x,other);
+}
+
+static opp_hash_t aroop_txt_get_hash_cb_impl(void*cb_data, const void*xarg) {
+	aroop_txt_t*x = (aroop_txt_t*)xarg;
+	return aroop_txt_get_hash(x);
+}
+
+
 OPP_CB_NOSTATIC(aroop_searchable_txt) {
 	aroop_searchable_txt_t*stxt = (aroop_searchable_txt_t*)data;
 	switch(callback) {
@@ -182,6 +196,10 @@ void aroop_txt_system_init() {
 	BLANK_STRING = aroop_txt_new("", 0, NULL, 0);
 	ASTERISKS_STRING = aroop_txt_new("***********************************************", 30, NULL, 0);
 	DOT = aroop_txt_new(".", 1, NULL, 0);
+	aroop_txt_equals_cb.aroop_closure_data = NULL;
+	aroop_txt_equals_cb.aroop_cb = aroop_txt_equals_cb_impl;
+	aroop_txt_get_hash_cb.aroop_closure_data = NULL;
+	aroop_txt_get_hash_cb.aroop_cb = aroop_txt_get_hash_cb_impl;
 #ifndef AROOP_BASIC
 	register_printf_function ('T', print_etxt, print_etxt_arginfo);
 #endif

@@ -39,11 +39,11 @@ SINGLE_FILE_HEADER_SEQUENCE= \
 ./inc/opp/opp_salt.h \
 ./inc/opp/opp_indexed_list.h \
 ./inc/aroop_core.h \
-./inc/core/txt.h \
-./inc/opp/opp_hash_table.h \
 ./inc/opp/opp_queue.h \
 ./inc/opp/opp_str2.h \
 ./inc/opp/opp_list.h \
+./inc/opp/opp_hash_table.h \
+./inc/core/txt.h \
 ./inc/opp/opp_type.h \
 ./inc/opp/opp_io.h \
 ./inc/opp/opp_thread_main.h \

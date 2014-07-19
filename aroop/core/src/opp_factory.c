@@ -33,21 +33,6 @@
 #endif
 
 C_CAPSULE_START
-
-// set 64 bit if __i686__ is defined
-#ifndef SYNC_BIT64
-#ifdef __i686__
-#define SYNC_BIT64
-#endif
-#endif
-
-// set 64 bit if __x86_64__ is defined
-#ifndef SYNC_BIT64
-#ifdef __x86_64__
-#define SYNC_BIT64
-#endif
-#endif
-
 #ifdef SYNC_BIT64
 #warning "Building 64 bit binary"
 #else
@@ -244,7 +229,6 @@ struct opp_object {
 	SYNC_UWORD32_T signature;
 #endif
 	BITSTRING_TYPE*bitstring;
-	struct opp_factory*obuff;
 #ifdef OPP_HAS_RECYCLING
 	struct opp_object*recycled;
 #endif
@@ -258,6 +242,7 @@ struct opp_object {
 	}ref_trace[OPP_TRACE_SIZE];
 	SYNC_UWORD32_T rt_idx;
 #endif
+	struct opp_factory*obuff;
 };
 
 #define SET_PAIRED_BITS(x) do{\

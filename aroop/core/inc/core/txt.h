@@ -27,6 +27,7 @@
 #include "core/config.h"
 #include "aroop_core.h"
 #include "opp/opp_hash.h"
+#include "opp/opp_hash_table.h"
 #endif
 
 // TODO remove dead code
@@ -197,10 +198,10 @@ aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
 aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index);
-#define aroop_txt_new_alloc(x,y) aroop_txt_new(null, x, NULL, y)
+#define aroop_txt_new_alloc(x,y) aroop_txt_new(NULL, x, NULL, y)
 #define aroop_txt_new_copy_on_demand(x,sc) ({((x)->proto)?aroop_txt_new((x)->str,(x)->len,(x)->proto,sc):aroop_txt_clone((x)->str,(x)->len,sc);})
 #define aroop_txt_new_copy_deep(x,y) aroop_txt_clone((x)->str, (x)->len, y)
-#define aroop_txt_new_copy_shallow(x) aroop_txt_new((x)->str, (x)->len, (x)->proto, 0)
+#define aroop_txt_new_copy_shallow(x,sc) aroop_txt_new((x)->str, (x)->len, (x)->proto, sc)
 #define aroop_txt_copy_string(x) aroop_txt_clone(x, strlen(x), 0)
 #define aroop_txt_memcopy_from_etxt_factory_build(x,y) ({ \
 	(x)->str = (((aroop_txt_t*)x)+1); \
@@ -328,6 +329,8 @@ OPP_CB_NOSTATIC(aroop_searchable_txt);
 #define aroop_searchable_txt_t_pray OPP_CB_FUNC(aroop_searchable_txt)
 
 extern aroop_txt_t*BLANK_STRING;
+extern opp_equals_t aroop_txt_equals_cb;
+extern opp_hash_function_t aroop_txt_get_hash_cb;
 
 C_CAPSULE_END
 

@@ -46,7 +46,6 @@ typedef struct {
 	obj_do_t aroop_cb;
 } aroop_do_t;
 
-
 enum {
 	AROOP_FLAG_HAS_LOCK = OPPF_HAS_LOCK,
 	AROOP_FLAG_SWEEP_ON_UNREF = OPPF_SWEEP_ON_UNREF,
@@ -130,8 +129,9 @@ enum {
 	};0;})
 
 // hashtable
-#define aroop_hash_table_create(x0, x1, x2, x3) ({opp_hash_table_create(x0, x2, x3);})
+#define aroop_hash_table_create(x0, xx1, xx2, a, b, x2, x3) ({opp_hash_table_create(x0, x2, x3, a, b);})
 #define aroop_hash_table_get(x,y,z) ({*z = opp_hash_table_get(x, y);})
+#define aroop_hash_table_use_count(x) (OPP_FACTORY_USE_COUNT(&(x)->fac));
 
 // cleanup
 #define opp_object_ext_tiny_t_prepare_internal(x)

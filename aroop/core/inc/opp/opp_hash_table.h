@@ -26,14 +26,38 @@
 
 #ifndef AROOP_CONCATENATED_FILE
 #include "opp/opp_factory.h"
+#include "opp/opp_list.h"
 #endif
 
 C_CAPSULE_START
+typedef struct {
+	void*aroop_closure_data;
+	int (*aroop_cb)(void*closure_data, const void*data, const void*other);
+} opp_equals_t;
 
-void*opp_hash_table_get(struct opp_factory*ht, aroop_txt_t*key);
-int opp_hash_table_set(struct opp_factory*ht, aroop_txt_t*key, void*obj_data);
-#define opp_hash_table_create(x,y,z) ({opp_hash_table_create_and_profile(x,y,z, __FILE__, __LINE__, "aroop");})
-int opp_hash_table_create_and_profile(struct opp_factory*ht, int pool_size, unsigned int flag, char*source_file, int source_line, char*module_name);
+typedef struct {
+	void*aroop_closure_data;
+	opp_hash_t (*aroop_cb)(void*closure_data, const void*data);
+} opp_hash_function_t;
+
+
+typedef struct {
+	opp_pointer_ext_t ptr;
+	void*key;
+} opp_map_pointer_ext_t;
+
+typedef struct {
+	struct opp_factory fac;
+	opp_hash_function_t hfunc;
+	opp_equals_t efunc;
+} opp_hash_table_t;
+
+void*opp_hash_table_get(opp_hash_table_t*ht, void*key);
+int opp_hash_table_set(opp_hash_table_t*ht, void*key, void*obj_data);
+#define opp_hash_table_create(x,y,z,a,b) ({opp_hash_table_create_and_profile(x,y,z,a,b, __FILE__, __LINE__, "aroop");})
+int opp_hash_table_create_and_profile(opp_hash_table_t*ht, int pool_size, unsigned int flag, opp_hash_function_t hfunc, opp_equals_t efunc
+		, char*source_file, int source_line, char*module_name);
+#define opp_hash_table_destroy(x) opp_factory_destroy(&(x)->fac)
 C_CAPSULE_END
 
 

@@ -54,6 +54,21 @@
 
 C_CAPSULE_START
 
+// set 64 bit if __i686__ is defined
+#ifndef SYNC_BIT64
+#ifdef __i686__
+#define SYNC_BIT64
+#endif
+#endif
+
+// set 64 bit if __x86_64__ is defined
+#ifndef SYNC_BIT64
+#ifdef __x86_64__
+#define SYNC_BIT64
+#endif
+#endif
+
+
 typedef SYNC_UWORD8_T opp_property_t;
 typedef SYNC_UWORD32_T opp_hash_t;
 #define OPP_OBJECT_EXT_TINY() opp_hash_t hash;OPP_VOLATILE_VAR SYNC_UWORD16_T flag,token;

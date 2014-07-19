@@ -25,6 +25,7 @@
 #include "opp/opp_factory.h"
 #include "opp/opp_factory_profiler.h"
 #include "opp/opp_iterator.h"
+#include "opp/opp_list.h"
 #include "opp/opp_hash_table.h"
 #include "opp/opp_hash.h"
 #include "core/logger.h"
@@ -32,25 +33,19 @@
 
 C_CAPSULE_START
 
-struct opp_hash_table_item {
-	struct opp_object_ext _ext;
-	aroop_txt_t*key;
-	void*obj_data;
-};
-
 OPP_CB(hash_table_item) {
-	struct opp_hash_table_item*item = (struct opp_hash_table_item*)data;
+	opp_map_pointer_ext_t*item = (opp_map_pointer_ext_t*)data;
 
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
-		item->key = (aroop_txt_t*)cb_data;
+		item->key = cb_data;
 		OPPREF(item->key);
-		item->obj_data = va_arg(ap, void*);
-		OPPREF(item->obj_data);
+		item->ptr.obj_data = va_arg(ap, void*);
+		OPPREF(item->ptr.obj_data);
 		break;
 	case OPPN_ACTION_FINALIZE:
 		OPPUNREF(item->key);
-		OPPUNREF(item->obj_data);
+		OPPUNREF(item->ptr.obj_data);
 		break;
 	}
 
@@ -58,59 +53,70 @@ OPP_CB(hash_table_item) {
 	return 0;
 }
 
+struct match_data {
+	opp_hash_table_t*ht;
+	void*key;
+};
+
+#define OPP_KEY_EQUALS(x,y) ({mdata->ht->efunc.aroop_cb(mdata->ht->efunc.aroop_closure_data,y,mdata->key);})
 static int match_hash(const void*func_data, const void*data) {
-	const struct opp_hash_table_item*item = (const struct opp_hash_table_item*)data;
-	const aroop_txt_t*key = (const aroop_txt_t*)func_data;
-	if(key->len == item->key->len && !memcmp(key->str, item->key->str, key->len)) {
+	const opp_map_pointer_ext_t*item = (const opp_map_pointer_ext_t*)data;
+	struct match_data*mdata = (struct match_data*)func_data;
+	if(OPP_KEY_EQUALS(mdata,item->key)) {
 		return 0;
 	}
 	return -1;
 }
 
 static int match_hash_and_delete(const void*func_data, const void*data) {
-	const struct opp_hash_table_item*item = (const struct opp_hash_table_item*)data;
-	const aroop_txt_t*key = (const aroop_txt_t*)func_data;
-	if(key->len == item->key->len && !memcmp(key->str, item->key->str, key->len)) {
+	const opp_map_pointer_ext_t*item = (const opp_map_pointer_ext_t*)data;
+	struct match_data*mdata = (struct match_data*)func_data;
+	if(OPP_KEY_EQUALS(mdata,item->key)) {
 		OPPUNREF(item);
 	}
 	return -1;
 }
 
-void*opp_hash_table_get(struct opp_factory*ht, aroop_txt_t*key) {
-	unsigned long hash = aroop_txt_get_hash(key);
-	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, hash, match_hash, key, NULL);
+#define OPP_KEY_HASH(h,x) ({h->hfunc.aroop_cb(h->hfunc.aroop_closure_data,x);})
+void*opp_hash_table_get(opp_hash_table_t*ht, void*key) {
+	//unsigned long hash = aroop_txt_get_hash(key);
+	unsigned long hash = OPP_KEY_HASH(ht,key);
+	struct match_data mdata = {ht,key};
+	opp_map_pointer_ext_t*item = (opp_map_pointer_ext_t*)opp_search(&ht->fac, hash, match_hash, &mdata, NULL);
 	if(!item) {
 		return NULL;
 	}
-	void*ret = item->obj_data;
+	void*ret = item->ptr.obj_data; // Note: we did not ref it.
 	OPPUNREF(item);
 	return ret;
 }
 
-int opp_hash_table_set(struct opp_factory*ht, aroop_txt_t*key, void*obj_data) {
+int opp_hash_table_set(opp_hash_table_t*ht, void*key, void*obj_data) {
 	if(!obj_data) {
-		opp_search(ht, aroop_txt_get_hash(key), match_hash_and_delete, key, NULL);return 0;
+		opp_search(&ht->fac, OPP_KEY_HASH(ht,key), match_hash_and_delete, key, NULL);return 0;
 	}
-	struct opp_hash_table_item*item = (struct opp_hash_table_item*)opp_search(ht, aroop_txt_get_hash(key), match_hash, key, NULL);
+	opp_map_pointer_ext_t*item = (opp_map_pointer_ext_t*)opp_search(&ht->fac, OPP_KEY_HASH(ht,key), match_hash, key, NULL);
 	if(item) {
-		if(item->obj_data) {
-			OPPUNREF(item->obj_data);
+		if(item->ptr.obj_data) {
+			OPPUNREF(item->ptr.obj_data);
 		}
-		item->obj_data = OPPREF(obj_data);
+		item->ptr.obj_data = OPPREF(obj_data);
 		OPPUNREF(item);
 	} else {
-		item = (struct opp_hash_table_item*)opp_alloc4(ht, 0, 0, 0, key, obj_data);
-		opp_set_hash(item, aroop_txt_get_hash(key));
+		item = (opp_map_pointer_ext_t*)opp_alloc4(&ht->fac, 0, 0, 0, key, obj_data);
+		opp_set_hash(item, OPP_KEY_HASH(ht,key));
 	}
 
 	//SYNC_LOG(SYNC_VERB, "set hash table value: %s\n", item->obj_data);
 	return 0;
 }
 
-int opp_hash_table_create_and_profile(struct opp_factory*ht, int pool_size, unsigned int flag
+int opp_hash_table_create_and_profile(opp_hash_table_t*ht, int pool_size, unsigned int flag, opp_hash_function_t hfunc, opp_equals_t efunc
 		, char*source_file, int source_line, char*module_name) {
-	return opp_factory_create_full_and_profile(ht, pool_size
-			, sizeof(struct opp_hash_table_item)
+	ht->hfunc = hfunc;
+	ht->efunc = efunc;
+	return opp_factory_create_full_and_profile(&ht->fac, pool_size
+			, sizeof(opp_map_pointer_ext_t)
 			, 1, flag | OPPF_SWEEP_ON_UNREF | OPPF_EXTENDED | OPPF_SEARCHABLE
 			, OPP_CB_FUNC(hash_table_item)
 			, source_file, source_line, module_name);
