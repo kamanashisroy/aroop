@@ -54,13 +54,13 @@ static struct opp_factory queue_factorys[OPP_QUEUE_FACTORY_COUNT];
 #define OBJ_QUEUE_INTEGRITY_TEST(x) do { \
 	int count = 0; \
 	struct obj_queue_item*test_item = NULL; \
-	for(test_item = x->_first; test_item; test_item = test_item->_next) { \
-		if(!test_item->_next) { \
-			SYNC_ASSERT(test_item == x->_tail); \
+	for(test_item = x->opp_internal_first; test_item; test_item = test_item->opp_internal_next) { \
+		if(!test_item->opp_internal_next) { \
+			SYNC_ASSERT(test_item == x->opp_internal_tail); \
 		} \
 		count++; \
 	} \
-	SYNC_ASSERT(count == queue->_use_count); \
+	SYNC_ASSERT(count == queue->opp_internal_usec); \
 } while(0)
 #else
 #define OBJ_QUEUE_INTEGRITY_TEST(x)
@@ -104,8 +104,8 @@ static struct opp_factory*opp_queue_factory_resulve(struct opp_queue*queue) {
 	cycles = (cycles+1)%OPP_QUEUE_REDUNDENCY;
 #endif
 
-	fac = queue_factorys+queue->_factory_idx+(COMPONENT_SCALABILITY*cycles);
-	if(queue->_factory_idx == OBJ_QUEUE_STACK_ALLOC) {
+	fac = queue_factorys+queue->opp_internal_factory_idx+(COMPONENT_SCALABILITY*cycles);
+	if(queue->opp_internal_factory_idx == OBJ_QUEUE_STACK_ALLOC) {
 		fac = (struct opp_factory*)(queue+1);
 	}
 	return fac;
@@ -114,21 +114,21 @@ static struct opp_queue_item*opp_queue_item_getfree(struct opp_queue*queue, void
 	volatile struct opp_queue_item*node = NULL;
 #ifdef USE_FREELIST
 	do {
-		node = queue->_freelist;
+		node = queue->opp_internal_free_list;
 		if(!node) {
 			break;
 		}
-		if(node == &queue->_free_node) {
+		if(node == &queue->opp_internal_free_node) {
 			USLEEP_BEFORE_RETRYING();
 			continue;
 		}
 		// we are placing a itermediate node so that none changes this
-		if(!sync_do_compare_and_swap(&(queue->_freelist), node, &queue->_free_node)) {
+		if(!sync_do_compare_and_swap(&(queue->opp_internal_free_list), node, &queue->opp_internal_free_node)) {
 			USLEEP_BEFORE_RETRYING();
 			continue;
 		}
-		volatile struct opp_queue_item*next = node->_next;
-		SYNC_ASSERT(sync_do_compare_and_swap(&(queue->_freelist), &queue->_free_node, next));
+		volatile struct opp_queue_item*next = node->opp_internal_next;
+		SYNC_ASSERT(sync_do_compare_and_swap(&(queue->opp_internal_free_list), &queue->opp_internal_free_node, next));
 		break;
 	} while(1);
 #endif
@@ -138,7 +138,7 @@ static struct opp_queue_item*opp_queue_item_getfree(struct opp_queue*queue, void
 			return NULL;
 		}
 	}
-	node->_next = NULL;
+	node->opp_internal_next = NULL;
 	if(obj_data) {
 		node->obj_data = OPPREF(obj_data);
 	} else {
@@ -148,18 +148,18 @@ static struct opp_queue_item*opp_queue_item_getfree(struct opp_queue*queue, void
 }
 
 static int opp_queue_item_setfree(struct opp_queue*queue, struct opp_queue_item*node) {
-	node->_next = NULL;
+	node->opp_internal_next = NULL;
 	node->obj_data = NULL;
 #ifdef USE_FREELIST
 	do {
 		SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*free_node;
-		free_node = queue->_freelist;
-		if(free_node == &queue->_free_node) {
+		free_node = queue->opp_internal_free_list;
+		if(free_node == &queue->opp_internal_free_node) {
 			USLEEP_BEFORE_RETRYING();
 			continue;
 		}
-		node->_next = free_node;
-		if(sync_do_compare_and_swap(&(queue->_freelist), free_node, node)) {
+		node->opp_internal_next = free_node;
+		if(sync_do_compare_and_swap(&(queue->opp_internal_free_list), free_node, node)) {
 			break;
 		}
 		USLEEP_BEFORE_RETRYING();
@@ -174,22 +174,22 @@ static int opp_queue_item_setfree(struct opp_queue*queue, struct opp_queue_item*
 
 #if 0
 #define OBJ_QUEUE_ASSERT_RETURN(x,y) ({int loop_breaker = 0; \
-while(x->_sign != OPP_QUEUE_INITIALIZED) { \
+while(x->opp_internal_sign != OPP_QUEUE_INITIALIZED) { \
 	usleep(1); \
 	loop_breaker++; \
 	if(loop_breaker > 500) { \
-		x->_error_count++; \
-		if(x->_error_count > 50) { \
-			x->_error_count = 0; \
+		x->opp_internal_errorc++; \
+		if(x->opp_internal_errorc > 50) { \
+			x->opp_internal_errorc = 0; \
 			SYNC_LOG(SYNC_ERROR, "%d line failed\n", __LINE__); \
 		} \
 		return y; \
 	} \
 }})
 #else
-//#define OBJ_QUEUE_ASSERT_RETURN(x,y) SYNC_ASSERT(x->_sign == OPP_QUEUE_INITIALIZED)
+//#define OBJ_QUEUE_ASSERT_RETURN(x,y) SYNC_ASSERT(x->opp_internal_sign == OPP_QUEUE_INITIALIZED)
 // NOTE The following code may introduce memory leak ..
-#define OBJ_QUEUE_ASSERT_RETURN(x,y) ({if(x->_sign != OPP_QUEUE_INITIALIZED)return y;})
+#define OBJ_QUEUE_ASSERT_RETURN(x,y) ({if(x->opp_internal_sign != OPP_QUEUE_INITIALIZED)return y;})
 #endif
 
 int opp_enqueue(struct opp_queue*queue, void*obj_data) {
@@ -221,47 +221,47 @@ int opp_enqueue(struct opp_queue*queue, void*obj_data) {
 	if(!node || !interm) {
 		return -1;
 	}
-	node->_next = interm;
-	interm->_next = NULL;
+	node->opp_internal_next = interm;
+	interm->opp_internal_next = NULL;
 	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*queuelast = NULL;
 	do {
-		queuelast = queue->_tail;
+		queuelast = queue->opp_internal_tail;
 		SYNC_ASSERT(queuelast);
-		if(sync_do_compare_and_swap(&(queue->_tail), queuelast, interm)) {
+		if(sync_do_compare_and_swap(&(queue->opp_internal_tail), queuelast, interm)) {
 			break;
 		}
 		USLEEP_BEFORE_RETRYING();
 	} while(1);
-	while(!sync_do_compare_and_swap(&(queuelast->_next), NULL, node)) {
+	while(!sync_do_compare_and_swap(&(queuelast->opp_internal_next), NULL, node)) {
 		USLEEP_BEFORE_RETRYING();
 	}
 	SYNC_QUEUE_VOLATILE_VAR int oldval,newval;
 	do {
-		oldval = queue->_use_count;
+		oldval = queue->opp_internal_usec;
 		newval = oldval+1;
-		if(sync_do_compare_and_swap(&(queue->_use_count), oldval, newval)) {
+		if(sync_do_compare_and_swap(&(queue->opp_internal_usec), oldval, newval)) {
 			break;
 		}
 		USLEEP_BEFORE_RETRYING();
 	}while(1);
 	return 0;
 #else
-	opp_factory_lock_donot_use(queue_factorys+queue->_factory_idx);
+	opp_factory_lock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
 	OBJ_QUEUE_INTEGRITY_TEST(queue);
-	struct opp_queue_item*node = (struct opp_queue_item*)OPP_ALLOC2(queue_factorys+queue->_factory_idx, NULL);
+	struct opp_queue_item*node = (struct opp_queue_item*)OPP_ALLOC2(queue_factorys+queue->opp_internal_factory_idx, NULL);
 	if(node) {
 		node->obj_data = OPPREF(obj_data);
-		node->_next = NULL;
-		if (queue->_first == NULL) {
-			queue->_first = queue->_tail = node;
+		node->opp_internal_next = NULL;
+		if (queue->opp_internal_first == NULL) {
+			queue->opp_internal_first = queue->opp_internal_tail = node;
 		} else {
-			queue->_tail->_next = node;
-			queue->_tail = node;
+			queue->opp_internal_tail->opp_internal_next = node;
+			queue->opp_internal_tail = node;
 		}
-		queue->_use_count++;
+		queue->opp_internal_usec++;
 	}
 	OBJ_QUEUE_INTEGRITY_TEST(queue);
-	opp_factory_unlock_donot_use(queue_factorys+queue->_factory_idx);
+	opp_factory_unlock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
 	return node?0:-1;
 #endif
 }
@@ -270,37 +270,37 @@ void*opp_dequeue(struct opp_queue*queue) {
 	void*ret = NULL;
 	OBJ_QUEUE_ASSERT_RETURN(queue,NULL);
 #ifdef SYNC_USE_LOCKFREE_QUEUE
-#define REMOVE_INTERMEDIATE_NODE() if(swap){SYNC_ASSERT(sync_do_compare_and_swap(&(node->_next), &queue->_free_node, next));swap = 0;}
-#define REMOVE_INTERMEDIATE_NODE2() if(swap2){SYNC_ASSERT(sync_do_compare_and_swap(&(queue->_head_node._next), &queue->_free_node, node));swap2 = 0;}
+#define REMOVE_INTERMEDIATE_NODE() if(swap){SYNC_ASSERT(sync_do_compare_and_swap(&(node->opp_internal_next), &queue->opp_internal_free_node, next));swap = 0;}
+#define REMOVE_INTERMEDIATE_NODE2() if(swap2){SYNC_ASSERT(sync_do_compare_and_swap(&(queue->opp_internal_head_node.opp_internal_next), &queue->opp_internal_free_node, node));swap2 = 0;}
 	do {
 		SYNC_QUEUE_VOLATILE_VAR int swap = 0, swap2 = 0;
 		do {
-			SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*node = queue->_head_node._next;
+			SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*node = queue->opp_internal_head_node.opp_internal_next;
 			if(!node) {
 				return NULL;
 			}
 
-			if(node == &queue->_free_node || !(swap2 = sync_do_compare_and_swap(&(queue->_head_node._next), node, &queue->_free_node))) {
+			if(node == &queue->opp_internal_free_node || !(swap2 = sync_do_compare_and_swap(&(queue->opp_internal_head_node.opp_internal_next), node, &queue->opp_internal_free_node))) {
 				USLEEP_BEFORE_RETRYING();
 				continue;
 			}
-			SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*next = node->_next;
+			SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*next = node->opp_internal_next;
 			if(!node->obj_data && !next) {
 				REMOVE_INTERMEDIATE_NODE2();
 				return NULL;
 			}
-			if(next == &queue->_free_node) {
+			if(next == &queue->opp_internal_free_node) {
 				REMOVE_INTERMEDIATE_NODE2();
 				USLEEP_BEFORE_RETRYING();
 				continue;
 			}
 			// we are placing a itermediate node so that none changes this
-			if(!(swap = sync_do_compare_and_swap(&(node->_next), next, &queue->_free_node))) {
+			if(!(swap = sync_do_compare_and_swap(&(node->opp_internal_next), next, &queue->opp_internal_free_node))) {
 				REMOVE_INTERMEDIATE_NODE2();
 				USLEEP_BEFORE_RETRYING();
 				continue;
 			}
-			if(!sync_do_compare_and_swap(&(queue->_head_node._next), &queue->_free_node, next)) {
+			if(!sync_do_compare_and_swap(&(queue->opp_internal_head_node.opp_internal_next), &queue->opp_internal_free_node, next)) {
 				REMOVE_INTERMEDIATE_NODE();
 				REMOVE_INTERMEDIATE_NODE2();
 				USLEEP_BEFORE_RETRYING();
@@ -315,65 +315,65 @@ void*opp_dequeue(struct opp_queue*queue) {
 	if(ret) {
 		SYNC_QUEUE_VOLATILE_VAR int oldval,newval;
 		do {
-			oldval = queue->_use_count;
+			oldval = queue->opp_internal_usec;
 			newval = oldval-1;
-		}while(!sync_do_compare_and_swap(&(queue->_use_count), oldval, newval));
+		}while(!sync_do_compare_and_swap(&(queue->opp_internal_usec), oldval, newval));
 	}
 	return ret;
 #else
 	struct opp_queue_item*item = NULL;
-	if(!queue->_first) {
+	if(!queue->opp_internal_first) {
 		return NULL;
 	}
 
-	opp_factory_lock_donot_use(queue_factorys+queue->_factory_idx);
+	opp_factory_lock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
 	OBJ_QUEUE_INTEGRITY_TEST(queue);
-	item = queue->_first;
+	item = queue->opp_internal_first;
 	if(item) {
 		ret = item->obj_data;
 		OPPREF(ret);
-		if(queue->_tail == item) {
-			queue->_tail = item->_next;
+		if(queue->opp_internal_tail == item) {
+			queue->opp_internal_tail = item->opp_internal_next;
 		}
-		queue->_first = item->_next;
+		queue->opp_internal_first = item->opp_internal_next;
 		OPPUNREF_UNLOCKED(item);
-		queue->_use_count--;
+		queue->opp_internal_usec--;
 	}
 	OBJ_QUEUE_INTEGRITY_TEST(queue);
-	opp_factory_unlock_donot_use(queue_factorys+queue->_factory_idx);
+	opp_factory_unlock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
 	return ret;
 #endif
 }
 
 int opp_queue_init2(struct opp_queue*queue, int scindex) {
 	if(scindex != OBJ_QUEUE_STACK_ALLOC)SYNC_ASSERT(scindex < COMPONENT_SCALABILITY);
-	queue->_use_count = 0;
+	queue->opp_internal_usec = 0;
 #ifdef SYNC_USE_LOCKFREE_QUEUE
-	queue->_tail = &queue->_head_node;
+	queue->opp_internal_tail = &queue->opp_internal_head_node;
 #ifdef USE_FREELIST
-	queue->_freelist = NULL;
+	queue->opp_internal_free_list = NULL;
 #endif
-	queue->_head_node._next = NULL;
-	queue->_free_node._next = NULL;
+	queue->opp_internal_head_node.opp_internal_next = NULL;
+	queue->opp_internal_free_node.opp_internal_next = NULL;
 #else
-	queue->_tail = NULL;
-	queue->_first = NULL;
+	queue->opp_internal_tail = NULL;
+	queue->opp_internal_first = NULL;
 #endif
-	queue->_sign = OPP_QUEUE_INITIALIZED;
-	queue->_factory_idx = (scindex%COMPONENT_SCALABILITY);
+	queue->opp_internal_sign = OPP_QUEUE_INITIALIZED;
+	queue->opp_internal_factory_idx = (scindex%COMPONENT_SCALABILITY);
 	return 0;
 }
 
 int opp_queue_deinit(struct opp_queue*queue) {
-	if(queue->_sign != OPP_QUEUE_INITIALIZED) {
+	if(queue->opp_internal_sign != OPP_QUEUE_INITIALIZED) {
 		return 0;
 	}
-	queue->_sign = 89;
+	queue->opp_internal_sign = 89;
 #ifdef SYNC_USE_LOCKFREE_QUEUE
 	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*node,*next;
-	for(node = queue->_head_node._next;node;node = next) {
-		next = node->_next;
-		if(node != &queue->_head_node && node != &queue->_free_node) {
+	for(node = queue->opp_internal_head_node.opp_internal_next;node;node = next) {
+		next = node->opp_internal_next;
+		if(node != &queue->opp_internal_head_node && node != &queue->opp_internal_free_node) {
 #ifdef USE_MALLOCED_QUEUE_ITEM
 			OPPUNREF(node->obj_data);
 			free((void*)node);
@@ -383,9 +383,9 @@ int opp_queue_deinit(struct opp_queue*queue) {
 		}
 	}
 #ifdef USE_FREELIST
-	for(node = queue->_freelist;node;node = next) {
-		next = node->_next;
-		if(node != &queue->_head_node && node != &queue->_free_node) {
+	for(node = queue->opp_internal_free_list;node;node = next) {
+		next = node->opp_internal_next;
+		if(node != &queue->opp_internal_head_node && node != &queue->opp_internal_free_node) {
 #ifdef USE_MALLOCED_QUEUE_ITEM
 			OPPUNREF(node->obj_data);
 			free((void*)node);
@@ -397,24 +397,24 @@ int opp_queue_deinit(struct opp_queue*queue) {
 #endif
 #else
 	struct opp_queue_item*node,*next;
-	opp_factory_lock_donot_use(queue_factorys+queue->_factory_idx);
+	opp_factory_lock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
 	OBJ_QUEUE_INTEGRITY_TEST(queue);
-	for(node = queue->_first;node;node = next) {
-		next = node->_next;
+	for(node = queue->opp_internal_first;node;node = next) {
+		next = node->opp_internal_next;
 		if(!next) {
-			SYNC_ASSERT(node == queue->_tail);
+			SYNC_ASSERT(node == queue->opp_internal_tail);
 		}
 		OPPUNREF_UNLOCKED(node);
 	}
-	opp_factory_unlock_donot_use(queue_factorys+queue->_factory_idx);
-	queue->_first = NULL;
+	opp_factory_unlock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
+	queue->opp_internal_first = NULL;
 #endif
-	queue->_tail = NULL;
+	queue->opp_internal_tail = NULL;
 #ifdef SYNC_USE_LOCKFREE_QUEUE
 #ifdef USE_FREELIST
-	queue->_freelist = NULL;
+	queue->opp_internal_free_list = NULL;
 #endif
-	queue->_head_node._next = NULL;
+	queue->opp_internal_head_node.opp_internal_next = NULL;
 #endif
 	return 0;
 }
@@ -422,20 +422,20 @@ int opp_queue_deinit(struct opp_queue*queue) {
 int opp_queue_do_full_unsafe(struct opp_queue*queue, int (*func)(void*data, void*func_data), void*func_data) {
 #ifdef SYNC_USE_LOCKFREE_QUEUE
   struct opp_queue_item*node,*prev;
-  for(prev = (struct opp_queue_item*)&queue->_head_node,node = (struct opp_queue_item*)queue->_head_node._next
-		  ;(node && node != &queue->_free_node);prev = node,node = (struct opp_queue_item*)node->_next) {
+  for(prev = (struct opp_queue_item*)&queue->opp_internal_head_node,node = (struct opp_queue_item*)queue->opp_internal_head_node.opp_internal_next
+		  ;(node && node != &queue->opp_internal_free_node);prev = node,node = (struct opp_queue_item*)node->opp_internal_next) {
     if(!node->obj_data) {
       continue;
     }
     if(func && func(node->obj_data, func_data) == OBJ_QUEUE_RETRUN_UNLINK) {
       // Destroy ..
       if(prev) {
-        prev->_next = node->_next;
-        if(node == queue->_tail) {
-          queue->_tail = prev;
+        prev->opp_internal_next = node->opp_internal_next;
+        if(node == queue->opp_internal_tail) {
+          queue->opp_internal_tail = prev;
         }
       }
-      queue->_use_count--;
+      queue->opp_internal_usec--;
 #if 0
       OPPUNREF(node);
 #else
@@ -455,11 +455,11 @@ int opp_queue_do_full_unsafe(struct opp_queue*queue, int (*func)(void*data, void
 int opp_queue_do_full(struct opp_queue*queue, int (*func)(void*data, void*func_data), void*func_data) {
 #ifdef SYNC_USE_LOCKFREE_QUEUE
 	void*data;
-	if(queue->_sign != OPP_QUEUE_INITIALIZED || !queue->_use_count) {
+	if(queue->opp_internal_sign != OPP_QUEUE_INITIALIZED || !queue->opp_internal_usec) {
 		return 0;
 	}
 	struct opp_queue tmpqueue;
-	opp_queue_init2(&tmpqueue, queue->_factory_idx);
+	opp_queue_init2(&tmpqueue, queue->opp_internal_factory_idx);
 
 	while((data = opp_dequeue(queue))) {
 		if(func && func(data, func_data) == OBJ_QUEUE_RETRUN_UNLINK) {
@@ -478,31 +478,31 @@ int opp_queue_do_full(struct opp_queue*queue, int (*func)(void*data, void*func_d
 	//no need to destroy may be ... obj_queue_destroy(&tmpqueue);
 #else
 	struct opp_queue_item*item, *prev;
-	if(queue->_sign != OPP_QUEUE_INITIALIZED || !queue->_first) {
+	if(queue->opp_internal_sign != OPP_QUEUE_INITIALIZED || !queue->opp_internal_first) {
 		return 0;
 	}
-	opp_factory_lock_donot_use(queue_factorys+queue->_factory_idx);
+	opp_factory_lock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
 	OBJ_QUEUE_INTEGRITY_TEST(queue);
-	for(item = queue->_first, prev = NULL;item;) {
+	for(item = queue->opp_internal_first, prev = NULL;item;) {
 		if(func && func(item->obj_data, func_data) == OBJ_QUEUE_RETRUN_UNLINK) {
 			if(prev) {
-				prev->_next = item->_next;
+				prev->opp_internal_next = item->opp_internal_next;
 			} else {
-				queue->_first = item->_next;
+				queue->opp_internal_first = item->opp_internal_next;
 			}
-			if(queue->_tail == item) {
-				queue->_tail = item->_next?item->_next:(prev?prev:queue->_first);
+			if(queue->opp_internal_tail == item) {
+				queue->opp_internal_tail = item->opp_internal_next?item->opp_internal_next:(prev?prev:queue->opp_internal_first);
 			}
 			OPPUNREF_UNLOCKED(item);
-			queue->_use_count--;
-			item = prev?prev->_next:queue->_first;
+			queue->opp_internal_usec--;
+			item = prev?prev->opp_internal_next:queue->opp_internal_first;
 		} else {
 			prev = item;
-			item = item->_next;
+			item = item->opp_internal_next;
 		}
 		OBJ_QUEUE_INTEGRITY_TEST(queue);
 	}
-	opp_factory_unlock_donot_use(queue_factorys+queue->_factory_idx);
+	opp_factory_unlock_donot_use(queue_factorys+queue->opp_internal_factory_idx);
 #endif
 	return 0;
 }
@@ -512,11 +512,11 @@ int opp_queue_do_full_on_stack(struct opp_queue*queue, int (*func)(void*data, vo
 #ifdef SYNC_USE_LOCKFREE_QUEUE
 	// XXX this code is buggy it destroyes the object sequence ..
 	void*data;
-	if(queue->_sign != OPP_QUEUE_INITIALIZED || !queue->_use_count) {
+	if(queue->opp_internal_sign != OPP_QUEUE_INITIALIZED || !queue->opp_internal_usec) {
 		return 0;
 	}
 #if 1
-	int incsize = ((queue->_use_count+1)*3);
+	int incsize = ((queue->opp_internal_usec+1)*3);
 	OPP_QUEUE_DECLARE_STACK(tmpqueue, incsize);
 #else
 	OPP_QUEUE_DECLARE_STACK(tmpqueue, 100);
@@ -546,7 +546,7 @@ OPP_CB(opp_queue_item) {
 	switch(callback) {
 	case OPPN_ACTION_FINALIZE:
 		OPPUNREF(node->obj_data);
-		node->_next = NULL;
+		node->opp_internal_next = NULL;
 		break;
 	}
 	return 0;

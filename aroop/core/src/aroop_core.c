@@ -34,18 +34,18 @@
 
 OPP_VOLATILE_VAR SYNC_UWORD16_T core_users = 0; // TODO make it thread safe where 
 
-static int _aroop_argc;static char**_aroop_argv;
+static int aroop_internal_argc;static char**aroop_internal_argv;
 int aroop_get_argc() {
-	return _aroop_argc;
+	return aroop_internal_argc;
 }
 
 char**aroop_get_argv() {
-	return _aroop_argv;
+	return aroop_internal_argv;
 }
 
 int aroop_init(int argc, char ** argv) {
-	_aroop_argc = argc;
-	_aroop_argv = argv;
+	aroop_internal_argc = argc;
+	aroop_internal_argv = argv;
 #ifdef SYNC_HAS_ATOMIC_OPERATION
 	do {
 		volatile SYNC_UWORD16_T oldval,newval;
@@ -106,7 +106,7 @@ int aroop_deinit() {
 	}
 }
 
-struct _aroop_memory_profiler_dumper {
+struct aroop_internal_memory_profiler_dumper {
 	aroop_write_output_stream_t log;
 	long total_memory_used;
 	long total_memory;
@@ -115,7 +115,7 @@ struct _aroop_memory_profiler_dumper {
 #define PROFILER_DUMP_LINE_SIZE 256
 static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 	struct opp_factory_profiler_info*x = data;
-	struct _aroop_memory_profiler_dumper*cb_data = func_data;
+	struct aroop_internal_memory_profiler_dumper*cb_data = func_data;
 	cb_data->total_memory_used += x->obuff->slot_use_count*x->obuff->obj_size;
 	cb_data->total_memory += (x->obuff->pool_count*x->obuff->memory_chunk_size);
 	struct aroop_txt content;
@@ -128,7 +128,7 @@ static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 }
 
 int aroop_memory_profiler_dump(aroop_write_output_stream_t log) {
-	struct _aroop_memory_profiler_dumper cb_data = {log, 0, 0};
+	struct aroop_internal_memory_profiler_dumper cb_data = {log, 0, 0};
 	struct aroop_txt content;
 	aroop_txt_embeded_stackbuffer(&content, PROFILER_DUMP_LINE_SIZE);
 	aroop_txt_printf(&content, OPP_FACTORY_PROFILER_DUMP_HEADER_FMT2()" -- " OPP_FACTORY_DUMP_HEADER_FMT()"\n", OPP_FACTORY_PROFILER_DUMP_HEADER_ARG2(), OPP_FACTORY_DUMP_HEADER_ARG());

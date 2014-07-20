@@ -846,7 +846,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			vblock.add_statement (new CCodeExpressionStatement (vcall));
 			generate_cparameters (m, cfile, vfunc, null, vcall);
 			if(m.tree_can_fail) {
-				vcall.add_argument (new CCodeIdentifier ("_err"));
+				vcall.add_argument (new CCodeIdentifier ("aroop_internal_err"));
 			}
 			CCodeStatement cstmt = new CCodeReturnStatement (new CCodeIdentifier (self_instance));
 			cstmt.line = vfunc.line;
@@ -998,7 +998,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		}
 		
 		if(m.tree_can_fail) {
-			var cparam = new CCodeParameter ("_err", "aroop_wrong**");
+			var cparam = new CCodeParameter ("aroop_internal_err", "aroop_wrong**");
 			current_method_inner_error = true;
 
 			func.add_parameter (cparam);

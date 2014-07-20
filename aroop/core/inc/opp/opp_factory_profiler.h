@@ -45,7 +45,7 @@ struct opp_factory_profiler_info {
 	struct opp_factory*obuff;
 };
 
-#define OPP_PFACTORY_CREATE_FULL(_obuff, _psize, _objsize, _tokenstart, _property, _cb) ({opp_factory_create_full_and_profile(_obuff, _psize, _objsize, _tokenstart, _property, _cb, __FILE__, __LINE__, "aroop");})
+#define OPP_PFACTORY_CREATE_FULL(obuff, psize, objsize, tokenstart, property, cb) ({opp_factory_create_full_and_profile(obuff, psize, objsize, tokenstart, property, cb, __FILE__, __LINE__, "aroop");})
 #define OPP_PFACTORY_CREATE(obuff, x, y, z) ({opp_factory_create_full_and_profile(obuff, x, y, 1, OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF, z, __FILE__, __LINE__, "aroop");})
 int opp_factory_create_full_and_profile(struct opp_factory*obuff
 		, SYNC_UWORD16_T inc

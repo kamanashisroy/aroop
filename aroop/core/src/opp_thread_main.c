@@ -30,7 +30,7 @@ C_CAPSULE_START
 
 #ifndef AROOP_BASIC
 
-__thread struct opp_context*__opp_context_id = NULL;
+__thread struct opp_context*opp_internal_context_id = NULL;
 static struct opp_factory threads;
 static int initiated = 0; // TODO make it volatile
 
@@ -50,9 +50,9 @@ int opp_destroy_all() { // TODO call the function before application exit
 
 int opp_thread_main(opp_thread_func_t func, int*argc, char*args[]) { // always call it in new thread ..
 	opp_thread_init();
-	__opp_context_id = (struct opp_context*)opp_alloc4(&threads, 0, 0, 0, NULL);
+	opp_internal_context_id = (struct opp_context*)opp_alloc4(&threads, 0, 0, 0, NULL);
 	func(argc, args);
-	OPPUNREF(__opp_context_id);
+	OPPUNREF(opp_internal_context_id);
 	return 0;
 }
 

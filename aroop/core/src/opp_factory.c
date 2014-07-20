@@ -327,17 +327,17 @@ int opp_factory_create_full(struct opp_factory*obuff
 #else
 #ifdef __EPOC32__ // todo add symbian version
 #define SYNC_OBJ_POPCOUNT(a) ({ \
-    unsigned int _pop_count = (unsigned int)a; \
-    _pop_count = _pop_count - ((_pop_count >> 1) & 0x55555555); \
+    unsigned int opp_internal_pop_count = (unsigned int)a; \
+    opp_internal_pop_count = opp_internal_pop_count - ((opp_internal_pop_count >> 1) & 0x55555555); \
     /* Every 2 bits holds the sum of every pair of bits */ \
-    _pop_count = ((_pop_count >> 2) & 0x33333333) + (_pop_count & 0x33333333); \
+    opp_internal_pop_count = ((opp_internal_pop_count >> 2) & 0x33333333) + (opp_internal_pop_count & 0x33333333); \
     /* Every 4 bits holds the sum of every 4-set of bits (3 significant bits) */ \
-    _pop_count = (_pop_count + (_pop_count >> 4)) & 0x0F0F0F0F; \
+    opp_internal_pop_count = (opp_internal_pop_count + (opp_internal_pop_count >> 4)) & 0x0F0F0F0F; \
     /* Every 8 bits holds the sum of every 8-set of bits (4 significant bits) */ \
-    _pop_count = (_pop_count + (_pop_count >> 16)); \
+    opp_internal_pop_count = (opp_internal_pop_count + (opp_internal_pop_count >> 16)); \
     /* The lower 16 bits hold two 8 bit sums (5 significant bits).*/ \
     /*    Upper 16 bits are garbage */ \
-    (_pop_count + (_pop_count >> 8)) & 0x0000003F;  /* (6 significant bits) */ \
+    (opp_internal_pop_count + (opp_internal_pop_count >> 8)) & 0x0000003F;  /* (6 significant bits) */ \
 })
 #else
 #define SYNC_OBJ_POPCOUNT(x) __builtin_popcount(x)
@@ -1898,7 +1898,7 @@ int opp_dump(const void*data, void (*log)(void *log_data, const char*fmt, ...), 
 }
 
 struct pencil {
-	struct opp_object_ext _ext;
+	struct opp_object_ext opp_internal_ext;
 	int color;
 	int depth;
 };
@@ -1953,7 +1953,7 @@ static int obj_utils_test_helper(int inc, struct pencil_logger*logger) {
 		pen = OPP_ALLOC1(&bpencil);
 		pen->color = (idx%2)?3:1;
 		pen->depth = idx;
-		SYNC_ASSERT(pen->_ext.flag == OPPN_ALL);
+		SYNC_ASSERT(pen->opp_internal_ext.flag == OPPN_ALL);
 	}
 	// remove 3
 	pen = opp_get(&bpencil, 0);
@@ -1970,7 +1970,7 @@ static int obj_utils_test_helper(int inc, struct pencil_logger*logger) {
 		pen = OPP_ALLOC1(&bpencil);
 		pen->color = (idx%2)?3:1;
 		pen->depth = idx;
-		SYNC_ASSERT(pen->_ext.flag == OPPN_ALL);
+		SYNC_ASSERT(pen->opp_internal_ext.flag == OPPN_ALL);
 	}
 	opp_factory_verb(&bpencil, pencil_verb, logger, logger->log, logger->log_data);
 
@@ -2036,7 +2036,7 @@ static int obj_utils_test_search_tree(struct pencil_logger*logger) {
 	}
 	// try to delete the root
 	OPPUNREF(first);
-	if((pen = opp_search(&bpencil, 4, NULL, NULL)) && pen->_ext.hash == 4) {
+	if((pen = opp_search(&bpencil, 4, NULL, NULL)) && pen->opp_internal_ext.hash == 4) {
 		ret = 0;
 		logger->log(logger->log_data, "Search Test [OK]\n");
 	} else {

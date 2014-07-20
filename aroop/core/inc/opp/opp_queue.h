@@ -46,30 +46,30 @@ enum {
 
 struct opp_queue_item {
 	void*obj_data;
-	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*_next;
+	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*opp_internal_next;
 };
 
 /* using freelist solves the repeatative memory allocation and locking problem .. anyway it creates fragmentation */
 //#define USE_FREELIST
 
 struct opp_queue {
-	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*_tail;
+	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*opp_internal_tail;
 #ifdef SYNC_USE_LOCKFREE_QUEUE
 #ifdef USE_FREELIST
-	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*_freelist;
+	SYNC_QUEUE_VOLATILE_VAR struct opp_queue_item*opp_internal_freelist;
 #endif
-	struct opp_queue_item _head_node,_free_node;
+	struct opp_queue_item opp_internal_head_node,opp_internal_free_node;
 #else
-	struct opp_queue_item*_first;
+	struct opp_queue_item*opp_internal_first;
 #endif
-	SYNC_UWORD16_T _use_count;
-	SYNC_UWORD8_T _sign;
-	SYNC_UWORD8_T _factory_idx;
+	SYNC_UWORD16_T opp_internal_usec;
+	SYNC_UWORD8_T opp_internal_sign;
+	SYNC_UWORD8_T opp_internal_factory_idx;
 };
 
 typedef struct opp_queue opp_queue_t;
 
-#define OPP_QUEUE_SIZE(q) ({(q)->_use_count;})
+#define OPP_QUEUE_SIZE(q) ({(q)->opp_internal_usec;})
 
 int opp_enqueue(struct opp_queue*queue, void*obj_data);
 void*opp_dequeue(struct opp_queue*queue);
@@ -86,14 +86,14 @@ void opp_queuesystem_verb(void (*log)(void *log_data, const char*fmt, ...), void
 int opp_queuesystem_init();
 void opp_queuesystem_deinit();
 
-#define OPP_QUEUE_DECLARE_STACK(x,y) char _x##buf[sizeof(struct opp_queue)+sizeof(struct opp_factory)];struct opp_queue*x = (struct opp_queue*)_x##buf;struct opp_factory*_x##fac = (struct opp_factory*)(x+1);do { \
-	_x##fac->sign = 0; \
-	SYNC_ASSERT(!opp_factory_create_full(_x##fac, y, sizeof(struct opp_queue_item), 1, OPPF_SWEEP_ON_UNREF, NULL)); \
-	opp_factory_create_pool_donot_use(_x##fac, NULL, alloca(_x##fac->memory_chunk_size)); \
+#define OPP_QUEUE_DECLARE_STACK(x,y) char opp_internal_x##buf[sizeof(struct opp_queue)+sizeof(struct opp_factory)];struct opp_queue*x = (struct opp_queue*)opp_internal_x##buf;struct opp_factory*opp_internal_x##fac = (struct opp_factory*)(x+1);do { \
+	opp_internal_x##fac->sign = 0; \
+	SYNC_ASSERT(!opp_factory_create_full(opp_internal_x##fac, y, sizeof(struct opp_queue_item), 1, OPPF_SWEEP_ON_UNREF, NULL)); \
+	opp_factory_create_pool_donot_use(_x##fac, NULL, alloca(opp_internal_x##fac->memory_chunk_size)); \
 	opp_queue_init2(x, OBJ_QUEUE_STACK_ALLOC); \
 }while(0);
 
-#define OPP_QUEUE_DESTROY_STACK(x) ({opp_queue_deinit(x);opp_factory_destroy(_x##fac);})
+#define OPP_QUEUE_DESTROY_STACK(x) ({opp_queue_deinit(x);opp_factory_destroy(opp_internal_x##fac);})
 
 #ifdef TEST_OBJ_FACTORY_UTILS
 void*opp_queue_test_thread_run(void*notused);

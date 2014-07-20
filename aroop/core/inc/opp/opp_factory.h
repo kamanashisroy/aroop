@@ -191,7 +191,7 @@ int opp_utils_multithreaded_test();
 int opp_dump(const void*data, void (*log)(void *log_data, const char*fmt, ...), void*log_data);
 #endif
 
-#define EXTOBJ_TEST_FLAG(o,f) ((o)->_ext.flag & f)
+#define EXTOBJ_TEST_FLAG(o,f) ((o)->opp_internal_ext.flag & f)
 
 #define OPP_FACTORY_DUMP_HEADER_FMT() "%-10.10s %-10.10s %-10.10s %-10.10s %-10.10s %-10.10s %-10.10s"
 #define OPP_FACTORY_DUMP_HEADER_ARG() "pools","allocated","used","objects","slots","bitstring size","pool size"

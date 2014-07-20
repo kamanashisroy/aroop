@@ -44,7 +44,7 @@ struct aroop_txt {
 } typedef aroop_txt_t;
 
 struct aroop_searchable_txt {
-	struct opp_object_ext _ext;
+	struct opp_object_ext aroop_internal_ext;
 	struct aroop_txt tdata;
 } typedef aroop_searchable_txt_t;
 
@@ -159,8 +159,8 @@ typedef int xultb_bool_t;
 
 #define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->proto = opp_str2_alloc(y))) {(x)->size = y;}(x)->str = (x)->proto;})
 #define aroop_txt_embeded_stackbuffer(x,y) ({ \
-	char*__buf = alloca(y+1)/*char buf##y[y]*/; \
-	(x)->str = __buf; \
+	char*aroop_internal_buf = alloca(y+1)/*char buf##y[y]*/; \
+	(x)->str = aroop_internal_buf; \
 	(x)->size = y; \
 	(x)->len = 0; \
 	(x)->proto = NULL; \
@@ -168,9 +168,9 @@ typedef int xultb_bool_t;
 })
 
 #define aroop_txt_embeded_stackbuffer_from_txt(x,y) ({ \
-	char*__buf = (char*)alloca((y)->len+1)/*char buf##y[(y)->len+1]*/; \
-	memcpy(__buf,(y)->str,(y)->len); \
-	(x)->str = __buf; \
+	char*aroop_internal_buf = (char*)alloca((y)->len+1)/*char buf##y[(y)->len+1]*/; \
+	memcpy(aroop_internal_buf,(y)->str,(y)->len); \
+	(x)->str = aroop_internal_buf; \
 	(x)->size = (y)->len; \
 	(x)->len = (y)->len; \
 	(x)->str[(x)->len] = '\0'; \
@@ -238,14 +238,14 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 // TODO optimize this shift code
 #define aroop_txt_shift_token(x,s,y) ({ \
 	aroop_txt_destroy(y); \
-	char*_p = (x)->str; \
+	char*aroop_internal_p = (x)->str; \
 	(y)->str = strsep(&((x)->str),s); \
 	if((y)->str){ \
 		(y)->len = strlen(((y)->str)); \
 		if((x)->proto){(y)->proto = OPPREF(((x)->proto));} \
 	} \
 	(x)->len = (x)->str?strlen(((x)->str)):0; \
-	(x)->size = (x)->str?((x)->size - ((x)->str - _p)):(x)->len; \
+	(x)->size = (x)->str?((x)->size - ((x)->str - aroop_internal_p)):(x)->len; \
 })
 
 #define aroop_txt_move_to_what_the_hell(x,y) ({ \
@@ -289,32 +289,32 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 })
 
 #define aroop_txt_concat(x,y) { \
-	int __ret = (y) && (y)->str && ((x)->len+(y)->len <= (x)->size); \
-	if(__ret) { \
+	int aroop_internal_ret = (y) && (y)->str && ((x)->len+(y)->len <= (x)->size); \
+	if(aroop_internal_ret) { \
 		memmove((x)->str+(x)->len, (y)->str, (y)->len); \
 		(x)->hash = 0; \
 		(x)->len += (y)->len; \
 	} \
-	__ret; \
+	aroop_internal_ret; \
 }
 #define aroop_txt_concat_string(x,y) { \
-	int __len = strlen(y); \
-	int __ret = (y) && ((x)->len+__len <= (x)->size); \
-	if(__ret) { \
-		memmove((x)->str+(x)->len, (y), __len); \
+	int aroop_internal_len = strlen(y); \
+	int aroop_internal_ret = (y) && ((x)->len+aroop_internal_len <= (x)->size); \
+	if(aroop_internal_ret) { \
+		memmove((x)->str+(x)->len, (y), aroop_internal_len); \
 		(x)->hash = 0; \
-		(x)->len += __len; \
+		(x)->len += aroop_internal_len; \
 	} \
-	__ret; \
+	aroop_internal_ret; \
 }
 #define aroop_txt_concat_char(x,y) { \
-	int __ret = (((x)->len+1) < (x)->size); \
-	if(__ret) { \
+	int aroop_internal_ret = (((x)->len+1) < (x)->size); \
+	if(aroop_internal_ret) { \
 		(x)->str[(x)->len] = (y); \
 		(x)->hash = 0; \
 		(x)->len++; \
 	} \
-	__ret; \
+	aroop_internal_ret; \
 }
 
 // system 
