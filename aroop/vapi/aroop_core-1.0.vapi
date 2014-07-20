@@ -482,7 +482,7 @@ public class aroop.xtring : aroop.Replicable {
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~str();
 	[CCode (cname = "aroop_txt_to_embeded_pointer")]
-	public extring*ecast();
+	public extring*fly();
 	[CCode (cname = "BLANK_STRING")]
 	public static aroop.xtring BLANK_STRING;
 	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]

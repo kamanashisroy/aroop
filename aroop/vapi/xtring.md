@@ -2,13 +2,15 @@
 String types
 ==============
 
-Aroop contains special support for strings. The aroop strings has support for,
+Aroop contains special support for strings. While `string` class is originally the character array in C output, the `xtring` contains some extra features. Xtring has support for,
 
 - Embeded/stack allocated container.
 - Stack allocated string.
 - Heap allocated string.
 - A hash value and precalculated length value.
 - There are plans to implement immutable strings.
+
+The `extring` is of `struct` type so it can reduce memory allocation in some cases. It supports [flyweight pattern](http://en.wikipedia.org/wiki/Flyweight_pattern) to reduce data duplication and copying. You can always get _extring_ from _xtring_ calling fly() method.
 
 Declaration
 =============
