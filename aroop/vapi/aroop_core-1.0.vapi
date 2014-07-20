@@ -347,6 +347,8 @@ public class aroop.SearchableString : aroop.Searchable {
 	public extring tdata;
 	[CCode (cname = "aroop_searchable_string_rehash")]
 	public void rehash();
+	[CCode (cname = "aroop_txt_searchable_factory_build_and_copy_deep")]
+	public static SearchableString factory_build_and_copy_deep(Factory*fac, extring*src);
 }
 
 [CCode (cname = "aroop_txt_t", cheader_filename = "core/txt.h")]
@@ -447,8 +449,8 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public bool concat_char(uchar c);
 	[CCode (cname = "aroop_txt_destroy")]
 	public void destroy();
-	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
-	public int factory_build_and_copy_on_tail_no_length_check(extring*src);
+	//[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
+	//public int factory_build_and_copy_on_tail_no_length_check(extring*src);
 }
 
 
@@ -472,13 +474,8 @@ public class aroop.xtring : aroop.Replicable {
 	public xtring.copy_static_string(string*content);
 	[CCode (cname = "aroop_txt_set_static_string")]
 	public xtring.set_static_string(string*content);
-	/**
-	 * For example,
-	 * txt kw = myTxtFactory.alloc_full(sizeof(txt)+src.length()+1)
-				.factory_build_by_memcopy_from_etxt_unsafe_no_length_check(&src);
-	 */
-	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
-	public int factory_build_by_memcopy_from_etxt_unsafe_no_length_check(extring*src);
+	//[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
+	//public int factory_build_by_memcopy_from_etxt_unsafe_no_length_check(extring*src);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~str();
 	[CCode (cname = "aroop_txt_to_embeded_pointer")]
@@ -491,6 +488,8 @@ public class aroop.xtring : aroop.Replicable {
 	public static aroop.equalsCb eCb;
 	[CCode (cname = "aroop_txt_get_hash_cb")]
 	public static aroop.getHashCb hCb;
+	[CCode (cname = "aroop_txt_factory_build_and_copy_deep")]
+	public static xtring factory_build_and_copy_deep(Factory*fac, extring*src);
 }
 
 

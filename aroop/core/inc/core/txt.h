@@ -317,6 +317,9 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 	aroop_internal_ret; \
 }
 
+#define aroop_txt_factory_build_and_copy_deep(f,x) ({aroop_txt_t*aroop_internal_x = opp_alloc4(f,sizeof(aroop_txt_t)+x->len+1,0,0,NULL);aroop_txt_memcopy_from_etxt_factory_build(aroop_internal_x,x);aroop_internal_x;})
+#define aroop_txt_searchable_factory_build_and_copy_deep(f,x) ({aroop_searchable_txt_t*aroop_internal_x = opp_alloc4(f,sizeof(aroop_searchable_txt_t)+x->len+1,0,0,NULL);aroop_txt_memcopy_from_etxt_factory_build(&aroop_internal_x->tdata,x);aroop_internal_x;})
+
 // system 
 void aroop_txt_system_init();
 void aroop_txt_system_deinit();
