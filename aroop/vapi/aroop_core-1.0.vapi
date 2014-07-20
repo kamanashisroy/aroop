@@ -60,6 +60,12 @@ enum aroop.factory_flags {
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.CountableSet {
+	[CCode (cname = "aroop_factory_mark_all")]
+	public void markAll(ulong flg);
+	[CCode (cname = "aroop_factory_unmark_all")]
+	public void unmarkAll(ulong flg);
+	[CCode (cname = "aroop_factory_prune_marked")]
+	public void pruneMarked(ulong flg);
 	[CCode (cname = "OPP_FACTORY_USE_COUNT")]
 	public int count_unsafe();
 	[CCode (cname = "opp_factory_destroy")]
@@ -86,8 +92,6 @@ public struct aroop.HashTable<K,G> : aroop.CountableSet {
 	public int iterator_hacked(aroop.Iterator<AroopPointer<G>>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_hash_table_use_count")]
 	public int count_unsafe();
-	[CCode (cname = "aroop_factory_prune_marked_pointer")]
-	public void pruneMarkedPointer(ulong flg);
 }
 
 [CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, copy_function="aroop_iterator_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_iterator_destroy")]
@@ -114,7 +118,6 @@ public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	public G? get(aroop_hash index);
 	[CCode (cname = "aroop_indexed_list_set")]
 	public void set(aroop_hash index, G item);
-	// TODO support marking mark() unmark()
 }
 
 [CCode (cname = "opp_pointer_ext_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]

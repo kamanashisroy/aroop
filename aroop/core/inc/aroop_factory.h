@@ -137,6 +137,11 @@ enum {
 #define opp_object_ext_tiny_t_prepare_internal(x)
 #define opp_object_ext_t_prepare_internal(x)
 
+#define aroop_factory_mark_all(x,y) ({aroop_factory_action_all_internal(x,1,y);})
+#define aroop_factory_unmark_all(x,y) ({aroop_factory_action_all_internal(x,0,y);})
+#define aroop_factory_prune_marked(x,y) ({aroop_factory_action_all_internal(x,-1,y);})
+int aroop_factory_action_all_internal(struct opp_factory*opp, int action, unsigned int flag);
+
 C_CAPSULE_END
 
 #endif // AROOP_FACTORY_H

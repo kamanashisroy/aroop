@@ -43,7 +43,6 @@ int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_no
 int opp_list_create2_and_profile(struct opp_factory*olist, int pool_size, opp_property_t property, char*source_file, int source_line, char*module_name);
 int opp_list_find_from_factory(struct opp_factory*obuff, struct opp_factory*olist, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data);
 int opp_list_search_and_prune(struct opp_factory*obuff, opp_hash_t hash, const void*target);
-int aroop_factory_prune_marked_pointer(struct opp_factory*olist, int flag);
 
 C_CAPSULE_END
 

@@ -109,15 +109,6 @@ int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_no
 	return 0;
 }
 
-static int opp_list_prune_all_helper(void*data, void*target) {
-	OPPUNREF(data);
-	return 0;
-}
-
-int aroop_factory_prune_marked_pointer(struct opp_factory*olist, int flag) {
-	opp_factory_do_full(olist, opp_list_prune_all_helper, NULL, flag, 0, 0);
-}
-
 static int opp_list_search_and_prune_comparator(const void*data, const void*target) {
 	if(((opp_pointer_ext_t*)data)->obj_data == target) {
 		OPPUNREF(data);
