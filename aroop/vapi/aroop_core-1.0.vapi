@@ -449,8 +449,8 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public bool concat_char(uchar c);
 	[CCode (cname = "aroop_txt_destroy")]
 	public void destroy();
-	//[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
-	//public int factory_build_and_copy_on_tail_no_length_check(extring*src);
+	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
+	public int factory_build_and_copy_on_tail_no_length_check(extring*src);
 }
 
 
@@ -474,8 +474,6 @@ public class aroop.xtring : aroop.Replicable {
 	public xtring.copy_static_string(string*content);
 	[CCode (cname = "aroop_txt_set_static_string")]
 	public xtring.set_static_string(string*content);
-	//[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
-	//public int factory_build_by_memcopy_from_etxt_unsafe_no_length_check(extring*src);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~str();
 	[CCode (cname = "aroop_txt_to_embeded_pointer")]
