@@ -68,6 +68,9 @@ public struct aroop.CountableSet {
 	public void pruneMarked(ulong flg);
 	[CCode (cname = "OPP_FACTORY_USE_COUNT")]
 	public int count_unsafe();
+	//[CCode (cname = "opp_factory_gc_donot_use")]
+	[CCode (cname = "aroop_donothing")]
+	public void gc_unsafe();
 	[CCode (cname = "opp_factory_destroy")]
 	public int destroy();
 }
@@ -534,6 +537,9 @@ public class aroop.core {
 	public static int argc();
 	[CCode (cname = "aroop_get_argv")]
 	public static unowned string[] argv();
+	//[CCode (cname = "aroop_core_gc_unsafe")]
+	[CCode (cname = "aroop_donothing")]
+	public static void gc_unsafe();
 }
 
 [Compact]

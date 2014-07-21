@@ -114,6 +114,7 @@ int aroop_deinit();
 
 // value
 #define aroop_value_set(nouse,x,y) ({x=y;})
+void aroop_core_gc_unsafe();
 
 int aroop_get_argc();
 char**aroop_get_argv();

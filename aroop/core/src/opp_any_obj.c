@@ -76,6 +76,12 @@ OPP_CB(any_obj) {
 	return 0;
 }
 
+void opp_any_obj_gc_unsafe() {
+	opp_factory_gc_donot_use(&deca_objs);
+	opp_factory_gc_donot_use(&hecto_objs);
+	opp_factory_gc_donot_use(&kilo_objs);
+}
+
 void opp_any_obj_system_init() {
 	SYNC_ASSERT(!OPP_PFACTORY_CREATE(
 		&deca_objs
