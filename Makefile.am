@@ -15,6 +15,7 @@ SUBDIRS = \
 	aroop/codegen \
 	aroop/compiler \
 	aroop/vapi \
+	aroop/core \
 	vapi \
 	tests \
 	doc \
@@ -28,6 +29,7 @@ DIST_SUBDIRS = \
 	aroop/codegen \
 	aroop/compiler \
 	aroop/vapi \
+	aroop/core \
 	vapi \
 	tests \
 	doc \

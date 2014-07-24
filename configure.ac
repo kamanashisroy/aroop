@@ -105,6 +105,7 @@ AC_CONFIG_FILES([Makefile
            vala/Makefile
            aroop/codegen/Makefile
            aroop/compiler/Makefile
+           aroop/core/Makefile
            aroop/vapi/Makefile
            vapi/Makefile
            tests/Makefile
