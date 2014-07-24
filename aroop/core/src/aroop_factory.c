@@ -22,10 +22,10 @@
 
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "aroop_core.h"
-#include "core/thread.h"
-#include "opp/opp_factory.h"
-#include "aroop_factory.h"
+#include "aroop/aroop_core.h"
+#include "aroop/core/thread.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/aroop_factory.h"
 #endif
 
 struct aroop_factory_action_data_internal {

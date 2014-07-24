@@ -32,8 +32,8 @@
  */
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
-#include "core/thread.h"
+#include "aroop/core/config.h"
+#include "aroop/core/thread.h"
 #endif
 
 #ifdef SYNC_HAS_ATOMIC_OPERATION

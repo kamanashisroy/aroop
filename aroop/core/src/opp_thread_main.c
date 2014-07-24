@@ -22,8 +22,8 @@
 
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "opp/opp_factory.h"
-#include "opp/opp_thread_main.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_thread_main.h"
 #endif
 
 C_CAPSULE_START

@@ -52,7 +52,6 @@ using aroop;
 class HelloWorld {
 	public static void main() {
 		print("Hello world\n");
-		return 0;
 	}
 }
 ```
@@ -61,7 +60,7 @@ class HelloWorld {
 At first the *aroopc* generates C code output. For example, if you have `hello_world.vala` file then it will create `hello_world.c` file.
 
 ```
-a/tmp$ /opt/aroop/bin/aroopc -D POSIX --profile=aroop --vapidir /opt/aroop/share/vala-0.16/vapi -C hello_world.vala
+a/tmp$ /opt/aroop/bin/aroopc -C hello_world.vala
 a/tmp$ ls
 hello_world.c
 ```
@@ -82,6 +81,17 @@ a/tmp$ ldconfig # reset library finder
 a/tmp$ ./hello_world.bin
 Hello world
 ```
+
+### One step compilation
+Once you installed the package file in `/usr/lib/pkgconfig`, you can compile a source in one step.
+
+```
+a/tmp$ install /opt/aroop/lib/pkgconfig/aroop_core-1.0.pc /usr/lib/pkgconfig
+a/tmp$ /opt/aroop/bin/aroopc hello_world.vala
+a/tmp$ ./hello_world.bin
+Hello world
+```
+
 You may learn more about vala code compiling [here](https://wiki.gnome.org/Projects/Vala/Documentation) [here](https://wiki.gnome.org/Projects/Vala/BasicSample).
 
 More

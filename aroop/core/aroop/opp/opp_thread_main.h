@@ -25,7 +25,7 @@
 
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
+#include "aroop/core/config.h"
 #endif
 
 C_CAPSULE_START

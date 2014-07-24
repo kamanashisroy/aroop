@@ -307,11 +307,11 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		cfile = new CCodeFile ();
 
 		if (context.nostdpkg) {
-			header_file.add_include ("aroop_core.h");
-			cfile.add_include ("aroop_core.h");
+			header_file.add_include ("aroop/aroop_core.h");
+			cfile.add_include ("aroop/aroop_core.h");
 		} else {
-			header_file.add_include ("aroop_core.h");
-			cfile.add_include ("aroop_core.h");
+			header_file.add_include ("aroop/aroop_core.h");
+			cfile.add_include ("aroop/aroop_core.h");
 		}
 
 		generated_external_symbols = new HashSet<Symbol> ();

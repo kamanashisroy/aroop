@@ -22,12 +22,12 @@
 
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
-#include "opp/opp_any_obj.h"
-#include "opp/opp_factory.h"
-#include "opp/opp_factory_profiler.h"
-#include "opp/opp_type.h"
-#include "opp/opp_io.h"
+#include "aroop/core/config.h"
+#include "aroop/opp/opp_any_obj.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_factory_profiler.h"
+#include "aroop/opp/opp_type.h"
+#include "aroop/opp/opp_io.h"
 #endif
 
 C_CAPSULE_START

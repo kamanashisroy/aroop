@@ -58,7 +58,7 @@ enum aroop.factory_flags {
 
 //public delegate void aroop.verb_func(Replicable data, void*func_data);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.CountableSet {
 	[CCode (cname = "aroop_factory_mark_all")]
 	public void markAll(ulong flg);
@@ -75,13 +75,13 @@ public struct aroop.CountableSet {
 	public int destroy();
 }
 
-[CCode (cname = "opp_hash_function_t", cheader_filename = "opp/opp_hash_table.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_hash_function_t", cheader_filename = "aroop/opp/opp_hash_table.h", has_copy_function=false, has_destroy_function=false)]
 public delegate aroop_hash aroop.getHashCb(Replicable data);
 
-[CCode (cname = "opp_equals_t", cheader_filename = "opp/opp_hash_table.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_equals_t", cheader_filename = "aroop/opp/opp_hash_table.h", has_copy_function=false, has_destroy_function=false)]
 public delegate bool aroop.equalsCb(Replicable x, Replicable y);
 
-[CCode (cname = "opp_hash_table_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_hash_table_destroy")]
+[CCode (cname = "opp_hash_table_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_hash_table_destroy")]
 public struct aroop.HashTable<K,G> : aroop.CountableSet {
 	[CCode (cname = "aroop_hash_table_create")]
 	public HashTable(aroop.getHashCb hcb, aroop.equalsCb ecb, int inc = 16, uchar flag = 0);
@@ -97,7 +97,7 @@ public struct aroop.HashTable<K,G> : aroop.CountableSet {
 	public int count_unsafe();
 }
 
-[CCode (cname = "struct opp_iterator", cheader_filename = "opp/opp_iterator.h", has_copy_function=false, copy_function="aroop_iterator_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_iterator_destroy")]
+[CCode (cname = "struct opp_iterator", cheader_filename = "aroop/opp/opp_iterator.h", has_copy_function=false, copy_function="aroop_iterator_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_iterator_destroy")]
 public struct aroop.Iterator<G> {
 	[CCode (cname = "aroop_memclean_raw_2args")]
 	public Iterator.EMPTY();
@@ -113,7 +113,7 @@ public struct aroop.Iterator<G> {
 	public void destroy();
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, free_function="aroop_factory_free_function", copy_function="aroop_factory_cpy_or_destroy", has_free_function = false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, free_function="aroop_factory_free_function", copy_function="aroop_factory_cpy_or_destroy", has_free_function = false, has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	[CCode (cname = "aroop_array_list_create")]
 	public ArrayList(int inc = 16);
@@ -123,7 +123,7 @@ public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	public void set(aroop_hash index, G item);
 }
 
-[CCode (cname = "opp_pointer_ext_t", cheader_filename = "opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_pointer_ext_t", cheader_filename = "aroop/opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public class aroop.AroopPointer<G> : Hashable {
 	[CCode (cname = "aroop_list_item_get")]
 	public unowned G get();
@@ -137,13 +137,13 @@ public class aroop.AroopPointer<G> : Hashable {
 	public bool isMarked(ulong flg);
 }
 
-[CCode (cname = "aroop_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "aroop_do_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.iterator_cb(Replicable data);
 
-[CCode (cname = "aroop_do_t", cheader_filename = "aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "aroop_do_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.pointer_iterator_cb<G>(AroopPointer<G> data);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Set<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_list_create")]
 	public Set(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
@@ -165,7 +165,7 @@ public struct aroop.Set<G> : aroop.CountableSet {
 	public int iterator_hacked(aroop.Iterator<AroopPointer<G>>*it, uint if_flag, uint ifnflag, aroop_hash hash);
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.SearchableSet<G> : aroop.Set<G> {
 	[CCode (cname = "aroop_searchable_list_create")]
 	public SearchableSet(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
@@ -179,25 +179,25 @@ public struct aroop.SearchableSet<G> : aroop.Set<G> {
 	public AroopPointer<G>? search(aroop_hash hash, pointer_iterator_cb<G>? compare_func);
 }
 
-[CCode (cname = "opp_queue_t", cheader_filename = "opp/opp_queue.h", has_copy_function=false, copy_function="aroop_memcpy_strt2", has_destroy_function=true, destroy_function="opp_queue_deinit")]
+[CCode (cname = "opp_queue_t", cheader_filename = "aroop/opp/opp_queue.h", has_copy_function=false, copy_function="aroop_memcpy_strt2", has_destroy_function=true, destroy_function="opp_queue_deinit")]
 public struct aroop.Queue<G> {
-	[CCode (cname = "aroop_queue_init", cheader_filename = "aroop_factory.h")]
+	[CCode (cname = "aroop_queue_init", cheader_filename = "aroop/aroop_factory.h")]
 	public Queue(int scindex = 0);
 	[CCode (cname = "opp_queue_deinit")]
 	public int destroy();
 	[CCode (cname = "opp_enqueue")]
 	public int enqueue(G data);
-	[CCode (cname = "aroop_dequeue", cheader_filename = "aroop_factory.h")]
+	[CCode (cname = "aroop_dequeue", cheader_filename = "aroop/aroop_factory.h")]
 	public G? dequeue();
 	[CCode (cname = "OPP_QUEUE_SIZE")]
 	public int count_unsafe();
 }
 
-[CCode (cname = "opp_object_ext_tiny_t", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "opp_object_ext_tiny_t", cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
 struct aroop.hashable_ext {
 }
 
-[CCode (cname = "opp_object_ext_t", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "opp_object_ext_t", cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
 public struct aroop.searchable_ext {
 	[CCode (cname = "aroop_unmark_searchable_ext")]
 	public void unmark(ulong flg);
@@ -207,12 +207,12 @@ public struct aroop.searchable_ext {
 	public bool test(ulong flg);
 }
 
-[CCode (cname = "opp_callback_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_callback_t", cheader_filename = "aroop/opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va_list*/void* ap, int size);
-[CCode (cname = "opp_log_t", cheader_filename = "opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_log_t", cheader_filename = "aroop/opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.factory_log(void*log_data, char*fmt, ...);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.Factory<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_assert_factory_creation_full")]
 	private Factory(uint inc=16, uint datalen, int token_offset, uchar flags, aroop.factory_cb callback);
@@ -238,7 +238,7 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	public int verb(iterator_cb do_func, factory_log log, void*log_data);
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
 public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
 	[CCode (cname = "aroop_srcblefac_constr")]
 	private SearchableFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE, aroop.factory_cb callback);
@@ -252,7 +252,7 @@ public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
 	public int do_preorder(iterator_cb do_func, void*func_data, uint if_flag, uint if_not_flag, aroop_hash hash);
 }
 
-[CCode (lower_case_cprefix = "OPPN_", cname = "int", cheader_filename = "opp/opp_factory.h")]
+[CCode (lower_case_cprefix = "OPPN_", cname = "int", cheader_filename = "aroop/opp/opp_factory.h")]
 public enum aroop.Replica_flags {
 	ALL = 1<<15,
 	INTERNAL_1 = 1<<14,
@@ -277,7 +277,7 @@ public enum aroop.prayer {
 	DESCRIBE,
 }
 
-[CCode (cname = "opp_object_ext_tiny_t", cheader_filename = "aroop_factory.h", destroy_function = "")]
+[CCode (cname = "opp_object_ext_tiny_t", cheader_filename = "aroop/aroop_factory.h", destroy_function = "")]
 public abstract class aroop.Hashable : aroop.Replicable {
 	private hashable_ext _ext;
 	[CCode (cname = "aroop_donothing")]
@@ -292,7 +292,7 @@ public abstract class aroop.Hashable : aroop.Replicable {
 	protected void memclean(ulong size);
 }
 
-[CCode (cname = "opp_object_ext_t", cheader_filename = "opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "opp_object_ext_t", cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
 public abstract class aroop.Searchable : aroop.Hashable {
 	private searchable_ext _ext;
 	[CCode (cname = "aroop_donothing")]
@@ -311,7 +311,7 @@ public struct aroop.Substance { // We can call it, Substance(in religion)
 
 #if false
 // This should be hidden from user
-[CCode (cname = "struct _aroop_wrong", cheader_filename = "core/aroop_error.h")]
+[CCode (cname = "struct _aroop_wrong", cheader_filename = "aroop/core/aroop_error.h")]
 public struct aroop.aroop_wrong : aroop.Substance {
 }
 #endif
@@ -347,7 +347,7 @@ public interface aroop.Replicable {
 	protected void memclean_raw();
 }
 
-[CCode (cname = "aroop_searchable_txt_t", cheader_filename = "aroop_core.h", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+[CCode (cname = "aroop_searchable_txt_t", cheader_filename = "aroop/aroop_core.h", cheader_filename = "aroop/core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.SearchableString : aroop.Searchable {
 	[CCode (cname = "tdata")]
 	public extring tdata;
@@ -357,7 +357,7 @@ public class aroop.SearchableString : aroop.Searchable {
 	public static SearchableString factory_build_and_copy_deep(Factory*fac, extring*src);
 }
 
-[CCode (cname = "aroop_txt_t", cheader_filename = "core/txt.h")]
+[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/txt.h")]
 public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_memclean_raw2")]
 	public extring(); // empty
@@ -460,7 +460,7 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 }
 
 
-[CCode (cname = "aroop_txt_t", cheader_filename = "core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.xtring : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
 	public xtring(char*content, int len = 0, aroop.Replicable? proto = null, int scalability_index = 0);
@@ -510,7 +510,7 @@ public class aroop.mem {
 	public unowned aroop.mem shift(int inc);
 }
 
-[CCode (cname = "aroop_write_output_stream_t", cheader_filename = "aroop_memory_profiler.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "aroop_write_output_stream_t", cheader_filename = "aroop/aroop_memory_profiler.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.writeOutputStream(extring*buf);
 public class aroop.core {
 	[CCode (cname = "aroop_assert")]

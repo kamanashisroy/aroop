@@ -278,6 +278,8 @@ class Vala.Compiler {
 		} else if (context.profile == Profile.AROOP) {
 #endif
 			if (!nostdpkg) {
+				context.profile = Profile.POSIX;
+				context.add_define ("POSIX");
 				/* default package */
 				// XXX should I load posix ?? context.add_external_package ("posix");
 				context.add_external_package ("aroop-1.0");

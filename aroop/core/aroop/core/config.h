@@ -69,7 +69,7 @@ typedef int32_t SYNC_SWORD32_T;
 #endif // ifdef ANDROID else
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/decorator.h"
+#include "aroop/core/decorator.h"
 #endif
 
 #define pointer_arith_add_byte(x,y) ({((SYNC_UWORD8_T*)(x))+y;})

@@ -24,7 +24,7 @@
 #define OPP_INTERNAL_H
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "opp/opp_factory.h"
+#include "aroop/opp/opp_factory.h"
 #endif
 
 C_CAPSULE_START

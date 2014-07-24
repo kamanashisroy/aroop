@@ -21,14 +21,14 @@
  */
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/txt.h"
-#include "opp/opp_factory.h"
-#include "opp/opp_factory_profiler.h"
-#include "opp/opp_iterator.h"
-#include "opp/opp_list.h"
-#include "opp/opp_hash_table.h"
-#include "opp/opp_hash.h"
-#include "core/logger.h"
+#include "aroop/core/txt.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_factory_profiler.h"
+#include "aroop/opp/opp_iterator.h"
+#include "aroop/opp/opp_list.h"
+#include "aroop/opp/opp_hash_table.h"
+#include "aroop/opp/opp_hash.h"
+#include "aroop/core/logger.h"
 #endif
 
 C_CAPSULE_START

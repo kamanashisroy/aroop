@@ -21,8 +21,8 @@
  */
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "opp/opp_factory.h"
-#include "opp/opp_salt.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_salt.h"
 #endif
 
 

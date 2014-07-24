@@ -22,14 +22,14 @@
 
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "aroop_core.h"
-#include "core/thread.h"
-#include "opp/opp_factory.h"
-#include "opp/opp_factory_profiler.h"
-#include "opp/opp_any_obj.h"
-#include "opp/opp_watchdog.h"
-#include "core/memory.h"
-#include "aroop_memory_profiler.h"
+#include "aroop/aroop_core.h"
+#include "aroop/core/thread.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_factory_profiler.h"
+#include "aroop/opp/opp_any_obj.h"
+#include "aroop/opp/opp_watchdog.h"
+#include "aroop/core/memory.h"
+#include "aroop/aroop_memory_profiler.h"
 #endif
 
 OPP_VOLATILE_VAR SYNC_UWORD16_T core_users = 0; // TODO make it thread safe where 

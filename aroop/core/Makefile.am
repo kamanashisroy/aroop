@@ -1,5 +1,4 @@
 
-#SUBDIRS=src
 TARGET_O=libaroop_core.o
 TARGET_BASIC_O=libaroop_core_basic.o
 TARGET_LAR=libaroop_core.la
@@ -18,11 +17,11 @@ aroop/aroop_assignment.h  aroop/aroop_core_type_conversion.h  aroop/aroop_error.
 aroop/opp/opp_any_obj.h  aroop/opp/opp_factory_profiler.h  aroop/opp/opp_hash.h        aroop/opp/opp_indexed_list.h  aroop/opp/opp_iterator.h  aroop/opp/opp_queue.h            aroop/opp/opp_salt.h  aroop/opp/opp_thread_main.h  aroop/opp/opp_watchdog.h \
 aroop/opp/opp_factory.h  aroop/opp/opp_factory_types.h     aroop/opp/opp_hash_table.h  aroop/opp/opp_io.h            aroop/opp/opp_list.h      aroop/opp/opp_rbtree_internal.h  aroop/opp/opp_str2.h  aroop/opp/opp_type.h \
 aroop/core/config.h  aroop/core/decorator.h  aroop/core/logger.h  aroop/core/memory.h  aroop/core/thread.h  aroop/core/txt.h \
-platform/linux/inc/linux_config.h  platform/linux/inc/linux_graphics.h  platform/linux/inc/linux_logger.h
+aroop_platform/linux/inc/linux_config.h  aroop_platform/linux/inc/linux_graphics.h  aroop_platform/linux/inc/linux_logger.h
 
 
 
-AROOP_CORE_INCLUDES=-Iaroop -Iplatform/linux/inc
+#AROOP_CORE_INCLUDES=-Iaroop -Iaroop_platform/linux/inc
 
 libaroop_core_la_SOURCES = $(AROOP_CORE_SOURCE_FILES)
 libaroop_core_la_CPPFLAGS = $(AROOP_CORE_INCLUDES)
@@ -34,4 +33,6 @@ libaroop_core_basic_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
 libaroop_core_basic_o_CPPFLAGS=-DAROOP_BASIC $(AROOP_CORE_INCLUDES)
 
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = aroop_core-1.0.pc
 

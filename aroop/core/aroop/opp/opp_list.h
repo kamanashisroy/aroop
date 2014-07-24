@@ -23,8 +23,8 @@
 #ifndef OPP_LIST_H
 #define OPP_LIST_H
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
-#include "opp/opp_factory.h"
+#include "aroop/core/config.h"
+#include "aroop/opp/opp_factory.h"
 #endif
 
 C_CAPSULE_START

@@ -21,7 +21,7 @@
  */
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "opp/opp_hash.h"
+#include "aroop/opp/opp_hash.h"
 #endif
 
 C_CAPSULE_START

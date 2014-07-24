@@ -21,11 +21,11 @@
  */
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "opp/opp_queue.h"
-#include "opp/opp_str2.h"
-#include "opp/opp_watchdog.h"
-//#include "core/net.h"
-#include "core/logger.h"
+#include "aroop/opp/opp_queue.h"
+#include "aroop/opp/opp_str2.h"
+#include "aroop/opp/opp_watchdog.h"
+//#include "aroop/core/net.h"
+#include "aroop/core/logger.h"
 #endif
 
 #ifdef HAS_WATCHDOG

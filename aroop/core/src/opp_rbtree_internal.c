@@ -21,11 +21,11 @@
 */
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "opp/opp_factory.h"
+#include "aroop/opp/opp_factory.h"
 #endif
 #ifdef OPP_RBTREE
 #ifndef AROOP_CONCATENATED_FILE
-#include "opp/opp_rbtree_internal.h"
+#include "aroop/opp/opp_rbtree_internal.h"
 #endif
 
 #ifdef __cplusplus

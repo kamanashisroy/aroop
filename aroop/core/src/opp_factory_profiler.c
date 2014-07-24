@@ -20,11 +20,11 @@
  *  Author: Kamanashis Roy (kamanashisroy@gmail.com)
  */
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
-#include "core/memory.h"
-#include "opp/opp_factory.h"
-#include "opp/opp_iterator.h"
-#include "opp/opp_factory_profiler.h"
+#include "aroop/core/config.h"
+#include "aroop/core/memory.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_iterator.h"
+#include "aroop/opp/opp_factory_profiler.h"
 #endif
 
 C_CAPSULE_START

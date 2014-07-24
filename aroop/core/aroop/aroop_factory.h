@@ -25,15 +25,15 @@
 #define AROOP_FACTORY_H
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
-#include "core/txt.h"
-#include "opp/opp_factory.h"
-#include "opp/opp_factory_profiler.h"
-#include "opp/opp_hash_table.h"
-#include "opp/opp_any_obj.h"
-#include "opp/opp_io.h"
-#include "opp/opp_indexed_list.h"
-#include "opp/opp_list.h"
+#include "aroop/core/config.h"
+#include "aroop/core/txt.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_factory_profiler.h"
+#include "aroop/opp/opp_hash_table.h"
+#include "aroop/opp/opp_any_obj.h"
+#include "aroop/opp/opp_io.h"
+#include "aroop/opp/opp_indexed_list.h"
+#include "aroop/opp/opp_list.h"
 #endif
 
 typedef struct opp_factory opp_factory_t;

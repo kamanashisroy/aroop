@@ -25,15 +25,15 @@
 #define AROOP_CORE_H_
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
-#include "opp/opp_factory.h"
-#include "opp/opp_any_obj.h"
-#include "opp/opp_io.h"
-#include "aroop_core_type_conversion.h"
-#include "aroop_core_type_info.h"
-#include "aroop_error.h"
-#include "aroop_assignment.h"
-#include "aroop_array.h"
+#include "aroop/core/config.h"
+#include "aroop/opp/opp_factory.h"
+#include "aroop/opp/opp_any_obj.h"
+#include "aroop/opp/opp_io.h"
+#include "aroop/aroop_core_type_conversion.h"
+#include "aroop/aroop_core_type_info.h"
+#include "aroop/aroop_error.h"
+#include "aroop/aroop_assignment.h"
+#include "aroop/aroop_array.h"
 #endif
 
 

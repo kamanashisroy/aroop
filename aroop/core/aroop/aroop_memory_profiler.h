@@ -4,8 +4,8 @@
 
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/txt.h"
-#include "aroop_memory_profiler.h"
+#include "aroop/core/txt.h"
+#include "aroop/aroop_memory_profiler.h"
 #endif
 
 typedef struct {

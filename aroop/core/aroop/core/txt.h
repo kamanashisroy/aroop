@@ -24,10 +24,10 @@
 #define XULTB_STRING_H_
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
-#include "aroop_core.h"
-#include "opp/opp_hash.h"
-#include "opp/opp_hash_table.h"
+#include "aroop/core/config.h"
+#include "aroop/aroop_core.h"
+#include "aroop/opp/opp_hash.h"
+#include "aroop/opp/opp_hash_table.h"
 #endif
 
 // TODO remove dead code

@@ -24,7 +24,7 @@
 #define SYNC_LOGGER_H_
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "core/config.h"
+#include "aroop/core/config.h"
 #endif
 
 C_CAPSULE_START
@@ -73,7 +73,7 @@ C_CAPSULE_END
 #endif
 #else
 #ifndef AROOP_CONCATENATED_FILE
-#include "linux_logger.h"
+#include "aroop_platform/linux/inc/linux_logger.h"
 #endif
 #endif // ANDROID_XULTB
 #endif // WIN

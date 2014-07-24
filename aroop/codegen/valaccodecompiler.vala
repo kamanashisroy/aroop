@@ -62,6 +62,10 @@ public class Vala.CCodeCompiler {
 				pc += " gthread-2.0";
 			}
 		}
+		if (context.profile == Profile.AROOP) {
+			use_pkgconfig = true;
+			pc += " aroop_core-1.0";
+		}
 		foreach (string pkg in context.get_packages ()) {
 			if (package_exists (pkg)) {
 				use_pkgconfig = true;
