@@ -72,8 +72,9 @@ Now the `hello_world.c` contains all the instructions in `hello_world.vala`.
 You can compile the C source using C compiler. Suppose if you use gnu C compiler then the following command will work for you.
 
 ```
-a/tmp$ gcc hello_world.c /opt/aroop/bin/libaroop_core.o-0.16 -I/opt/aroop/include/aroop  -o hello_world.bin # you can link statically
-a/tmp$ gcc hello_world.c -I/opt/aroop/include/aroop -L/opt/aroop/lib -laroop_core -o hello_world.bin # or you can link dynamically
+a/tmp$ gcc -I/opt/aroop/include/aroop hello_world.c /opt/aroop/bin/libaroop_core.o-0.16 -o hello_world.bin # you can link statically
+a/tmp$ gcc -I/opt/aroop/include/aroop hello_world.c /opt/aroop/lib/libaroop_core_static.a  -o hello_world.bin # you can link statically
+a/tmp$ gcc -I/opt/aroop/include/aroop hello_world.c -L/opt/aroop/lib -laroop_core -o hello_world.bin # or you can link dynamically
 a/tmp$ ls
 hello_world.bin
 a/tmp$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/aroop/lib # you need to set the dynamic library path

@@ -9,8 +9,8 @@ class AnyObject<G> : Replicable {
 	internal int my_cb_impl(G val) {
 		//if(val instanceof xtring) {
 			xtring mytxt = (xtring)val;
-			core.assert(mytxt.ecast().equals_string("fine"));
-    	print("Working : %s\n", mytxt.ecast().to_string());
+			core.assert(mytxt.fly().equals_string("fine"));
+    	print("Working : %s\n", mytxt.fly().to_string());
 		//}
 		return 0;
 	}

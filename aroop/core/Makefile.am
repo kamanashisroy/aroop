@@ -2,10 +2,11 @@
 #SUBDIRS=src
 TARGET_O=libaroop_core.o
 TARGET_BASIC_O=libaroop_core_basic.o
-TARGET_AR=libaroop_core.la
-TARGETS=$(TARGET_O) $(TARGET_BASIC_O) $(TARGET_AR)
+TARGET_LAR=libaroop_core.la
+TARGET_AR=libaroop_core_static.a
 bin_PROGRAMS=$(TARGET_O) $(TARGET_BASIC_O)
-lib_LTLIBRARIES=$(TARGET_AR)
+lib_LTLIBRARIES=$(TARGET_LAR)
+lib_LIBRARIES=$(TARGET_AR)
 AROOP_CORE_SOURCE_FILES = \
 src/aroop_core.c     src/opp_any_obj.c           src/opp_hash.c          src/opp_list.c             src/opp_salt.c         src/opp_watchdog.c \
 src/aroop_factory.c  src/opp_factory.c           src/opp_hash_table.c    src/opp_queue.c            src/opp_str2.c \
@@ -25,6 +26,8 @@ AROOP_CORE_INCLUDES=-Iaroop -Iplatform/linux/inc
 
 libaroop_core_la_SOURCES = $(AROOP_CORE_SOURCE_FILES)
 libaroop_core_la_CPPFLAGS = $(AROOP_CORE_INCLUDES)
+libaroop_core_static_a_SOURCES = $(AROOP_CORE_SOURCE_FILES)
+libaroop_core_static_a_CPPFLAGS = $(AROOP_CORE_INCLUDES)
 libaroop_core_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
 libaroop_core_o_CPPFLAGS = $(AROOP_CORE_INCLUDES)
 libaroop_core_basic_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
