@@ -9,11 +9,6 @@ This is a library to manipulate collection of objects and for garbage collection
 ###core api
 The [core api](aroop/vapi/README.md) contains string and collection manipulation api.
 
-Getting Aroop
-=============
-
-Aroop is hosted in [github](https://github.com/kamanashisroy/aroop). You can either *clone* the project using git form `https://github.com/kamanashisroy/aroop.git` . Or you can download it [here](https://github.com/kamanashisroy/aroop/archive/master.zip).
-
 Building
 ========
 
@@ -23,6 +18,9 @@ You need the following projects to build aroopc.
 - libtool
 - valac (If the aroop project does not come with generated C files)
 - C compiler (gnu C compiler for example)
+
+### Getting aroop source
+Aroop is hosted in [github](https://github.com/kamanashisroy/aroop). You can either *clone* the project using git form `https://github.com/kamanashisroy/aroop.git` . Or you can download it [here](https://github.com/kamanashisroy/aroop/archive/master.zip).
 
 ### Compiling aroopc
 
