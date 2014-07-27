@@ -2,7 +2,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 bindir=@bindir@
-includedir=@includedir@
+includedir=@includedir@/aroop_core-1.0
 datarootdir=@datarootdir@
 datadir=@datadir@
 vapidir=@datadir@/vala@PACKAGE_SUFFIX@/vapi
@@ -12,5 +12,6 @@ vapidir=@datadir@/vala@PACKAGE_SUFFIX@/vapi
 Name: Aroop core
 Description: The Aroop core library
 Version: @VERSION@
-Libs: -L${libdir} -laroop_core_static
+Libs: -L${libdir} -laroop_core
+Libs.private: ${libdir}/libaroop_core_static.a
 Cflags: -I${includedir}

@@ -90,8 +90,23 @@ a/tmp$ ./hello_world.bin
 Hello world
 ```
 
-You may learn more about vala code compiling [here](https://wiki.gnome.org/Projects/Vala/Documentation) [here](https://wiki.gnome.org/Projects/Vala/BasicSample).
+The above binary will need the shared library to run. You can also build standalone binary using --static-link argument.
+```
+a/tmp$ install /opt/aroop/lib/pkgconfig/aroop_core-1.0.pc /usr/lib/pkgconfig
+a/tmp$ /opt/aroop/bin/aroopc --static-link hello_world.vala
+a/tmp$ ./hello_world.bin
+Hello world
+```
+
+You may learn more about vala code compiling [here](https://wiki.gnome.org/Projects/Vala/Documentation) and [here](https://wiki.gnome.org/Projects/Vala/BasicSample).
 
 More
 =====
 Please refer to [vala readme](README) for more information.
+
+Public projects using aroop
+============================
+- [Shotodol](https://github.com/kamanashisroy/shotodol)
+- [Roopkotha](https://github.com/kamanashisroy/roopkotha)
+- [Onubodh](https://github.com/kamanashisroy/onubodh)
+

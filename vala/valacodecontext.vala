@@ -82,6 +82,7 @@ public class Vala.CodeContext {
 	 * Compile but do not link.
 	 */
 	public bool compile_only { get; set; }
+	public bool static_link { get; set; }
 
 	/**
 	 * Output filename.

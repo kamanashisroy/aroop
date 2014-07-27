@@ -26,7 +26,7 @@
 
 #ifndef AROOP_CONCATENATED_FILE
 #include "aroop/core/config.h"
-#include "aroop/core/txt.h"
+#include "aroop/core/xtring.h"
 #include "aroop/opp/opp_factory.h"
 #include "aroop/opp/opp_factory_profiler.h"
 #include "aroop/opp/opp_hash_table.h"

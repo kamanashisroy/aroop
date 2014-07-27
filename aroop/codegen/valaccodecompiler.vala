@@ -55,6 +55,9 @@ public class Vala.CCodeCompiler {
 		if (!context.compile_only) {
 			pc += " --libs";
 		}
+		if (context.static_link) {
+			pc += " --static";
+		}
 		if (context.profile == Profile.GOBJECT) {
 			use_pkgconfig = true;
 			pc += " gobject-2.0";

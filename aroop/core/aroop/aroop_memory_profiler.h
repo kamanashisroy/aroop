@@ -4,7 +4,7 @@
 
 
 #ifndef AROOP_CONCATENATED_FILE
-#include "aroop/core/txt.h"
+#include "aroop/core/xtring.h"
 #include "aroop/aroop_memory_profiler.h"
 #endif
 

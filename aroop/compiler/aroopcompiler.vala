@@ -53,6 +53,7 @@ class Vala.Compiler {
 	static string symbols_filename;
 	static string includedir;
 	static bool compile_only;
+	static bool static_link;
 	static string output;
 	static bool debug;
 	static bool thread;
@@ -98,6 +99,7 @@ class Vala.Compiler {
 		{ "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null },
 		{ "ccode", 'C', 0, OptionArg.NONE, ref ccode_only, "Output C code", null },
 		{ "header", 'H', 0, OptionArg.FILENAME, ref header_filename, "Output C header file", "FILE" },
+		{ "static-link", 0, 0, OptionArg.NONE, ref static_link, "Tell the linker to link statically", null },
 		{ "use-header", 0, 0, OptionArg.NONE, ref use_header, "Use C header file", null },
 		{ "includedir", 0, 0, OptionArg.FILENAME, ref includedir, "Directory used to include the C header file", "DIRECTORY" },
 		{ "internal-header", 'h', 0, OptionArg.FILENAME, ref internal_header_filename, "Output internal C header file", "FILE" },
@@ -178,6 +180,7 @@ class Vala.Compiler {
 
 		context.ccode_only = ccode_only;
 		context.compile_only = compile_only;
+		context.static_link = static_link;
 		context.header_filename = header_filename;
 		if (header_filename == null && use_header) {
 			Report.error (null, "--use-header may only be used in combination with --header");

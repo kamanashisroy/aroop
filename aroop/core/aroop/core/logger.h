@@ -73,7 +73,7 @@ C_CAPSULE_END
 #endif
 #else
 #ifndef AROOP_CONCATENATED_FILE
-#include "aroop_platform/linux/inc/linux_logger.h"
+#include "aroop/platform/linux/inc/linux_logger.h"
 #endif
 #endif // ANDROID_XULTB
 #endif // WIN
