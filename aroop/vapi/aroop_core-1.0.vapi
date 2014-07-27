@@ -347,7 +347,7 @@ public interface aroop.Replicable {
 	protected void memclean_raw();
 }
 
-[CCode (cname = "aroop_searchable_txt_t", cheader_filename = "aroop/aroop_core.h", cheader_filename = "aroop/core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+[CCode (cname = "aroop_searchable_txt_t", cheader_filename = "aroop/aroop_core.h", cheader_filename = "aroop/core/xtring.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.SearchableString : aroop.Searchable {
 	[CCode (cname = "tdata")]
 	public extring tdata;
@@ -357,7 +357,7 @@ public class aroop.SearchableString : aroop.Searchable {
 	public static SearchableString factory_build_and_copy_deep(Factory*fac, extring*src);
 }
 
-[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/txt.h")]
+[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/xtring.h")]
 public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_memclean_raw2")]
 	public extring(); // empty
@@ -460,7 +460,7 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 }
 
 
-[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/txt.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
+[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/xtring.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.xtring : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
 	public xtring(char*content, int len = 0, aroop.Replicable? proto = null, int scalability_index = 0);
