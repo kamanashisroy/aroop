@@ -6,6 +6,7 @@ includedir=@includedir@/aroop_core-1.0
 datarootdir=@datarootdir@
 datadir=@datadir@
 vapidir=@datadir@/vala@PACKAGE_SUFFIX@/vapi
+variant=static
 
 @vapigen_decl@
 
@@ -13,5 +14,5 @@ Name: Aroop core
 Description: The Aroop core library
 Version: @VERSION@
 Libs: -L${libdir} -laroop_core
-Libs.private: ${libdir}/libaroop_core_static.a
+Libs.private: ${libdir}/libaroop_core_{variant}.a
 Cflags: -I${includedir}
