@@ -6,13 +6,13 @@ internal class Counter<G> : Replicable {
   internal Counter(int val) {
     i = val;
   }
-	internal int match_int_unowned(container<G> can) {
+	internal int match_int_unowned(AroopPointer<G> can) {
 		unowned Mango x = (Mango)can.get();
 		print("Comparing %d-%d\n", x.id, i);
 		core.assert(i == x.id);
 		return 0;
 	}
-	internal int match_int(container<G> can) {
+	internal int match_int(AroopPointer<G> can) {
 		Mango x = (Mango)can.get();
 		print("Comparing %d-%d\n", x.id, i);
 		core.assert(i == x.id);
@@ -41,7 +41,7 @@ internal class Orchard : Replicable {
 			Mango x = tree.alloc_full(4, 0, false, null);
 			core.assert(x != null);
 			x.build(i);
-			buscket.add_container(x, i);
+			buscket.addPointer(x, i);
 		}
   }
 

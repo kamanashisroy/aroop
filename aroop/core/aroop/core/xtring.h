@@ -191,7 +191,7 @@ aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
 #define aroop_txt_iequals(x,y) ({((x) && (y) && (x)->len == (y)->len && !strncasecmp((x)->str, (y)->str, (x)->len));})
 
 #define aroop_txt_equals_static(x,static_y) ({((x) && (x)->len == (sizeof(static_y)-1) && !memcmp((x)->str, static_y,(x)->len));})
-#define aroop_txt_equals_chararray(x,y) ({((!(x) && !(y)) || ((x) && !(x)->str && !(y) )) || ((x) && !strcmp((x)->str, y));})
+#define aroop_txt_equals_chararray(x,y) ({((!(x) && !(y)) || ((x) && !(x)->str && !(y) )) || ((x) && !strncmp((x)->str, y, (x)->len));})
 #define aroop_txt_zero_terminate(x) ({if((x)->len < (x)->size && (x)->str != NULL && (x)->str[(x)->len] != '\0') (x)->str[(x)->len] = '\0';})
 #define aroop_txt_is_zero_terminated(x) ({((x)->len < (x)->size && (x)->str != NULL && (x)->str[(x)->len] == '\0');})
 

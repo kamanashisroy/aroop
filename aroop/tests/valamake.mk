@@ -8,7 +8,7 @@ VSOURCE_BASE=$(basename $(notdir $(VSOURCES)))
 CSOURCES=$(addprefix vsrc/, $(addsuffix .c,$(VSOURCE_BASE)))
 OBJECTS+=$(addprefix vsrc/, $(addsuffix .o,$(VSOURCE_BASE)))
 
-INCLUDES+=-I$(VALA_HOME)/aroop/core/aroop
+INCLUDES+=-I$(VALA_HOME)/aroop/core
 #LIBS+=-L$(VALA_HOME)/aroop/core/ -laroop_core
 LIBS+=$(VALA_HOME)/aroop/core/libaroop_core.o
 
