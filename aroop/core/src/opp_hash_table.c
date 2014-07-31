@@ -92,10 +92,11 @@ void*opp_hash_table_get(opp_hash_table_t*ht, void*key) {
 }
 
 int opp_hash_table_set(opp_hash_table_t*ht, void*key, void*obj_data) {
+	struct match_data mdata = {ht,key};
 	if(!obj_data) {
-		opp_search(&ht->fac, OPP_KEY_HASH(ht,key), match_hash_and_delete, key, NULL);return 0;
+		opp_search(&ht->fac, OPP_KEY_HASH(ht,key), match_hash_and_delete, &mdata, NULL);return 0;
 	}
-	opp_map_pointer_ext_t*item = (opp_map_pointer_ext_t*)opp_search(&ht->fac, OPP_KEY_HASH(ht,key), match_hash, key, NULL);
+	opp_map_pointer_ext_t*item = (opp_map_pointer_ext_t*)opp_search(&ht->fac, OPP_KEY_HASH(ht,key), match_hash, &mdata, NULL);
 	if(item) {
 		if(item->ptr.obj_data) {
 			OPPUNREF(item->ptr.obj_data);
