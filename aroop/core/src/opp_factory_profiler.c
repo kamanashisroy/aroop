@@ -1,5 +1,5 @@
 /*
- * This file part of aroop.
+ * This file is part of aroop.
  *
  * Copyright (C) 2012  Kamanashis Roy
  *

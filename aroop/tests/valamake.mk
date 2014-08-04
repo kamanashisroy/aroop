@@ -10,7 +10,7 @@ OBJECTS+=$(addprefix vsrc/, $(addsuffix .o,$(VSOURCE_BASE)))
 
 INCLUDES+=-I$(VALA_HOME)/aroop/core
 #LIBS+=-L$(VALA_HOME)/aroop/core/ -laroop_core
-LIBS+=$(VALA_HOME)/aroop/core/libaroop_core.o
+LIBS+=$(VALA_HOME)/aroop/core/libaroop_core_debug.a
 
 ifeq ($(VLIBRARY_FILE),)
 VLIBRARY=
@@ -24,7 +24,7 @@ else
 VHEADER=--use-header --header=$(VHEADER_FILE)
 endif
 
-CC+=-ggdb -ggdb3
+CC+=-ggdb -ggdb3 -D AROOP_MODULE_NAME=\"Aroop\ Test\"
 
 genvapi:
 	$(VALAC) --profile=aroop -D POSIX -C $(VAPI) --vapidir ../../vapi --vapidir vapi $(TESTVAPI) $(VLIBRARY) $(VHEADER) $(VSOURCES)

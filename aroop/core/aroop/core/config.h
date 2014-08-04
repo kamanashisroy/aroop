@@ -75,4 +75,8 @@ typedef int32_t SYNC_SWORD32_T;
 #define pointer_arith_add_byte(x,y) ({((SYNC_UWORD8_T*)(x))+y;})
 #define pointer_arith_sub_byte(x,y) ({((SYNC_UWORD8_T*)(x))-y;})
 
+#ifndef AROOP_MODULE_NAME
+#define AROOP_MODULE_NAME "aroop"
+#endif
+
 #endif //XULTB_CONFIG_H

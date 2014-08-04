@@ -73,7 +73,7 @@ void aroop_core_gc_unsafe() {
 	opp_any_obj_gc_unsafe();
 }
 
-//#define PROFILER_CRASH_DEBUG
+#define PROFILER_CRASH_DEBUG
 #ifdef PROFILER_CRASH_DEBUG
 static int profiler_logger_debug(void*log_data, struct aroop_txt*content) {
 	printf("%s\n", content->str);
