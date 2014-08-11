@@ -93,7 +93,7 @@ Once you installed the package file in `/usr/lib/pkgconfig`, you can compile a s
 
 ```
 a/tmp$ install /opt/aroop/lib/pkgconfig/aroop_core-1.0.pc /usr/lib/pkgconfig
-a/tmp$ /opt/aroop/bin/aroopc hello_world.vala
+a/tmp$ /opt/aroop/bin/aroopc hello_world.vala -o hello_world.bin
 a/tmp$ ./hello_world.bin
 Hello world
 ```
