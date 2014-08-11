@@ -24,7 +24,7 @@ Aroop is hosted in [github](https://github.com/kamanashisroy/aroop). You can eit
 
 ### Compiling aroopc
 
-Aroop uses the same [automake tool-chain](http://www.gnu.org/software/automake/manual/automake.html) as [vala](https://wiki.gnome.org/Projects/Vala/Hacking#Compiling_from_Git). You may do it using the following commands,
+Aroop uses the same [automake tool-chain](http://www.gnu.org/software/automake/manual/automake.html) as [vala](https://wiki.gnome.org/Projects/Vala/Hacking#Compiling_from_Git). If you are compiling a GNU software for the first time, then I strongly suggest you read [this document](http://autotoolset.sourceforge.net/tutorial.html#Installing-GNU-software). You may do it using the following commands,
 
 ```
 a/aroop$ export VALAC=/opt/vala-release/bin/valac # skip this if you installed right version of valac from binary package
