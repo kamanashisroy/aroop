@@ -27,9 +27,6 @@ Aroop is hosted in [github](https://github.com/kamanashisroy/aroop). You can eit
 Aroop uses the same [automake tool-chain](http://www.gnu.org/software/automake/manual/automake.html) as [vala](https://wiki.gnome.org/Projects/Vala/Hacking#Compiling_from_Git). If you are compiling a GNU software for the first time, then I strongly suggest you read [this document](http://autotoolset.sourceforge.net/tutorial.html#Installing-GNU-software). You may do it using the following commands,
 
 ```
-a/aroop$ export VALAC=/opt/vala-release/bin/valac # skip this if you installed right version of valac from binary package
-a/aroop$ export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):/opt/vala-release/lib # skip this if you installed right version of valac from binary package
-a/aroop$ ldconfig # skip this if you installed right version of valac from binary package
 a/aroop$ ./autogen.sh --prefix=/opt/aroop
 a/aroop$ make
 a/aroop$ ls aroop/compiler/
@@ -38,6 +35,17 @@ a/aroop$ make install
 a/aroop$ ls /opt/aroop/bin
 aroopc
 ```
+
+##### If _autogen_ failed to find right vala version
+Well if _autogen_ command above fails and it says it needs right version of vala, then you need to install right version of [vala](https://wiki.gnome.org/Projects/Vala/Hacking#Compiling_from_Git) first. After installation you may need to carry out the following commands as well,
+
+```
+a/aroop$ export VALAC=/opt/vala-release/bin/valac # skip this if you installed right version of valac from binary package
+a/aroop$ export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):/opt/vala-release/lib # skip this if you installed right version of valac from binary package
+a/aroop$ ldconfig # skip this if you installed right version of valac from binary package
+```
+
+Now that you have installed vala, you can carry out the previous commands starting from _autogen_ .
 
 Compiling your code
 ==================
