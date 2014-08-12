@@ -137,6 +137,12 @@ public class aroop.AroopPointer<G> : Hashable {
 	public bool isMarked(ulong flg);
 }
 
+[CCode (cname = "opp_map_pointer_ext_t", cheader_filename = "aroop/opp/opp_hash_table.h", has_copy_function=false, has_destroy_function=false)]
+public class aroop.AroopHashTablePointer<K,G> : aroop.AroopPointer<G> {
+	[CCode (cname = "aroop_hash_table_pointer_get_key")]
+	public unowned K key();
+}
+
 [CCode (cname = "aroop_do_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.iterator_cb(Replicable data);
 
