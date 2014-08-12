@@ -292,7 +292,7 @@ public abstract class aroop.Hashable : aroop.Replicable {
 	protected void memclean(ulong size);
 }
 
-[CCode (cname = "opp_object_ext_t", cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "opp_object_ext_t", cheader_filename = "aroop/aroop_factory.h", destroy_function = "")]
 public abstract class aroop.Searchable : aroop.Hashable {
 	private searchable_ext _ext;
 	[CCode (cname = "aroop_donothing")]
