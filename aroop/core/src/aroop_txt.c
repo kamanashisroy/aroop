@@ -33,9 +33,9 @@ aroop_txt_t*ASTERISKS_STRING;
 opp_equals_t aroop_txt_equals_cb;
 opp_hash_function_t aroop_txt_get_hash_cb;
 static struct opp_factory txt_pool;
-aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index) {
+aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, struct opp_factory*gpool) {
 	if(content) {
-		aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(&txt_pool, 0, 0, 0, NULL);
+		aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, 0, 0, 0, NULL);
 		XULTB_ASSERT_RETURN(str, NULL);
 		str->size = str->len = len;
 		str->str = content;
@@ -43,7 +43,7 @@ aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalabil
 		str->proto = proto?OPPREF(proto):NULL;
 		return str;
 	} else {
-		aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(&txt_pool, sizeof(aroop_txt_t)+len+1, 0, 0, NULL);
+		aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, sizeof(aroop_txt_t)+len+1, 0, 0, NULL);
 		XULTB_ASSERT_RETURN(str, NULL);
 		str->str = (char*)(str+1);
 		*str->str = '\0';
@@ -55,9 +55,9 @@ aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalabil
 	}
 }
 
-aroop_txt_t*aroop_txt_clone(const char*content, int len, int scalability_index) {
+aroop_txt_t*aroop_txt_clone(const char*content, int len,  struct opp_factory*gpool) {
 	XULTB_ASSERT_RETURN(content && len, NULL);
-	aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(&txt_pool, sizeof(aroop_txt_t)+len+1, 0, 0, NULL);
+	aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, sizeof(aroop_txt_t)+len+1, 0, 0, NULL);
 	XULTB_ASSERT_RETURN(str, NULL);
 	str->size = len+1;
 	str->len = len;

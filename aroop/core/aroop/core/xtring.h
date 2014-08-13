@@ -197,7 +197,7 @@ aroop_txt_t*xultb_subtxt(aroop_txt_t*src, int off, int width, aroop_txt_t*dest);
 
 #define aroop_txt_printf(x, ...) ({(x)->len = snprintf((x)->str, (x)->size - 1, __VA_ARGS__);})
 
-aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalability_index);
+aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, struct opp_factory*gpool);
 #define aroop_txt_new_alloc(x,y) aroop_txt_new(NULL, x, NULL, y)
 #define aroop_txt_new_copy_on_demand(x,sc) ({((x)->proto)?aroop_txt_new((x)->str,(x)->len,(x)->proto,sc):aroop_txt_clone((x)->str,(x)->len,sc);})
 #define aroop_txt_new_copy_deep(x,y) aroop_txt_clone((x)->str, (x)->len, y)
@@ -213,7 +213,7 @@ aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, int scalabil
 })
 #define aroop_txt_copy_static_string(x) ({aroop_txt_clone(x,sizeof(x)-1, 0);})
 #define aroop_txt_set_static_string(x) ({aroop_txt_new(x,sizeof(x)-1,NULL, 0);})
-aroop_txt_t*aroop_txt_clone(const char*content, int len, int scalability_index);
+aroop_txt_t*aroop_txt_clone(const char*content, int len,  struct opp_factory*gpool);
 aroop_txt_t*aroop_txtrim(aroop_txt_t*text);
 
 aroop_txt_t*aroop_txt_cat(aroop_txt_t*text, aroop_txt_t*suffix);

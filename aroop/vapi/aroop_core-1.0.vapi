@@ -469,17 +469,17 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 [CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/xtring.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.xtring : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
-	public xtring(char*content, uint len = 0, aroop.Replicable? proto = null, int scalability_index = 0);
+	public xtring(char*content, uint len = 0, aroop.Replicable? proto = null, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_alloc")]
-	public xtring.alloc(uint len = 0, int scalability_index = 0);
+	public xtring.alloc(uint len = 0, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_on_demand")]
-	public xtring.copy_on_demand(extring*src, int scalability_index = 0);
+	public xtring.copy_on_demand(extring*src, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_shallow")]
-	public xtring.copy_shallow(extring*src, int scalability_index = 0);
+	public xtring.copy_shallow(extring*src, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_deep")]
-	public xtring.copy_deep(extring*src, int scalability_index = 0);
+	public xtring.copy_deep(extring*src, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_clone")]
-	public xtring.copy_content(char*content, uint len = 0, int scalability_index = 0);
+	public xtring.copy_content(char*content, uint len = 0,  aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_string")]
 	public xtring.copy_string(string*content);
 	[CCode (cname = "aroop_txt_copy_static_string")]

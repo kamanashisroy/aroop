@@ -24,3 +24,8 @@ Internals
 
 [virtual method table](http://en.wikipedia.org/wiki/Virtual_method_table)
 
+Reading
+========
+
+[The Basic Program/System Interface](http://ftp.gnu.org/old-gnu/Manuals/glibc-2.2.3/html_chapter/libc_25.html)
+
