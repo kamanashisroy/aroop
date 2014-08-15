@@ -24,7 +24,7 @@ else
 VHEADER=--use-header --header=$(VHEADER_FILE)
 endif
 
-CC+=-ggdb -ggdb3 -D AROOP_MODULE_NAME=\"Aroop\ Test\"
+CC+=-ggdb3 -D AROOP_MODULE_NAME=\"Aroop\ Test\" -DAROOP_OPP_PROFILE
 
 genvapi:
 	$(VALAC) --profile=aroop -D POSIX -C $(VAPI) --vapidir ../../vapi --vapidir vapi $(TESTVAPI) $(VLIBRARY) $(VHEADER) $(VSOURCES)

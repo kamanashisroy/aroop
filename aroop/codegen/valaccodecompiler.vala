@@ -58,6 +58,9 @@ public class Vala.CCodeCompiler {
 		if (context.static_link) {
 			pc += " --static";
 		}
+		if (context.debug) {
+			pc += " --define-variable=variant=debug";
+		}
 		if (context.profile == Profile.GOBJECT) {
 			use_pkgconfig = true;
 			pc += " gobject-2.0";
@@ -98,6 +101,9 @@ public class Vala.CCodeCompiler {
 		string cmdline = cc_command;
 		if (context.debug) {
 			cmdline += " -g";
+			//if (context.profile == Profile.AROOP) {
+				cmdline += " -DAROOP_OPP_PROFILE -DMTRACE";
+			//}
 		}
 		if (context.compile_only) {
 			cmdline += " -c";

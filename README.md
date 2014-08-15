@@ -105,7 +105,7 @@ a/tmp$ /opt/aroop/bin/aroopc --static-link hello_world.vala
 a/tmp$ ./hello_world.bin
 Hello world
 ```
-
+You may optionally put a `--debug` option while doing static linking. This will create a debug build, which you may want to trace and debug.
 You may learn more about vala code compiling [here](https://wiki.gnome.org/Projects/Vala/Documentation) and [here](https://wiki.gnome.org/Projects/Vala/BasicSample).
 
 More

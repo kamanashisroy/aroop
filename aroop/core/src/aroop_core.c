@@ -46,6 +46,9 @@ char**aroop_get_argv() {
 int aroop_init(int argc, char ** argv) {
 	aroop_internal_argc = argc;
 	aroop_internal_argv = argv;
+#ifdef MTRACE
+	mtrace();
+#endif
 #ifdef SYNC_HAS_ATOMIC_OPERATION
 	do {
 		volatile SYNC_UWORD16_T oldval,newval;
@@ -108,6 +111,9 @@ int aroop_deinit() {
 #endif
 		opp_factory_profiler_deinit();
 	}
+#ifdef MTRACE
+	muntrace();
+#endif
 }
 
 struct aroop_internal_memory_profiler_dumper {
