@@ -118,6 +118,7 @@ struct aroop_internal_memory_profiler_dumper {
 
 #define PROFILER_DUMP_LINE_SIZE 256
 static int aroop_memory_profiler_visitor(void*func_data, void*data) {
+#ifdef AROOP_OPP_PROFILE
 	struct opp_factory_profiler_info*x = data;
 	struct aroop_internal_memory_profiler_dumper*cb_data = func_data;
 	cb_data->total_memory_used += x->obuff->slot_use_count*x->obuff->obj_size;
@@ -128,6 +129,7 @@ static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 	aroop_txt_zero_terminate(&content);
 	cb_data->log.cb(cb_data->log.cb_data, &content);
 	//printf(content.str);
+#endif
 	return 0;
 }
 

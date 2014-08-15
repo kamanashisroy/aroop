@@ -37,6 +37,7 @@
 
 C_CAPSULE_START
 
+#ifdef AROOP_OPP_PROFILE
 struct opp_factory_profiler_info {
 	char*source_file;
 	int source_line;
@@ -45,8 +46,6 @@ struct opp_factory_profiler_info {
 	struct opp_factory*obuff;
 };
 
-#define OPP_PFACTORY_CREATE_FULL(obuff, psize, objsize, tokenstart, property, cb) ({opp_factory_create_full_and_profile(obuff, psize, objsize, tokenstart, property, cb, __FILE__, __LINE__, AROOP_MODULE_NAME);})
-#define OPP_PFACTORY_CREATE(obuff, x, y, z) ({opp_factory_create_full_and_profile(obuff, x, y, 1, OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF, z, __FILE__, __LINE__, AROOP_MODULE_NAME);})
 int opp_factory_create_full_and_profile(struct opp_factory*obuff
 		, SYNC_UWORD16_T inc
 		, SYNC_UWORD16_T obj_size
@@ -55,7 +54,6 @@ int opp_factory_create_full_and_profile(struct opp_factory*obuff
 		, opp_callback_t callback
 		, char*source_file, int source_line, char*module_name
 	);
-#define OPP_PFACTORY_DESTROY(x) opp_factory_destroy_and_remove_profile(x)
 int opp_factory_destroy_and_remove_profile(struct opp_factory*src);
 
 int opp_factory_profiler_init();
@@ -65,6 +63,22 @@ void opp_factory_profiler_visit(obj_do_t obj_do, void*func_data);
 void opp_factory_profiler_get_total_memory(int*grasped,int*really_allocated);
 void*profiler_replace_malloc(size_t size);
 void profiler_replace_free(void*ptr, size_t size);
+
+void opp_factory_profiler_checkleak_debug();
+#else
+#define opp_factory_create_full_and_profile(obuff,inc,obj_size,token_offset,property,callback,source_file,source_line,module_name) opp_factory_create_full(obuff,inc,obj_size,token_offset,property,callback)
+#define opp_factory_destroy_and_remove_profile opp_factory_destroy
+#define opp_factory_profiler_init()
+#define opp_factory_profiler_deinit()
+#define opp_factory_profiler_visit(x, y)
+#define opp_factory_profiler_get_total_memory(x,y)
+#define profiler_replace_malloc sync_malloc
+#define profiler_replace_free(x,y) sync_free(x)
+#define opp_factory_profiler_checkleak_debug()
+
+#endif
+//#define opp_factory_profiler_checkleak() opp_factory_profiler_checkleak_debug()
+#define opp_factory_profiler_checkleak()
 
 #define OPP_FACTORY_PROFILER_DUMP_HEADER_FMT() "%-20.20s %-5.5s %-10.10s %-10.10s"
 #define OPP_FACTORY_PROFILER_DUMP_HEADER_ARG() "Source","Line", "Module","Birth"
@@ -76,10 +90,9 @@ void profiler_replace_free(void*ptr, size_t size);
 #define OPP_FACTORY_PROFILER_DUMP_FMT2() "%-20.20s %5d %-10.10s"
 #define OPP_FACTORY_PROFILER_DUMP_ARG2(x) STR_OR((x)->source_file, ""), (x)->source_line, STR_OR((x)->module_name, "")
 
-
-void opp_factory_profiler_checkleak_debug();
-//#define opp_factory_profiler_checkleak() opp_factory_profiler_checkleak_debug()
-#define opp_factory_profiler_checkleak()
+#define OPP_PFACTORY_CREATE_FULL(obuff, psize, objsize, tokenstart, property, cb) ({opp_factory_create_full_and_profile(obuff, psize, objsize, tokenstart, property, cb, __FILE__, __LINE__, AROOP_MODULE_NAME);})
+#define OPP_PFACTORY_CREATE(obuff, x, y, z) ({opp_factory_create_full_and_profile(obuff, x, y, 1, OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF, z, __FILE__, __LINE__, AROOP_MODULE_NAME);})
+#define OPP_PFACTORY_DESTROY(x) opp_factory_destroy_and_remove_profile(x)
 
 C_CAPSULE_END
 

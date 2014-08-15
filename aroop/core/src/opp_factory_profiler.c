@@ -28,6 +28,7 @@
 #endif
 
 C_CAPSULE_START
+#ifdef AROOP_OPP_PROFILE
 
 enum {
 	PROFILER_SIGNATURE = 1213,
@@ -208,5 +209,6 @@ void opp_factory_profiler_checkleak_debug() {
 	opp_factory_profiler_get_total_memory(&linked,&allocated);
 	SYNC_ASSERT(linked == allocated);
 }
+#endif
 
 C_CAPSULE_END
