@@ -61,20 +61,35 @@ OPP_CB(any_obj) {
 		break;
 	}
 	case OPPN_ACTION_FINALIZE:
-	{
-		struct any_obj*cb = (struct any_obj*)pointer_arith_add_byte(data,size);
-		cb--;
-		return cb->cb(obj, OPPN_ACTION_FINALIZE, NULL, ap, size - sizeof(struct any_obj));
-	}
 	case OPPN_ACTION_DESCRIBE:
+	default:
 	{
 		struct any_obj*cb = (struct any_obj*)pointer_arith_add_byte(data,size);
 		cb--;
-		return cb->cb(obj, OPPN_ACTION_DESCRIBE, NULL, ap, size - sizeof(struct any_obj));
+		return cb->cb(obj, callback, cb_data, ap, size - sizeof(struct any_obj));
 	}
 	}
 	return 0;
 }
+#ifdef AROOP_OPP_DEBUG
+#include "core/xtring.h"
+static int opp_any_obj_assert_no_module_helper(void*func_data, void*content) {
+	char*module_name = (char*)func_data;
+	aroop_txt_t obj_module_name;
+	aroop_memclean_raw2(&obj_module_name);
+	
+	static va_list va;
+	OPP_CB_FUNC(any_obj)(content, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name, va, 0);
+	assert(!(!aroop_txt_is_empty_magical(&obj_module_name) && module_name != NULL && aroop_txt_equals_chararray(&obj_module_name, module_name)));
+	aroop_txt_destroy(&obj_module_name);
+	return 0;
+}
+void opp_any_obj_assert_no_module(char*module_name) {
+	opp_factory_do_full(&deca_objs, opp_any_obj_assert_no_module_helper, module_name, OPPN_ALL, 0, 0);
+	opp_factory_do_full(&hecto_objs, opp_any_obj_assert_no_module_helper, module_name, OPPN_ALL, 0, 0);
+	opp_factory_do_full(&kilo_objs, opp_any_obj_assert_no_module_helper, module_name, OPPN_ALL, 0, 0);
+}
+#endif
 
 void opp_any_obj_gc_unsafe() {
 	opp_factory_gc_donot_use(&deca_objs);

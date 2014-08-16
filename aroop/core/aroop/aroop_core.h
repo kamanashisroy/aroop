@@ -55,6 +55,7 @@ int aroop_deinit();
 #define aroop_none_unpin(x) ({void*y=x;OPPUNREF(y);/*x=y;*/}) // TODO fix this workarround.
 #define aroop_none_pray(x,y,z) opp_callback(x,y,z)
 #define aroop_none_describe(x) opp_callback(x, OPPN_ACTION_DESCRIBE, NULL)
+#define aroop_none_get_source_module(x,y) opp_callback(x, OPPN_ACTION_GET_SOURCE_MODULE, y)
 #define aroop_none_is_same(x,y) ({(x && y && x == y);})
 #define aroop_none_shrink(x,y) ({opp_shrink(x,sizeof(*x)+y);})
 #define aroop_factory_iterator_get(x,y,a,b,c) ({opp_iterator_create(y,x,a,b,c);})

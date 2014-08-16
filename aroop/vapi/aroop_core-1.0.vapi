@@ -337,6 +337,8 @@ public interface aroop.Replicable {
 	public void unpin();
 	[CCode (cname = "aroop_none_describe")]
 	public virtual void describe();
+	[CCode (cname = "aroop_none_get_source_module")]
+	public virtual void get_source_module(extring*module_name_output);
 	[CCode (cname = "aroop_none_pray")]
 	public void pray(int callback, void*cb_data = null);
 	[CCode (cname = "aroop_none_is_same")]
@@ -525,6 +527,8 @@ public class aroop.core {
 	public static void die(string x);
 	[CCode (cname = "aroop_assert_no_error", cheader_filename="errno.h")]
 	public static void assert_no_error();
+	[CCode (cname = "opp_any_obj_assert_no_module", cheader_filename="opp/opp_any_obj.h")]
+	public static void assert_no_module(string module_name);
 	[CCode (cname = "aroop_init")]
 	public static int libinit(int argc, char ** argv);
 	[CCode (cname = "aroop_deinit")]

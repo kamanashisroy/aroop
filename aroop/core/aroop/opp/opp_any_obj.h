@@ -38,6 +38,11 @@ void opp_any_obj_gc_unsafe();
 void opp_any_obj_system_init();
 void opp_any_obj_system_deinit();
 
+#ifdef AROOP_OPP_DEBUG
+void opp_any_obj_assert_no_module(char*module_name);
+#else
+#define opp_any_obj_assert_no_module(x)
+#endif
 
 C_CAPSULE_END
 
