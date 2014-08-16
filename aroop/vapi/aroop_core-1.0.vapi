@@ -527,7 +527,7 @@ public class aroop.core {
 	public static void die(string x);
 	[CCode (cname = "aroop_assert_no_error", cheader_filename="errno.h")]
 	public static void assert_no_error();
-	[CCode (cname = "opp_any_obj_assert_no_module", cheader_filename="opp/opp_any_obj.h")]
+	[CCode (cname = "opp_any_obj_assert_no_module", cheader_filename="aroop/opp/opp_any_obj.h")]
 	public static void assert_no_module(string module_name);
 	[CCode (cname = "aroop_init")]
 	public static int libinit(int argc, char ** argv);
@@ -552,6 +552,8 @@ public class aroop.core {
 	//[CCode (cname = "aroop_core_gc_unsafe")]
 	[CCode (cname = "aroop_donothing")]
 	public static void gc_unsafe();
+	[CCode (cname = "aroop_get_source_module")]
+	public static unowned string sourceModuleName();
 }
 
 [Compact]

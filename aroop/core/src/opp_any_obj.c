@@ -28,6 +28,9 @@
 #include "aroop/opp/opp_factory_profiler.h"
 #include "aroop/opp/opp_type.h"
 #include "aroop/opp/opp_io.h"
+#ifdef AROOP_OPP_DEBUG
+#include "aroop/core/xtring.h"
+#endif
 #endif
 
 C_CAPSULE_START
@@ -36,6 +39,9 @@ C_CAPSULE_START
 //opp_class_declare(any_obj,);
 struct any_obj {
 	opp_callback_t cb;
+#ifdef AROOP_OPP_DEBUG
+	SYNC_UWORD8_T signature;
+#endif
 };
 
 static struct opp_factory deca_objs,hecto_objs,kilo_objs;
@@ -57,15 +63,24 @@ OPP_CB(any_obj) {
 		struct any_obj*cb = (struct any_obj*)pointer_arith_add_byte(data,size);
 		cb--;
 		cb->cb = (opp_callback_t)cb_data;
+#ifdef AROOP_OPP_DEBUG
+		cb->signature = 123;
+		aroop_txt_t obj_module_name;
+		aroop_memclean_raw2(&obj_module_name);
+		opp_callback(data, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name);
+		printf("Any object:%s\n", obj_module_name.str);
+		aroop_txt_destroy(&obj_module_name);
+#endif
 //		obj->vtable->oppcb = cb_data;
 		break;
 	}
-	case OPPN_ACTION_FINALIZE:
-	case OPPN_ACTION_DESCRIBE:
 	default:
 	{
 		struct any_obj*cb = (struct any_obj*)pointer_arith_add_byte(data,size);
 		cb--;
+#ifdef AROOP_OPP_DEBUG
+		assert(cb->signature == 123);
+#endif
 		return cb->cb(obj, callback, cb_data, ap, size - sizeof(struct any_obj));
 	}
 	}
@@ -78,8 +93,9 @@ static int opp_any_obj_assert_no_module_helper(void*func_data, void*content) {
 	aroop_txt_t obj_module_name;
 	aroop_memclean_raw2(&obj_module_name);
 	
-	static va_list va;
-	OPP_CB_FUNC(any_obj)(content, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name, va, 0);
+	//OPP_CB_FUNC(any_obj)(content, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name, va, 0);
+	opp_callback(content, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name);
+	printf("%s,%s\n", module_name, obj_module_name.str);
 	assert(!(!aroop_txt_is_empty_magical(&obj_module_name) && module_name != NULL && aroop_txt_equals_chararray(&obj_module_name, module_name)));
 	aroop_txt_destroy(&obj_module_name);
 	return 0;

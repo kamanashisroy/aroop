@@ -627,7 +627,7 @@ int opp_callback(void*data, int callback, void*cb_data) {
 	SYNC_ASSERT(obuff->callback);
 	CHECK_OBJ(obj);
 	static va_list va;
-	return obuff->callback(data, callback, cb_data, va, 0);
+	return obuff->callback(data, callback, cb_data, va, obj->slots*obuff->obj_size - sizeof(struct opp_object));
 }
 
 int opp_callback2(void*data, int callback, void*cb_data, ...) {
@@ -637,7 +637,7 @@ int opp_callback2(void*data, int callback, void*cb_data, ...) {
 	CHECK_OBJ(obj);
 	va_list va;
 	va_start(va, cb_data);
-	int ret = obuff->callback(data, callback, cb_data, va, 0);
+	int ret = obuff->callback(data, callback, cb_data, va, obj->slots*obuff->obj_size - sizeof(struct opp_object));
 	va_end(va);
 	return ret;
 }

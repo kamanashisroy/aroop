@@ -308,10 +308,14 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 		if (context.nostdpkg) {
 			header_file.add_include ("aroop/aroop_core.h");
+			header_file.add_include ("aroop/core/xtring.h");
 			cfile.add_include ("aroop/aroop_core.h");
+			cfile.add_include ("aroop/core/xtring.h");
 		} else {
 			header_file.add_include ("aroop/aroop_core.h");
+			header_file.add_include ("aroop/core/xtring.h");
 			cfile.add_include ("aroop/aroop_core.h");
+			cfile.add_include ("aroop/core/xtring.h");
 		}
 
 		generated_external_symbols = new HashSet<Symbol> ();

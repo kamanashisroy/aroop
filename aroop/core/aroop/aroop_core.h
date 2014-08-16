@@ -111,6 +111,7 @@ int aroop_deinit();
 
 #define aroop_get_source_file() __FILE__
 #define aroop_get_source_lineno() __LINE__
+#define aroop_get_source_module() AROOP_MODULE_NAME
 #define aroop_array(x,y) (x)
 
 // value

@@ -464,6 +464,13 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		switch_stat.add_statement (new CCodeExpressionStatement (unref_case));
 		switch_stat.add_statement (new CCodeBreakStatement());
 
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_GET_SOURCE_MODULE")));
+		var module_name_case = new CCodeFunctionCall (new CCodeIdentifier("aroop_txt_embeded_rebuild_and_set_static_string"));
+		module_name_case.add_argument(new CCodeCastExpression(obj_cb_data_var, "aroop_txt_t*"));
+		module_name_case.add_argument(new CCodeConstant("AROOP_MODULE_NAME"));
+		switch_stat.add_statement (new CCodeExpressionStatement (module_name_case));
+		switch_stat.add_statement (new CCodeBreakStatement());
+
 		vblock.add_statement (switch_stat);
 		vblock.add_statement (new CCodeReturnStatement(new CCodeConstant ("0")));
 
