@@ -215,6 +215,10 @@ enum {
 	OPPF_INITIALIZED_INTERNAL = 0x3428,
 };
 
+enum {
+	OPP_INTERNAL_FLAG_NO_GC_NOW = 1,
+};
+
 #ifdef LOW_MEMORY
 #define refcount_t OPP_VOLATILE_VAR SYNC_UWORD16_T
 #else
@@ -309,6 +313,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 	obuff->use_count = 0;
 	obuff->slot_use_count = 0;
 	obuff->pools = NULL;
+	obuff->internal_flags = 0;
 
 #ifndef OBJ_MAX_BUFFER_SIZE
 #define OBJ_MAX_BUFFER_SIZE (4096<<10)
@@ -650,6 +655,7 @@ void*opp_get(struct opp_factory*obuff, int token) {
 	struct opp_pool*pool;
 
 	OPP_LOCK(obuff);
+	obuff->internal_flags |= OPP_INTERNAL_FLAG_NO_GC_NOW;
 	do {
 		if( (idx = (token - obuff->token_offset)) < 0 ) break;
 		k = idx%obuff->pool_size;
@@ -676,6 +682,7 @@ void*opp_get(struct opp_factory*obuff, int token) {
 			break;
 		}
 	} while(0);
+	obuff->internal_flags &= ~OPP_INTERNAL_FLAG_NO_GC_NOW;
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
 	return data;
@@ -1113,9 +1120,11 @@ void*opp_search(struct opp_factory*obuff
 	void*ret = NULL;
 	SYNC_ASSERT(obuff->property & OPPF_SEARCHABLE);
 	OPP_LOCK(obuff);
+	obuff->internal_flags |= OPP_INTERNAL_FLAG_NO_GC_NOW;
 	if((ret = opp_lookup_table_search(&obuff->tree, hash, compare_func, compare_data))) {
 		OPPREF(ret);
 	}
+	obuff->internal_flags &= ~OPP_INTERNAL_FLAG_NO_GC_NOW;
 	OPP_UNLOCK(obuff);
 	if(rval != NULL) {
 		*rval = ret;
@@ -1137,9 +1146,9 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, obj_comp_t compare_f
 #endif
 	struct opp_pool*pool;
 	OPP_LOCK(obuff);
+	obuff->internal_flags |= OPP_INTERNAL_FLAG_NO_GC_NOW;
 	if(!obuff->use_count) {
-		OPP_UNLOCK(obuff);
-		return NULL;
+		goto exit_point;
 	}
 #ifdef OPTIMIZE_OBJ_LOOP
 	use_count = obuff->use_count;
@@ -1199,6 +1208,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, obj_comp_t compare_f
 		}
 	}
 	exit_point:
+	obuff->internal_flags &= ~OPP_INTERNAL_FLAG_NO_GC_NOW;
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
 	return retval;
@@ -1219,9 +1229,9 @@ void*opp_find_full(struct opp_factory*obuff, obj_comp_t compare_func, const void
 #endif
 	struct opp_pool*pool;
 	OPP_LOCK(obuff);
+	obuff->internal_flags |= OPP_INTERNAL_FLAG_NO_GC_NOW;
 	if(!obuff->use_count) {
-		OPP_UNLOCK(obuff);
-		return NULL;
+		goto exit_point;
 	}
 #ifdef OPTIMIZE_OBJ_LOOP
 	use_count = obuff->use_count;
@@ -1307,6 +1317,7 @@ void*opp_find_full(struct opp_factory*obuff, obj_comp_t compare_func, const void
 		}
 	}
 	exit_point:
+	obuff->internal_flags &= ~OPP_INTERNAL_FLAG_NO_GC_NOW;
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
 	return retval;
@@ -1317,6 +1328,8 @@ int opp_count_donot_use(const struct opp_factory*obuff) {
 }
 
 static void opp_factory_gc_nolock(struct opp_factory*obuff) {
+	if(obuff->internal_flags & OPP_INTERNAL_FLAG_NO_GC_NOW)
+		return;
 	int k;
 	BITSTRING_TYPE*bitstring,bsv;
 	int use_count;
@@ -1419,9 +1432,9 @@ void opp_factory_list_do_full(struct opp_factory*obuff, obj_do_t obj_do, void*fu
 #endif
 	struct opp_pool*pool;
 	OPP_LOCK(obuff);
+	obuff->internal_flags |= OPP_INTERNAL_FLAG_NO_GC_NOW;
 	if(!obuff->use_count) {
-		OPP_UNLOCK(obuff);
-		return;
+		goto exitpoint;
 	}
 #ifdef OPTIMIZE_OBJ_LOOP
 	use_count = obuff->use_count;
@@ -1514,6 +1527,7 @@ void opp_factory_list_do_full(struct opp_factory*obuff, obj_do_t obj_do, void*fu
 		}
 	}
 exitpoint:
+	obuff->internal_flags &= ~OPP_INTERNAL_FLAG_NO_GC_NOW;
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
 }
@@ -1536,6 +1550,7 @@ void*opp_iterator_next(struct opp_iterator*iterator) {
 		return NULL;
 	}
 	OPP_LOCK(iterator->fac);
+	iterator->fac->internal_flags |= OPP_INTERNAL_FLAG_NO_GC_NOW;
 	if(iterator->data)OPPUNREF_UNLOCKED(iterator->data);
 	for(pool = iterator->fac->pools;pool;pool = pool->next) {
 		CHECK_POOL(pool);
@@ -1623,6 +1638,7 @@ void*opp_iterator_next(struct opp_iterator*iterator) {
 		}
 	}
 exit_point:
+	iterator->fac->internal_flags &= ~OPP_INTERNAL_FLAG_NO_GC_NOW;
 	OPP_UNLOCK(iterator->fac);
 	return iterator->data;
 }
@@ -1672,8 +1688,7 @@ exitpoint:
 	struct opp_pool*pool;
 	OPP_LOCK(obuff);
 	if(!obuff->use_count) {
-		OPP_UNLOCK(obuff);
-		return;
+		goto exitpoint;
 	}
 #ifdef OPTIMIZE_OBJ_LOOP
 	use_count = obuff->use_count;
@@ -1752,6 +1767,7 @@ exitpoint:
 		}
 	}
 exitpoint:
+	obuff->internal_flags &= ~OPP_INTERNAL_FLAG_NO_GC_NOW;
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
 #endif

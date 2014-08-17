@@ -102,12 +102,11 @@ struct opp_factory {
 	SYNC_UWORD16_T obj_size;
 	SYNC_UWORD16_T bitstring_size;
 	SYNC_UWORD32_T memory_chunk_size;
+	SYNC_UWORD8_T internal_flags;
 	opp_property_t property;
 #ifdef OPP_BUFFER_HAS_LOCK
 	sync_mutex_t lock;
 #endif
-//	int (*initialize)(void*data, const void*init_data, unsigned short size);
-//	int (*finalize)(void*data);
 	opp_callback_t callback;
 	struct opp_pool*pools;
 	opp_lookup_table_t tree;

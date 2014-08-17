@@ -104,11 +104,13 @@ public struct aroop.Iterator<G> {
 	[CCode (cname = "aroop_iterator_create")]
 	public Iterator(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_iterator_next")]
-	public bool next ();
+	public bool next();
 	[CCode (cname = "aroop_iterator_get")]
-	public G? get ();
+	public G? get();
 	[CCode (cname = "aroop_iterator_get_unowned")]
 	public unowned G? get_unowned ();
+	[CCode (cname = "aroop_iterator_unlink")]
+	public void unlink();
 	[CCode (cname = "opp_iterator_destroy")]
 	public void destroy();
 }
@@ -126,7 +128,7 @@ public struct aroop.ArrayList<G> : aroop.SearchableSet {
 [CCode (cname = "opp_pointer_ext_t", cheader_filename = "aroop/opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public class aroop.AroopPointer<G> : Hashable {
 	[CCode (cname = "aroop_list_item_get")]
-	public unowned G get();
+	public unowned G getUnowned();
 	[CCode (cname = "aroop_list_item_set")]
 	public void set(G x);
 	[CCode (cname = "opp_unset_flag")]
@@ -371,16 +373,14 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public extring(); // empty
 	[CCode (cname = "aroop_txt_embeded")]
 	public extring.set_string(string content, Replicable?proto = null);
-	[CCode (cname = "aroop_txt_embeded_static")]
+	[CCode (cname = "aroop_txt_embeded_set_static_string")]
 	public extring.set_static_string(string content);
 	[CCode (cname = "aroop_txt_embeded_set_content")]
 	public extring.set_content(string content, uint len, Replicable?proto = null);
 	[CCode (cname = "aroop_txt_embeded_txt_copy_shallow")]
-	public extring.str_copy_shallow(aroop.xtring proto);
+	public extring.copy_shallow(aroop.extring*proto);
 	[CCode (cname = "aroop_txt_embeded_copy_on_demand")]
 	public extring.copy_on_demand(aroop.extring*proto);
-	[CCode (cname = "aroop_txt_embeded_copy_shallow")]
-	public extring.copy_shallow(aroop.extring*proto);
 	[CCode (cname = "aroop_txt_embeded_copy_deep")]
 	public extring.copy_deep(aroop.extring*proto);
 	[CCode (cname = "aroop_txt_embeded_copy_string")]
@@ -392,7 +392,7 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_embeded_stackbuffer_from_txt")]
 	public extring.stack_copy_deep(aroop.extring*proto);
 	[CCode (cname = "aroop_txt_embeded_buffer")]
-	public bool buffer(int size);
+	public bool rebuild_in_heap(int size);
 	[CCode (cname = "aroop_txt_embeded_rebuild_and_set_content")]
 	public void rebuild_and_set_content(string content, uint len, Replicable?proto=null);
 	[CCode (cname = "aroop_txt_embeded_rebuild_and_set_static_string")]
@@ -415,10 +415,10 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public aroop_hash getStringHash();
 	[CCode (cname = "aroop_txt_to_vala_magical")]
 	public string to_string_magical();
-	[CCode (cname = "aroop_txt_string_or_magical")]
-	public string or_magical(aroop.extring*other);
-	[CCode (cname = "aroop_txt_string_or")]
-	public aroop.extring* e_or_magical(aroop.extring*other);
+	[CCode (cname = "aroop_txt_or_string_magical")]
+	public string or_string_magical(string*other);
+	[CCode (cname = "aroop_txt_or")]
+	public aroop.extring* or_magical(aroop.extring*other);
 	[CCode (cname = "aroop_txt_is_empty")]
 	public bool is_empty();
 	[CCode (cname = "aroop_txtcmp")]
@@ -434,7 +434,7 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_equals_static")]
 	public bool equals_static_string(string other);
 	[CCode (cname = "aroop_txt_zero_terminate")]
-	public void zero_terminate();
+	public void zero_terminate(); // It only tries to zero terminate the string, but it may fail if there is space in the end
 	[CCode (cname = "aroop_txt_is_zero_terminated")]
 	public bool is_zero_terminated();
 	[CCode (cname = "aroop_txt_printf")]
@@ -442,11 +442,11 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public void printf(string format,...);
 	[CCode (cname = "aroop_txt_printf_extra")]
 	[PrintfFormat]
-	public void printf_extra(string format,...);
+	public void printf_extra(string format,...); // TODO implement a way to put string as xtring ..
 	[CCode (cname = "aroop_txt_shift_token")]
 	public void shift_token(string delim, extring*output);
-	[CCode (cname = "aroop_txt_move_to_what_the_hell")]
-	public void move_to_may_be_you_are_doing_wrong(extring*space);
+	//[CCode (cname = "aroop_txt_move_to_what_the_hell")]
+	//public void move_to_may_be_you_are_doing_wrong(extring*space);
 	[CCode (cname = "aroop_txt_char_at")]
 	public char char_at(uint index);
 	[CCode (cname = "aroop_txt_contains_char")]
@@ -481,27 +481,27 @@ public class aroop.xtring : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new_copy_deep")]
 	public xtring.copy_deep(extring*src, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_clone")]
-	public xtring.copy_content(char*content, uint len = 0,  aroop.Factory<xtring>*pool = null);
+	public xtring.copy_content(char*content, uint len = 0, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_string")]
-	public xtring.copy_string(string*content);
+	public xtring.copy_string(string*content, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_static_string")]
-	public xtring.copy_static_string(string*content);
+	public xtring.copy_static_string(string*content, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_set_static_string")]
-	public xtring.set_static_string(string*content);
+	public xtring.set_static_string(string*content, aroop.Factory<xtring>*pool = null);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~str();
 	[CCode (cname = "aroop_txt_to_embeded_pointer")]
 	public extring*fly();
 	[CCode (cname = "BLANK_STRING")]
 	public static aroop.xtring BLANK_STRING;
-	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
-	public int factory_build_by_memcopy_from_extring_unsafe_no_length_check(extring*src);
+	//[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
+	//public int factory_build_by_memcopy_from_extring_unsafe_no_length_check(extring*src);
 	[CCode (cname = "aroop_txt_equals_cb")]
 	public static aroop.equalsCb eCb;
 	[CCode (cname = "aroop_txt_get_hash_cb")]
 	public static aroop.getHashCb hCb;
-	[CCode (cname = "aroop_txt_factory_build_and_copy_deep")]
-	public static xtring factory_build_and_copy_deep(Factory*fac, extring*src);
+	//[CCode (cname = "aroop_txt_factory_build_and_copy_deep")]
+	//public static xtring factory_build_and_copy_deep(Factory*fac, extring*src);
 }
 
 

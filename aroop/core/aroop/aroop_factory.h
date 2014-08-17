@@ -121,6 +121,7 @@ enum {
 #define aroop_iterator_next(x) ({opp_iterator_next(x) != NULL;})
 #define aroop_iterator_get_unowned(x,y) ({*(y)=(x)->data;})
 #define aroop_iterator_get(x,y) ({*(y)=(x)->data;(x)->data=NULL;})
+#define aroop_iterator_unlink(x) ({if((x)->data)OPPUNREF((x)->data);})
 #define aroop_iterator_cpy_or_destroy(x,nouse,y,nouse2) ({\
 	if((x) && (y)){ \
 		memcpy(x,y,sizeof(*(x))); \

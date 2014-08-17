@@ -44,9 +44,8 @@ char*opp_str2_alloc(int size) {
 	return (char*)opp_alloc4(&str2_factory, size, 0, 0, NULL);
 }
 
-char*opp_str2_reuse(char*string) {
+char*opp_str2_reuse(char*string, int len) {
 	char *ret = NULL;
-	int len;
 
 	if(!string || !string[0]) {
 		return NULL;
@@ -58,7 +57,6 @@ char*opp_str2_reuse(char*string) {
 		return string;
 	}
 
-	len = strlen(string);
 	ret = (char*)opp_alloc4(&str2_factory, len+1, 0, 0, NULL);
 
 	if(!ret) {
@@ -70,8 +68,7 @@ char*opp_str2_reuse(char*string) {
 	return ret;
 }
 
-void opp_str2_reuse2(char**dest, char*string) {
-	int len;
+void opp_str2_reuse2(char**dest, char*string, int len) {
 
 	OPPUNREF(*dest);
 	*dest = NULL;
@@ -85,7 +82,6 @@ void opp_str2_reuse2(char**dest, char*string) {
 		*dest = string;
 		return;
 	}
-	len = strlen(string);
 	*dest = (char*)opp_alloc4(&str2_factory, len+1, 0, 0, NULL);
 
 	memcpy(*dest, string, len);
@@ -93,14 +89,12 @@ void opp_str2_reuse2(char**dest, char*string) {
 }
 
 
-char*opp_str2_dup(const char*string) {
+char*opp_str2_dup(const char*string, int len) {
 	char *ret = NULL;
-	int len;
 
 	if(!string || !string[0]) {
 		return NULL;
 	}
-	len = strlen(string);
 	ret = (char*)opp_alloc4(&str2_factory, len+1, 0, 0, NULL);
 
 	if(!ret) {
@@ -112,8 +106,7 @@ char*opp_str2_dup(const char*string) {
 	return ret;
 }
 
-void opp_str2_dup2(char**dest, const char*string) {
-	int len;
+void opp_str2_dup2(char**dest, const char*string, int len) {
 
 	OPPUNREF(*dest);
 	*dest = NULL;
@@ -121,7 +114,6 @@ void opp_str2_dup2(char**dest, const char*string) {
 	if(!string || !string[0]) {
 		return;
 	}
-	len = strlen(string);
 	*dest = (char*)opp_alloc4(&str2_factory, len+1, 0, 0, NULL);
 
 	memcpy(*dest, string, len);

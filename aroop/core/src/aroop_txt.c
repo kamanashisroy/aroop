@@ -33,50 +33,52 @@ aroop_txt_t*ASTERISKS_STRING;
 opp_equals_t aroop_txt_equals_cb;
 opp_hash_function_t aroop_txt_get_hash_cb;
 static struct opp_factory txt_pool;
-aroop_txt_t*aroop_txt_new(char*content, int len, aroop_txt_t*proto, struct opp_factory*gpool) {
-	if(content) {
-		aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, 0, 0, 0, NULL);
-		XULTB_ASSERT_RETURN(str, NULL);
-		str->size = str->len = len;
-		str->str = content;
-		str->hash = 0;
-		str->proto = proto?OPPREF(proto):NULL;
-		return str;
-	} else {
-		aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, sizeof(aroop_txt_t)+len+1, 0, 0, NULL);
-		XULTB_ASSERT_RETURN(str, NULL);
-		str->str = (char*)(str+1);
-		*str->str = '\0';
-		str->len = 0;
-		str->size = len+1;
-		str->hash = 0;
-		str->proto = NULL;
-		return str;
-	}
-}
-
-aroop_txt_t*aroop_txt_clone(const char*content, int len,  struct opp_factory*gpool) {
-	XULTB_ASSERT_RETURN(content && len, NULL);
+aroop_txt_t*aroop_txt_new_alloc(int len, struct opp_factory*gpool) {
 	aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, sizeof(aroop_txt_t)+len+1, 0, 0, NULL);
 	XULTB_ASSERT_RETURN(str, NULL);
-	str->size = len+1;
-	str->len = len;
-	str->str = (char*)(str+1);
-	if(len) {
-		memcpy(str->str, content, len);
-	}
-	*(str->str+len) = '\0';
+	str->internal_flag = XTRING_IS_ARRAY;
+	str->content.str[0] = '\0';
+	str->len = 0;
+	//str->size = len+1;
 	str->hash = 0;
-	str->proto = NULL;
+	return str;
+}
+aroop_txt_t*aroop_txt_new_set_content(char*content, int len, aroop_txt_t*proto, struct opp_factory*gpool) {
+	if(content == NULL) return NULL;
+	aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, 0, 0, 0, NULL);
+	XULTB_ASSERT_RETURN(str, NULL);
+	str->internal_flag = 0;
+	str->len = len;
+	str->size = len;
+	str->content.pointer.str = content;
+	str->hash = 0;
+	str->content.pointer.proto = proto?OPPREF(proto):NULL;
 	return str;
 }
 
+aroop_txt_t*aroop_txt_new_copy_content_deep(const char*content, int len,  struct opp_factory*gpool) {
+	XULTB_ASSERT_RETURN(content && len, NULL);
+	aroop_txt_t*str = (aroop_txt_t*)opp_alloc4(gpool?gpool:&txt_pool, sizeof(aroop_txt_t)+len+1-sizeof(struct aroop_txt_pointer), 0, 0, NULL);
+	XULTB_ASSERT_RETURN(str, NULL);
+	str->internal_flag = XTRING_IS_ARRAY;
+	//str->size = len+1;
+	str->len = len;
+	if(len) {
+		memcpy(str->content.str, content, len);
+	}
+	printf("[%s]-[%s]%d\n", str->content.str, content, len);
+	str->content.str[len] = '\0';
+	printf("[%s]-[%s]\n", str->content.str, content);
+	str->hash = 0;
+	return str;
+}
+
+#if false
 aroop_txt_t*aroop_txtrim(aroop_txt_t*text) {
 	// TODO trim
 	text->hash = 0;
 	return text;
 }
-
 
 aroop_txt_t*aroop_txt_cat(aroop_txt_t*text, aroop_txt_t*suffix) {
 	// TODO check if we have enough space
@@ -114,6 +116,7 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len) {
 	*(text->str+len) = '\0';
 	return text;
 }
+#endif
 
 #ifndef AROOP_BASIC
 #include <printf.h>
@@ -123,7 +126,7 @@ static int print_etxt (FILE *stream,
 	int len = 0;
 	const aroop_txt_t *x = *((const aroop_txt_t **) (args[0]));
 	/* Pad to the minimum field width and print to the stream. */
-	len = fprintf (stream, "%s", x->str);
+	len = fprintf (stream, "%s", aroop_txt_to_vala(x));
 	return len;
 }
 
@@ -143,7 +146,7 @@ int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...) {
 	int done;
 
 	va_start (arg, format);
-	done = vsnprintf (output->str, output->size, format, arg);
+	done = vsnprintf (aroop_txt_to_string(output), output->size, format, arg);
 	va_end (arg);
 
 	return done;
@@ -178,14 +181,15 @@ OPP_CB_NOSTATIC(aroop_txt) {
 	aroop_txt_t*txt = (aroop_txt_t*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
+		txt->content.str[0] = '\0';
+		txt->size = size - sizeof(aroop_txt_t);
+		txt->len = 0;
 		return 0;
 	case OPPN_ACTION_FINALIZE:
-		OPPUNREF(txt->proto);
+		aroop_txt_destroy(txt);
 		break;
 	case OPPN_ACTION_DESCRIBE:
-		if(txt->str && txt->len != 0) {
-			printf("%s\n", txt->str);
-		}
+		printf("%s\n", aroop_txt_to_vala(txt));
 		break;
 	}
 	return 0;
@@ -193,9 +197,9 @@ OPP_CB_NOSTATIC(aroop_txt) {
 
 void aroop_txt_system_init() {
 	SYNC_ASSERT(!OPP_PFACTORY_CREATE(&txt_pool, 128, sizeof(aroop_txt_t)+32, OPP_CB_FUNC(aroop_txt)));
-	BLANK_STRING = aroop_txt_new("", 0, NULL, 0);
-	ASTERISKS_STRING = aroop_txt_new("***********************************************", 30, NULL, 0);
-	DOT = aroop_txt_new(".", 1, NULL, 0);
+	BLANK_STRING = aroop_txt_new_set_content("", 0, NULL, 0);
+	ASTERISKS_STRING = aroop_txt_new_set_content("***********************************************", 30, NULL, 0);
+	DOT = aroop_txt_new_set_content(".", 1, NULL, 0);
 	aroop_txt_equals_cb.aroop_closure_data = NULL;
 	aroop_txt_equals_cb.aroop_cb = aroop_txt_equals_cb_impl;
 	aroop_txt_get_hash_cb.aroop_closure_data = NULL;

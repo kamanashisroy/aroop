@@ -7,13 +7,13 @@ internal class Counter<G> : Replicable {
     i = val;
   }
 	internal int match_int_unowned(AroopPointer<G> can) {
-		unowned Mango x = (Mango)can.get();
+		unowned Mango x = (Mango)can.getUnowned();
 		print("Comparing %d-%d\n", x.id, i);
 		core.assert(i == x.id);
 		return 0;
 	}
 	internal int match_int(AroopPointer<G> can) {
-		Mango x = (Mango)can.get();
+		Mango x = (Mango)can.getUnowned();
 		print("Comparing %d-%d\n", x.id, i);
 		core.assert(i == x.id);
 		return 0;

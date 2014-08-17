@@ -41,7 +41,9 @@ typedef quint32 SYNC_UWORD32_T;
 typedef qint16 SYNC_SWORD16_T;
 typedef qint32 SYNC_SWORD32_T;
 
+#ifdef AROOP_OPP_DEBUG
 #define SYNC_ASSERT(x) assert(x)
+#endif
 
 #ifdef __cplusplus
 }

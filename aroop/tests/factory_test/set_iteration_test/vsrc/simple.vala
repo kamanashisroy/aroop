@@ -7,7 +7,7 @@ internal class Counter : Replicable {
     i = val;
   }
 	internal int do(Replicable data) {
-		unowned Mango x = ((AroopPointer<Mango>)data).get();
+		unowned Mango x = ((AroopPointer<Mango>)data).getUnowned();
 		print("Here we are %d-%d\n", x.id, i);
 		core.assert(i == x.id);
 		return -1;

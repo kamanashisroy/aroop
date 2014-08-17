@@ -65,7 +65,11 @@ typedef int8_t SYNC_SWORD8_T;
 typedef int16_t SYNC_SWORD16_T;
 typedef int32_t SYNC_SWORD32_T;
 
+#ifdef AROOP_OPP_DEBUG
 #define SYNC_ASSERT(x) assert(x)
+#else
+#define SYNC_ASSERT(x)
+#endif
 #endif // ifdef ANDROID else
 
 #ifndef AROOP_CONCATENATED_FILE
