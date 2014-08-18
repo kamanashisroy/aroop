@@ -84,7 +84,7 @@ typedef int xultb_bool_t;
 		(x)->content.pointer.str = (y)->content.pointer.str; \
 	} else { \
 		opp_str2_reuse2(&(x)->content.pointer.str, (y)->content.pointer.str, (y)->len); \
-		(x)->content.pointer.proto = (x)->str; \
+		(x)->content.pointer.proto = (x)->content.pointer.str; \
 		(x)->len = (y)->len+1; \
 	} \
 })
@@ -100,7 +100,7 @@ typedef int xultb_bool_t;
 
 #define aroop_txt_embeded_rebuild_copy_shallow(x,y) ({ \
 	aroop_txt_destroy(x); \
-	aroop_txt_embeded_copy_shallow(x,y); \
+	aroop_txt_embeded_txt_copy_shallow(x,y); \
 })
 
 #define aroop_txt_embeded_txt_copy_shallow(x,y) ({ \
@@ -119,15 +119,15 @@ typedef int xultb_bool_t;
 		(x)->content.pointer.proto = OPPREF((y)->content.pointer.proto); \
 		(x)->content.pointer.str = (y)->content.pointer.str; \
 	} else { \
-		opp_str2_reuse2(&(x)->content.pointer.str, (y)->content.pointer.str, (y)->len); \
-		(x)->content.pointer.proto = (x)->content.pointer.str; \
+		(x)->content.pointer.proto = NULL; \
+		(x)->content.pointer.str = (y)->content.pointer.str; \
 		(x)->len = (y)->len; \
 	} \
 })
 
 #define aroop_txt_embeded_copy_deep(x,y) ({\
 	aroop_memclean_raw2(x); \
-	opp_str2_dup2(&(x)->content.pointer.str, (y)->str, (y)->len); \
+	opp_str2_dup2(&(x)->content.pointer.str, aroop_txt_to_string(y), (y)->len); \
 	(x)->content.pointer.proto = (x)->content.pointer.str; \
 	(x)->hash = (y)->hash; \
 	(x)->len = (y)->len; \
@@ -135,17 +135,17 @@ typedef int xultb_bool_t;
 })
 #define aroop_txt_embeded_copy_static_string(x,y) aroop_txt_embeded_copy_string_helper(x,y,sizeof(y)-1)
 #define aroop_txt_embeded_copy_string(x,y) aroop_txt_embeded_copy_string_helper(x,y,strlen(y))
-#define aroop_txt_embeded_copy_string_helper(x,y,len) ({\
+#define aroop_txt_embeded_copy_string_helper(x,y,ylen) ({\
 	aroop_memclean_raw2(x); \
-	opp_str2_dup2(&(x)->content.pointer.str, y, len); \
+	(x)->len = ylen; \
+	opp_str2_dup2(&(x)->content.pointer.str, y, (x)->len); \
 	(x)->content.pointer.proto = (x)->content.pointer.str; \
 	(x)->hash = 0; \
 	(x)->size=(x)->len+1; \
-	(x)->len = len; \
 })
 
 
-#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->content.pointer.proto = opp_str2_alloc(y))) {(x)->size = y;}(x)->str = (x)->content.pointer.proto;})
+#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->content.pointer.proto = opp_str2_alloc(y))) {(x)->size = y;}(x)->content.pointer.str = (x)->content.pointer.proto;})
 #define aroop_txt_embeded_stackbuffer(x,y) ({ \
 	(x)->internal_flag = 0; \
 	(x)->content.pointer.str = alloca(y+1); \
@@ -185,10 +185,13 @@ typedef int xultb_bool_t;
 #define aroop_txt_equals_static(x,static_y) aroop_txt_equals_chararray_helper(x,static_y,sizeof(static_y)-1)
 #define aroop_txt_equals_chararray(x,y) aroop_txt_equals_chararray_helper(x,y,strlen(y))
 #define aroop_txt_zero_terminate(x) ({ \
+	int internal_return = 0; \
 	if(!((x)->internal_flag & XTRING_IS_IMMUTABLE) && (x)->len < (x)->size) { \
 		char*internal_str = aroop_txt_to_string(x); \
 		if(internal_str && internal_str[(x)->len] != '\0') internal_str[(x)->len] = '\0'; \
+		internal_return = 1; \
 	} \
+	internal_return; \
 })
 #define aroop_txt_is_zero_terminated(x) ({ \
 	char*internal_str = aroop_txt_to_string(x); \
@@ -202,11 +205,12 @@ aroop_txt_t*aroop_txt_new_alloc(int len, struct opp_factory*gpool);
 #define aroop_txt_new_copy_on_demand(x,fac) ({ \
 	if((x)->internal_flag & XTRING_IS_ARRAY) { \
 		aroop_txt_new_set_content((x)->content.str, (x)->len, (x), fac); \
-	} else if((y)->content.pointer.proto) { \
+	} else if((x)->content.pointer.proto) { \
 		aroop_txt_new_set_content((x)->content.pointer.str, (x)->len, (x)->content.pointer.proto, fac); \
 	} else { \
-		aroop_txt_new_copy_content_deep((x)->content.pointer.str,(x)->len,sc); \
+		aroop_txt_new_copy_content_deep((x)->content.pointer.str,(x)->len,fac); \
 	} \
+	0; \
 })
 #define aroop_txt_new_copy_deep(x,y) aroop_txt_new_copy_content_deep(aroop_txt_to_string(x), (x)->len, y)
 #define aroop_txt_new_copy_shallow(x,sc) ({ \
@@ -244,7 +248,7 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 #define aroop_txt_to_vala(x) aroop_txt_to_string_cb(x, (char*), "(null)")
 #define aroop_txt_to_int(x) aroop_txt_to_string_cb(x,atoi,0)
 #define aroop_txt_to_vala_magical(x) aroop_txt_to_vala(x)
-#define aroop_txt_is_empty(x) ({(((x)->len == 0);})
+#define aroop_txt_is_empty(x) ({((x)->len == 0);})
 #define aroop_txt_is_empty_magical(x) ({(!(x) || ((x)->len == 0));})
 #define aroop_txt_or(x,y) {aroop_txt_is_empty_magical(x)?y:x;})
 #define aroop_txt_or_string_magical(x,y) aroop_txt_to_string_cb(x,(char*),y)
@@ -341,7 +345,7 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 #define aroop_txt_concat_char(x,y) { \
 	int aroop_internal_ret = !((x)->internal_flag & XTRING_IS_IMMUTABLE) && (((x)->len+1) < (x)->size); \
 	if(aroop_internal_ret) { \
-		aroop_txt_to_string_suffix(x, [(x)->len]) = (y); \
+		if((x)->internal_flag & XTRING_IS_ARRAY)(x)->content.str[(x)->len] = y; else (x)->content.pointer.str[(x)->len] = y; \
 		(x)->hash = 0; \
 		(x)->len++; \
 	} \

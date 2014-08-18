@@ -480,7 +480,7 @@ public class aroop.xtring : aroop.Replicable {
 	public xtring.copy_shallow(extring*src, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_deep")]
 	public xtring.copy_deep(extring*src, aroop.Factory<xtring>*pool = null);
-	[CCode (cname = "aroop_txt_clone")]
+	[CCode (cname = "aroop_txt_new_copy_content_deep")]
 	public xtring.copy_content(char*content, uint len = 0, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_string")]
 	public xtring.copy_string(string*content, aroop.Factory<xtring>*pool = null);

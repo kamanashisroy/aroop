@@ -68,7 +68,7 @@ typedef int32_t SYNC_SWORD32_T;
 #ifdef AROOP_OPP_DEBUG
 #define SYNC_ASSERT(x) assert(x)
 #else
-#define SYNC_ASSERT(x)
+#define SYNC_ASSERT(x) (x)
 #endif
 #endif // ifdef ANDROID else
 
