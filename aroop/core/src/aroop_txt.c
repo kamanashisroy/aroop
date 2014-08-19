@@ -66,9 +66,7 @@ aroop_txt_t*aroop_txt_new_copy_content_deep(const char*content, int len,  struct
 	if(len) {
 		memcpy(str->content.str, content, len);
 	}
-	printf("[%s]-[%s]%d\n", str->content.str, content, len);
 	str->content.str[len] = '\0';
-	printf("[%s]-[%s]\n", str->content.str, content);
 	str->hash = 0;
 	return str;
 }

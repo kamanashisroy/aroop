@@ -8,7 +8,7 @@ Aroop contains special support for strings. While `string` class is originally t
 - Stack allocated string.
 - Heap allocated string.
 - A hash value and precalculated length value.
-- There are plans to implement immutable strings.
+- You can make a string immutable.
 
 The `extring` is of `struct` type so it can reduce memory allocation in some cases. It supports [flyweight pattern](http://en.wikipedia.org/wiki/Flyweight_pattern) to reduce data duplication and copying. You can always get _extring_ from _xtring_ calling fly() method.
 

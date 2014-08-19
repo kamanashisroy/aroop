@@ -60,6 +60,7 @@ typedef int xultb_bool_t;
 
 #define aroop_searchable_string_rehash(y) ({opp_set_hash(y, aroop_txt_get_hash(&(y)->tdata));})
 #define aroop_txt_to_embeded_pointer(x) (x)
+#define aroop_txt_make_constant(x) ((x)->internal_flag |= XTRING_IS_IMMUTABLE);
 
 #define aroop_txt_embeded_set_content(x,y,z,p) ({ \
 	(x)->internal_flag = 0, \

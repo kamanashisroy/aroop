@@ -467,6 +467,8 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public void destroy();
 	[CCode (cname = "aroop_txt_memcopy_from_etxt_factory_build")]
 	public int factory_build_and_copy_on_tail_no_length_check(extring*src);
+	[CCode (cname = "aroop_txt_make_constant")]
+	public void makeConstant();
 }
 
 
