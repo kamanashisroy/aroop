@@ -79,7 +79,7 @@ void aroop_core_gc_unsafe() {
 #define PROFILER_CRASH_DEBUG
 #ifdef PROFILER_CRASH_DEBUG
 static int profiler_logger_debug(void*log_data, struct aroop_txt*content) {
-	printf("%s\n", aroop_txt_to_vala(content));
+	printf("%s\n", aroop_txt_to_vala_string(content));
 	return 0;
 }
 #endif

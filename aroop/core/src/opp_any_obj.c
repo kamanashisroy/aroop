@@ -68,7 +68,7 @@ OPP_CB(any_obj) {
 		aroop_txt_t obj_module_name;
 		aroop_memclean_raw2(&obj_module_name);
 		opp_callback(data, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name);
-		printf("Any object:%s\n", aroop_txt_to_vala(&obj_module_name));
+		printf("Any object:%s\n", aroop_txt_to_vala_string(&obj_module_name));
 		aroop_txt_destroy(&obj_module_name);
 #endif
 //		obj->vtable->oppcb = cb_data;
@@ -95,7 +95,7 @@ static int opp_any_obj_assert_no_module_helper(void*func_data, void*content) {
 	
 	//OPP_CB_FUNC(any_obj)(content, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name, va, 0);
 	opp_callback(content, OPPN_ACTION_GET_SOURCE_MODULE, &obj_module_name);
-	printf("%s,%s\n", module_name, aroop_txt_to_vala(&obj_module_name));
+	printf("%s,%s\n", module_name, aroop_txt_to_vala_string(&obj_module_name));
 	assert(!(!aroop_txt_is_empty_magical(&obj_module_name) && module_name != NULL && aroop_txt_equals_chararray(&obj_module_name, module_name)));
 	aroop_txt_destroy(&obj_module_name);
 	return 0;

@@ -126,7 +126,7 @@ static int print_etxt (FILE *stream,
 	int len = 0;
 	const aroop_txt_t *x = *((const aroop_txt_t **) (args[0]));
 	/* Pad to the minimum field width and print to the stream. */
-	len = fprintf (stream, "%s", aroop_txt_to_vala(x));
+	len = fprintf (stream, "%s", aroop_txt_to_vala_string(x));
 	return len;
 }
 
@@ -189,7 +189,7 @@ OPP_CB_NOSTATIC(aroop_txt) {
 		aroop_txt_destroy(txt);
 		break;
 	case OPPN_ACTION_DESCRIBE:
-		printf("%s\n", aroop_txt_to_vala(txt));
+		printf("%s\n", aroop_txt_to_vala_string(txt));
 		break;
 	}
 	return 0;

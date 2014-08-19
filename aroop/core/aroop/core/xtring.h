@@ -203,14 +203,13 @@ typedef int xultb_bool_t;
 aroop_txt_t*aroop_txt_new_set_content(char*content, int len, aroop_txt_t*proto, struct opp_factory*gpool);
 aroop_txt_t*aroop_txt_new_alloc(int len, struct opp_factory*gpool);
 #define aroop_txt_new_copy_on_demand(x,fac) ({ \
-	if((x)->internal_flag & XTRING_IS_ARRAY) { \
-		aroop_txt_new_set_content((x)->content.str, (x)->len, (x), fac); \
-	} else if((x)->content.pointer.proto) { \
-		aroop_txt_new_set_content((x)->content.pointer.str, (x)->len, (x)->content.pointer.proto, fac); \
-	} else { \
-		aroop_txt_new_copy_content_deep((x)->content.pointer.str,(x)->len,fac); \
-	} \
-	0; \
+	((x)->internal_flag & XTRING_IS_ARRAY) ? \
+		aroop_txt_new_set_content((x)->content.str, (x)->len, (x), fac) \
+	: (((x)->content.pointer.proto) ? \
+		aroop_txt_new_set_content((x)->content.pointer.str, (x)->len, (x)->content.pointer.proto, fac) \
+	: \
+		aroop_txt_new_copy_content_deep((x)->content.pointer.str,(x)->len,fac) \
+	); \
 })
 #define aroop_txt_new_copy_deep(x,y) aroop_txt_new_copy_content_deep(aroop_txt_to_string(x), (x)->len, y)
 #define aroop_txt_new_copy_shallow(x,sc) ({ \
@@ -245,9 +244,9 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 #define aroop_txt_get_hash(x) ({((x)->hash != 0)?(x)->hash:((x)->hash = opp_get_hash_bin(aroop_txt_to_string(x), (x)->len));})
 #define aroop_txt_to_string_cb(x,cb,defaultval) ({((!(x) || (x)->len ==0)?defaultval:(((x)->internal_flag & XTRING_IS_ARRAY)?(cb((x)->content.str)):(cb((x)->content.pointer.str))));})
 #define aroop_txt_to_string_suffix(x,suffix,defaultval) ({((!(x) || (x)->len ==0)?defaultval:(((x)->internal_flag & XTRING_IS_ARRAY)?((x)->content.str suffix):((x)->content.pointer.str suffix)));})
-#define aroop_txt_to_vala(x) aroop_txt_to_string_cb(x, (char*), "(null)")
+#define aroop_txt_to_vala_string(x) aroop_txt_to_string_cb(x, (char*), "(null)")
 #define aroop_txt_to_int(x) aroop_txt_to_string_cb(x,atoi,0)
-#define aroop_txt_to_vala_magical(x) aroop_txt_to_vala(x)
+#define aroop_txt_to_vala_string_magical(x) aroop_txt_to_vala_string(x)
 #define aroop_txt_is_empty(x) ({((x)->len == 0);})
 #define aroop_txt_is_empty_magical(x) ({(!(x) || ((x)->len == 0));})
 #define aroop_txt_or(x,y) {aroop_txt_is_empty_magical(x)?y:x;})

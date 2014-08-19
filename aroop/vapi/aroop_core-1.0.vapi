@@ -403,7 +403,9 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public void rebuild_and_copy_shallow(aroop.extring*proto);
 	[CCode (cname = "aroop_txt_size")]
 	public int size();
-	[CCode (cname = "aroop_txt_to_vala")]
+	[CCode (cname = "aroop_txt_to_string")]
+	public string to_memory();
+	[CCode (cname = "aroop_txt_to_vala_string")]
 	public string to_string();
 	[CCode (cname = "aroop_txt_to_int")]
 	public int to_int();
@@ -413,7 +415,7 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public int trim_to_length(uint len);
 	[CCode (cname = "aroop_txt_get_hash")]
 	public aroop_hash getStringHash();
-	[CCode (cname = "aroop_txt_to_vala_magical")]
+	[CCode (cname = "aroop_txt_to_vala_string_magical")]
 	public string to_string_magical();
 	[CCode (cname = "aroop_txt_or_string_magical")]
 	public string or_string_magical(string*other);
