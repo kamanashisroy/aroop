@@ -44,6 +44,11 @@ char*opp_str2_alloc(int size) {
 	return (char*)opp_alloc4(&str2_factory, size, 0, 0, NULL);
 }
 
+void opp_str2_alloc2(char**dest, int size) {
+	OPPUNREF(*dest);
+	*dest = NULL;
+	*dest = opp_alloc4(&str2_factory, size, 0, 0, NULL);
+}
 char*opp_str2_reuse(char*string, int len) {
 	char *ret = NULL;
 
@@ -120,14 +125,9 @@ void opp_str2_dup2(char**dest, const char*string, int len) {
 	*(*dest + len) = '\0';
 }
 
-static int opp_str2_verb_helper(const void*data, const void*func_data) {
-	// do nothing
-	return 0;
+void opp_str2system_traverse(void*cb, void*cb_data) {
+	opp_factory_do_full(&str2_factory, cb, cb_data, OPPN_ALL, 0, 0);
 }
-void opp_str2system_verb(void (*log)(void *log_data, const char*fmt, ...), void*log_data) {
-	opp_factory_verb(&str2_factory, opp_str2_verb_helper, NULL, log, log_data);
-}
-
 #ifdef OPP_ALLOW_UNSAFE_MULTIPLE_INIT
 static int initialized = 0; // TODO make it volatile
 #endif

@@ -545,6 +545,8 @@ public class aroop.core {
 	public static void memclean_raw(void*ptr, ulong size);
 	[CCode (cname = "aroop_memory_profiler_dump")]
 	public static void memory_profiler_dump(writeOutputStream dump);
+	[CCode (cname = "aroop_string_buffer_dump")]
+	public static void string_buffer_dump(writeOutputStream dump);
 	//[CCode (cname = "opp_factory_profiler_get_total_memory")]
 	//public static void memory_profiler_get_unsafe(int*grasped,int*really_allocated);
 	[CCode (cname = "aroop_get_source_file")]

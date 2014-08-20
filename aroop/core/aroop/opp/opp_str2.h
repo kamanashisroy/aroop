@@ -35,8 +35,9 @@ void opp_str2_reuse2(char**dest, char*string, int len);
 char*opp_str2_dup(const char*string, int len);
 void opp_str2_dup2(char**dest, const char*string, int len);
 char*opp_str2_alloc(int size);
+void opp_str2_alloc2(char**dest, int size);
 
-void opp_str2system_verb(void (*log)(void *log_data, const char*fmt, ...), void*log_data);
+void opp_str2system_traverse(void*cb, void*cb_data);
 void opp_str2system_init();
 void opp_str2system_deinit();
 

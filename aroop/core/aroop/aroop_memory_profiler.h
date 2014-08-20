@@ -13,6 +13,7 @@ typedef struct {
 	int (*cb)(void*log_data, struct aroop_txt*content);
 }aroop_write_output_stream_t;
 
+void aroop_string_buffer_dump(aroop_write_output_stream_t log);
 int aroop_memory_profiler_dump(aroop_write_output_stream_t log);
 
 #endif // AROOP_MEMORY_PROFILER_DUMP_H_

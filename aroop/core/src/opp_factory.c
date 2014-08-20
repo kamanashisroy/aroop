@@ -78,6 +78,8 @@ static const uint64_t BITSTRING_MASK = 0xFFFFFFFFFFFFFFFF;
 
 #ifdef OPP_DEBUG
 #define OPP_DEBUG_REFCOUNT // only for testing
+#endif
+#ifdef OPP_DEBUG_REFCOUNT
 enum {
 	OPP_TRACE_SIZE = 32,
 };
@@ -1855,7 +1857,7 @@ void opp_factory_verb(struct opp_factory*obuff, opp_verb_t verb_obj, const void*
 	}
 #endif
 	OPP_LOCK(obuff);
-	opp_factory_do_full(obuff, (int (*)(void*data, void*func_data))verb_obj, (void*)func_data, OPPN_ALL, 0, 0);
+	opp_factory_do_full(obuff, (int (*)(void*, void*))verb_obj, (void*)func_data, OPPN_ALL, 0, 0);
 	if(log) {
 #if 0
 		if((obuff->property & OPPF_SEARCHABLE) && obuff->tree.rb_count) {

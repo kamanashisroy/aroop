@@ -139,6 +139,19 @@ static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 	return 0;
 }
 
+static int aroop_string_buffer_dump_helper(const void*func_data, const void*data) {
+	aroop_write_output_stream_t*logger = func_data;
+	struct aroop_txt content;
+	aroop_txt_embeded_stackbuffer(&content, 1024);
+	aroop_txt_printf(&content, "[%s]\n", (char*)data);
+	logger->cb(logger->cb_data, &content);
+	return 0;
+}
+
+void aroop_string_buffer_dump(aroop_write_output_stream_t log) {
+	opp_str2system_traverse(aroop_string_buffer_dump_helper, log);
+}
+
 int aroop_memory_profiler_dump(aroop_write_output_stream_t log) {
 	struct aroop_internal_memory_profiler_dumper cb_data = {log, 0, 0};
 	struct aroop_txt content;

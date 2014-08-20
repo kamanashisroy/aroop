@@ -86,7 +86,8 @@ typedef int xultb_bool_t;
 	} else { \
 		opp_str2_reuse2(&(x)->content.pointer.str, (y)->content.pointer.str, (y)->len); \
 		(x)->content.pointer.proto = (x)->content.pointer.str; \
-		(x)->len = (y)->len+1; \
+		(x)->len = (y)->len; \
+		(x)->size = (y)->len+1; \
 	} \
 })
 
@@ -146,7 +147,7 @@ typedef int xultb_bool_t;
 })
 
 
-#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);if(((x)->content.pointer.proto = opp_str2_alloc(y))) {(x)->size = y;}(x)->content.pointer.str = (x)->content.pointer.proto;})
+#define aroop_txt_embeded_buffer(x,y) ({aroop_txt_destroy(x);opp_str2_alloc2(&(x)->content.pointer.str,y);if((x)->content.pointer.str) {(x)->size = y;}(x)->content.pointer.proto = (x)->content.pointer.str;})
 #define aroop_txt_embeded_stackbuffer(x,y) ({ \
 	(x)->internal_flag = 0; \
 	(x)->content.pointer.str = alloca(y+1); \

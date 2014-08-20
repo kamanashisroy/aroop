@@ -86,6 +86,12 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		decl_space.add_type_definition (class_struct);
 	}
 
+	public void generate_element_destruction_code(Field f, CCodeSwitchStatement stmt) {
+		if (f.binding != MemberBinding.INSTANCE)  {
+			return;
+		}
+		stmt.add_statement(new CCodeExpressionStatement(get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(self_instance), get_ccode_name(f)), f.variable_type)));
+	}
 	public void generate_getter_setter_declaration(Class cl, CCodeFile decl_space) {
 		foreach (Property prop in cl.get_properties ()) {
 			if (prop.is_abstract && prop.is_virtual) {
@@ -400,6 +406,19 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		switch_stat.add_statement (new CCodeBreakStatement());
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_FINALIZE")));
+		if(cl.base_class != null) {
+			string base_pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl.base_class));
+			var super_pray_call = new CCodeFunctionCall (new CCodeIdentifier(base_pray_function_name));
+			super_pray_call.add_argument(obj_arg_var);
+			super_pray_call.add_argument(new CCodeIdentifier ("callback"));
+			super_pray_call.add_argument(obj_cb_data_var);
+			super_pray_call.add_argument(new CCodeIdentifier ("ap"));
+			super_pray_call.add_argument(new CCodeIdentifier ("size"));
+			switch_stat.add_statement(new CCodeExpressionStatement(super_pray_call));
+		}
+		foreach (Field f in cl.get_fields ()) {
+			generate_element_destruction_code(f, switch_stat);
+		}
 		// TODO may be we should call destructor function here *****~~~~~****!~~~!!!!!!|||(:>)
 		switch_stat.add_statement (new CCodeBreakStatement());
 		
