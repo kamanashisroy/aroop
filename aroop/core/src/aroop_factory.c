@@ -57,3 +57,20 @@ int aroop_factory_action_all_internal(struct opp_factory*fac, int action, unsign
 	opp_factory_do_full(fac, opp_factory_do_all_helper, &data, action == 1?OPPN_ALL:flag, 0, 0);
 }
 
+
+int aroop_cl_aroop_aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size) {
+	switch(callback) {
+	case OPPN_ACTION_IS_TYPE_OF:
+		return(opp_get_factory_donot_use(data)->property & OPPF_EXTENDED);
+	}
+	return 0;
+}
+
+int aroop_cl_aroop_aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size) {
+	switch(callback) {
+	case OPPN_ACTION_IS_TYPE_OF:
+		return(opp_get_factory_donot_use(data)->property & OPPF_SEARCHABLE);
+	}
+	return 0;
+}
+

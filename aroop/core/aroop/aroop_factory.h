@@ -143,6 +143,8 @@ enum {
 #define aroop_factory_unmark_all(x,y) ({aroop_factory_action_all_internal(x,0,y);})
 #define aroop_factory_prune_marked(x,y) ({aroop_factory_action_all_internal(x,-1,y);})
 int aroop_factory_action_all_internal(struct opp_factory*opp, int action, unsigned int flag);
+int aroop_cl_aroop_aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
+int aroop_cl_aroop_aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
 
 C_CAPSULE_END
 

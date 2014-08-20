@@ -183,6 +183,7 @@ int opp_count_donot_use(const struct opp_factory*obuff);
 int opp_exists(struct opp_factory*obuff, const void*data);
 int opp_callback(void*data, int callback, void*cb_data);
 int opp_callback2(void*data, int callback, void*cb_data, ...);
+struct opp_factory*opp_get_factory_donot_use(void*data);
 
 #ifdef TEST_OBJ_FACTORY_UTILS
 int opp_utils_test(void (*log)(void *log_data, const char*fmt, ...), void*log_data);

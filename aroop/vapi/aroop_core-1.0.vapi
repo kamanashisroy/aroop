@@ -341,6 +341,8 @@ public interface aroop.Replicable {
 	public virtual void describe();
 	[CCode (cname = "aroop_none_get_source_module")]
 	public virtual void get_source_module(extring*module_name_output);
+	[CCode (cname = "aroop_none_get_class_name")]
+	public virtual void get_class_name(extring*class_name_output);
 	[CCode (cname = "aroop_none_pray")]
 	public void pray(int callback, void*cb_data = null);
 	[CCode (cname = "aroop_none_is_same")]

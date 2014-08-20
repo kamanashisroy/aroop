@@ -833,6 +833,11 @@ void opp_force_memclean(void*data) {
 	}
 }
 
+struct opp_factory*opp_get_factory_donot_use(void*data) {
+	struct opp_object*obj = data_to_opp_object(data);
+	return obj->obuff;
+}
+
 void opp_set_hash(void*data, opp_hash_t hash) {
 	struct opp_object*obj = data_to_opp_object(data);
 	struct opp_object_ext*ext = (struct opp_object_ext*)data;

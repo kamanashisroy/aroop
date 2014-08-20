@@ -10,6 +10,7 @@ union aroop_internal_type_desc {
 
 typedef opp_callback_t aroop_type_desc;
 
+#define any_is_a(x,y) opp_callback(x, OPPN_ACTION_IS_TYPE_OF, y)
 // Generic argument
 #define aroop_generic_type_for_class(x) x##_pray
 

@@ -358,7 +358,8 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 	}
 	
 	private void add_pray_function (Class cl) {
-		var function = new CCodeFunction ("%spray".printf (get_ccode_lower_case_prefix (cl)), "int");
+		string pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl));
+		var function = new CCodeFunction (pray_function_name, "int");
 		if(cl.is_internal_symbol()) {
 			function.modifiers = CCodeModifiers.STATIC;
 		}
@@ -469,6 +470,33 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		module_name_case.add_argument(new CCodeCastExpression(obj_cb_data_var, "aroop_txt_t*"));
 		module_name_case.add_argument(new CCodeConstant("AROOP_MODULE_NAME"));
 		switch_stat.add_statement (new CCodeExpressionStatement (module_name_case));
+		switch_stat.add_statement (new CCodeBreakStatement());
+
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_GET_CLASS_NAME")));
+		var class_name_case = new CCodeFunctionCall (new CCodeIdentifier("aroop_txt_embeded_rebuild_and_set_static_string"));
+		class_name_case.add_argument(new CCodeCastExpression(obj_cb_data_var, "aroop_txt_t*"));
+		class_name_case.add_argument(new CCodeConstant("\"%s\"".printf(get_ccode_aroop_name(cl))));
+		switch_stat.add_statement (new CCodeExpressionStatement (class_name_case));
+		switch_stat.add_statement (new CCodeBreakStatement());
+
+		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_IS_TYPE_OF")));
+		var is_equal_this_class = new CCodeBinaryExpression (
+			CCodeBinaryOperator.EQUALITY
+			, new CCodeIdentifier(pray_function_name)
+			, obj_cb_data_var);
+		CCodeExpression else_not_this_class = new CCodeConstant("0");
+		if(cl.base_class != null) {
+			string base_pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl.base_class));
+			var super_pray_call = new CCodeFunctionCall (new CCodeIdentifier(base_pray_function_name));
+			super_pray_call.add_argument(obj_arg_var);
+			super_pray_call.add_argument(new CCodeIdentifier ("callback"));
+			super_pray_call.add_argument(obj_cb_data_var);
+			super_pray_call.add_argument(new CCodeIdentifier ("ap"));
+			super_pray_call.add_argument(new CCodeIdentifier ("size"));
+			else_not_this_class = super_pray_call;
+		}
+		var is_type_of_this_class = new CCodeIfStatement(is_equal_this_class, new CCodeReturnStatement(new CCodeConstant("1")), new CCodeReturnStatement(else_not_this_class));
+		switch_stat.add_statement (is_type_of_this_class);
 		switch_stat.add_statement (new CCodeBreakStatement());
 
 		vblock.add_statement (switch_stat);
