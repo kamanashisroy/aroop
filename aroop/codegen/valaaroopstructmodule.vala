@@ -67,12 +67,71 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 		}
 		proto.generate_type_declaration(decl_space);
 		decl_space.add_type_definition (instance_struct);
+		var func_macro = new CCodeMacroReplacement("%s(sttype,index,x)".printf(get_ccode_free_function(st)), "({%s(x,0,NULL,0);})".printf(get_ccode_copy_function(st)));
+		decl_space.add_type_declaration (func_macro);
+	}
+
+	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
+		if (f.binding != MemberBinding.INSTANCE)  {
+			return;
+		}
+		var array_type = f.variable_type as ArrayType;
+		if (array_type != null && array_type.fixed_length) {
+			for (int i = 0; i < array_type.length; i++) {
+				var fld = new CCodeMemberAccess.pointer(new CCodeIdentifier(self_instance), get_ccode_name(f));
+				var element = new CCodeElementAccess (fld, new CCodeConstant (i.to_string ()));
+				if (requires_destroy (array_type.element_type))  {
+					stmt.add_statement(new CCodeExpressionStatement(get_unref_expression(element, array_type.element_type)));
+				}
+			}
+			return;
+		}
+		if (requires_destroy (f.variable_type))  {
+			stmt.add_statement(new CCodeExpressionStatement(get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(self_instance), get_ccode_name(f)), f.variable_type)));
+		}
+	}
+
+	public void generate_struct_copy_function (Struct st) {
+		string copy_function_name = "%scopy".printf (get_ccode_lower_case_prefix (st));
+		var function = new CCodeFunction (copy_function_name, "int");
+		if(st.is_internal_symbol()) {
+			function.modifiers = CCodeModifiers.STATIC;
+		}
+		function.add_parameter (new CCodeParameter (self_instance, get_ccode_aroop_name(st)+"*"));
+		function.add_parameter (new CCodeParameter ("nouse1", "int"));
+		function.add_parameter (new CCodeParameter ("dest", "void*"));
+		function.add_parameter (new CCodeParameter ("nouse2", "int"));
+		push_function (function); // XXX I do not know what push does 
+		if(st.is_internal_symbol()) {
+			cfile.add_function_declaration (function);
+		} else {
+			header_file.add_function_declaration (function);
+		}
+		
+		pop_function (); // XXX I do not know what pop does 
+		var vblock = new CCodeBlock ();
+
+		var cleanupblock = new CCodeBlock();
+		foreach (Field f in st.get_fields ()) {
+			generate_element_destruction_code(f, cleanupblock);
+		}
+
+		var destroy_if_null = new CCodeIfStatement(
+			new CCodeBinaryExpression(CCodeBinaryOperator.EQUALITY, new CCodeIdentifier("dest"), new CCodeConstant("0"))
+			, cleanupblock
+		);
+		vblock.add_statement(destroy_if_null);
+		vblock.add_statement(new CCodeReturnStatement(new CCodeConstant("0")));
+
+
+		function.block = vblock;
+		cfile.add_function(function);
 	}
 
 	public override void visit_struct (Struct st) {
 		push_context (new EmitContext (st));
 
-
+		generate_struct_copy_function(st);
 		if (st.is_internal_symbol ()) {
 			generate_struct_declaration (st, cfile);
 		} else {

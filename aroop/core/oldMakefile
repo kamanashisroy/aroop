@@ -54,6 +54,7 @@ SINGLE_FILE_HEADER_SEQUENCE= \
 ./inc/aroop_assignment.h \
 ./inc/aroop_factory.h \
 ./inc/aroop_memory_profiler.h \
+./inc/aroop_int_type.h \
 ./inc/aroop_core_type_info.h 
 
 

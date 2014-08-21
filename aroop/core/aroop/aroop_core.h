@@ -34,6 +34,7 @@
 #include "aroop/aroop_error.h"
 #include "aroop/aroop_assignment.h"
 #include "aroop/aroop_array.h"
+#include "aroop/aroop_int_type.h"
 #endif
 
 

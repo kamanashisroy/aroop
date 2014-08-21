@@ -13,7 +13,7 @@ src/aroop_txt.c      src/opp_factory_profiler.c  src/opp_indexed_list.c  src/opp
 
 pkgincludedir=$(includedir)/aroop_core-1.0
 nobase_pkginclude_HEADERS= \
-aroop/aroop_array.h       aroop/aroop_core.h                  aroop/aroop_core_type_info.h  aroop/aroop_factory.h \
+aroop/aroop_array.h       aroop/aroop_core.h                  aroop/aroop_core_type_info.h aroop/aroop_int_type.h  aroop/aroop_factory.h \
 aroop/aroop_assignment.h  aroop/aroop_core_type_conversion.h  aroop/aroop_error.h           aroop/aroop_memory_profiler.h  \
 aroop/opp/opp_any_obj.h  aroop/opp/opp_factory_profiler.h  aroop/opp/opp_hash.h        aroop/opp/opp_indexed_list.h  aroop/opp/opp_iterator.h  aroop/opp/opp_queue.h            aroop/opp/opp_salt.h  aroop/opp/opp_thread_main.h  aroop/opp/opp_watchdog.h \
 aroop/opp/opp_factory.h  aroop/opp/opp_factory_types.h     aroop/opp/opp_hash_table.h  aroop/opp/opp_io.h            aroop/opp/opp_list.h      aroop/opp/opp_rbtree_internal.h  aroop/opp/opp_str2.h  aroop/opp/opp_type.h \

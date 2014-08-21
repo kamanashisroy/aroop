@@ -369,7 +369,7 @@ public class aroop.SearchableString : aroop.Searchable {
 	public static SearchableString factory_build_and_copy_deep(Factory*fac, extring*src);
 }
 
-[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/xtring.h")]
+[CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/xtring.h", destroy_function="aroop_txt_destroy", copy_function="aroop_extring_copy_or_destroy")]
 public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_memclean_raw2")]
 	public extring(); // empty

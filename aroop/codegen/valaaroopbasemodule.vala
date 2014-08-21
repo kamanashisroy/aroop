@@ -902,7 +902,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 					}
 				} else {
 					var st = (Struct) type.data_type;
-					unref_function = get_ccode_copy_function (st);
+					unref_function = get_ccode_free_function (st);
 				}
 			}
 			if (unref_function == null) {
@@ -917,6 +917,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		} else if (type is DelegateType) {
 			return new CCodeConstant ("aroop_donothing4");
 		} else if (type is PointerType) {
+			PointerType pt = (PointerType)type;
+			if(pt.base_type != null) {
+				return get_destroy_func_expression(pt.base_type, is_chainup);
+			}
 			return new CCodeIdentifier ("free");
 		} else {
 			return new CCodeConstant ("NULL");

@@ -86,12 +86,6 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		decl_space.add_type_definition (class_struct);
 	}
 
-	public void generate_element_destruction_code(Field f, CCodeSwitchStatement stmt) {
-		if (f.binding != MemberBinding.INSTANCE)  {
-			return;
-		}
-		stmt.add_statement(new CCodeExpressionStatement(get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(self_instance), get_ccode_name(f)), f.variable_type)));
-	}
 	public void generate_getter_setter_declaration(Class cl, CCodeFile decl_space) {
 		foreach (Property prop in cl.get_properties ()) {
 			if (prop.is_abstract && prop.is_virtual) {

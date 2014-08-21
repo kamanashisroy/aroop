@@ -41,105 +41,15 @@ public class Vala.AroopValueModule : AroopObjectModule {
 
 		generate_class_declaration (type_class, decl_space);
 
+#if false
 		var func_macro = new CCodeMacroReplacement("%s(dst,dst_index,src,src_index)".printf(get_ccode_copy_function(st)), "({aroop_struct_cpy_or_destroy(dst,src,%s);})".printf(CCodeBaseModule.get_ccode_destroy_function(st)));
 		decl_space.add_type_declaration (func_macro);
+#endif
 
 	}
 
 	public override void visit_struct (Struct st) {
 		base.visit_struct (st);
-	}
-
-	void add_struct_copy_function (Struct st) {
-		var function = new CCodeFunction (get_ccode_copy_function (st), "void");
-		if (st.is_internal_symbol ()) {
-			function.modifiers = CCodeModifiers.STATIC;
-		}
-
-		function.add_parameter (new CCodeParameter ("dest", get_ccode_name (st) + "*"));
-		function.add_parameter (new CCodeParameter ("dest_index", "intptr_t"));
-		function.add_parameter (new CCodeParameter ("src", get_ccode_name (st) + "*"));
-		function.add_parameter (new CCodeParameter ("src_index", "intptr_t"));
-
-		var cblock = new CCodeBlock ();
-		var cfrag = new CCodeFragment ();
-		cblock.add_statement (cfrag);
-
-		var dest = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("dest"), new CCodeIdentifier ("dest_index"));
-		var src = new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeIdentifier ("src"), new CCodeIdentifier ("src_index"));
-
-		foreach (var f in st.get_fields ()) {
-			if (f.binding == MemberBinding.INSTANCE) {
-				var field = new CCodeMemberAccess.pointer (dest, f.name);
-
-				var array_type = f.variable_type as ArrayType;
-				if (array_type != null && array_type.fixed_length) {
-					for (int i = 0; i < array_type.length; i++) {
-						var element = new CCodeElementAccess (field, new CCodeConstant (i.to_string ()));
-
-						if (requires_destroy (array_type.element_type))  {
-							cblock.add_statement (new CCodeExpressionStatement (get_unref_expression (element, array_type.element_type)));
-						}
-					}
-					continue;
-				}
-
-				if (requires_destroy (f.variable_type))  {
-					var this_access = new MemberAccess.simple (self_instance);
-					this_access.value_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
-					set_cvalue (this_access, new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, dest));
-					var ma = new MemberAccess (this_access, f.name);
-					ma.symbol_reference = f;
-					ma.value_type = f.variable_type.copy ();
-					cblock.add_statement (new CCodeExpressionStatement (get_unref_expression (field, f.variable_type, ma)));
-				}
-			}
-		}
-
-		var copy_block = new CCodeBlock ();
-
-		if (st.get_fields ().size == 0) {
-			copy_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, dest), new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, src))));
-		} else {
-			foreach (var f in st.get_fields ()) {
-				if (f.binding == MemberBinding.INSTANCE) {
-					CCodeExpression copy = new CCodeMemberAccess.pointer (src, f.name);
-					var dest_field = new CCodeMemberAccess.pointer (dest, f.name);
-
-					var array_type = f.variable_type as ArrayType;
-					if (array_type != null && array_type.fixed_length) {
-						for (int i = 0; i < array_type.length; i++) {
-							CCodeExpression copy_element = new CCodeElementAccess (copy, new CCodeConstant (i.to_string ()));
-							var dest_field_element = new CCodeElementAccess (dest_field, new CCodeConstant (i.to_string ()));
-
-							if (requires_copy (array_type.element_type))  {
-								copy_element = get_ref_cexpression (array_type.element_type, copy_element, null, f);
-							}
-
-							copy_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (dest_field_element, copy_element)));
-						}
-						continue;
-					}
-
-					if (requires_copy (f.variable_type))  {
-						var this_access = new MemberAccess.simple (self_instance);
-						this_access.value_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
-						set_cvalue (this_access, new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, src));
-						var ma = new MemberAccess (this_access, f.name);
-						ma.symbol_reference = f;
-						copy = get_ref_cexpression (f.variable_type, copy, ma, f);
-					}
-
-					copy_block.add_statement (new CCodeExpressionStatement (new CCodeAssignment (dest_field, copy)));
-				}
-			}
-		}
-
-		cblock.add_statement (new CCodeIfStatement (new CCodeIdentifier ("src"), copy_block));
-
-		function.block = cblock;
-
-		cfile.add_function (function);
 	}
 
 #if false

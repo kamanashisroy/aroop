@@ -91,7 +91,6 @@ enum {
 #define aroop_array_list_create(x,y,z) ({SYNC_ASSERT(OPP_INDEXED_LIST_CREATE2(x,z,0) == 0);})
 #define aroop_indexed_list_get(x,y,z) ({*z = opp_indexed_list_get(x, y);})
 #define aroop_indexed_list_set(x,y,z) ({opp_indexed_list_set(x, y, z);})
-#define aroop_factory_free_function(unused1,unused2,x) opp_factory_destroy(x)
 
 // Set
 #define aroop_list_create(x0, x1, x2, x3) ({OPP_PLIST_CREATE_FULL(x0, x2, x3);})
@@ -145,6 +144,9 @@ enum {
 int aroop_factory_action_all_internal(struct opp_factory*opp, int action, unsigned int flag);
 int aroop_cl_aroop_aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
 int aroop_cl_aroop_aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
+
+//#define aroop_factory_free_function(unused1,unused2,x) opp_factory_destroy(x)
+#define aroop_factory_free_function(x, unused1, x2, unused2) opp_factory_destroy(x)
 
 C_CAPSULE_END
 
