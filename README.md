@@ -108,6 +108,10 @@ Hello world
 You may optionally put a `--debug` option while doing static linking. This will create a debug build, which you may want to trace and debug.
 You may learn more about vala code compiling [here](https://wiki.gnome.org/Projects/Vala/Documentation) and [here](https://wiki.gnome.org/Projects/Vala/BasicSample).
 
+###Compiling a bare metal image for raspberry pi
+
+Details is [here](aroop/core/build/raspberry_pi_bare_metal/README.md).
+
 More
 =====
 Please refer to [vala readme](README) for more information.
