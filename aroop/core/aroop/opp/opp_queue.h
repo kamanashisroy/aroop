@@ -106,7 +106,7 @@ int opp_queue_test_deinit();
 	pthread_attr_t att[100];
 	opp_queue_test_init();
 	SYNC_ASSERT(threadcount <= 100);
-	printf("Starting threads\n");
+	aroop_printf("Starting threads\n");
 	for(i = 0; i < threadcount; i++) {
 		pthread_attr_init(att+i);
 		pthread_attr_setdetachstate(att+i, PTHREAD_CREATE_JOINABLE);
@@ -117,7 +117,7 @@ int opp_queue_test_deinit();
 		SYNC_ASSERT(!pthread_join(ths[i], NULL));
 		pthread_attr_destroy(att+i);
 	}
-	printf("If you see this then the error is fixed\n");
+	aroop_printf("If you see this then the error is fixed\n");
 	opp_queue_test_deinit();
 
  * */

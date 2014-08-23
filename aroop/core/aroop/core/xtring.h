@@ -200,7 +200,7 @@ typedef int xultb_bool_t;
 	(internal_str && (x)->len < (x)->size && internal_str[(x)->len] == '\0'); \
 })
 
-#define aroop_txt_printf(x, ...) ({(x)->len = snprintf(aroop_txt_to_string(x), (x)->size - 1, __VA_ARGS__);})
+#define aroop_txt_printf(x, ...) ({(x)->len = aroop_snprintf(aroop_txt_to_string(x), (x)->size - 1, __VA_ARGS__);})
 
 aroop_txt_t*aroop_txt_new_set_content(char*content, int len, aroop_txt_t*proto, struct opp_factory*gpool);
 aroop_txt_t*aroop_txt_new_alloc(int len, struct opp_factory*gpool);

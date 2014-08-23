@@ -24,8 +24,8 @@
 
 #define COMPONENT_SCALABILITY 2
 
-#define XULTB_PLATFORM_ENTER(x) x
-#define XULTB_PLATFORM_WALK(x) x
+//#define XULTB_PLATFORM_ENTER(x) x
+//#define XULTB_PLATFORM_WALK(x) x
 
 #ifdef ASTERISK_CHANNEL
 #ifndef AROOP_CONCATENATED_FILE
@@ -46,6 +46,10 @@
 #elif defined(AROOP_ANDROID)
 #ifndef AROOP_CONCATENATED_FILE
 #include "android_config.h"
+#endif
+#elif defined(RASPBERRY_PI_BARE_METAL)
+#ifndef AROOP_CONCATENATED_FILE
+#include "raspberry_pi_bare_metal_config.h"
 #endif
 #else // ANDROID_XULTB
 #include <unistd.h>

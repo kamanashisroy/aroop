@@ -73,7 +73,7 @@ int aroop_deinit();
 #define aroop_memclean_raw(x,y) ({memset(x, 0, y);})
 // TODO remove all the SYNC_ prefix things ..
 #define aroop_assert(x)	SYNC_ASSERT(x)
-#define aroop_assert_no_error() ({if(errno){printf("%s", strerror(errno));SYNC_ASSERT(0);};})
+#define aroop_assert_no_error() ({if(errno){aroop_printf("%s", strerror(errno));SYNC_ASSERT(0);};})
 #define aroop_memcpy_struct(x,nouse,y,nouse2) ({ \
 	if(x) { \
 		if(y) { \

@@ -28,6 +28,8 @@
 #include "aroop/opp/opp_factory_profiler.h"
 #include "aroop/opp/opp_any_obj.h"
 #include "aroop/opp/opp_watchdog.h"
+#include "aroop/opp/opp_str2.h"
+#include "aroop/opp/opp_queue.h"
 #include "aroop/core/memory.h"
 #include "aroop/aroop_memory_profiler.h"
 #endif
@@ -70,6 +72,7 @@ int aroop_init(int argc, char ** argv) {
 		opp_queuesystem_init();
 		opp_watchdog_init();
 	}
+	return 0;
 }
 
 void aroop_core_gc_unsafe() {
@@ -79,7 +82,7 @@ void aroop_core_gc_unsafe() {
 #define PROFILER_CRASH_DEBUG
 #ifdef PROFILER_CRASH_DEBUG
 static int profiler_logger_debug(void*log_data, struct aroop_txt*content) {
-	printf("%s\n", aroop_txt_to_vala_string(content));
+	aroop_printf("%s\n", aroop_txt_to_vala_string(content));
 	return 0;
 }
 #endif
@@ -114,6 +117,7 @@ int aroop_deinit() {
 #ifdef MTRACE
 	muntrace();
 #endif
+	return 0;
 }
 
 struct aroop_internal_memory_profiler_dumper {
@@ -123,8 +127,8 @@ struct aroop_internal_memory_profiler_dumper {
 };
 
 #define PROFILER_DUMP_LINE_SIZE 256
-static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 #ifdef AROOP_OPP_PROFILE
+static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 	struct opp_factory_profiler_info*x = data;
 	struct aroop_internal_memory_profiler_dumper*cb_data = func_data;
 	cb_data->total_memory_used += x->obuff->slot_use_count*x->obuff->obj_size;
@@ -134,13 +138,13 @@ static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 	aroop_txt_printf(&content, OPP_FACTORY_PROFILER_DUMP_FMT2()" -- "OPP_FACTORY_DUMP_FMT() "\n", OPP_FACTORY_PROFILER_DUMP_ARG2(x), OPP_FACTORY_DUMP_ARG(x->obuff));
 	aroop_txt_zero_terminate(&content);
 	cb_data->log.cb(cb_data->log.cb_data, &content);
-	//printf(content.str);
-#endif
+	//aroop_printf(content.str);
 	return 0;
 }
+#endif
 
 static int aroop_string_buffer_dump_helper(const void*func_data, const void*data) {
-	aroop_write_output_stream_t*logger = func_data;
+	aroop_write_output_stream_t*logger = (aroop_write_output_stream_t*)func_data;
 	struct aroop_txt content;
 	aroop_txt_embeded_stackbuffer(&content, 1024);
 	aroop_txt_printf(&content, "[%s]\n", (char*)data);
@@ -149,7 +153,7 @@ static int aroop_string_buffer_dump_helper(const void*func_data, const void*data
 }
 
 void aroop_string_buffer_dump(aroop_write_output_stream_t log) {
-	opp_str2system_traverse(aroop_string_buffer_dump_helper, log);
+	opp_str2system_traverse(aroop_string_buffer_dump_helper, &log);
 }
 
 int aroop_memory_profiler_dump(aroop_write_output_stream_t log) {
@@ -158,11 +162,11 @@ int aroop_memory_profiler_dump(aroop_write_output_stream_t log) {
 	aroop_txt_embeded_stackbuffer(&content, PROFILER_DUMP_LINE_SIZE);
 	aroop_txt_printf(&content, OPP_FACTORY_PROFILER_DUMP_HEADER_FMT2()" -- " OPP_FACTORY_DUMP_HEADER_FMT()"\n", OPP_FACTORY_PROFILER_DUMP_HEADER_ARG2(), OPP_FACTORY_DUMP_HEADER_ARG());
 	cb_data.log.cb(cb_data.log.cb_data, &content);
-	//printf(content.str);
+	//aroop_printf(content.str);
 	opp_factory_profiler_visit(aroop_memory_profiler_visitor, &cb_data);
 	aroop_txt_printf(&content, "%ld bytes total, %ld bytes used\n", cb_data.total_memory, cb_data.total_memory_used);
 	aroop_txt_zero_terminate(&content);
 	cb_data.log.cb(cb_data.log.cb_data, &content);
-	//printf(content.str);
+	//aroop_printf(content.str);
 	return 0;
 }

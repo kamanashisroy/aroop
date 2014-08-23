@@ -23,6 +23,10 @@
 #ifndef OBJ_WATCHDOG_H_
 #define OBJ_WATCHDOG_H_
 
+#ifndef AROOP_CONCATENATED_FILE
+#include "aroop/core/config.h"
+#endif
+
 C_CAPSULE_START
 
 enum watchdog_severity {

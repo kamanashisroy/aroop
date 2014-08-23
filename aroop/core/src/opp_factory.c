@@ -332,7 +332,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 #if 0
 #define SYNC_OBJ_CTZ(x) 
 #else
-#ifdef __EPOC32__ // todo add symbian version
+#if defined(__EPOC32__) || defined(RASPBERRY_PI_BARE_METAL) // todo add symbian version
 #define SYNC_OBJ_POPCOUNT(a) ({ \
     unsigned int opp_internal_pop_count = (unsigned int)a; \
     opp_internal_pop_count = opp_internal_pop_count - ((opp_internal_pop_count >> 1) & 0x55555555); \
@@ -478,7 +478,7 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, SYNC_UWORD8_T dou
 					}
 #endif
 					SYNC_UWORD16_T obj_idx = BITSTRING_IDX_TO_BITS(k) + bit_idx;
-					//printf("%d\n", bit_idx);
+					//aroop_printf("%d\n", bit_idx);
 					if(obj_idx < obuff->pool_size) {
 						ret = pool->head + obj_idx*obuff->obj_size;
 						struct opp_object*obj = (struct opp_object*)ret;
@@ -651,7 +651,8 @@ int opp_callback2(void*data, int callback, void*cb_data, ...) {
 
 #ifdef OPP_HAS_TOKEN
 void*opp_get(struct opp_factory*obuff, int token) {
-	int k, idx;
+	unsigned int idx;
+	unsigned int k;
 	int pool_idx;
 	void*data = NULL;
 	struct opp_pool*pool;
@@ -659,7 +660,9 @@ void*opp_get(struct opp_factory*obuff, int token) {
 	OPP_LOCK(obuff);
 	obuff->internal_flags |= OPP_INTERNAL_FLAG_NO_GC_NOW;
 	do {
-		if( (idx = (token - obuff->token_offset)) < 0 ) break;
+		/* sanity check */
+		if(token < obuff->token_offset) break;
+		idx = (token - obuff->token_offset);
 		k = idx%obuff->pool_size;
 		pool_idx = (idx - k)/obuff->pool_size;
 
@@ -690,9 +693,9 @@ void*opp_get(struct opp_factory*obuff, int token) {
 	return data;
 }
 
-void opp_shrink(void*data, int size) {
+void opp_shrink(void*data, unsigned int size) {
 	struct opp_object*obj = data_to_opp_object(data);
-	int slots;
+	unsigned int slots;
 	struct opp_factory*obuff = obj->obuff;
 	
 	size += sizeof(struct opp_object);

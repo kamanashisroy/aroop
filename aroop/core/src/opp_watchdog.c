@@ -63,11 +63,11 @@ void opp_watchdog_report(enum watchdog_severity severity, const char *fmt, ...) 
 		return;
 	}
 	for(i=1;i<nptrs;i++) {
-		len += snprintf(buffer+len, WATCHDOG_BUFFER_SIZE - len, "%s\n", symbols[i]);
+		len += aroop_snprintf(buffer+len, WATCHDOG_BUFFER_SIZE - len, "%s\n", symbols[i]);
 	}
 
 	free(symbols);
-	snprintf(buffer+1, WATCHDOG_INT_SIZE, "%04d", len);
+	aroop_snprintf(buffer+1, WATCHDOG_INT_SIZE, "%04d", len);
 	write(dogpipe[1], buffer, len);
 	fsync(dogpipe[1]);
 }

@@ -137,8 +137,6 @@ int print_etxt_arginfo (const struct printf_info *info, size_t n,
 	 argtypes[0] = PA_POINTER;
 	return 1;
 }
-#endif
-
 int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...) {
 	va_list arg;
 	int done;
@@ -149,6 +147,7 @@ int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...) {
 
 	return done;
 }
+#endif
 
 static int aroop_txt_equals_cb_impl(void*cb_data, const void*xarg, const void*otherarg) {
 	const aroop_txt_t*x = xarg;
@@ -187,7 +186,7 @@ OPP_CB_NOSTATIC(aroop_txt) {
 		aroop_txt_destroy(txt);
 		break;
 	case OPPN_ACTION_DESCRIBE:
-		printf("%s\n", aroop_txt_to_vala_string(txt));
+		aroop_printf("%s\n", aroop_txt_to_vala_string(txt));
 		break;
 	}
 	return 0;
