@@ -36,6 +36,8 @@ int raspberry_snprintf(char*format, ...);
 #define SYNC_ASSERT(x) ({(x) && 1;})
 #endif
 
+#define AROOP_MAIN_ENTRY_POINT nomain
+
 #ifdef __cplusplus
 }
 #endif

@@ -5,15 +5,7 @@
 #define serial_dev(x) ({asm volatile("ldr %[dev],=0x101f1000" :: [dev]"r"(x));})
 #define dev_putc(dev,ch) ({asm volatile("str %[data], [%[dest]]" :: [dest]"r"(dev), [data]"r"(ch));})
 
-#if 0
-void inline serial_dev_inline(unsigned int*dev) {
-        serial_dev(dev);
-}
-void inline dev_putc_inline(unsigned int*dev, char ch) {
-        dev_putc(dev, ch);
-}
-#endif
-static void dev_puts_func(const char*data) {
+inline void dev_puts_func(const char*data) {
         int i = 0;
         uint32_t*dev = (uint32_t*)0x101f1000;
         char ch = 0;
@@ -28,6 +20,7 @@ static void dev_puts_func(const char*data) {
 }
 
 int raspberry_serial_printf(char*format, ...) {
+	dev_puts_func(format);
 	return 0;
 }
 
@@ -35,13 +28,9 @@ int raspberry_snprintf(char*format, ...) {
 	return 0;
 }
 
-int program(void)
+int kernel_main()
 {
-   dev_puts_func("Hello world\r\n");
-   dev_puts_func("wait for input> \r\n");
-   
-   while(1)
-   {
-   }
-   return(0);
+//	raspberry_serial_printf("Hello world\r\n");
+	nomain(0,0);
+	return(0);
 }

@@ -26,9 +26,10 @@ ASM_SOURCES_BASE=$(basename $(notdir $(ASM_SOURCES)))
 ASM_OBJECTS=$(addprefix $(OBJECT_DIR)/, $(addsuffix .o, $(ASM_SOURCES_BASE)))
 OBJECTS+=$(ASM_OBJECTS)
 
+STATIC_LIB=aroop_core_rtl.a
 KERNEL_IMG=kernel.img
 KERNEL_ELF=kernel.elf
-TARGETS+=$(OBJECTS) $(KERNEL_IMG) $(KERNEL_ELF)
+TARGETS+=$(OBJECTS) $(STATIC_LIB) $(KERNEL_IMG) $(KERNEL_ELF)
 
 LIBS = 
 
@@ -56,6 +57,9 @@ $(KERNEL_ELF) : memmap.ld $(OBJECTS) $(LIBS)
 $(KERNEL_IMG) : $(KERNEL_ELF)
 	$(ARMGNU)-objcopy $(KERNEL_ELF) -O binary $(KERNEL_IMG)
 	$(ARMGNU)-objdump -D $(KERNEL_ELF) > main.dump
+
+$(STATIC_LIB) : $(OBJECTS)
+	$(ARMGNU)-ar crv $@ $<
 
 test: $(KERNEL_ELF)
 	qemu-system-arm -cpu arm1176 -nographic -m 256 -kernel $(KERNEL_ELF) -M versatilepb

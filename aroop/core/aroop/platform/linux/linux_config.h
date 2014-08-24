@@ -22,28 +22,35 @@
 
 #ifndef XULTB_LINUX_CONFIG_H
 #define XULTB_LINUX_CONFIG_H
-
-#include <inttypes.h>
-#include "unistd.h"
-#include "string.h"
-#include "stdlib.h"
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <inttypes.h>
 #include <stdarg.h>
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef quint8 SYNC_UWORD8_T;
-typedef quint16 SYNC_UWORD16_T;
-typedef quint32 SYNC_UWORD32_T;
+typedef uint8_t SYNC_UWORD8_T;
+typedef uint16_t SYNC_UWORD16_T;
+typedef uint32_t SYNC_UWORD32_T;
 
-typedef qint16 SYNC_SWORD16_T;
-typedef qint32 SYNC_SWORD32_T;
+typedef int8_t SYNC_SWORD8_T;
+typedef int16_t SYNC_SWORD16_T;
+typedef int32_t SYNC_SWORD32_T;
 
 #ifdef AROOP_OPP_DEBUG
 #define SYNC_ASSERT(x) assert(x)
+#else
+#define SYNC_ASSERT(x) (x)
 #endif
+
+#define aroop_printf printf
+#define aroop_snprintf snprintf
 
 #ifdef __cplusplus
 }

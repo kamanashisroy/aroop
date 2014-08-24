@@ -26,7 +26,7 @@ _start:
    mov   r0, #0x40000000
    fmxr  fpexc, r0
    /* start program */
-   bl   program
+   bl   kernel_main
 h: bl h
 
    /* sample register address into buffer

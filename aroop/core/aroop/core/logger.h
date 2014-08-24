@@ -39,6 +39,7 @@ enum sync_logtype {
 
 C_CAPSULE_END
 
+//#ifndef AROOP_CONCATENATED_FILE
 #ifdef NO_LOG
 #define SYNC_LOG_INIT()
 #define SYNC_LOG_DEINIT()
@@ -47,33 +48,20 @@ C_CAPSULE_END
 #define SYNC_LOG(y, ...)
 #define SYNC_LOG_OPP(x)
 #elif defined(ASTERISK_CHANNEL)
-#ifndef AROOP_CONCATENATED_FILE
 #include "ast_logger.h"
-#endif
 #elif defined(QTGUI_LIBRARY)
-#ifndef AROOP_CONCATENATED_FILE
 #include "qt_logger.h"
-#endif
 #elif defined(__EPOC32__)
-#ifndef AROOP_CONCATENATED_FILE
 #include "symb_logger.h"
-#endif
 #elif defined(WIN)
-#ifndef AROOP_CONCATENATED_FILE
 #include "win_logger.h"
-#endif
 #elif defined(AROOP_ANDROID)
-#ifndef AROOP_CONCATENATED_FILE
 #include "android_logger.h"
-#endif
 #elif defined(RASPBERRY_PI_BARE_METAL)
-#ifndef AROOP_CONCATENATED_FILE
 #include "raspberry_pi_bare_metal_logger.h"
-#endif
 #else
-#ifndef AROOP_CONCATENATED_FILE
-#include "aroop/platform/linux/inc/linux_logger.h"
+#include "aroop/platform/linux/linux_logger.h"
 #endif
-#endif
+//#endif // AROOP_CONCATENATED_FILE
 
 #endif /* SYNC_LOGGER_H_ */

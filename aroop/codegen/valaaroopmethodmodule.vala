@@ -169,7 +169,7 @@ public abstract class Vala.AroopMethodModule : AroopBlockModule {
 			generate_type_declaration (new StructValueType (array_struct), cfile);
 
 			// m is possible entry point, add appropriate startup code
-			var cmain = new CCodeFunction ("main", "int");
+			var cmain = new CCodeFunction ("AROOP_MAIN_ENTRY_POINT", "int");
 			cmain.line = function.line;
 			cmain.add_parameter (new CCodeParameter ("argc", "int"));
 			cmain.add_parameter (new CCodeParameter ("argv", "char **"));
