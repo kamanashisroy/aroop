@@ -67,7 +67,7 @@ public abstract class Vala.AroopStructModule : AroopBaseModule {
 		}
 		proto.generate_type_declaration(decl_space);
 		decl_space.add_type_definition (instance_struct);
-		var func_macro = new CCodeMacroReplacement("%s(sttype,index,x)".printf(get_ccode_free_function(st)), "({%s(x,0,NULL,0);})".printf(get_ccode_copy_function(st)));
+		var func_macro = new CCodeMacroReplacement("%s(x,xindex,y,yindex)".printf(get_ccode_free_function(st)), "({%s(x,xindex,y,yindex);})".printf(get_ccode_copy_function(st)));
 		decl_space.add_type_declaration (func_macro);
 	}
 
