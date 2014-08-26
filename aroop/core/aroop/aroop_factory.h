@@ -140,6 +140,7 @@ enum {
 #define aroop_hash_table_get(x,y,z) ({*z = opp_hash_table_get(x, y);})
 #define aroop_hash_table_use_count(x) (OPP_FACTORY_USE_COUNT(&(x)->fac));
 #define aroop_hash_table_pointer_get_key(x,y) ({*(y) = (x)->key;})
+#define aroop_cl_aroop_aroop_hashable_destruction(x)
 
 // cleanup
 #define opp_object_ext_tiny_t_prepare_internal(x)
