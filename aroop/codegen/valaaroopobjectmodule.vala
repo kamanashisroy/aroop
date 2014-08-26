@@ -400,20 +400,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 		switch_stat.add_statement (new CCodeBreakStatement());
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_FINALIZE")));
-		if(cl.base_class != null) {
-			string base_pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl.base_class));
-			var super_pray_call = new CCodeFunctionCall (new CCodeIdentifier(base_pray_function_name));
-			super_pray_call.add_argument(obj_arg_var);
-			super_pray_call.add_argument(new CCodeIdentifier ("callback"));
-			super_pray_call.add_argument(obj_cb_data_var);
-			super_pray_call.add_argument(new CCodeIdentifier ("ap"));
-			super_pray_call.add_argument(new CCodeIdentifier ("size"));
-			switch_stat.add_statement(new CCodeExpressionStatement(super_pray_call));
-		}
-		foreach (Field f in cl.get_fields ()) {
-			generate_element_destruction_code(f, switch_stat);
-		}
-		// TODO may be we should call destructor function here *****~~~~~****!~~~!!!!!!|||(:>)
+		var destruction_function = new CCodeFunctionCall (new CCodeIdentifier("%sdestruction".printf (get_ccode_lower_case_prefix (cl))));
+		destruction_function.add_argument(obj_arg_var);
+		switch_stat.add_statement(new CCodeExpressionStatement(destruction_function));
 		switch_stat.add_statement (new CCodeBreakStatement());
 		
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_GET_SIZE")));
@@ -521,20 +510,31 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 
 	}
 
-	void add_finalize_function (Class cl) {
-		var function = new CCodeFunction ("%sfinalize".printf (get_ccode_lower_case_prefix (cl)), "void");
-		function.modifiers = CCodeModifiers.STATIC;
+	void add_destruction_function (Class cl) {
+		var function = new CCodeFunction ("%sdestruction".printf (get_ccode_lower_case_prefix (cl)), "void");
+		if(cl.is_internal_symbol()) {
+			function.modifiers = CCodeModifiers.STATIC;
+		}
 
 		function.add_parameter (new CCodeParameter (self_instance, get_ccode_aroop_name (cl) + "*"));
 
 		push_function (function);
 
-		cfile.add_function_declaration (function);
+
+		if(cl.is_internal_symbol()) {
+			cfile.add_function_declaration (function);
+		} else {
+			header_file.add_function_declaration (function);
+		}
 
 		if (cl.destructor != null) {
 			cl.destructor.body.emit (this);
 		}
 
+		foreach (Field f in cl.get_fields ()) {
+			generate_element_destruction_code(f, ccode.block);
+		}
+#if false
 		foreach (var f in cl.get_fields ()) {
 			if (f.binding == MemberBinding.INSTANCE)  {
 				CCodeExpression lhs = new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_ccode_name (f));
@@ -557,16 +557,32 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 			}
 		}
 
-		// chain up to finalize function of the base class
+		if(cl.base_class != null) {
+			string base_pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl.base_class));
+			var super_pray_call = new CCodeFunctionCall (new CCodeIdentifier(base_pray_function_name));
+			super_pray_call.add_argument(obj_arg_var);
+			super_pray_call.add_argument(new CCodeIdentifier ("callback"));
+			super_pray_call.add_argument(obj_cb_data_var);
+			super_pray_call.add_argument(new CCodeIdentifier ("ap"));
+			super_pray_call.add_argument(new CCodeIdentifier ("size"));
+			switch_stat.add_statement(new CCodeExpressionStatement(super_pray_call));
+		}
+#endif
+		// chain up to destroy function of the base class
 		foreach (DataType base_type in cl.get_base_types ()) {
 			var object_type = (ObjectType) base_type;
 			if (object_type.type_symbol is Class) {
-				var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_base_finalize"));
+#if false
+				var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_base_destroy"));
 				var type_get_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_get".printf (get_ccode_aroop_name (object_type.type_symbol))));
 				foreach (var type_arg in base_type.get_type_arguments ()) {
 					type_get_call.add_argument (get_type_id_expression (type_arg, false));
 				}
 				ccall.add_argument (type_get_call);
+				ccall.add_argument (new CCodeIdentifier (self_instance));
+				ccode.add_statement (new CCodeExpressionStatement (ccall));
+#endif
+				var ccall = new CCodeFunctionCall (new CCodeIdentifier("%sdestruction".printf (get_ccode_lower_case_prefix (cl.base_class))));
 				ccall.add_argument (new CCodeIdentifier (self_instance));
 				ccode.add_statement (new CCodeExpressionStatement (ccall));
 			}
@@ -582,6 +598,7 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 		cleanup_is_already_declared = false;
 		push_context (new EmitContext (cl));
 
+		add_destruction_function (cl);
 		add_pray_function (cl);
 		add_class_system_init_function(cl);
 

@@ -13,8 +13,11 @@ class MainClass : Replicable {
 		mango = new xtring.copy_static_string("mango", &fac);
 	}
 	~MainClass() {
+		int i = 0;
+		i++;
 		mango = null;
 		emango.destroy();
+		print("%d\n", i);
 	}
 	static int testCode() {
 		MainClass x = new MainClass();

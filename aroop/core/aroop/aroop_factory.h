@@ -85,6 +85,7 @@ enum {
 #define aroop_cl_aroop_aroop_hashable_type_system_init()
 #define aroop_search(a,h,cb,ret) ({(typeof((*ret)))opp_search(a, h, (obj_do_t)(cb).aroop_cb,(cb).aroop_closure_data, (void**)ret);})
 #define aroop_search_no_ret_arg(a,h,cb) ({opp_search(a, h, (obj_do_t)(cb).aroop_cb,(cb).aroop_closure_data, NULL);})
+#define aroop_cl_aroop_aroop_searchable_destruction(x)
 
 
 // ArrayList
