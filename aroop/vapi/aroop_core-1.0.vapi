@@ -406,9 +406,9 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_size")]
 	public int size();
 	[CCode (cname = "aroop_txt_to_string")]
-	public string to_memory();
+	public unowned string to_memory();
 	[CCode (cname = "aroop_txt_to_vala_string")]
-	public string to_string();
+	public unowned string to_string();
 	[CCode (cname = "aroop_txt_to_int")]
 	public int to_int();
 	[CCode (cname = "aroop_txt_length")]
@@ -418,9 +418,9 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	[CCode (cname = "aroop_txt_get_hash")]
 	public aroop_hash getStringHash();
 	[CCode (cname = "aroop_txt_to_vala_string_magical")]
-	public string to_string_magical();
-	[CCode (cname = "aroop_txt_or_string_magical")]
-	public string or_string_magical(string*other);
+	public unowned string to_string_magical();
+	//[CCode (cname = "aroop_txt_or_string_magical")]
+	//public unowned string or_string_magical(string*other);
 	[CCode (cname = "aroop_txt_or")]
 	public aroop.extring* or_magical(aroop.extring*other);
 	[CCode (cname = "aroop_txt_is_empty")]

@@ -1904,7 +1904,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				// manual memory management for non-void pointers
 				// treat void* special to not leak memory with void* method parameters
 			} else if (requires_destroy (expression_type)) {
-#if false
+#if true
 				var decl = get_temp_variable (expression_type, true, expression_type);
 				emit_temp_var (decl);
 				temp_ref_vars.insert (0, decl);
