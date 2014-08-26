@@ -3,9 +3,26 @@ using aroop;
 
 
 class MainClass : Replicable {
-	xtring mango;
+	protected xtring mango;
+	extring emango;
+	Factory<xtring> fac;
+	MainClass() {
+		mango = new xtring.copy_static_string("mango");
+		emango = extring.copy_deep(mango);
+		fac = Factory<xtring>.for_type();
+		mango = new xtring.copy_static_string("mango", &fac);
+	}
+	~MainClass() {
+		mango = null;
+		emango.destroy();
+	}
+	static int testCode() {
+		MainClass x = new MainClass();
+		print("%s\n", x.mango.fly().to_string());
+		return 0;
+	}
 	public static int main() {
-		new MainClass();
+		testCode();
 		return 0;
 	}
 }

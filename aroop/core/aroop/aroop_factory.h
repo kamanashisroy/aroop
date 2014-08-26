@@ -109,6 +109,12 @@ enum {
 // queue
 #define aroop_dequeue(x,y) ({*y = opp_dequeue(x);})
 #define aroop_queue_init(x,y,z) ({opp_queue_init2(x,z);})
+#define aroop_queue_copy_or_destroy(x,xindex,y,yindex) ({ \
+	if((x) && (y)){ \
+		memcpy((x)+xindex,(y)+yindex,sizeof(*(x))); \
+	} else { \
+		opp_factory_destroy(((x)+xindex)); \
+	};0;})
 
 // object 
 #define aroop_mark_searchable_ext(x,y) ({(x)->flag |= y;})
