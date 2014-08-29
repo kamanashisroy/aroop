@@ -161,6 +161,8 @@ public struct aroop.Set<G> : aroop.CountableSet {
 	public bool add(G item);
 	[CCode (cname = "aroop_list_add_container")]
 	public AroopPointer<G> addPointer(G item, aroop_hash hash = 0, uint flag = 0);
+	[CCode (cname = "aroop_factory_get_by_token2")]
+	public AroopPointer<G>? getByToken(uint token);
 	//[CCode (cname = "aroop_list_remove")]
 	//public void remove(G item);
 	[CCode (cname = "aroop_factory_do_full")]
@@ -452,9 +454,11 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	//[CCode (cname = "aroop_txt_move_to_what_the_hell")]
 	//public void move_to_may_be_you_are_doing_wrong(extring*space);
 	[CCode (cname = "aroop_txt_char_at")]
-	public char char_at(uint index);
+	public uchar char_at(uint index);
+	[CCode (cname = "aroop_txt_set_char_at")]
+	public void set_char_at(uint index, uchar x);
 	[CCode (cname = "aroop_txt_contains_char")]
-	public bool contains_char(char x);
+	public bool contains_char(uchar x);
 	/* "good".shift(1) will give "ood"
 	 * "good".shift(-1) will give "goo" */
 	[CCode (cname = "aroop_txt_shift")]

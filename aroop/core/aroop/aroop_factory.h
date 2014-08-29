@@ -67,6 +67,7 @@ enum {
 #define aroop_assert_factory_creation_for_type_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_assert_factory_creation_full(x0, x2, x3 ,x4, x5, x1);})
 #define aroop_factory_get_by_token(x,y,z) ({*z = opp_get(x,y);})
+#define aroop_factory_get_by_token2(x,y) ({opp_get(x,y);})
 //typedef int (*aroop_iterator_cb)(void*func_data, void*data);
 #define aroop_factory_do_full(x,a,b,c,d) ({opp_factory_do_full(x,(obj_do_t)(a).aroop_cb,(a).aroop_closure_data,b,c,d);})
 #define aroop_factory_list_do_full(x,a,b,c,d,e,f,g) ({opp_factory_list_do_full(x,(obj_do_t)(a).aroop_cb,(a).aroop_closure_data,b,c,d,e,f,g);})

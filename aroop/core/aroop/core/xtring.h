@@ -64,7 +64,7 @@ typedef int xultb_bool_t;
 
 #define aroop_txt_embeded_set_content(x,y,z,p) ({ \
 	(x)->internal_flag = 0, \
-	(x)->content.pointer.proto = p, \
+	(x)->content.pointer.proto = p?OPPREF(p):NULL, \
 	(x)->content.pointer.str = y, \
 	(x)->hash = 0, \
 	(x)->len = z; \
@@ -78,7 +78,7 @@ typedef int xultb_bool_t;
 	(x)->len = (y)->len; \
 	(x)->size=(y)->size; \
 	if((y)->internal_flag & XTRING_IS_ARRAY) { \
-		(x)->content.pointer.proto = (y); \
+		(x)->content.pointer.proto = OPPREF((y)); \
 		(x)->content.pointer.str = (y)->content.str; \
 	} else if((y)->content.pointer.proto) { \
 		(x)->content.pointer.proto = OPPREF((y)->content.pointer.proto); \
@@ -115,7 +115,7 @@ typedef int xultb_bool_t;
 	(x)->len = (y)->len; \
 	(x)->size=(y)->size; \
 	if((y)->internal_flag & XTRING_IS_ARRAY) { \
-		(x)->content.pointer.proto = (y); \
+		(x)->content.pointer.proto = OPPREF(y); \
 		(x)->content.pointer.str = (y)->content.str; \
 	} else if((y)->content.pointer.proto) { \
 		(x)->content.pointer.proto = OPPREF((y)->content.pointer.proto); \
@@ -297,6 +297,7 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 
 // char operation
 #define aroop_txt_char_at(x,i) aroop_txt_to_string_suffix(x, [i], '\0')
+#define aroop_txt_set_char_at(x,i,ch) aroop_txt_to_string_suffix(x, [i] = ch, '\0')
 #define aroop_txt_contains_char(x,c) ({((!(x) || (x)->len ==0)?NULL:((x)->internal_flag & XTRING_IS_ARRAY)?memchr((x)->content.str, c, (x)->len):memchr((x)->content.pointer.str, c, (x)->len));})
 #define aroop_txt_shift(x,inc) ({ \
 	if((x)->len) { \
