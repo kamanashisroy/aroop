@@ -242,6 +242,7 @@ aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 #endif
 #define aroop_txt_size(x) ({(x)->size;})
 #define aroop_txt_length(x) ({(x)->len;})
+#define aroop_txt_set_length(x,y) ({if(y < (x)->size)(x)->len = y;})
 #define aroop_txt_trim_to_length(x,y) ({if(y < (x)->len)(x)->len = y;})
 #define aroop_txt_get_hash(x) ({((x)->hash != 0)?(x)->hash:((x)->hash = opp_get_hash_bin(aroop_txt_to_string(x), (x)->len));})
 #define aroop_txt_to_string_cb(x,cb,defaultval) ({((!(x) || (x)->len ==0)?defaultval:(((x)->internal_flag & XTRING_IS_ARRAY)?(cb((x)->content.str)):(cb((x)->content.pointer.str))));})

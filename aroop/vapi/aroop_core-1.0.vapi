@@ -415,6 +415,8 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 	public int to_int();
 	[CCode (cname = "aroop_txt_length")]
 	public int length();
+	[CCode (cname = "aroop_txt_set_length")]
+	public int setLength(uint len);
 	[CCode (cname = "aroop_txt_trim_to_length")]
 	public int trim_to_length(uint len);
 	[CCode (cname = "aroop_txt_get_hash")]
