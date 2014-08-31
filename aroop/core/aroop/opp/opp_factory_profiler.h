@@ -94,6 +94,13 @@ void opp_factory_profiler_checkleak_debug();
 #define OPP_PFACTORY_CREATE(obuff, x, y, z) ({opp_factory_create_full_and_profile(obuff, x, y, 1, OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF, z, __FILE__, __LINE__, AROOP_MODULE_NAME);})
 #define OPP_PFACTORY_DESTROY(x) opp_factory_destroy_and_remove_profile(x)
 
+
+#ifdef AROOP_OPP_DEBUG
+void opp_factory_profiler_assert_no_module(char*module_name);
+#else
+#define opp_factory_profiler_assert_no_module(x) 
+#endif
+
 C_CAPSULE_END
 
 #endif // OPP_FACTORY_PROFILER_H

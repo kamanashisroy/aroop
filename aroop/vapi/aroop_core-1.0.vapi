@@ -542,7 +542,9 @@ public class aroop.core {
 	[CCode (cname = "aroop_assert_no_error", cheader_filename="errno.h")]
 	public static void assert_no_error();
 	[CCode (cname = "opp_any_obj_assert_no_module", cheader_filename="aroop/opp/opp_any_obj.h")]
-	public static void assert_no_module(string module_name);
+	public static void assert_no_module_object(string module_name);
+	[CCode (cname = "opp_factory_profiler_assert_no_module", cheader_filename="aroop/opp/opp_any_obj.h")]
+	public static void assert_no_module_factory(string module_name);
 	[CCode (cname = "aroop_init")]
 	public static int libinit(int argc, char ** argv);
 	[CCode (cname = "aroop_deinit")]

@@ -202,6 +202,25 @@ void opp_factory_profiler_get_total_memory(int*grasped,int*really_allocated) {
 	*really_allocated = prof.total_allocated;
 }
 
+#ifdef AROOP_OPP_DEBUG
+#include "core/xtring.h"
+static int opp_factory_profiler_assert_no_module_helper(void*func_data, void*content) {
+	char*module_name = (char*)func_data;
+	struct opp_factory_profiler_info*x = content;
+	aroop_printf("Comparing %s,%s\n", x->module_name, module_name);
+	if(module_name && x->module_name && strcmp(module_name,x->module_name) == 0) {
+		aroop_printf("The module %s left from %s file and %d line\n", x->module_name, x->source_file, x->source_line);
+		SYNC_ASSERT(0);
+	}
+	return 0;
+}
+void opp_factory_profiler_assert_no_module(char*module_name) {
+	opp_factory_profiler_visit(opp_factory_profiler_assert_no_module_helper, module_name);
+}
+#endif
+
+
+
 
 void opp_factory_profiler_checkleak_debug() {
 	RETURN_IF_PROFILER_OFF();
