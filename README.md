@@ -37,11 +37,11 @@ aroopc
 ```
 
 ##### If _autogen_ failed to find right vala version
-Well if _autogen_ command above fails and it says it needs right version of vala, then you need to install right version of [vala](https://wiki.gnome.org/Projects/Vala/Hacking#Compiling_from_Git) first. After installation you may need to carry out the following commands as well,
+Well if _autogen_ command above fails and it says it needs right version of vala, then you need to install right version of [vala](https://wiki.gnome.org/Projects/Vala/Hacking#Compiling_from_Git) first(in my system it is 14). After installation you may need to carry out the following commands as well,
 
 ```
-a/aroop$ export VALAC=/opt/vala-release/bin/valac # skip this if you installed right version of valac from binary package
-a/aroop$ export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):/opt/vala-release/lib # skip this if you installed right version of valac from binary package
+a/aroop$ export VALAC=/opt/vala-14/bin/valac # skip this if you installed right version of valac from binary package
+a/aroop$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/vala-14/lib # skip this if you installed right version of valac from binary package
 a/aroop$ ldconfig # skip this if you installed right version of valac from binary package
 ```
 
