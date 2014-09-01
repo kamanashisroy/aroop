@@ -46,7 +46,7 @@ typedef int32_t SYNC_SWORD32_T;
 #ifdef AROOP_OPP_DEBUG
 #define SYNC_ASSERT(x) assert(x)
 #else
-#define SYNC_ASSERT(x) (x)
+#define SYNC_ASSERT(x) ({(x) && 1;})
 #endif
 
 #define aroop_printf printf

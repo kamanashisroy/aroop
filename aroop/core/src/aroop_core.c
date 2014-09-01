@@ -56,7 +56,7 @@ int aroop_init(int argc, char ** argv) {
 		volatile SYNC_UWORD16_T oldval,newval;
 		oldval = core_users;
 		newval = oldval+1;
-		SYNC_ASSERT(oldval >= 0 && newval <= 255)
+		SYNC_ASSERT(oldval >= 0 && newval <= 255);
 		if(sync_do_compare_and_swap(&core_users, oldval, newval)) {
 			break;
 		}
@@ -65,7 +65,7 @@ int aroop_init(int argc, char ** argv) {
 	SYNC_UWORD16_T newval = ++core_users;
 #endif
 	if(newval) {
-		opp_factory_profiler_init();
+		SYNC_ASSERT(opp_factory_profiler_init() == 0);
 		opp_any_obj_system_init();
 		aroop_txt_system_init();
 		opp_str2system_init();

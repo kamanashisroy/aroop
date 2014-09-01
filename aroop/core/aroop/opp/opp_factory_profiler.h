@@ -68,10 +68,10 @@ void opp_factory_profiler_checkleak_debug();
 #else
 #define opp_factory_create_full_and_profile(obuff,inc,obj_size,token_offset,property,callback,source_file,source_line,module_name) opp_factory_create_full(obuff,inc,obj_size,token_offset,property,callback)
 #define opp_factory_destroy_and_remove_profile opp_factory_destroy
-#define opp_factory_profiler_init()
-#define opp_factory_profiler_deinit()
-#define opp_factory_profiler_visit(x, y)
-#define opp_factory_profiler_get_total_memory(x,y)
+#define opp_factory_profiler_init() ({0;})
+#define opp_factory_profiler_deinit() ({0;})
+#define opp_factory_profiler_visit(x, y) ({0;})
+#define opp_factory_profiler_get_total_memory(x,y) ({0;})
 #define profiler_replace_malloc sync_malloc
 #define profiler_replace_free(x,y) sync_free(x)
 #define opp_factory_profiler_checkleak_debug()

@@ -58,7 +58,7 @@ enum aroop.factory_flags {
 
 //public delegate void aroop.verb_func(Replicable data, void*func_data);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy", has_free_function = true, free_function="aroop_factory_cpy_or_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile", has_free_function = true, free_function="aroop_factory_cpy_or_destroy")]
 public struct aroop.CountableSet {
 	[CCode (cname = "aroop_factory_mark_all")]
 	public void markAll(ulong flg);
@@ -71,7 +71,7 @@ public struct aroop.CountableSet {
 	//[CCode (cname = "opp_factory_gc_donot_use")]
 	[CCode (cname = "aroop_donothing")]
 	public void gc_unsafe();
-	[CCode (cname = "opp_factory_destroy")]
+	[CCode (cname = "opp_factory_destroy_and_remove_profile")]
 	public int destroy();
 }
 
@@ -115,7 +115,7 @@ public struct aroop.Iterator<G> {
 	public void destroy();
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, free_function="aroop_factory_free_function", copy_function="aroop_factory_cpy_or_destroy", has_free_function = true, free_function = "aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_factory_cpy_or_destroy", has_free_function = true, free_function = "aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
 public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	[CCode (cname = "aroop_array_list_create")]
 	public ArrayList(int inc = 16);
@@ -151,7 +151,7 @@ public delegate int aroop.iterator_cb(Replicable data);
 [CCode (cname = "aroop_do_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.pointer_iterator_cb<G>(AroopPointer<G> data);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
 public struct aroop.Set<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_list_create")]
 	public Set(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
@@ -175,7 +175,7 @@ public struct aroop.Set<G> : aroop.CountableSet {
 	public int iterator_hacked(aroop.Iterator<AroopPointer<G>>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
 public struct aroop.SearchableSet<G> : aroop.Set<G> {
 	[CCode (cname = "aroop_searchable_list_create")]
 	public SearchableSet(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
@@ -222,7 +222,7 @@ public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va
 [CCode (cname = "opp_log_t", cheader_filename = "aroop/opp/opp_factory.h", has_copy_function=false, has_destroy_function=false)]
 public delegate int aroop.factory_log(void*log_data, char*fmt, ...);
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
 public struct aroop.Factory<G> : aroop.CountableSet {
 	[CCode (cname = "aroop_assert_factory_creation_full")]
 	private Factory(uint inc=16, uint datalen, int token_offset, uchar flags, aroop.factory_cb callback);
@@ -248,7 +248,7 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	public int verb(iterator_cb do_func, factory_log log, void*log_data);
 }
 
-[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy")]
+[CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
 public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
 	[CCode (cname = "aroop_srcblefac_constr")]
 	private SearchableFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE, aroop.factory_cb callback);

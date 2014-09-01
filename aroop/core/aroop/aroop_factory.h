@@ -105,7 +105,7 @@ enum {
 	if((x) && (y)){ \
 		memcpy(x,y,sizeof(*(x))); \
 	} else { \
-		opp_factory_destroy(x); \
+		opp_factory_destroy_and_remove_profile(x); \
 	};0;})
 
 // queue
@@ -115,7 +115,7 @@ enum {
 	if((x) && (y)){ \
 		memcpy((x)+xindex,(y)+yindex,sizeof(*(x))); \
 	} else { \
-		opp_factory_destroy(((x)+xindex)); \
+		opp_factory_destroy_and_remove_profile(((x)+xindex)); \
 	};0;})
 
 // object 
@@ -154,8 +154,8 @@ int aroop_factory_action_all_internal(struct opp_factory*opp, int action, unsign
 int aroop_cl_aroop_aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
 int aroop_cl_aroop_aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
 
-//#define aroop_factory_free_function(unused1,unused2,x) opp_factory_destroy(x)
-#define aroop_factory_free_function(x, unused1, x2, unused2) opp_factory_destroy(x)
+//#define aroop_factory_free_function(unused1,unused2,x) opp_factory_destroy_and_remove_profile(x)
+#define aroop_factory_free_function(x, unused1, x2, unused2) opp_factory_destroy_and_remove_profile(x)
 
 C_CAPSULE_END
 
