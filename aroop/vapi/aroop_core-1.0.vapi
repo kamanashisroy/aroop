@@ -243,7 +243,7 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	[CCode (cname = "opp_factory_unlock_donot_use")]
 	public int unlock_donot_use();
 	[CCode (cname = "aroop_factory_iterator_get")]
-	public int iterator(aroop.Iterator<G> it, uint if_flag, uint ifnflag, aroop_hash hash);
+	public int iterator(aroop.Iterator<G>*it, uint if_flag, uint ifnflag, aroop_hash hash);
 	[CCode (cname = "aroop_factory_do_full")]
 	public int verb(iterator_cb do_func, factory_log log, void*log_data);
 }
