@@ -7,7 +7,7 @@ This is compiler profile for vala. This profile is targeted for server applicati
 This is a library to manipulate collection of objects and for garbage collection. This library is used in complimentary [core](aroop/core/README.md) library for aroop profile bulild. This library is an implementation of [*object pool*](http://en.wikipedia.org/wiki/Object_pool).
 
 ###core api
-The [core api](aroop/vapi/README.md) contains string and collection manipulation api.
+The [core api](aroop/vapi/README.md) contains [string](aroop/vapi/xtring.md) and collection manipulation api.
 
 Building
 ========
