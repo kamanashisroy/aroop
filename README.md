@@ -114,7 +114,9 @@ Details is [here](aroop/core/build/raspberry_pi_bare_metal/README.md).
 
 More
 =====
-Please refer to [vala readme](README) for more information.
+Please refer to [vala readme](README) for more information. There are more documents in the talks directory,
+
+- [Features](talks/features.md)
 
 Public projects using aroop
 ============================

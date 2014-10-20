@@ -10,5 +10,6 @@ This api provides the following classes,
 - Set
 - SearchableSet
 - ArrayList
+- [Queue](queue.md)
 - Factory
 - SearchableFactory
