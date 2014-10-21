@@ -37,11 +37,11 @@ It has magnificent [string types](../aroop/vapi/xtring.md). You have ways to red
 
 #### Memory debugging
 
-Check the [memory profiler command in shotodol](shotodol/core/profiler/README.md) . It shows which module allocated memory, where and how much. You can also debug to see where exactly the referencing and dereferencing occurs. 
+Check the [memory profiler command in shotodol](https://github.com/kamanashisroy/shotodol/core/profiler/README.md) . It shows which module allocated memory, where and how much. You can also debug to see where exactly the referencing and dereferencing occurs. 
 
 #### Serialization and Message passing
 
-It has high-level message passing frameworks, see shotodol/libs/bundle . It serializes the data into memory bags. And you can send them as message. An easy way to put memory is to use the extension methods. Otherwise you can write message in database for interprocess communication like in [shotodol_db](https://github.com/kamanashisroy/shotodol_db).
+It has high-level message passing frameworks, see [shotodol.bundle](https://github.com/kamanashisroy/shotodol/libs/bundle/README.md). It serializes the data into memory bags. And you can send them as message. An easy way to put memory is to use the extension methods. Otherwise you can write message in database for interprocess communication like in [shotodol_db](https://github.com/kamanashisroy/shotodol_db).
 
 #### Garbage collection
 
@@ -65,24 +65,23 @@ This reduces the code size.
 
 #### It has python like language integration.
 
-You can write things even shorter like in python language here. This is added by Genie .
+You can write things even shorter like in python language here. This is added by [Genie](http://en.wikipedia.org/wiki/Genie_(programming_language)).
 
 #### Easy to learn
 
 If you are already a programmer and you know C and Java or C# then you will find Aroop easy to use.
 
-#### Integrating performance code/ low level code
+#### Integrating performance-code/low-level-code
 
 It supports you to integrate low level code, such as C/assembly into it. You can easily write vapi file to amalgamate the C implementation.
 
 #### Portability
 
-It generates code for C, so you can be ported it in places where C is available.
+It generates code for C, so it can be ported in places where C is available.
 
 #### It has object introspection developed over C 
 
 You may use the object introspection in your C implementation.
-
 
 #### Data programming best practices
 
@@ -90,7 +89,7 @@ TODO say something here.
 
 #### Using the same language to write the compiler
 
-We are using the same language to write compiler. It makes available the features with are talking about here for writing the compiler. And it will be easier for users to change/modify it.
+We are using the same language to write compiler. It makes available the features(which we talked here) for writing the compiler. And it will be easier for users to change/modify it.
 
 TALKS
 =====
