@@ -93,6 +93,7 @@ We are using the same language to write compiler. It makes available the feature
 
 TALKS
 =====
-[Game programming #1](https://www.youtube.com/watch?v=TH9VCN6UkyQ)
-[Game programming #2](https://www.youtube.com/watch?v=5Nc68IdNKdg)
-
+- [Game programming #1](https://www.youtube.com/watch?v=TH9VCN6UkyQ)
+- [Game programming #2](https://www.youtube.com/watch?v=5Nc68IdNKdg)
+- [Earlier talks](https://wiki.gnome.org/action/recall/Projects/Vala?action=recall&rev=1)
+- [Another talk](http://www.linux-magazin.de/Online-Artikel/Vorteile-kombinieren)
