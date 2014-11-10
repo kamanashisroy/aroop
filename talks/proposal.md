@@ -5,11 +5,18 @@ Aroop, the C code generator designed for writing scalable server
 
 One of the main cause of using Aroop code generator is portability while using high level language. In fact the C programming language was popular because of universality and portability. The portability in C was achieved by compiling the universal C code into different non-portable assembly language. And Aroop is one way that portable because it can generate portable C code. Also it can use the existing C libraries by mapping them into api files.
 
+###### Tags
+Programming language, Compiler, Code generator, High level language, Object oriented language
+
 ###Summary
 
-Aroop is a subset of Vala programming language. The Aroop compiler is a fork of Vala compiler. And the programming languages are similar as well. Both of the compilers avoid any additional ABI[1]. Both of them has the goal to use the existing C sources. The C programmers have to write a lot of boilerplate code to do simple things. These two compilers give the C programmers a way to write new code in Vala and still be able to integrate it with existing C libraries. The Vala project initially wanted to reduce boilerplate code needed for GObject based C programming. Thus it has GObject in it's core library. Aroop was developed as a compiler profile of Vala language. The idea behind Aroop is scalable server development. The Aroop does not use GObject, it uses Object-Pool-Plus library as replacement. It has memory pools and Red-Black tree available for searching. It has object tokens. It has string type that reduces memory copy. And it has libraries to do message passing.
+Aroop is a subset of Vala programming language. The Aroop compiler is a fork of Vala compiler. And the programming languages are similar as well. Both of the compilers avoid any additional ABI[1]. Both of them has the goal to use the existing C sources. The C programmers have to write a lot of boilerplate code to do simple things. These two compilers give the C programmers a way to write new code in Vala and still be able to integrate it with existing C libraries. The Vala project initially wanted to reduce boilerplate code needed for GObject based C programming. Thus it has GObject in it's core library. Aroop was developed as a compiler profile of Vala language. The idea behind Aroop is scalable server development. The Aroop does not use GObject, it uses Object-Pool-Plus library as replacement. It has memory pools and an optional Red-Black tree with memory nodes available for searching. It has object tokens. It has string type that reduces memory copy. And it has libraries to do message passing.
 
 [1](https://wiki.gnome.org/action/recall/Projects/Vala?action=recall&rev=1)
+
+
+###Features and benefits
+
 
 #### Duck typing
 
@@ -56,6 +63,10 @@ It can reduce coupling of class inheritance using [plugin based development](htt
 #### String
 
 It has magnificent [string type, Xtring](../aroop/vapi/xtring.md). It reduces memory copy. It is possible to mark the string immutable(something like const ). It can be zero terminated on demand. Xtring can be allocated in stack memory as well as in heap. It is possible to manipulate binary data(not-ASCII data) in the form of strings.
+
+#### defered statements 
+
+TODO fill this up
 
 #### Memory debugging
 
@@ -115,6 +126,27 @@ Here the same language is used to write compiler. It makes available the feature
 
 TODO fill me
 
+###Comparison
+
+#### C preprocessor
+TODO fill me
+
+[C preprocessor, by Richard Stallman](http://web.archive.org/web/20120904041038/http://docs.freebsd.org/info/cpp/cpp.pdf)
+
+### Compiler
+
+TODO Write about gcc and llvm.
+Write about vala compiler. Write about roopantor.
+
+#### Transforms
+TODO K-normal forms
+TODO Delegate conversions
+TODO Nested expressions
+
+#### Extending compiler
+
+TODO say how we write a new feature extension plugin.
+
 ### Conclusion
 
 Though Aroop is initially being developed to support the developement of scalable servers, it attracts the developers of other applications too. 
@@ -122,7 +154,8 @@ Though Aroop is initially being developed to support the developement of scalabl
 
 ### Other proposals
 [Lua proposal](http://lua-users.org/wiki/FeatureProposals)
-
+[MinCaml Compiler](http://esumii.github.io/min-caml/index-e.html)
+[Principles of programming languages](http://www.sigplan.org/Conferences/POPL/)
 
 
 
