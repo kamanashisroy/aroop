@@ -155,8 +155,12 @@ Though Aroop is initially being developed to support the developement of scalabl
 ### Other proposals
 [Lua proposal](http://lua-users.org/wiki/FeatureProposals)
 [MinCaml Compiler](http://esumii.github.io/min-caml/index-e.html)
-[Principles of programming languages](http://www.sigplan.org/Conferences/POPL/)
+[Principles of programming languages](http://www.sigplan.org/Conferences/POPL/), [mentor](http://plmw2014.inria.fr/program.html)
+[Ivory programming language](http://ivorylang.sourceforge.net/)
+[Bedrock](http://plv.csail.mit.edu/bedrock/)
 
+### Readings
+[Constructive mathematics and computer programming](http://www.cs.tufts.edu/~nr/cs257/archive/per-martin-lof/constructive-math.pdf)
 
 
 
