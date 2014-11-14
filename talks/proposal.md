@@ -122,6 +122,14 @@ It is possible to write object-oriented code in C using it's object introspectio
 
 Here the same language is used to write compiler. It makes available the features above for writing the compiler. This may be easier for users to change/modify it. There are plans to reorganize the code using plugin based approach.
 
+
+#### With expression
+
+with object {
+	do1(); do2(); do3();
+}
+
+
 ### Current status
 
 TODO fill me
@@ -146,6 +154,12 @@ TODO Nested expressions
 #### Extending compiler
 
 TODO say how we write a new feature extension plugin.
+
+### Comparisons
+
+#### Scalla
+#### Java
+#### C++
 
 ### Conclusion
 
