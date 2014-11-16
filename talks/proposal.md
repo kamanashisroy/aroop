@@ -66,7 +66,7 @@ It has magnificent [string type, Xtring](../aroop/vapi/xtring.md). It reduces me
 
 #### defered statements 
 
-TODO fill this up
+Sometimes we acquire a resource and we neet to get them free. In those cases we may defer a free statement to be executed before the function or block exits.
 
 #### Memory debugging
 
@@ -125,26 +125,30 @@ Here the same language is used to write compiler. It makes available the feature
 
 #### With expression
 
+When we operate on an object we repeatedly need to reference the fields of the objects. We may reduce the retyping of the variable using a with statement. For example, it can be done like the following.
+
+```
 with object {
 	do1(); do2(); do3();
 }
+```
 
 
 ### Current status
 
-TODO fill me
+Currently Aroop compiles [shotodol](https://github.com/kamanashisroy/shotodol) and it is used to develop server applications.
 
 ###Comparison
 
 #### C preprocessor
-TODO fill me
+
+This compiler is more like C preprocessor in a sense that it produces C sources.
 
 [C preprocessor, by Richard Stallman](http://web.archive.org/web/20120904041038/http://docs.freebsd.org/info/cpp/cpp.pdf)
 
 ### Compiler
 
-TODO Write about gcc and llvm.
-Write about vala compiler. Write about roopantor.
+This compiler is a choise of development and extension over the other compilers like gcc and llvm because of the works done already. There is another compiler concept available named Roopantor. That project is created for an ease of development and extension. It has the same philosophy of [shotodol](https://github.com/kamanashisroy/shotodol). And it is written in Aroop language.
 
 #### Transforms
 TODO K-normal forms
@@ -153,13 +157,15 @@ TODO Nested expressions
 
 #### Extending compiler
 
-TODO say how we write a new feature extension plugin.
+The extension mechanism is provided by plugin. So it will be easy to add new plugin to add new feature. The Roopantor project structure is ideal for that purpose.
 
 ### Comparisons
 
-#### Scalla
-#### Java
-#### C++
+Aroop is very similar to some object oriented projects.
+
+- Scalla
+- Java
+- C++
 
 ### Conclusion
 
