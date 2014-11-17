@@ -197,18 +197,18 @@ Currently [Aroop](https://github.com/kamanashisroy/aroop) compiles [shotodol](ht
 
 Though Aroop is initially being developed to support the development of scalable servers, it attracts the developers of other applications too. 
 
-###8. Other related proposals
+###8.1. Other related proposals
 - [Principles of programming languages](http://www.sigplan.org/Conferences/POPL/), [mentor](http://plmw2014.inria.fr/program.html)
 - [Lua proposal](http://lua-users.org/wiki/FeatureProposals)
 - [MinCaml Compiler](http://esumii.github.io/min-caml/index-e.html)
 - [Ivory programming language](http://ivorylang.sourceforge.net/)
 - [Bedrock](http://plv.csail.mit.edu/bedrock/)
 
-###9. Readings
+###8.2. Readings
 - [Constructive mathematics and computer programming](http://www.cs.tufts.edu/~nr/cs257/archive/per-martin-lof/constructive-math.pdf)
 - [C preprocessor, by Richard Stallman](http://web.archive.org/web/20120904041038/http://docs.freebsd.org/info/cpp/cpp.pdf)
 
-###10. Links
+###8.3. Links
 
 - [Aroop](https://github.com/kamanashisroy/aroop)
 - [Roopantor](https://github.com/kamanashisroy/roopantor)
@@ -223,3 +223,13 @@ Though Aroop is initially being developed to support the development of scalable
 - [Vala](https://wiki.gnome.org/Projects/Vala)
 
 
+###8.4. Talks
+- [Game programming #1](https://www.youtube.com/watch?v=TH9VCN6UkyQ)
+- [Game programming #2](https://www.youtube.com/watch?v=5Nc68IdNKdg)
+- [Earlier talks](https://wiki.gnome.org/action/recall/Projects/Vala?action=recall&rev=1)
+- [Another talk](http://www.linux-magazin.de/Online-Artikel/Vorteile-kombinieren)
+
+###8.5. Other projects
+- [Ejabberd](https://www.ejabberd.im/) is very popular scalable [XMPP server](https://en.wikipedia.org/wiki/XMPP).
+- [Asterisk](http://www.asterisk.org/)
+- [Nodejs addon](http://www.nodejs.org/api/addons.html)
