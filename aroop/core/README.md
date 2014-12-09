@@ -27,5 +27,7 @@ Internals
 Reading
 ========
 
-[The Basic Program/System Interface](http://ftp.gnu.org/old-gnu/Manuals/glibc-2.2.3/html_chapter/libc_25.html)
-[obstacks](http://www.gnu.org/software/libc/manual/html_node/Obstacks.html#Obstacks)
+- [The Basic Program/System Interface](http://ftp.gnu.org/old-gnu/Manuals/glibc-2.2.3/html_chapter/libc_25.html)
+- [obstacks](http://www.gnu.org/software/libc/manual/html_node/Obstacks.html#Obstacks)
+- [ZeroMQ](http://aosabook.org/en/zeromq.html), is a message passing library that uses less memory copy and less system call. It uses batching and memory pooling.
+

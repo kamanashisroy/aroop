@@ -799,6 +799,9 @@ public class Vala.AroopObjectModule : AroopArrayModule {
 					if (f.variable_type.data_type is Struct) {
 						bless_function = "aroop_cleanup_in_countructor_function_for_struct";
 					}
+					if (f.variable_type is ArrayType) {
+						bless_function = "aroop_cleanup_in_countructor_function_for_array_costly";
+					}
 					var cleanupfields = new CCodeFunctionCall (new CCodeIdentifier (bless_function));
 					cleanupfields.add_argument (fieldexp);
 					vblock.add_statement (new CCodeExpressionStatement (cleanupfields));
