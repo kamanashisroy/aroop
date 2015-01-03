@@ -84,7 +84,8 @@ typedef int xultb_bool_t;
 		(x)->content.pointer.proto = OPPREF((y)->content.pointer.proto); \
 		(x)->content.pointer.str = (y)->content.pointer.str; \
 	} else { \
-		opp_str2_reuse2(&(x)->content.pointer.str, (y)->content.pointer.str, (y)->len); \
+		/*opp_str2_reuse2(&(x)->content.pointer.str, (y)->content.pointer.str, (y)->len); this code causes crash */ \
+		opp_str2_dup2(&(x)->content.pointer.str, (y)->content.pointer.str, (y)->len); \
 		(x)->content.pointer.proto = (x)->content.pointer.str; \
 		(x)->len = (y)->len; \
 		(x)->size = (y)->len+1; \
