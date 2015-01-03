@@ -86,7 +86,7 @@ struct opp_pool;
 #ifdef TEST_OBJ_FACTORY_UTILS
 #define OPP_HAS_HIJACK
 #endif
-#ifndef SYNC_HAS_NO_THREAD
+#ifdef HAS_THREAD
 #define OPP_BUFFER_HAS_LOCK
 #endif
 

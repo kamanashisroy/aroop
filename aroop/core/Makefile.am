@@ -1,6 +1,7 @@
 
 TARGET_O=libaroop_core.o
 TARGET_BASIC_O=libaroop_core_basic.o
+TARGET_HAS_THREAD_O=libaroop_core_has_thread.o
 TARGET_LAR=libaroop_core.la
 TARGET_AR=libaroop_core_static.a libaroop_core_debug.a
 bin_PROGRAMS=$(TARGET_O) $(TARGET_BASIC_O)
@@ -34,6 +35,8 @@ libaroop_core_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
 libaroop_core_o_CPPFLAGS = $(AROOP_CORE_INCLUDES)
 libaroop_core_basic_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
 libaroop_core_basic_o_CPPFLAGS=-DAROOP_BASIC $(AROOP_CORE_INCLUDES)
+libaroop_core_has_thread_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
+libaroop_core_has_thread_o_CPPFLAGS=-DHAS_THREAD $(AROOP_CORE_INCLUDES)
 
 
 pkgconfigdir = $(libdir)/pkgconfig

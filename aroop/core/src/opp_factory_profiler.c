@@ -51,9 +51,11 @@ struct opp_memory_size {
 }
 #endif
 
-#ifndef sync_do_compare_and_swap
+//#ifndef sync_do_compare_and_swap
+#ifndef HAS_THREAD
 #define sync_do_compare_and_swap(x,a,b) ({SYNC_ASSERT(*(x) == a);*(x)=b;1;})
 #endif
+//#endif
 
 static int check_stop(int from, int to) {
 	int i = 0;

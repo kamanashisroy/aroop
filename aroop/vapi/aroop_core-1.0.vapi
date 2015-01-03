@@ -152,7 +152,7 @@ public delegate int aroop.iterator_cb(Replicable data);
 public delegate int aroop.pointer_iterator_cb<G>(AroopPointer<G> data);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
-public struct aroop.Set<G> : aroop.CountableSet {
+public struct aroop.Set<G> : aroop.CountableSet { // TODO change the Set to Collection or something ..
 	[CCode (cname = "aroop_list_create")]
 	public Set(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	//[CCode (cname = "opp_list_create2")]
