@@ -102,7 +102,7 @@ with object {
 
 Plugin based programming is a way to develop the features as plugins. It has lots of advantages over the kitchen-sink approach. Aroop is used to write [Shotodol](https://github.com/kamanashisroy/shotodol), a [plugin](https://github.com/kamanashisroy/shotodol/blob/master/libs/plugin) based server. The idea is to reduce coupling of class inheritance using [plugin based development](http://miniim.blogspot.com/2014/09/plugin.html). This also helps to write modular code.
 
-![image](https://cloud.githubusercontent.com/assets/973414/3930915/c45b8232-244e-11e4-9ced-f277e9d48729.jpg)
+![image](https://cloud.githubusercontent.com/assets/973414/5548616/ffe8add0-8b9f-11e4-9660-5e96311ea880.jpg)
 
 #### Namespaces
 
@@ -144,9 +144,9 @@ It is possible to send asynchronous message. There is [lock free queue](https://
 
 It has both preemptive and non-preemptive multitasking.
 
-[Propeller](https://github.com/kamanashisroy/shotodol/blob/master/libs/propeller) is a thread. It is collection of _Spindles_. And it executes the _step()_ method of registered _Spindles_ one by one. If _step()_ returns nonzero then it is oust from the execution line.
+[CompositeFiber](https://github.com/kamanashisroy/shotodol/blob/master/libs/fiber) is a thread. It is collection of _Fiber_s. And it executes the _step()_ method of registered _Fiber_s one by one. If _step()_ returns nonzero then it is oust from the execution line.
 
-[Turbine](https://github.com/kamanashisroy/shotodol/blob/master/libs/turbine) is a _Propeller_ that integrates the platform thread library. An application may contain only main thread which can perform _Propeller_ without the need of _Turbine_ . Otherwise if it contains multiple threads, it will need _Turbine_ to create them. 
+[SpinningWheel](https://github.com/kamanashisroy/shotodol/blob/master/libs/spinningwheel) is a _CompositeFiber_ that integrates the platform thread library. An application may contain only main thread which can perform _CompositeFiber_ without the need of _SpinningWheel_ . Otherwise if it contains multiple threads, it will need _SpinningWheel_ to create them. 
 
 ###3.6. Language features(Adaptability)
 
