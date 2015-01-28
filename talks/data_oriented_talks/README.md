@@ -1,7 +1,7 @@
 Response to [talk](https://www.youtube.com/watch?v=ZHqFrNyLlpA)
 ===============================================================
 
-Jonathan Blow gave [a talk](https://www.youtube.com/watch?v=ZHqFrNyLlpA) on programming language. Here we shall discuss the vala way to do that, specifically we will use [aroop](www.github.com/kamanashisroy/aroop) profile for vala language to investigate the whole thing.
+Jonathan Blow gave [a talk](https://www.youtube.com/watch?v=ZHqFrNyLlpA) on programming language. Here we shall discuss the vala way to do that, specifically we shall use [aroop](www.github.com/kamanashisroy/aroop) profile for vala language to investigate the whole thing.
 
 
 #### Multiple heap allocation and cache miss.

@@ -114,9 +114,10 @@ Details is [here](aroop/core/build/raspberry_pi_bare_metal/README.md).
 
 More
 =====
-Please refer to [vala readme](README) for more information. There are more documents in the talks directory,
+Please refer to [vala readme](README) for more information. There are more documents in the [talks](talks) directory,
 
 - [Features](talks/features.md)
+- [Data oriented programming](talks/data_oriented_talks/)
 
 Public projects using aroop
 ============================
@@ -127,5 +128,5 @@ Public projects using aroop
 TASKS
 =====
 
-[Tasks](TASKS.md)
+[Tasks](aroop/TASKS.md)
 
