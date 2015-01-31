@@ -118,6 +118,7 @@ Please refer to [vala readme](README) for more information. There are more docum
 
 - [Features](talks/features.md)
 - [Data oriented programming](talks/data_oriented_talks/)
+- [talks](talks)
 
 Public projects using aroop
 ============================
