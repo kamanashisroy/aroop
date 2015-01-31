@@ -16,5 +16,7 @@ Investigation
 ![Class diagram for vala contructs](talks/diagrams/vala_symbol_classes.svg)
 ![Class diagram for vala contructs](talks/diagrams/vala_datatype_classes.svg)
 ![Class diagram for vala contructs](talks/diagrams/vala_value_type_classes.svg)
+![Class diagram for vala contructs](talks/diagrams/vala_codevisitor_classes.svg)
+![Class diagram for vala contructs](talks/diagrams/vala_expression_classes.svg)
 
 
