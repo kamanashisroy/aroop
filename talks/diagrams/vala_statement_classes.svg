@@ -18,7 +18,7 @@
    inkscape:version="0.48.3.1 r9886"
    width="100%"
    height="100%"
-   sodipodi:docname="statement_classes.svg"
+   sodipodi:docname="vala_statement_classes.svg"
    style="stroke:#000000">
   <metadata
      id="metadata4150">
@@ -28,12 +28,68 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs4148">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9090"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9086"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9082"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9053"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9049"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9045"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9041"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9037"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9033"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8990"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8986"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8982"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8978"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8974"
+       is_visible="true" />
     <inkscape:path-effect
        effect="spiro"
        id="path-effect5239"
@@ -604,9 +660,9 @@
      inkscape:window-height="750"
      id="namedview4146"
      showgrid="false"
-     inkscape:zoom="0.18895348"
-     inkscape:cx="-777.93315"
-     inkscape:cy="983.54445"
+     inkscape:zoom="0.37790696"
+     inkscape:cx="590.55951"
+     inkscape:cy="722.5414"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -724,12 +780,12 @@ polygon {
      points="285,150 290,147.5 290,152.5 "
      style="fill:#000000;stroke:none"
      id="polygon4130-3-6-3"
-     transform="matrix(0,-4,-4,0,1527.8963,2053.9985)" />
+     transform="matrix(0,-4,-4,0,1493.8963,2055.9985)" />
   <polygon
-     points="285,150 290,147.5 290,152.5 "
+     points="290,152.5 285,150 290,147.5 "
      style="fill:#000000;stroke:none"
      id="polygon4130-3-6"
-     transform="matrix(0,4,-4,0,1530.1153,-111.76015)" />
+     transform="matrix(0,4,-4,0,1490.1153,-111.76015)" />
   <g
      id="g7462-2"
      transform="translate(-86.3326,988.1778)"
@@ -923,24 +979,10 @@ polygon {
      inkscape:connector-curvature="0" />
   <path
      style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     d="M 926.9279,895.2317 618.1942,577.14243"
-     id="path3790"
-     inkscape:path-effect="#path-effect3792-3-4"
-     inkscape:original-d="M 926.9279,895.2317 618.1942,577.14243"
-     inkscape:connector-curvature="0" />
-  <path
-     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      d="M 852.0834,1046.7919 616.3231,1220.8054"
      id="path3796"
      inkscape:path-effect="#path-effect3798-5-0"
      inkscape:original-d="M 852.0834,1046.7919 616.3231,1220.8054"
-     inkscape:connector-curvature="0" />
-  <path
-     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     d="m 928.7991,1046.7919 -312.476,338.6715"
-     id="path3800"
-     inkscape:path-effect="#path-effect3802-2-9"
-     inkscape:original-d="m 928.7991,1046.7919 -312.476,338.6715"
      inkscape:connector-curvature="0" />
   <g
      id="g7462-2-5-5"
@@ -1006,15 +1048,15 @@ polygon {
      id="polygon4130-3-6-1-6"
      transform="matrix(0,4,4,0,506.5587,-112.37108)" />
   <polygon
-     points="285,150 290,147.5 290,152.5 "
+     points="290,147.5 290,152.5 285,150 "
      style="fill:#000000;stroke:none"
      id="polygon4130-3-6-3-0"
-     transform="matrix(0,-4,4,0,431.7084,2052.5029)" />
+     transform="matrix(0,-4,4,0,469.7084,2054.5029)" />
   <polygon
-     points="285,150 290,147.5 290,152.5 "
+     points="290,152.5 285,150 290,147.5 "
      style="fill:#000000;stroke:none"
      id="polygon4130-3-6-63"
-     transform="matrix(0,4,4,0,429.4894,-113.25572)" />
+     transform="matrix(0,4,4,0,469.4894,-113.25572)" />
   <g
      id="g7462-2-9"
      transform="matrix(-1,0,0,1,2045.9371,986.6822)"
@@ -1208,24 +1250,10 @@ polygon {
      inkscape:connector-curvature="0" />
   <path
      style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     d="M 1032.6767,893.7361 1341.4103,575.64686"
-     id="path3790-4"
-     inkscape:path-effect="#path-effect3792-3-4-1"
-     inkscape:original-d="M 1032.6767,893.7361 1341.4103,575.64686"
-     inkscape:connector-curvature="0" />
-  <path
-     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      d="m 1107.5212,1045.2963 235.7603,174.0135"
      id="path3796-9"
      inkscape:path-effect="#path-effect3798-5-0-3"
      inkscape:original-d="m 1107.5212,1045.2963 235.7603,174.0135"
-     inkscape:connector-curvature="0" />
-  <path
-     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     d="m 1030.8055,1045.2963 312.476,338.6715"
-     id="path3800-5"
-     inkscape:path-effect="#path-effect3802-2-9-7"
-     inkscape:original-d="m 1030.8055,1045.2963 312.476,338.6715"
      inkscape:connector-curvature="0" />
   <g
      id="g7462-2-5-7"
@@ -1479,4 +1507,153 @@ polygon {
          id="tspan5952-1-2-2-1-4-0-6"
          sodipodi:role="line">ContinueStatement</tspan></text>
   </g>
+  <polygon
+     points="290,147.5 290,152.5 285,150 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-3-8"
+     transform="matrix(0,-4,-4,0,1534.2923,2054.8615)" />
+  <polygon
+     points="290,147.5 290,152.5 285,150 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-3-7"
+     transform="matrix(0,-4,-4,0,1628.2923,2054.8615)" />
+  <polygon
+     points="290,152.5 285,150 290,147.5 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-3-6"
+     transform="matrix(0,-4,-4,0,1574.2923,2055.1692)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 449.84617,285.29223 770.0308,798.6461"
+     id="path8972"
+     inkscape:path-effect="#path-effect8974"
+     inkscape:original-d="M 449.84617,285.29223 770.0308,798.6461"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 862.64619,798.6461 1174.8924,290.58454"
+     id="path8976"
+     inkscape:path-effect="#path-effect8978"
+     inkscape:original-d="M 862.64619,798.6461 1174.8924,290.58454"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 1174.8924,486.39993 904.98466,801.29225"
+     id="path8980"
+     inkscape:path-effect="#path-effect8982"
+     inkscape:original-d="M 1174.8924,486.39993 904.98466,801.29225"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 452.49233,481.10762 730.33849,801.29225"
+     id="path8984"
+     inkscape:path-effect="#path-effect8986"
+     inkscape:original-d="M 452.49233,481.10762 730.33849,801.29225"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 807.07696,229.723 0,571.56925"
+     id="path8988"
+     inkscape:path-effect="#path-effect8990"
+     inkscape:original-d="m 807.07696,229.723 0,571.56925"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <polygon
+     points="290,152.5 285,150 290,147.5 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-63-9"
+     transform="matrix(0,4,4,0,429.89234,-112.92313)" />
+  <polygon
+     points="290,147.5 290,152.5 285,150 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-63-7"
+     transform="matrix(0,4,4,0,395.89234,-112.92313)" />
+  <polygon
+     points="290,152.5 285,150 290,147.5 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-63-5"
+     transform="matrix(0,4,4,0,358.5385,-113.20004)" />
+  <polygon
+     points="290,147.5 290,152.5 285,150 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-63-8"
+     transform="matrix(0,4,4,0,322.5385,-111.20004)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 449.84617,1280.2461 725.04619,944.18457"
+     id="path9031"
+     inkscape:path-effect="#path-effect9033"
+     inkscape:original-d="M 449.84617,1280.2461 725.04619,944.18457"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 449.84617,1473.4154 756.80003,944.18457"
+     id="path9035"
+     inkscape:path-effect="#path-effect9037"
+     inkscape:original-d="M 449.84617,1473.4154 756.80003,944.18457"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 449.84617,1650.7077 791.20004,941.53841"
+     id="path9039"
+     inkscape:path-effect="#path-effect9041"
+     inkscape:original-d="M 449.84617,1650.7077 791.20004,941.53841"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 1174.8924,1285.5384 899.69235,944.18457"
+     id="path9043"
+     inkscape:path-effect="#path-effect9045"
+     inkscape:original-d="M 1174.8924,1285.5384 899.69235,944.18457"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 862.64619,944.18457 1177.5385,1473.4154"
+     id="path9047"
+     inkscape:path-effect="#path-effect9049"
+     inkscape:original-d="M 862.64619,944.18457 1177.5385,1473.4154"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 828.24619,941.53841 1177.5385,1645.4154"
+     id="path9051"
+     inkscape:path-effect="#path-effect9053"
+     inkscape:original-d="M 828.24619,941.53841 1177.5385,1645.4154"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <polygon
+     points="285,150 290,147.5 290,152.5 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-63-7-8"
+     transform="matrix(0,4,4,0,391.76927,-40.21543)" />
+  <polygon
+     points="290,152.5 285,150 290,147.5 "
+     style="fill:#000000;stroke:none"
+     id="polygon4130-3-6-63-7-9"
+     transform="matrix(0,4,4,0,351.76927,-40.21543)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 785.90773,1012.9846 449.84617,1822.7077"
+     id="path9080"
+     inkscape:path-effect="#path-effect9082"
+     inkscape:original-d="M 785.90773,1012.9846 449.84617,1822.7077"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 828.24619,1012.9846 349.29231,807.0769"
+     id="path9084"
+     inkscape:path-effect="#path-effect9086"
+     inkscape:original-d="m 828.24619,1012.9846 349.29231,807.0769"
+     inkscape:connector-curvature="0"
+     transform="translate(165,100)" />
 </svg>
