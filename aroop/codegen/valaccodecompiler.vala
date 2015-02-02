@@ -21,11 +21,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * Interface to the C compiler.
  */
-public class Vala.CCodeCompiler {
+public class aroop.CCodeCompiler {
 	public CCodeCompiler () {
 	}
 

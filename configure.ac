@@ -1,120 +1,73 @@
-AC_INIT([vala], m4_esyscmd([build-aux/git-version-gen .tarball-version]), [j@bitron.ch], [vala])
-AC_CONFIG_SRCDIR([Makefile.am])
-AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_HEADERS(config.h)
+m4_define([aroop_major], [0])
+m4_define([aroop_minor], [1])
+m4_define([aroop_micro], [0])
+
+m4_define([aroop_version], [aroop_major.aroop_minor.aroop_micro])
+m4_define([aroop_api_version], [0.1])
+
+m4_define([aroop_name], [aroop])
+
+AC_PREREQ([2.64])
+AC_INIT([Maja], [aroop_version], [lucabru@src.gnome.org])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([1.11 dist-bzip2])
-AM_MAINTAINER_MODE([enable])
+AM_INIT_AUTOMAKE([dist-bzip2])
+AM_MAINTAINER_MODE
 
-PACKAGE_SUFFIX=-0.16
-AC_SUBST(PACKAGE_SUFFIX)
-AC_DEFINE_UNQUOTED(PACKAGE_SUFFIX, "$PACKAGE_SUFFIX", [Define to the suffix of this package])
+AROOP_MAJOR_VERSION=aroop_major
+AROOP_MINOR_VERSION=aroop_minor
+AROOP_MICRO_VERSION=aroop_micro
+AROOP_VERSION=aroop_version
+AROOP_API_VERSION=aroop_api_version
+AC_SUBST(AROOP_MAJOR_VERSION)
+AC_SUBST(AROOP_MINOR_VERSION)
+AC_SUBST(AROOP_MICRO_VERSION)
+AC_SUBST(AROOP_VERSION)
+AC_SUBST(AROOP_API_VERSION)
 
-program_transform_name="s,\$\$,${PACKAGE_SUFFIX},"
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
-AC_SUBST(pkgdatadir, [${datadir}/vala${PACKAGE_SUFFIX}])
+
+GLIB_REQUIRED=2.16.0
+GEE_REQUIRED=0.5.0
+VALA_REQUIRED=0.15.0
+
+
+# Checks for libraries.
+PKG_CHECK_MODULES(GEE, gee-1.0 >= $GEE_REQUIRED)
+AC_SUBST(GEE_CFLAGS)
+AC_SUBST(GEE_LIBS)
+PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED)
+AC_SUBST(GLIB_CFLAGS)
+AC_SUBST(GLIB_LIBS)
+
+
+VALA_PACKAGE=libvala-0.16
+AC_SUBST(VALA_PACKAGE)
+
+PKG_CHECK_MODULES(VALA, $VALA_PACKAGE >= $VALA_REQUIRED)
+AC_SUBST(VALA_CFLAGS)
+AC_SUBST(VALA_LIBS)
+
+# Checks for header files.
+AC_CHECK_HEADERS([stdlib.h string.h])
+
 
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_CC_C_O
-AC_DISABLE_STATIC
+AC_PROG_INSTALL
 AC_PROG_LIBTOOL
-AC_PROG_LN_S
+AC_PROG_RANLIB
+AM_PROG_VALAC($VALA_REQUIRED)
 
-AC_PROG_LEX
-if test "$LEX" = :; then
-	AC_MSG_ERROR([flex not found but required])
-fi
-
-AC_CHECK_PROGS(YACC, 'bison -y' byacc yacc, :)
-if test "$YACC" = :; then
-	AC_MSG_ERROR([bison not found but required])
-fi
-
-AC_PATH_PROG(VALAC, valac, valac)
-AC_SUBST(VALAC)
-
-VALAFLAGS="$VALAFLAGS --disable-version-header"
-
-AC_SUBST(VALAFLAGS)
-AC_SUBST(CFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(LDFLAGS)
-
-AC_ARG_ENABLE(unversioned, AS_HELP_STRING([--disable-unversioned], [Disable unversioned binaries]), enable_unversioned=$enableval, enable_unversioned=yes)
-AM_CONDITIONAL(ENABLE_UNVERSIONED, test x$enable_unversioned = xyes)
-
-AC_ARG_ENABLE(coverage, AS_HELP_STRING([--enable-coverage], [Enable coverage analysis]), enable_coverage=$enableval, enable_coverage=no)
-AM_CONDITIONAL(ENABLE_COVERAGE, test x$enable_coverage = xyes)
-
-if test "$enable_coverage" = "yes"; then
-	COVERAGE_VALAFLAGS="-g"
-	COVERAGE_CFLAGS="-fprofile-arcs -ftest-coverage"
-	COVERAGE_LIBS="-lgcov"
-else
-	COVERAGE_VALAFLAGS=
-	COVERAGE_CFLAGS=
-	COVERAGE_LIBS=
-fi
-AC_SUBST(COVERAGE_VALAFLAGS)
-AC_SUBST(COVERAGE_CFLAGS)
-AC_SUBST(COVERAGE_LIBS)
-
-AC_ARG_ENABLE(vapigen, AS_HELP_STRING([--disable-vapigen], [Disable VAPI generator]), enable_vapigen=$enableval, enable_vapigen=yes)
-AM_CONDITIONAL(ENABLE_VAPIGEN, test x$enable_vapigen = xyes)
-
-if test "$enable_vapigen" = "yes"; then
-  vapigen_decl="vapigen=\${bindir}/vapigen${PACKAGE_SUFFIX}"
-  gen_introspect_decl="gen_introspect=\${libdir}/vala${PACKAGE_SUFFIX}/gen-introspect${PACKAGE_SUFFIX}"
-  vala_gen_introspect_decl="vala_gen_introspect=\${bindir}/vala-gen-introspect${PACKAGE_SUFFIX}"
-else
-  vapigen_decl=''
-  gen_introspect_decl=''
-  vala_gen_introspect_decl=''
-fi
-AC_SUBST(vapigen_decl)
-AC_SUBST(gen_introspect_decl)
-AC_SUBST(vala_gen_introspect_decl)
-
-GLIB_REQUIRED=2.16.0
-
-PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED)
-
-AC_SUBST(GLIB_CFLAGS)
-AC_SUBST(GLIB_LIBS)
-
-PKG_CHECK_MODULES(GMODULE, gmodule-2.0 >= $GLIB_REQUIRED)
-
-AC_SUBST(GMODULE_CFLAGS)
-AC_SUBST(GMODULE_LIBS)
-
-PKG_CHECK_MODULES(GTHREAD, gthread-2.0 >= $GLIB_REQUIRED)
-
-AC_SUBST(GTHREAD_CFLAGS)
-AC_SUBST(GTHREAD_LIBS)
-
-AC_PATH_PROG([XSLTPROC], [xsltproc], :)
-AM_CONDITIONAL(HAVE_XSLTPROC, test "$XSLTPROC" != :)
-
-m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_CONFIG_FILES([Makefile
            libaroop.pc
-           gee/Makefile
-           ccode/Makefile
-           vala/Makefile
            aroop/codegen/Makefile
            aroop/compiler/Makefile
            aroop/core/Makefile
 	   aroop/core/aroop_core-1.0.pc
-           aroop/vapi/Makefile
-           vapi/Makefile
-           tests/Makefile
-           doc/Makefile
-           doc/vala/Makefile
-           gobject-introspection/Makefile
-           vapigen/Makefile
-           vapigen/vala-gen-introspect/Makefile
-           vapigen/vala-gen-introspect/vala-gen-introspect])
+           aroop/vapi/Makefile])
 
 AC_OUTPUT

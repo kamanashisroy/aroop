@@ -21,8 +21,9 @@
  * 	Jürg Billeter <j@bitron.ch>
  *	Raffaele Sandrini <raffaele@sandrini.ch>
  */
+using Vala;
 
-public abstract class Vala.CCodeMemberAccessModule : CCodeControlFlowModule {
+public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 	public override void visit_member_access (MemberAccess expr) {
 		CCodeExpression pub_inst = null;
 	

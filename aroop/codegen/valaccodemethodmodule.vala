@@ -22,11 +22,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * The link between a method and generated code.
  */
-public abstract class Vala.CCodeMethodModule : CCodeStructModule {
+public abstract class aroop.CCodeMethodModule : CCodeStructModule {
 	public override bool method_has_wrapper (Method method) {
 		return (method.get_attribute ("NoWrapper") == null);
 	}

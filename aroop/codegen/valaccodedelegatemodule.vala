@@ -22,11 +22,12 @@
  *	Raffaele Sandrini <raffaele@sandrini.ch>
  */
 
+using Vala;
 
 /**
  * The link between an assignment and generated code.
  */
-public class Vala.CCodeDelegateModule : CCodeArrayModule {
+public class aroop.CCodeDelegateModule : CCodeArrayModule {
 	public override void generate_delegate_declaration (Delegate d, CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, d, get_ccode_name (d))) {
 			return;

@@ -21,8 +21,9 @@
  */
 
 using GLib;
+using Vala;
 
-public abstract class Vala.AroopStructModule : AroopBaseModule {  
+public abstract class aroop.AroopStructModule : AroopBaseModule {  
 	public override void generate_struct_declaration (Struct st, CCodeFile decl_space) {
 		if (st.is_boolean_type ()) {
 			// typedef for boolean types

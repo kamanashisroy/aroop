@@ -22,8 +22,9 @@
  *	Raffaele Sandrini <raffaele@sandrini.ch>
  */
 
+using Vala;
 
-public class Vala.CCodeArrayModule : CCodeMethodCallModule {
+public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 	int next_array_dup_id = 0;
 	int next_array_add_id = 0;
 

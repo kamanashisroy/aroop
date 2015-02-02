@@ -20,10 +20,11 @@
  * 	Kamanashis Roy Shuva <kamanashisroy@gmail.com>
  */
 
+using Vala;
 /**
  * Represents a struct declaration in the C code.
  */
-public class Vala.CCodeStructPrototype : Vala.CCodeNode {
+public class aroop.CCodeStructPrototype : Vala.CCodeNode {
         /**
          * The struct name.
          */

@@ -21,11 +21,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * C function to register a class at runtime.
  */
-public class Vala.ClassRegisterFunction : TypeRegisterFunction {
+public class aroop.ClassRegisterFunction : TypeRegisterFunction {
 	/**
 	 * Specifies the class to be registered.
 	 */

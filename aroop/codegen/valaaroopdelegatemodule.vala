@@ -22,11 +22,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * The link between a delegate and generated code.
  */
-public class Vala.AroopDelegateModule : AroopValueModule {
+public class aroop.AroopDelegateModule : AroopValueModule {
 	protected override void generate_delegate_declaration (Delegate d, CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, d, get_ccode_aroop_name (d))) {
 			return;

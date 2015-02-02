@@ -20,7 +20,9 @@
  * 	Jürg Billeter <j@bitron.ch>
  */
 
-public class Vala.AroopObjectModule : AroopArrayModule {
+using Vala;
+
+public class aroop.AroopObjectModule : AroopArrayModule {
 	private string get_ccode_vtable_struct(Class cl) {
 		return "struct aroop_vtable_%s".printf(CCodeBaseModule.get_ccode_lower_case_suffix(cl));
 	}

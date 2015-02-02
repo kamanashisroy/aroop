@@ -20,7 +20,9 @@
  * 	Jürg Billeter <j@bitron.ch>
  */
 
-public class Vala.AroopMethodCallModule : AroopAssignmentModule {
+using Vala;
+
+public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 
 	protected virtual CCodeExpression? generate_delegate_closure_argument(Expression arg) {
 		return null;

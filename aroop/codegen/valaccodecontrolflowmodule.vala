@@ -23,8 +23,9 @@
  */
 
 using GLib;
+using Vala;
 
-public abstract class Vala.CCodeControlFlowModule : CCodeMethodModule {
+public abstract class aroop.CCodeControlFlowModule : CCodeMethodModule {
 	public override void visit_if_statement (IfStatement stmt) {
 		ccode.open_if (get_cvalue (stmt.condition));
 

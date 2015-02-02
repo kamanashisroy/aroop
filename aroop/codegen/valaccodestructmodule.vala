@@ -23,8 +23,9 @@
  */
 
 using GLib;
+using Vala;
 
-public abstract class Vala.CCodeStructModule : CCodeBaseModule {
+public abstract class aroop.CCodeStructModule : CCodeBaseModule {
 	public override void generate_struct_declaration (Struct st, CCodeFile decl_space) {
 		if (add_symbol_declaration (decl_space, st, get_ccode_name (st))) {
 			return;

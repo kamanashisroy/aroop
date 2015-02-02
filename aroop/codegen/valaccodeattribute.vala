@@ -20,11 +20,12 @@
  * 	Luca Bruno <lucabru@src.gnome.org>
  */
 
+using Vala;
 
 /**
  * Cache for the CCode attribute
  */
-public class Vala.CCodeAttribute : AttributeCache {
+public class aroop.CCodeAttribute : AttributeCache {
 	private weak CodeNode node;
 	private weak Symbol sym;
 	private Attribute ccode;

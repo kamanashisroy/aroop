@@ -23,8 +23,9 @@
  */
 
 using GLib;
+using Vala;
 
-public class Vala.CCodeMethodCallModule : CCodeAssignmentModule {
+public class aroop.CCodeMethodCallModule : CCodeAssignmentModule {
 	public override void visit_method_call (MethodCall expr) {
 		// the bare function call
 		var ccall = new CCodeFunctionCall (get_cvalue (expr.call));

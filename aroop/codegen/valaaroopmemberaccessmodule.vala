@@ -21,8 +21,9 @@
  */
 
 using GLib;
+using Vala;
 
-public abstract class Vala.AroopMemberAccessModule : AroopControlFlowModule {
+public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 	protected string get_ccode_vtable_var(Class cl, Class of_class) {
 		return "vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl)
 			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));

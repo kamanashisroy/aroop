@@ -1,7 +1,7 @@
 using GLib;
 using Vala;
 
-public abstract class Vala.AroopBlockModule : AroopStructModule {
+public abstract class aroop.AroopBlockModule : AroopStructModule {
 	
 	public override void generate_block_finalization(Block b, CCodeFunction decl_space) {
 

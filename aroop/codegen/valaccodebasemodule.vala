@@ -22,11 +22,12 @@
  * 	Raffaele Sandrini <raffaele@sandrini.ch>
  */
 
+using Vala;
 
 /**
  * Code visitor generating C Code.
  */
-public abstract class Vala.CCodeBaseModule : CodeGenerator {
+public abstract class aroop.CCodeBaseModule : CodeGenerator {
 	public class EmitContext {
 		public Symbol? current_symbol;
 		public ArrayList<Symbol> symbol_stack = new ArrayList<Symbol> ();
@@ -6230,7 +6231,7 @@ public abstract class Vala.CCodeBaseModule : CodeGenerator {
 	}
 }
 
-public class Vala.GLibValue : TargetValue {
+public class aroop.GLibValue : TargetValue {
 	public CCodeExpression cvalue;
 	public bool lvalue;
 	public bool non_null;

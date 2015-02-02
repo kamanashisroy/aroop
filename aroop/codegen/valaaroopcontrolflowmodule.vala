@@ -20,7 +20,8 @@
  * 	Jürg Billeter <j@bitron.ch>
  */
 
-public abstract class Vala.AroopControlFlowModule : AroopMethodModule {
+using Vala;
+public abstract class aroop.AroopControlFlowModule : AroopMethodModule {
 	public override void visit_if_statement (IfStatement stmt) {
 		ccode.open_if (get_cvalue (stmt.condition));
 

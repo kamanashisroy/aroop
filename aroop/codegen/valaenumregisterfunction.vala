@@ -22,11 +22,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * C function to register an enum at runtime.
  */
-public class Vala.EnumRegisterFunction : TypeRegisterFunction {
+public class aroop.EnumRegisterFunction : TypeRegisterFunction {
 	/**
 	 * Specifies the enum to be registered.
 	 */

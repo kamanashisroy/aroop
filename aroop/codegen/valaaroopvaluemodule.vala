@@ -20,7 +20,9 @@
  * 	Jürg Billeter <j@bitron.ch>
  */
 
-public class Vala.AroopValueModule : AroopObjectModule {
+using Vala;
+
+public class aroop.AroopValueModule : AroopObjectModule {
 	public override void visit_creation_method (CreationMethod m) {
 		if (current_type_symbol is Class &&
 		    (current_class.base_class == null ||

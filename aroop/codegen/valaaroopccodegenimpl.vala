@@ -21,7 +21,8 @@
  *	Thijs Vermeir <thijsvermeir@gmail.com>
  */
 
-public class Vala.AroopCCodegenImpl : AroopErrorModule {
+using Vala;
+public class aroop.AroopCCodegenImpl : AroopErrorModule {
 	private int current_try_id = 0;
 	private int next_try_id = 0;
 	private bool is_in_catch = false;

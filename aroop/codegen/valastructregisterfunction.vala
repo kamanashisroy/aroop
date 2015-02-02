@@ -21,11 +21,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * C function to register a struct at runtime.
  */
-public class Vala.StructRegisterFunction : TypeRegisterFunction {
+public class aroop.StructRegisterFunction : TypeRegisterFunction {
 	/**
 	 * Specifies the struct to be registered.
 	 */

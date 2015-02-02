@@ -20,10 +20,11 @@
  * 	Jürg Billeter <j@bitron.ch>
  */
 
+using Vala;
 /**
  * The link between a method and generated code.
  */
-public abstract class Vala.AroopMethodModule : AroopBlockModule {
+public abstract class aroop.AroopMethodModule : AroopBlockModule {
 	public override bool method_has_wrapper (Method method) {
 		return (method.get_attribute ("NoWrapper") == null);
 	}

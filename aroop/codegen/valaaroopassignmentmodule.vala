@@ -20,10 +20,11 @@
  * 	Jürg Billeter <j@bitron.ch>
  */
 
+using Vala;
 /**
  * The link between an assignment and generated code.
  */
-public class Vala.AroopAssignmentModule : AroopMemberAccessModule {
+public class aroop.AroopAssignmentModule : AroopMemberAccessModule {
 	CCodeExpression? emit_simple_assignment (Assignment assignment) {
 		CCodeExpression rhs = get_cvalue (assignment.right);
 		CCodeExpression lhs = (CCodeExpression) get_ccodenode (assignment.left);

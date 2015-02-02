@@ -23,11 +23,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * C function to register an interface at runtime.
  */
-public class Vala.InterfaceRegisterFunction : TypeRegisterFunction {
+public class aroop.InterfaceRegisterFunction : TypeRegisterFunction {
 	/**
 	 * Specifies the interface to be registered.
 	 */

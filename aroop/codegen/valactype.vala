@@ -20,10 +20,11 @@
  *	Mark Lee <marklee@src.gnome.org>
  */
 
+using Vala;
 /**
  * A C type, used only for code generation purposes.
  */
-public class Vala.CType : DataType {
+public class aroop.CType : DataType {
 	/**
 	 * The name of the C type.
 	 */

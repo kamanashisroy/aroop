@@ -20,7 +20,9 @@
  * 	Jürg Billeter <j@bitron.ch>
  */
 
-public class Vala.AroopArrayModule : AroopMethodCallModule {
+using Vala;
+
+public class aroop.AroopArrayModule : AroopMethodCallModule {
 	void append_initializer_list (CCodeExpression name_cnode, InitializerList initializer_list, ref int i) {
 		foreach (Expression e in initializer_list.get_initializers ()) {
 			ccode.add_assignment (new CCodeElementAccess (name_cnode, new CCodeConstant (i.to_string ())), get_cvalue (e));

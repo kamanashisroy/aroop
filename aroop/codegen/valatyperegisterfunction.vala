@@ -21,11 +21,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * C function to register a type at runtime.
  */
-public abstract class Vala.TypeRegisterFunction {
+public abstract class aroop.TypeRegisterFunction {
 	CCodeFragment source_declaration_fragment = new CCodeFragment ();
 	CCodeFragment declaration_fragment = new CCodeFragment ();
 	CCodeFragment definition_fragment = new CCodeFragment ();

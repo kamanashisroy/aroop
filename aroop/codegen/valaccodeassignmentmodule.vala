@@ -23,11 +23,12 @@
  */
 
 using GLib;
+using Vala;
 
 /**
  * The link between an assignment and generated code.
  */
-public class Vala.CCodeAssignmentModule : CCodeMemberAccessModule {
+public class aroop.CCodeAssignmentModule : CCodeMemberAccessModule {
 	TargetValue emit_simple_assignment (Assignment assignment) {
 		Variable variable = (Variable) assignment.left.symbol_reference;
 
