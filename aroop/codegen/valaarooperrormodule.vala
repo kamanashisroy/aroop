@@ -28,7 +28,7 @@ public class aroop.AroopErrorModule : AroopDelegateModule {
 	private int current_try_id = 0;
 	private int next_try_id = 0;
 	private bool is_in_catch = false;
-	public ErrorType gerror_type;
+	public Vala.ErrorType gerror_type;
 
 	private string generate_error_domain_description_function(ErrorDomain edomain) {
 		return get_error_module_lower_case_name (edomain) + "_desc";
@@ -65,8 +65,8 @@ public class aroop.AroopErrorModule : AroopDelegateModule {
 	}
 	
 	public override string get_error_module_lower_case_name (CodeNode node, string? infix = null) {
-		if (node is ErrorType) {
-			ErrorType etype = node as ErrorType;
+		if (node is Vala.ErrorType) {
+			Vala.ErrorType etype = node as Vala.ErrorType;
 			//return "aroop_error_%s".printf(Symbol.camel_case_to_lower_case (etype.name));
 			return "aroop_error";
 		} else if(node is ErrorDomain) {
@@ -128,7 +128,7 @@ public class aroop.AroopErrorModule : AroopDelegateModule {
 		// return something
 		if (current_method is CreationMethod && current_method.parent_symbol is Class) {
 			var cl = (Class) current_method.parent_symbol;
-			ccode.add_expression (destroy_value (new GLibValue (new ObjectType (cl), new CCodeIdentifier (self_instance), true)));
+			//ccode.add_expression (destroy_value (new GLibValue (new ObjectType (cl), new CCodeIdentifier (self_instance), true)));
 			ccode.add_return ();
 		} else if (is_in_coroutine ()) {
 			ccode.add_return (new CCodeConstant ("FALSE"));
@@ -224,7 +224,7 @@ public class aroop.AroopErrorModule : AroopDelegateModule {
 						ccode.add_goto (clause.clabel_name);
 						break;
 					} else {
-						var catch_type = clause.error_type as ErrorType;
+						var catch_type = clause.error_type as Vala.ErrorType;
 
 						if (catch_type.error_code != null) {
 							/* catch clause specifies a specific error code */
@@ -389,7 +389,7 @@ public class aroop.AroopErrorModule : AroopDelegateModule {
 	public override void visit_catch_clause (CatchClause clause) {
 		current_method_inner_error = true;
 
-		var error_type = (ErrorType) clause.error_type;
+		var error_type = (Vala.ErrorType) clause.error_type;
 		if (error_type.error_domain != null) {
 			generate_error_domain_declaration (error_type.error_domain, cfile);
 		}

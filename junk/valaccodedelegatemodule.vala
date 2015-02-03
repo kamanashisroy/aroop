@@ -48,7 +48,7 @@ public class aroop.CCodeDelegateModule : CCodeArrayModule {
 		}
 
 		var cfundecl = new CCodeFunctionDeclarator (get_ccode_name (d));
-		foreach (Parameter param in d.get_parameters ()) {
+		foreach (Vala.Parameter param in d.get_parameters ()) {
 			var cparam = generate_parameter (param, decl_space, new HashMap<int,CCodeParameter> (), null);
 
 			cfundecl.add_parameter (cparam);
@@ -58,7 +58,7 @@ public class aroop.CCodeDelegateModule : CCodeArrayModule {
 				var array_type = (ArrayType) param.variable_type;
 				
 				var length_ctype = "int";
-				if (param.direction != ParameterDirection.IN) {
+				if (param.direction != Vala.ParameterDirection.IN) {
 					length_ctype = "int*";
 				}
 				
@@ -177,7 +177,7 @@ public class aroop.CCodeDelegateModule : CCodeArrayModule {
 	private string generate_delegate_wrapper (Method m, DelegateType dt, CodeNode? node) {
 		var d = dt.delegate_symbol;
 		string delegate_name;
-		var sig = d.parent_symbol as Signal;
+		var sig = d.parent_symbol as Vala.Signal;
 		var dynamic_sig = sig as DynamicSignal;
 		if (dynamic_sig != null) {
 			delegate_name = get_dynamic_signal_cname (dynamic_sig);
@@ -216,12 +216,12 @@ public class aroop.CCodeDelegateModule : CCodeArrayModule {
 		}
 
 		if (d.sender_type != null) {
-			var param = new Parameter ("_sender", d.sender_type);
+			var param = new Vala.Parameter ("_sender", d.sender_type);
 			generate_parameter (param, cfile, cparam_map, null);
 		}
 
 		var d_params = d.get_parameters ();
-		foreach (Parameter param in d_params) {
+		foreach (Vala.Parameter param in d_params) {
 			if (dynamic_sig != null
 			    && param.variable_type is ArrayType
 			    && ((ArrayType) param.variable_type).element_type.data_type == string_type.data_type) {
@@ -306,7 +306,7 @@ public class aroop.CCodeDelegateModule : CCodeArrayModule {
 
 		bool first = true;
 
-		foreach (Parameter param in m.get_parameters ()) {
+		foreach (Vala.Parameter param in m.get_parameters ()) {
 			if (first && d.sender_type != null && m.get_parameters ().size == d.get_parameters ().size + 1) {
 				// sender parameter
 				carg_map.set (get_param_pos (get_ccode_pos (param)), new CCodeIdentifier ("_sender"));
@@ -439,7 +439,7 @@ public class aroop.CCodeDelegateModule : CCodeArrayModule {
 		return wrapper_name;
 	}
 
-	public override CCodeParameter generate_parameter (Parameter param, CCodeFile decl_space, Map<int,CCodeParameter> cparam_map, Map<int,CCodeExpression>? carg_map) {
+	public override CCodeParameter generate_parameter (Vala.Parameter param, CCodeFile decl_space, Map<int,CCodeParameter> cparam_map, Map<int,CCodeExpression>? carg_map) {
 		if (!(param.variable_type is DelegateType || param.variable_type is MethodType)) {
 			return base.generate_parameter (param, decl_space, cparam_map, carg_map);
 		}
@@ -454,7 +454,7 @@ public class aroop.CCodeDelegateModule : CCodeArrayModule {
 			ctypename = "GCallback";
 		}
 
-		if (param.direction != ParameterDirection.IN) {
+		if (param.direction != Vala.ParameterDirection.IN) {
 			ctypename += "*";
 			target_ctypename += "*";
 			target_destroy_notify_ctypename += "*";

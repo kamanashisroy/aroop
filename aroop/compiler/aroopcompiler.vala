@@ -22,8 +22,9 @@
  */
 
 using GLib;
+using Vala;
 
-class Vala.Compiler {
+class aroop.Compiler {
 	static string basedir;
 	static string directory;
 	static bool version;
@@ -84,7 +85,7 @@ class Vala.Compiler {
 
 	static bool run_output;
 
-	private CodeContext context;
+	private CodeCompilerContext context;
 
 	const OptionEntry[] options = {
 		{ "vapidir", 0, 0, OptionArg.FILENAME_ARRAY, ref vapi_directories, "Look for package bindings in DIRECTORY", "DIRECTORY..." },
@@ -138,25 +139,25 @@ class Vala.Compiler {
 	};
 	
 	private int quit () {
-		if (context.report.get_errors () == 0 && context.report.get_warnings () == 0) {
+		if (context.ccode.report.get_errors () == 0 && context.ccode.report.get_warnings () == 0) {
 			return 0;
 		}
-		if (context.report.get_errors () == 0 && (!fatal_warnings || context.report.get_warnings () == 0)) {
+		if (context.ccode.report.get_errors () == 0 && (!fatal_warnings || context.ccode.report.get_warnings () == 0)) {
 			if (!quiet_mode) {
-				stdout.printf ("Compilation succeeded - %d warning(s)\n", context.report.get_warnings ());
+				stdout.printf ("Compilation succeeded - %d warning(s)\n", context.ccode.report.get_warnings ());
 			}
 			return 0;
 		} else {
 			if (!quiet_mode) {
-				stdout.printf ("Compilation failed: %d error(s), %d warning(s)\n", context.report.get_errors (), context.report.get_warnings ());
+				stdout.printf ("Compilation failed: %d error(s), %d warning(s)\n", context.ccode.report.get_errors (), context.ccode.report.get_warnings ());
 			}
 			return 1;
 		}
 	}
 
 	private int run () {
-		context = new CodeContext ();
-		CodeContext.push (context);
+		context = CodeCompilerContext();
+		CodeContext.push (context.ccode);
 
 		// default to build executable
 		if (!ccode_only && !compile_only && output == null) {
@@ -168,133 +169,76 @@ class Vala.Compiler {
 			}
 		}
 
-		context.assert = !disable_assert;
-		context.checking = enable_checking;
-		context.deprecated = deprecated;
-		context.experimental = experimental;
-		context.experimental_non_null = experimental_non_null;
-		context.report.enable_warnings = !disable_warnings;
-		context.report.set_verbose_errors (!quiet_mode);
-		context.verbose_mode = verbose_mode;
-		context.version_header = !disable_version_header;
+		context.ccode.assert = !disable_assert;
+		context.ccode.checking = enable_checking;
+		context.ccode.deprecated = deprecated;
+		context.ccode.experimental = experimental;
+		context.ccode.experimental_non_null = experimental_non_null;
+		context.ccode.report.enable_warnings = !disable_warnings;
+		context.ccode.report.set_verbose_errors (!quiet_mode);
+		context.ccode.verbose_mode = verbose_mode;
+		context.ccode.version_header = !disable_version_header;
 
-		context.ccode_only = ccode_only;
-		context.compile_only = compile_only;
+		context.ccode.ccode_only = ccode_only;
+		context.ccode.compile_only = compile_only;
 		context.static_link = static_link;
-		context.header_filename = header_filename;
+		context.ccode.header_filename = header_filename;
 		if (header_filename == null && use_header) {
 			Report.error (null, "--use-header may only be used in combination with --header");
 		}
-		context.use_header = use_header;
-		context.internal_header_filename = internal_header_filename;
-		context.symbols_filename = symbols_filename;
-		context.includedir = includedir;
-		context.output = output;
+		context.ccode.use_header = use_header;
+		context.ccode.internal_header_filename = internal_header_filename;
+		context.ccode.symbols_filename = symbols_filename;
+		context.ccode.includedir = includedir;
+		context.ccode.output = output;
 		if (basedir == null) {
-			context.basedir = CodeContext.realpath (".");
+			context.ccode.basedir = CodeContext.realpath (".");
 		} else {
-			context.basedir = CodeContext.realpath (basedir);
+			context.ccode.basedir = CodeContext.realpath (basedir);
 		}
 		if (directory != null) {
-			context.directory = CodeContext.realpath (directory);
+			context.ccode.directory = CodeContext.realpath (directory);
 		} else {
-			context.directory = context.basedir;
+			context.ccode.directory = context.ccode.basedir;
 		}
-		context.vapi_directories = vapi_directories;
-		context.gir_directories = gir_directories;
-		context.metadata_directories = metadata_directories;
-		context.debug = debug;
-		context.thread = thread;
-		context.mem_profiler = mem_profiler;
-		context.save_temps = save_temps;
-#if false
-		if (profile == "posix") {
-			context.profile = Profile.POSIX;
-			context.add_define ("POSIX");
-		} else if (profile == "gobject-2.0" || profile == "gobject" || profile == null) {
-			// default profile
-			context.profile = Profile.GOBJECT;
-			context.add_define ("GOBJECT");
-		} else if (profile == "dova") {
-			context.profile = Profile.DOVA;
-			context.add_define ("DOVA");
-		} else if (profile == "aroop") {
-#endif
-			context.profile = Profile.AROOP;
-			context.add_define("AROOP");
-#if false
-		} else {
-			Report.error (null, "Unknown profile %s".printf (profile));
-		}
-#endif
+		context.ccode.vapi_directories = vapi_directories;
+		context.ccode.gir_directories = gir_directories;
+		context.ccode.metadata_directories = metadata_directories;
+		context.ccode.debug = debug;
+		context.ccode.thread = thread;
+		//context.profile = profile;
+		context.ccode.mem_profiler = mem_profiler;
+		context.ccode.save_temps = save_temps;
+		context.ccode.add_define("AROOP"); // #define AROOP
 		nostdpkg |= fast_vapi_filename != null;
-		context.nostdpkg = nostdpkg;
+		context.ccode.nostdpkg = nostdpkg;
 
-		context.entry_point_name = entry_point;
+		context.ccode.entry_point_name = entry_point;
 
-		context.run_output = run_output;
+		context.ccode.run_output = run_output;
 
 		if (defines != null) {
 			foreach (string define in defines) {
-				context.add_define (define);
+				context.ccode.add_define (define);
 			}
 		}
 
 		for (int i = 2; i <= 16; i += 2) {
-			context.add_define ("VALA_0_%d".printf (i));
+			context.ccode.add_define ("VALA_0_%d".printf (i));
 		}
 
-#if false
-		if (context.profile == Profile.POSIX) {
-			if (!nostdpkg) {
-				/* default package */
-				context.add_external_package ("posix");
-			}
-		} else if (context.profile == Profile.GOBJECT) {
-			int glib_major = 2;
-			int glib_minor = 16;
-			if (target_glib != null && target_glib.scanf ("%d.%d", out glib_major, out glib_minor) != 2) {
-				Report.error (null, "Invalid format for --target-glib");
-			}
-
-			context.target_glib_major = glib_major;
-			context.target_glib_minor = glib_minor;
-			if (context.target_glib_major != 2) {
-				Report.error (null, "This version of valac only supports GLib 2");
-			}
-
-			for (int i = 16; i <= glib_minor; i += 2) {
-				context.add_define ("GLIB_2_%d".printf (i));
-			}
-
-			if (!nostdpkg) {
-				/* default packages */
-				context.add_external_package ("glib-2.0");
-				context.add_external_package ("gobject-2.0");
-			}
-		} else if (context.profile == Profile.DOVA) {
-			if (!nostdpkg) {
-				/* default package */
-				context.add_external_package ("posix");
-				context.add_external_package ("dova-core-0.1");
-			}
-		} else if (context.profile == Profile.AROOP) {
-#endif
-			if (!nostdpkg) {
-				context.profile = Profile.POSIX;
-				context.add_define ("POSIX");
-				/* default package */
-				// XXX should I load posix ?? context.add_external_package ("posix");
-				context.add_external_package ("aroop-1.0");
-				context.add_external_package ("aroop_core-1.0");
-			}
-#if false
+		if (!nostdpkg) {
+			context.profile = Profile.POSIX;
+			context.ccode.add_define ("POSIX");
+			/* default package */
+			// XXX should I load posix ?? context.ccode.add_external_package ("posix");
+			context.ccode.add_external_package ("aroop-1.0");
+			context.ccode.add_external_package ("aroop_core-1.0");
 		}
-#endif
 
 		if (packages != null) {
 			foreach (string package in packages) {
-				context.add_external_package (package);
+				context.ccode.add_external_package (package);
 			}
 			packages = null;
 		}
@@ -302,33 +246,21 @@ class Vala.Compiler {
 		if (fast_vapis != null) {
 			foreach (string vapi in fast_vapis) {
 				var rpath = CodeContext.realpath (vapi);
-				var source_file = new SourceFile (context, SourceFileType.FAST, rpath);
-				context.add_source_file (source_file);
+				var source_file = new SourceFile (context.ccode, SourceFileType.FAST, rpath);
+				context.ccode.add_source_file (source_file);
 			}
 		}
 		
-		if (context.report.get_errors () > 0 || (fatal_warnings && context.report.get_warnings () > 0)) {
+		if (context.ccode.report.get_errors () > 0 || (fatal_warnings && context.ccode.report.get_warnings () > 0)) {
 			return quit ();
 		}
 
-#if false
-		if (context.profile == Profile.GOBJECT) {
-			context.codegen = new GDBusServerModule ();
-		} else if (context.profile == Profile.DOVA) {
-			context.codegen = new DovaErrorModule ();
-		} else if (context.profile == Profile.AROOP) {
-#endif
-			context.codegen = new AroopCCodegenImpl ();
-#if false
-		} else {
-			context.codegen = new CCodeDelegateModule ();
-		}
-#endif
+		context.ccode.codegen = new AroopCCodegenImpl ();
 
 		bool has_c_files = false;
 
 		foreach (string source in sources) {
-			if (context.add_source_filename (source, run_output)) {
+			if (context.ccode.add_source_filename (source, run_output)) {
 				if (source.has_suffix (".c")) {
 					has_c_files = true;
 				}
@@ -336,54 +268,54 @@ class Vala.Compiler {
 		}
 		sources = null;
 		
-		if (context.report.get_errors () > 0 || (fatal_warnings && context.report.get_warnings () > 0)) {
+		if (context.ccode.report.get_errors () > 0 || (fatal_warnings && context.ccode.report.get_warnings () > 0)) {
 			return quit ();
 		}
 		
 		var parser = new Parser ();
-		parser.parse (context);
+		parser.parse (context.ccode);
 
 		var genie_parser = new Genie.Parser ();
-		genie_parser.parse (context);
+		genie_parser.parse (context.ccode);
 
 		var gir_parser = new GirParser ();
-		gir_parser.parse (context);
+		gir_parser.parse (context.ccode);
 
-		if (context.report.get_errors () > 0 || (fatal_warnings && context.report.get_warnings () > 0)) {
+		if (context.ccode.report.get_errors () > 0 || (fatal_warnings && context.ccode.report.get_warnings () > 0)) {
 			return quit ();
 		}
 
 		if (fast_vapi_filename != null) {
 			var interface_writer = new CodeWriter (CodeWriterType.FAST);
-			interface_writer.write_file (context, fast_vapi_filename);
+			interface_writer.write_file (context.ccode, fast_vapi_filename);
 			return quit ();
 		}
 
-		context.check ();
+		context.ccode.check ();
 
-		if (context.report.get_errors () > 0 || (fatal_warnings && context.report.get_warnings () > 0)) {
+		if (context.ccode.report.get_errors () > 0 || (fatal_warnings && context.ccode.report.get_warnings () > 0)) {
 			return quit ();
 		}
 
 		if (!ccode_only && !compile_only && library == null) {
 			// building program, require entry point
-			if (!has_c_files && context.entry_point == null) {
+			if (!has_c_files && context.ccode.entry_point == null) {
 				Report.error (null, "program does not contain a static `main' method");
 			}
 		}
 
 		if (dump_tree != null) {
 			var code_writer = new CodeWriter (CodeWriterType.DUMP);
-			code_writer.write_file (context, dump_tree);
+			code_writer.write_file (context.ccode, dump_tree);
 		}
 
-		if (context.report.get_errors () > 0 || (fatal_warnings && context.report.get_warnings () > 0)) {
+		if (context.ccode.report.get_errors () > 0 || (fatal_warnings && context.ccode.report.get_warnings () > 0)) {
 			return quit ();
 		}
 
-		context.codegen.emit (context);
+		context.ccode.codegen.emit (context.ccode);
 
-		if (context.report.get_errors () > 0 || (fatal_warnings && context.report.get_warnings () > 0)) {
+		if (context.ccode.report.get_errors () > 0 || (fatal_warnings && context.ccode.report.get_warnings () > 0)) {
 			return quit ();
 		}
 
@@ -394,34 +326,6 @@ class Vala.Compiler {
 
 		if (library != null) {
 			if (gir != null) {
-#if false
-				if (context.profile == Profile.GOBJECT) {
-					long gir_len = gir.length;
-					int last_hyphen = gir.last_index_of_char ('-');
-
-					if (last_hyphen == -1 || !gir.has_suffix (".gir")) {
-						Report.error (null, "GIR file name `%s' is not well-formed, expected NAME-VERSION.gir".printf (gir));
-					} else {
-						string gir_namespace = gir.substring (0, last_hyphen);
-						string gir_version = gir.substring (last_hyphen + 1, gir_len - last_hyphen - 5);
-						gir_version.canon ("0123456789.", '?');
-						if (gir_namespace == "" || gir_version == "" || !gir_version[0].isdigit () || gir_version.contains ("?")) {
-							Report.error (null, "GIR file name `%s' is not well-formed, expected NAME-VERSION.gir".printf (gir));
-						} else {
-							var gir_writer = new GIRWriter ();
-
-							// put .gir file in current directory unless -d has been explicitly specified
-							string gir_directory = ".";
-							if (directory != null) {
-								gir_directory = context.directory;
-							}
-
-							gir_writer.write_file (context, gir_directory, gir_namespace, gir_version, library);
-						}
-					}
-				}
-
-#endif
 				gir = null;
 			}
 
@@ -434,10 +338,10 @@ class Vala.Compiler {
 
 			// put .vapi file in current directory unless -d has been explicitly specified
 			if (directory != null && !Path.is_absolute (vapi_filename)) {
-				vapi_filename = "%s%c%s".printf (context.directory, Path.DIR_SEPARATOR, vapi_filename);
+				vapi_filename = "%s%c%s".printf (context.ccode.directory, Path.DIR_SEPARATOR, vapi_filename);
 			}
 
-			interface_writer.write_file (context, vapi_filename);
+			interface_writer.write_file (context.ccode, vapi_filename);
 		}
 
 		if (internal_vapi_filename != null) {
@@ -453,16 +357,16 @@ class Vala.Compiler {
 
 			// put .vapi file in current directory unless -d has been explicitly specified
 			if (directory != null && !Path.is_absolute (vapi_filename)) {
-				vapi_filename = "%s%c%s".printf (context.directory, Path.DIR_SEPARATOR, vapi_filename);
+				vapi_filename = "%s%c%s".printf (context.ccode.directory, Path.DIR_SEPARATOR, vapi_filename);
 			}
 
-			interface_writer.write_file (context, vapi_filename);
+			interface_writer.write_file (context.ccode, vapi_filename);
 
 			internal_vapi_filename = null;
 		}
 
 		if (dependencies != null) {
-			context.write_dependencies (dependencies);
+			context.ccode.write_dependencies (dependencies);
 		}
 
 		if (!ccode_only) {
@@ -471,15 +375,16 @@ class Vala.Compiler {
 				cc_command = Environment.get_variable ("CC");
 			}
 			if (cc_options == null) {
-				ccompiler.compile (context, cc_command, new string[] { });
+				ccompiler.compile (&context, cc_command, new string[] { });
 			} else {
-				ccompiler.compile (context, cc_command, cc_options);
+				ccompiler.compile (&context, cc_command, cc_options);
 			}
 		}
 
 		return quit ();
 	}
 
+#if false
 	static int run_source (string[] args) {
 		int i = 1;
 		if (args[i] != null && args[i].has_prefix ("-")) {
@@ -559,14 +464,17 @@ class Vala.Compiler {
 			return 1;
 		}
 	}
+#endif
 
 	static int main (string[] args) {
 		// initialize locale
 		Intl.setlocale (LocaleCategory.ALL, "");
 
+#if 0
 		if (Path.get_basename (args[0]) == "vala" || Path.get_basename (args[0]) == "vala" + Config.PACKAGE_SUFFIX) {
 			return run_source (args);
 		}
+#endif
 
 		try {
 			var opt_context = new OptionContext ("- Vala Compiler");
@@ -580,7 +488,7 @@ class Vala.Compiler {
 		}
 		
 		if (version) {
-			stdout.printf ("Vala %s\n", Config.BUILD_VERSION);
+			stdout.printf ("Vala %s\n", Config.PACKAGE_VERSION);
 			return 0;
 		}
 		

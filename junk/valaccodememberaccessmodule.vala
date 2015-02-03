@@ -117,8 +117,8 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 			} else {
 				expr.target_value = load_field (field, expr.inner != null ? expr.inner.target_value : null);
 			}
-		} else if (expr.symbol_reference is EnumValue) {
-			var ev = (EnumValue) expr.symbol_reference;
+		} else if (expr.symbol_reference is Vala.EnumValue) {
+			var ev = (Vala.EnumValue) expr.symbol_reference;
 
 			generate_enum_declaration ((Enum) ev.parent_symbol, cfile);
 
@@ -309,8 +309,8 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 					expr.target_value = load_local (local);
 				}
 			}
-		} else if (expr.symbol_reference is Parameter) {
-			var param = (Parameter) expr.symbol_reference;
+		} else if (expr.symbol_reference is Vala.Parameter) {
+			var param = (Vala.Parameter) expr.symbol_reference;
 			if (expr.lvalue) {
 				expr.target_value = get_parameter_cvalue (param);
 			} else {
@@ -379,7 +379,7 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 	}
 
 	/* Returns access values to the given parameter */
-	public override TargetValue get_parameter_cvalue (Parameter param) {
+	public override TargetValue get_parameter_cvalue (Vala.Parameter param) {
 		var result = new GLibValue (param.variable_type.copy ());
 		result.lvalue = true;
 		result.array_null_terminated = get_ccode_array_null_terminated (param);
@@ -440,12 +440,12 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 			} else {
 				var type_as_struct = result.value_type.data_type as Struct;
 
-				if (param.direction == ParameterDirection.OUT) {
+				if (param.direction == Vala.ParameterDirection.OUT) {
 					name = "_vala_" + name;
 				}
 
-				if (param.direction == ParameterDirection.REF ||
-					(param.direction == ParameterDirection.IN && type_as_struct != null && !type_as_struct.is_simple_type () && !result.value_type.nullable)) {
+				if (param.direction == Vala.ParameterDirection.REF ||
+					(param.direction == Vala.ParameterDirection.IN && type_as_struct != null && !type_as_struct.is_simple_type () && !result.value_type.nullable)) {
 					result.cvalue = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, new CCodeIdentifier (get_variable_cname (name)));
 				} else {
 					// Property setters of non simple structs shall replace all occurences
@@ -464,7 +464,7 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 				if (delegate_type != null && delegate_type.delegate_symbol.has_target) {
 					CCodeExpression target_expr = new CCodeIdentifier (get_delegate_target_cname (get_variable_cname (name)));
 					CCodeExpression delegate_target_destroy_notify = new CCodeIdentifier (get_delegate_target_destroy_notify_cname (get_variable_cname (name)));
-					if (param.direction == ParameterDirection.REF) {
+					if (param.direction == Vala.ParameterDirection.REF) {
 						// accessing argument of ref param
 						target_expr = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, target_expr);
 						delegate_target_destroy_notify = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, delegate_target_destroy_notify);
@@ -479,9 +479,9 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 				if (get_ccode_array_length (param) && !get_ccode_array_null_terminated (param)) {
 					for (int dim = 1; dim <= array_type.rank; dim++) {
 						CCodeExpression length_expr = get_variable_cexpression (get_parameter_array_length_cname (param, dim));
-						if (param.direction == ParameterDirection.OUT) {
+						if (param.direction == Vala.ParameterDirection.OUT) {
 							length_expr = get_variable_cexpression (get_array_length_cname (get_variable_cname (name), dim));
-						} else if (param.direction == ParameterDirection.REF) {
+						} else if (param.direction == Vala.ParameterDirection.REF) {
 							// accessing argument of ref param
 							length_expr = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, length_expr);
 						}
@@ -695,7 +695,7 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 			// special handling for types such as va_list
 			use_temp = false;
 		}
-		if (variable is Parameter && variable.name == "self_data") {
+		if (variable is Vala.Parameter && variable.name == "self_data") {
 			use_temp = false;
 		}
 		if (variable.single_assignment && !result.value_type.is_real_non_null_struct_type ()) {
@@ -724,13 +724,13 @@ public abstract class aroop.CCodeMemberAccessModule : CCodeControlFlowModule {
 	}
 
 	/* Returns unowned access to the given parameter */
-	public override TargetValue load_parameter (Parameter param) {
+	public override TargetValue load_parameter (Vala.Parameter param) {
 		return load_variable (param, get_parameter_cvalue (param));
 	}
 
 	/* Convenience method returning access to "self_data" */
 	public override TargetValue load_this_parameter (TypeSymbol sym) {
-		var param = new Parameter ("self_data", get_data_type_for_symbol (sym));
+		var param = new Vala.Parameter ("self_data", get_data_type_for_symbol (sym));
 		return load_parameter (param);
 	}
 

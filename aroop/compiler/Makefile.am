@@ -1,28 +1,30 @@
 NULL =
 
-BUILT_SOURCES = aroopc.vala.stamp
-
 bin_PROGRAMS = \
-	aroopc \
+	aroopc@PACKAGE_SUFFIX@ \
 	$(NULL)
 
-aroopc_VALASOURCES = \
+aroopc@PACKAGE_SUFFIX@_SOURCES = \
 	aroopcompiler.vala \
 	$(NULL)
 
-aroopc_SOURCES = \
-	$(aroopc_VALASOURCES:.vala=.c) \
-	$(NULL)
-
-aroopc_LDADD = \
+aroopc@PACKAGE_SUFFIX@_LDADD = \
         $(GLIB_LIBS) \
         $(GEE_LIBS) \
         $(VALA_LIBS) \
-	$(top_srcdir)/aroop/codegen/libaroop@PACKAGE_SUFFIX@.la \
+	$(top_srcdir)/aroop/codegen/libaroopcodegen.la \
         $(NULL)
 
-aroopc_VALAFLAGS = \
-        --vapidir $(top_srcdir)/aroop/codegen \
+aroopc@PACKAGE_SUFFIX@_CFLAGS = \
+        $(GLIB_CFLAGS) \
+        $(GEE_CFLAGS) \
+        $(VALA_CFLAGS) \
+	-I$(top_srcdir)/aroop/codegen/ \
+        $(NULL)
+
+
+aroopc@PACKAGE_SUFFIX@_VALAFLAGS = \
+        --vapidir $(top_srcdir)/aroop/codegen --pkg codegen \
         --pkg config \
         --pkg gee-1.0 \
         --pkg $(VALA_PACKAGE) \
@@ -30,9 +32,9 @@ aroopc_VALAFLAGS = \
         $(NULL)
 
 
-EXTRA_DIST = $(aroopc_VALASOURCES)
+#EXTRA_DIST = $(aroopc@PACKAGE_SUFFIX@_VALASOURCES)
 
 MAINTAINERCLEANFILES = \
-	$(aroopc_VALASOURCES:.vala=.c) \
+	$(aroopc@PACKAGE_SUFFIX@_SOURCES:.vala=.c) \
 	$(NULL)
 

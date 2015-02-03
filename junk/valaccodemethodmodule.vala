@@ -284,7 +284,7 @@ public abstract class aroop.CCodeMethodModule : CCodeStructModule {
 			creturn_type = new VoidType ();
 		}
 
-		foreach (Parameter param in m.get_parameters ()) {
+		foreach (Vala.Parameter param in m.get_parameters ()) {
 			param.accept (this);
 		}
 
@@ -436,12 +436,12 @@ public abstract class aroop.CCodeMethodModule : CCodeStructModule {
 					}
 				}
 
-				foreach (Parameter param in m.get_parameters ()) {
+				foreach (Vala.Parameter param in m.get_parameters ()) {
 					if (param.ellipsis) {
 						break;
 					}
 
-					if (param.direction != ParameterDirection.OUT) {
+					if (param.direction != Vala.ParameterDirection.OUT) {
 						var t = param.variable_type.data_type;
 						if (t != null && (t.is_reference_type () || param.variable_type.is_real_struct_type ())) {
 							create_method_type_check_statement (m, creturn_type, t, !param.variable_type.nullable, get_variable_cname (param.name));
@@ -715,7 +715,7 @@ public abstract class aroop.CCodeMethodModule : CCodeStructModule {
 		pop_line ();
 	}
 
-	public virtual CCodeParameter generate_parameter (Parameter param, CCodeFile decl_space, Map<int,CCodeParameter> cparam_map, Map<int,CCodeExpression>? carg_map) {
+	public virtual CCodeParameter generate_parameter (Vala.Parameter param, CCodeFile decl_space, Map<int,CCodeParameter> cparam_map, Map<int,CCodeExpression>? carg_map) {
 		CCodeParameter cparam;
 		if (!param.ellipsis) {
 			string ctypename = get_ccode_name (param.variable_type);
@@ -725,7 +725,7 @@ public abstract class aroop.CCodeMethodModule : CCodeStructModule {
 			// pass non-simple structs always by reference
 			if (param.variable_type.data_type is Struct) {
 				var st = (Struct) param.variable_type.data_type;
-				if (!st.is_simple_type () && param.direction == ParameterDirection.IN) {
+				if (!st.is_simple_type () && param.direction == Vala.ParameterDirection.IN) {
 					if (st.is_immutable && !param.variable_type.value_owned) {
 						ctypename = "const " + ctypename;
 					}
@@ -736,7 +736,7 @@ public abstract class aroop.CCodeMethodModule : CCodeStructModule {
 				}
 			}
 
-			if (param.direction != ParameterDirection.IN) {
+			if (param.direction != Vala.ParameterDirection.IN) {
 				ctypename += "*";
 			}
 
@@ -834,8 +834,8 @@ public abstract class aroop.CCodeMethodModule : CCodeStructModule {
 			}
 		}
 
-		foreach (Parameter param in m.get_parameters ()) {
-			if (param.direction != ParameterDirection.OUT) {
+		foreach (Vala.Parameter param in m.get_parameters ()) {
+			if (param.direction != Vala.ParameterDirection.OUT) {
 				if ((direction & 1) == 0) {
 					// no in paramters
 					continue;

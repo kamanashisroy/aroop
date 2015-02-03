@@ -43,7 +43,7 @@ public abstract class aroop.AroopMethodModule : AroopBlockModule {
 	public override void visit_method (Method m) {
 		push_context (new EmitContext (m));
 
-		foreach (Parameter param in m.get_parameters ()) {
+		foreach (Vala.Parameter param in m.get_parameters ()) {
 			param.accept (this);
 		}
 
@@ -101,14 +101,14 @@ public abstract class aroop.AroopMethodModule : AroopBlockModule {
 						, ccode
 					);
 				}
-				foreach (Parameter param in m.get_parameters ()) {
+				foreach (Vala.Parameter param in m.get_parameters ()) {
 					if (param.ellipsis) {
 						break;
 					}
 
 					var t = param.variable_type.data_type;
 					if (t != null && t.is_reference_type ()) {
-						if (param.direction == ParameterDirection.OUT) {
+						if (param.direction == Vala.ParameterDirection.OUT) {
 							// ensure that the passed reference for output parameter is cleared
 							var a = new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)), new CCodeConstant ("NULL"));
 							var cblock = new CCodeBlock ();

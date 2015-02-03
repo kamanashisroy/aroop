@@ -36,7 +36,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 		var ccall = new CCodeFunctionCall (get_cvalue (expr.call));
 
 		Method m = null;
-		List<Parameter> params;
+		Vala.List<Vala.Parameter> params;
 
 		var ma = expr.call as MemberAccess;
 
@@ -55,7 +55,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 		} else if (itype is DelegateType) {
 #if false
 			bool is_param = false;
-			foreach (Parameter param in current_method.get_parameters ()) {
+			foreach (Vala.Parameter param in current_method.get_parameters ()) {
 				//print("symbol:%s:parent:%s\n".printf(expr.call.to_string(), param.name.to_string()));
 				if(param.name == expr.call.to_string()) {
 					is_param = true;
@@ -121,7 +121,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 		bool ellipsis = false;
 
 		int i = 1;
-		Iterator<Parameter> params_it = params.iterator ();
+		Iterator<Vala.Parameter> params_it = params.iterator ();
 		foreach (Expression arg in expr.get_argument_list ()) {
 			CCodeExpression cexpr = get_cvalue (arg);
 
@@ -134,19 +134,19 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 					// unref old value for non-null non-weak ref/out arguments
 					// disabled for arrays for now as that requires special handling
 					// (ret_tmp = call (&tmp), var1 = (assign_tmp = dup (tmp), free (var1), assign_tmp), ret_tmp)
-					if (param.direction != ParameterDirection.IN && requires_destroy (arg.value_type)
-					    && (param.direction == ParameterDirection.OUT || !param.variable_type.value_owned)
+					if (param.direction != Vala.ParameterDirection.IN && requires_destroy (arg.value_type)
+					    && (param.direction == Vala.ParameterDirection.OUT || !param.variable_type.value_owned)
 					    && !(param.variable_type is ArrayType)) {
 						var unary = (UnaryExpression) arg;
 
 						var ccomma = new CCodeCommaExpression ();
 
 						var temp_var = get_temp_variable (param.variable_type, param.variable_type.value_owned);
-						temp_var.is_imaginary = true;
+						//temp_var.is_imaginary = true;
 						emit_temp_var (temp_var);
 						cexpr = new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_variable_cexpression (temp_var.name));
 
-						if (param.direction == ParameterDirection.REF) {
+						if (param.direction == Vala.ParameterDirection.REF) {
 							var crefcomma = new CCodeCommaExpression ();
 							crefcomma.append_expression (new CCodeAssignment (get_variable_cexpression (temp_var.name), get_cvalue (unary.inner)));
 							crefcomma.append_expression (cexpr);
@@ -159,7 +159,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 							ccomma.append_expression (ccall_expr);
 						} else {
 							ret_temp_var = get_temp_variable (itype.get_return_type ());
-							ret_temp_var.is_imaginary = true;
+							//ret_temp_var.is_imaginary = true;
 							emit_temp_var (ret_temp_var);
 							ccomma.append_expression (new CCodeAssignment (get_variable_cexpression (ret_temp_var.name), ccall_expr));
 						}
@@ -167,7 +167,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 						var cassign_comma = new CCodeCommaExpression ();
 
 						var assign_temp_var = get_temp_variable (unary.inner.value_type, unary.inner.value_type.value_owned);
-						assign_temp_var.is_imaginary = true;
+						//assign_temp_var.is_imaginary = true;
 						emit_temp_var (assign_temp_var);
 
 						cassign_comma.append_expression (new CCodeAssignment (get_variable_cexpression (assign_temp_var.name), transform_expression (get_variable_cexpression (temp_var.name), param.variable_type, unary.inner.value_type, arg)));
@@ -243,7 +243,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 			var ccomma = new CCodeCommaExpression ();
 
 			var temp_var = get_temp_variable (expr.value_type);
-			temp_var.is_imaginary = true;
+			//temp_var.is_imaginary = true;
 			emit_temp_var (temp_var);
 			//if (expr.value_type is GenericType) {
 				//ccall.add_argument (get_variable_cexpression (temp_var.name));

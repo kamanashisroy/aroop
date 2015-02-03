@@ -170,7 +170,7 @@ public abstract class aroop.TypeRegisterFunction {
 			var clist = new CCodeInitializerList (); /* or during visit time? */
 
 			CCodeInitializerList clist_ev = null;
-			foreach (EnumValue ev in en.get_values ()) {
+			foreach (Vala.EnumValue ev in en.get_values ()) {
 				clist_ev = new CCodeInitializerList ();
 				clist_ev.append (new CCodeConstant (CCodeBaseModule.get_ccode_name (ev)));
 				clist_ev.append (new CCodeIdentifier ("\"%s\"".printf (CCodeBaseModule.get_ccode_name (ev))));
@@ -189,7 +189,7 @@ public abstract class aroop.TypeRegisterFunction {
 			if (en.is_flags) {
 				cdecl = new CCodeDeclaration ("const GFlagsValue");
 			} else {
-				cdecl = new CCodeDeclaration ("const GEnumValue");
+				cdecl = new CCodeDeclaration ("const GVala.EnumValue");
 			}
 
 			cdecl.add_declarator (enum_decl);

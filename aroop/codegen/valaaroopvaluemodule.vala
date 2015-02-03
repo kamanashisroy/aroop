@@ -162,6 +162,7 @@ public class aroop.AroopValueModule : AroopObjectModule {
 		}
 	}
 
+#if false
 	public override void visit_list_literal (ListLiteral expr) {
 		CCodeExpression ptr;
 		int length = expr.get_expressions ().size;
@@ -289,7 +290,6 @@ public class aroop.AroopValueModule : AroopObjectModule {
 
 		set_cvalue (expr, map_creation);
 	}
-
 	public override void visit_tuple (Tuple tuple) {
 		var type_array_type = new ArrayType (new PointerType (new VoidType ()), 1, tuple.source_reference);
 		type_array_type.inline_allocated = true;
@@ -351,4 +351,5 @@ public class aroop.AroopValueModule : AroopObjectModule {
 
 		set_cvalue (tuple, tuple_creation);
 	}
+#endif
 }

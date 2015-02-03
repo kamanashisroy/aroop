@@ -8,7 +8,7 @@ m4_define([aroop_api_version], [0.1])
 m4_define([aroop_name], [aroop])
 
 AC_PREREQ([2.64])
-AC_INIT([Maja], [aroop_version], [lucabru@src.gnome.org])
+AC_INIT([Aroop], [aroop_version], [kamanashisroy@github.com])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([dist-bzip2])
@@ -19,6 +19,7 @@ AROOP_MINOR_VERSION=aroop_minor
 AROOP_MICRO_VERSION=aroop_micro
 AROOP_VERSION=aroop_version
 AROOP_API_VERSION=aroop_api_version
+PACKAGE_SUFFIX=AROOP_VERSION
 AC_SUBST(AROOP_MAJOR_VERSION)
 AC_SUBST(AROOP_MINOR_VERSION)
 AC_SUBST(AROOP_MICRO_VERSION)
@@ -30,8 +31,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 GLIB_REQUIRED=2.16.0
 GEE_REQUIRED=0.5.0
-VALA_REQUIRED=0.15.0
-
+VALA_REQUIRED=0.17.0
 
 # Checks for libraries.
 PKG_CHECK_MODULES(GEE, gee-1.0 >= $GEE_REQUIRED)
@@ -42,7 +42,7 @@ AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
 
-VALA_PACKAGE=libvala-0.16
+VALA_PACKAGE=libvala-0.26
 AC_SUBST(VALA_PACKAGE)
 
 PKG_CHECK_MODULES(VALA, $VALA_PACKAGE >= $VALA_REQUIRED)

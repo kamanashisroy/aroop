@@ -78,13 +78,15 @@ public abstract class aroop.AroopStructModule : AroopBaseModule {
 		}
 		var array_type = f.variable_type as ArrayType;
 		if (array_type != null && array_type.fixed_length) {
-			for (int i = 0; i < array_type.length; i++) {
+			// TODO cleanup array
+			int i = 0;
+			//for (int i = 0; i < array_type.length; i++) {
 				var fld = new CCodeMemberAccess.pointer(new CCodeIdentifier(self_instance), get_ccode_name(f));
 				var element = new CCodeElementAccess (fld, new CCodeConstant (i.to_string ()));
 				if (requires_destroy (array_type.element_type))  {
 					stmt.add_statement(new CCodeExpressionStatement(get_unref_expression(element, array_type.element_type)));
 				}
-			}
+			//}
 			return;
 		}
 		if (requires_destroy (f.variable_type))  {
@@ -218,14 +220,14 @@ public abstract class aroop.AroopStructModule : AroopBaseModule {
 		return returnparam;
 	}
 
-	public override CCodeExpression? generate_cargument_for_struct (Parameter param, Expression arg, CCodeExpression? cexpr) {
+	public override CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		if (!((arg.formal_target_type is StructValueType) || (arg.formal_target_type is PointerType))) {
 			return cexpr;
 		}
 
 		if(arg.formal_target_type is PointerType) {
 			if(arg.target_type is PointerType) {
-				if (param.direction == ParameterDirection.IN) {
+				if (param.direction == Vala.ParameterDirection.IN) {
 					CCodeUnaryExpression?unary = null;
 					if ((unary = cexpr as CCodeUnaryExpression) != null) {
 						if(unary.operator == CCodeUnaryOperator.ADDRESS_OF 
@@ -258,7 +260,7 @@ public abstract class aroop.AroopStructModule : AroopBaseModule {
 		return cexpr;
 	}
 	
-	public override CCodeExpression? handle_struct_argument (Parameter param, Expression arg, CCodeExpression? cexpr) {
+	public override CCodeExpression? handle_struct_argument (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		assert_not_reached ();
 		return null;
 	}

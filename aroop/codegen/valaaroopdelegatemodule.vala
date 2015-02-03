@@ -61,7 +61,7 @@ public class aroop.AroopDelegateModule : AroopValueModule {
 		
 		function.add_parameter (new CCodeParameter ("_closure_data", "void*"));
 		
-		foreach (Parameter param in d.get_parameters ()) {
+		foreach (Vala.Parameter param in d.get_parameters ()) {
 			generate_type_declaration (param.variable_type, decl_space);
 
 			function.add_parameter (new CCodeParameter (param.name, get_ccode_name (param.variable_type)));
@@ -117,7 +117,7 @@ public class aroop.AroopDelegateModule : AroopValueModule {
 				dleg_expr = new CCodeIdentifier("NULL");
 			}
 			if(dleg_expr == null) {
-				Parameter? pm = (Parameter)arg;
+				Vala.Parameter? pm = (Vala.Parameter)arg;
 				if(pm != null)
 					dleg_expr = new CCodeIdentifier(pm.to_string() + "_closure_data");
 				else

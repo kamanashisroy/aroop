@@ -164,7 +164,7 @@ public class aroop.CCodeAssignmentModule : CCodeMemberAccessModule {
 		store_value (get_local_cvalue (local), value);
 	}
 
-	public override void store_parameter (Parameter param, TargetValue value) {
+	public override void store_parameter (Vala.Parameter param, TargetValue value) {
 		if (requires_destroy (param.variable_type)) {
 			/* unref old value */
 			ccode.add_expression (destroy_parameter (param));

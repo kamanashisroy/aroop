@@ -78,7 +78,7 @@ public class aroop.AroopArrayModule : AroopMethodCallModule {
 	}
 
 	public override void visit_element_access (ElementAccess expr) {
-		List<Expression> indices = expr.get_indices ();
+		Vala.List<Expression> indices = expr.get_indices ();
 
 		var ccontainer = get_cvalue (expr.container);
 		var cindex = get_cvalue (indices[0]);

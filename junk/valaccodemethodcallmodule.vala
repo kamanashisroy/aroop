@@ -34,7 +34,7 @@ public class aroop.CCodeMethodCallModule : CCodeAssignmentModule {
 
 		Method m = null;
 		Delegate deleg = null;
-		List<Parameter> params;
+		Vala.List<Vala.Parameter> params;
 		
 		var ma = expr.call as MemberAccess;
 		
@@ -44,7 +44,7 @@ public class aroop.CCodeMethodCallModule : CCodeAssignmentModule {
 		if (itype is MethodType) {
 			assert (ma != null);
 			m = ((MethodType) itype).method_symbol;
-			if (ma.inner != null && ma.inner.value_type is EnumValueType && ((EnumValueType) ma.inner.value_type).get_to_string_method() == m) {
+			if (ma.inner != null && ma.inner.value_type is Vala.EnumValueType && ((Vala.EnumValueType) ma.inner.value_type).get_to_string_method() == m) {
 				// Enum.VALUE.to_string()
 				var en = (Enum) ma.inner.value_type.data_type;
 				ccall.call = new CCodeIdentifier (generate_enum_tostring_function (en));
@@ -134,7 +134,7 @@ public class aroop.CCodeMethodCallModule : CCodeAssignmentModule {
 					// chain up to base class
 					foreach (DataType base_type in current_class.get_base_types ()) {
 						if (base_type.data_type is Class) {
-							List<TypeParameter> type_parameters = null;
+							Vala.List<TypeParameter> type_parameters = null;
 							if (get_ccode_real_name (m) == "g_object_new") {
 								// gobject-style chainup
 								type_parameters = ((Class) base_type.data_type).get_type_parameters ();
@@ -260,21 +260,21 @@ public class aroop.CCodeMethodCallModule : CCodeAssignmentModule {
 				var unary = arg as UnaryExpression;
 				if (unary != null && unary.operator == UnaryOperator.OUT) {
 					// out argument
-					var param = new Parameter ("param%d".printf (param_nr), unary.inner.value_type);
-					param.direction = ParameterDirection.OUT;
+					var param = new Vala.Parameter ("param%d".printf (param_nr), unary.inner.value_type);
+					param.direction = Vala.ParameterDirection.OUT;
 					m.add_parameter (param);
 				} else if (unary != null && unary.operator == UnaryOperator.REF) {
 					// ref argument
-					var param = new Parameter ("param%d".printf (param_nr), unary.inner.value_type);
-					param.direction = ParameterDirection.REF;
+					var param = new Vala.Parameter ("param%d".printf (param_nr), unary.inner.value_type);
+					param.direction = Vala.ParameterDirection.REF;
 					m.add_parameter (param);
 				} else {
 					// in argument
-					m.add_parameter (new Parameter ("param%d".printf (param_nr), arg.value_type));
+					m.add_parameter (new Vala.Parameter ("param%d".printf (param_nr), arg.value_type));
 				}
 				param_nr++;
 			}
-			foreach (Parameter param in m.get_parameters ()) {
+			foreach (Vala.Parameter param in m.get_parameters ()) {
 				param.accept (this);
 			}
 			generate_dynamic_method_wrapper ((DynamicMethod) m);
@@ -309,7 +309,7 @@ public class aroop.CCodeMethodCallModule : CCodeAssignmentModule {
 		
 		int i = 1;
 		int arg_pos;
-		Iterator<Parameter> params_it = params.iterator ();
+		Iterator<Vala.Parameter> params_it = params.iterator ();
 		foreach (Expression arg in expr.get_argument_list ()) {
 			CCodeExpression cexpr = get_cvalue (arg);
 
@@ -319,7 +319,7 @@ public class aroop.CCodeMethodCallModule : CCodeAssignmentModule {
 				var param = params_it.get ();
 				ellipsis = param.params_array || param.ellipsis;
 				if (!ellipsis) {
-					if (param.direction == ParameterDirection.OUT) {
+					if (param.direction == Vala.ParameterDirection.OUT) {
 						carg_map = out_arg_map;
 					}
 

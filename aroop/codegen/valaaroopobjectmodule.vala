@@ -65,8 +65,9 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 
 		proto.generate_type_declaration(decl_space);
 		//decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (get_ccode_aroop_name (cl))));
+		bool has_vtables = hasVtables(cl);
 
-		if(cl.has_vtables) {
+		if(has_vtables) {
 			generate_vtable(cl, decl_space);
 		}
 		
@@ -82,7 +83,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			class_struct.add_field (get_aroop_type_cname(), get_generic_class_variable_cname(tparams));
 			tparams++;
 		}
-		if(cl.has_vtables) {
+		if(has_vtables) {
 			class_struct.add_field ("%s*".printf(get_ccode_vtable_struct (cl)), "vtable");
 		}
 		decl_space.add_type_definition (class_struct);
@@ -95,7 +96,11 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 				Report.error (prop.source_reference, "virtual or abstract property is not supported");
 			}
 			generate_type_declaration (prop.property_type, decl_space);
-			var prop_name = get_ccode_name (prop.field) + get_ccode_declarator_suffix (prop.field.variable_type);
+			var prop_name = get_ccode_name (prop.field);
+#if false
+			// TODO add array accessor
+			 + get_ccode_declarator_suffix (prop.field.variable_type).to_string();
+#endif
 			var prop_accessor = "";
 			var get_params = "";
 			var set_params = "y";
@@ -208,7 +213,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 	}
 
 	private void add_vtable_ovrd_variables_external(Class cl, Class of_class) {
-		if(of_class.external_package && of_class.has_vtables) {
+		if(of_class.external_package && hasVtables(of_class)) {
 			var vbdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
 			vbdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(
 				cl, of_class)));
@@ -225,7 +230,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			add_vtable_ovrd_variables(cl, of_class.base_class);
 		}
 		add_vtable_ovrd_variables_external(of_class, of_class);
-		if(!of_class.has_vtables) {
+		if(!hasVtables(of_class)) {
 			return;
 		}
 		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
@@ -237,7 +242,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		if(of_class.base_class != null) {
 			cpy_vtable_of_base_class(cl, of_class.base_class, block);			
 		}
-		if(!of_class.has_vtables) {
+		if(!hasVtables(of_class)) {
 			return;
 		}
 		block.add_statement (
@@ -329,7 +334,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		if(of_class.base_class != null) {
 			set_vtables(cl, of_class.base_class, block);			
 		}
-		if(!of_class.has_vtables) {
+		if(!hasVtables(of_class)) {
 			return;
 		}
 		block.add_statement (new CCodeExpressionStatement (
@@ -1009,14 +1014,14 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			}
 		}
 
-		foreach (Parameter param in m.get_parameters ()) {
+		foreach (Vala.Parameter param in m.get_parameters ()) {
 			CCodeParameter cparam;
 			if (!param.ellipsis) {
 				string ctypename = get_ccode_aroop_name (param.variable_type);
 
 				generate_type_declaration (param.variable_type, decl_space);
 
-				if (param.direction != ParameterDirection.IN && !(param.variable_type is GenericType)) {
+				if (param.direction != Vala.ParameterDirection.IN && !(param.variable_type is GenericType)) {
 					ctypename += "*";
 				}
 
@@ -1085,7 +1090,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 
 			expr.accept_children (this);
 
-			List<Expression> indices = expr.get_indices ();
+			Vala.List<Expression> indices = expr.get_indices ();
 			var cindex = get_cvalue (indices[0]);
 
 			if (array_type.inline_allocated) {
@@ -1116,4 +1121,5 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			base.visit_element_access (expr);
 		}
 	}
+
 }

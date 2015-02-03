@@ -58,7 +58,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 		}
 
 		CCodeFunctionCall gnew;
-		if (context.profile == Profile.POSIX) {
+		if (isPosix) {
 			cfile.add_include ("stdlib.h");
 			gnew = new CCodeFunctionCall (new CCodeIdentifier ("calloc"));
 		} else {
@@ -89,7 +89,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 		
 		gnew.add_argument (cexpr);
 
-		if (context.profile == Profile.POSIX) {
+		if (isPosix) {
 			var csizeof = new CCodeFunctionCall (new CCodeIdentifier ("sizeof"));
 			csizeof.add_argument (new CCodeIdentifier (get_ccode_name (expr.element_type)));
 			gnew.add_argument (csizeof);
@@ -114,7 +114,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 		return "%s_length%d".printf (array_cname, dim);
 	}
 
-	public override string get_parameter_array_length_cname (Parameter param, int dim) {
+	public override string get_parameter_array_length_cname (Vala.Parameter param, int dim) {
 		if (get_ccode_array_length_name (param) != null) {
 			return get_ccode_array_length_name (param);
 		} else {
@@ -146,7 +146,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 			}
 		}
 
-		List<CCodeExpression> size = ((GLibValue) value).array_length_cvalues;
+		Vala.List<CCodeExpression> size = ((GLibValue) value).array_length_cvalues;
 		assert (size != null && size.size >= dim);
 		return size[dim - 1];
 	}
@@ -156,7 +156,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 	}
 
 	public override void visit_element_access (ElementAccess expr) {
-		List<Expression> indices = expr.get_indices ();
+		Vala.List<Expression> indices = expr.get_indices ();
 		int rank = indices.size;
 
 		var ccontainer = get_cvalue (expr.container);
@@ -539,6 +539,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 		
 	CCodeExpression generate_fixed_array_length_expression(ArrayType array_type) {
 		assert_not_reached();
+#if false
 		assert(array_type.fixed_length);
 		if(array_type.const_size != null && array_type.length == 0) {
 #if false
@@ -552,6 +553,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 			return get_cvalue(array_type.const_size);
 #endif
 		}
+#endif
 		assert_not_reached();
 		return new CCodeConstant ("%d".printf (array_type.length));
 	}
@@ -709,7 +711,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 			return;
 		}
 
-		var value_param = new Parameter ("value", element.target_type);
+		var value_param = new Vala.Parameter ("value", element.target_type);
 
 		var ccall = new CCodeFunctionCall (new CCodeIdentifier (generate_array_add_wrapper (array_type)));
 		ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_cvalue (array)));
@@ -720,14 +722,14 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 		ccode.add_expression (ccall);
 	}
 
-	public override CCodeParameter generate_parameter (Parameter param, CCodeFile decl_space, Map<int,CCodeParameter> cparam_map, Map<int,CCodeExpression>? carg_map) {
+	public override CCodeParameter generate_parameter (Vala.Parameter param, CCodeFile decl_space, Map<int,CCodeParameter> cparam_map, Map<int,CCodeExpression>? carg_map) {
 		if (!(param.variable_type is ArrayType)) {
 			return base.generate_parameter (param, decl_space, cparam_map, carg_map);
 		}
 
 		string ctypename = get_ccode_name (param.variable_type);
 
-		if (param.direction != ParameterDirection.IN) {
+		if (param.direction != Vala.ParameterDirection.IN) {
 			ctypename += "*";
 		}
 
@@ -747,7 +749,7 @@ public class aroop.CCodeArrayModule : CCodeMethodCallModule {
 			if (get_ccode_array_length_type (param) != null) {
 				length_ctype = get_ccode_array_length_type (param);
 			}
-			if (param.direction != ParameterDirection.IN) {
+			if (param.direction != Vala.ParameterDirection.IN) {
 				length_ctype = "%s*".printf (length_ctype);
 			}
 			

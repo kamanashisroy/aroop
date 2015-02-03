@@ -23,6 +23,20 @@
 using GLib;
 using Vala;
 
+public enum aroop.Profile {
+	AROOP = 1,
+	POSIX,
+}
+public struct aroop.CodeCompilerContext {
+	public aroop.Profile profile;
+	public bool static_link;
+	public CodeContext ccode;
+	public CodeCompilerContext() {
+		ccode = new CodeContext();
+		static_link = false;
+		profile = Profile.AROOP;
+	}
+}
 /**
  * Interface to the C compiler.
  */
@@ -49,31 +63,22 @@ public class aroop.CCodeCompiler {
 	 *
 	 * @param context a code context
 	 */
-	public void compile (CodeContext context, string? cc_command, string[] cc_options) {
+	public void compile (CodeCompilerContext*context, string? cc_command, string[] cc_options) {
 		bool use_pkgconfig = false;
 
 		string pc = "pkg-config --cflags";
-		if (!context.compile_only) {
+		if (!context.ccode.compile_only) {
 			pc += " --libs";
 		}
 		if (context.static_link) {
 			pc += " --static";
 		}
-		if (context.debug) {
+		if (context.ccode.debug) {
 			pc += " --define-variable=variant=debug";
 		}
-		if (context.profile == Profile.GOBJECT) {
-			use_pkgconfig = true;
-			pc += " gobject-2.0";
-			if (context.thread) {
-				pc += " gthread-2.0";
-			}
-		}
-		if (context.profile == Profile.AROOP) {
-			use_pkgconfig = true;
-			pc += " aroop_core-1.0";
-		}
-		foreach (string pkg in context.get_packages ()) {
+		use_pkgconfig = true;
+		pc += " aroop_core-1.0";
+		foreach (string pkg in context.ccode.get_packages ()) {
 			if (package_exists (pkg)) {
 				use_pkgconfig = true;
 				pc += " " + pkg;
@@ -100,30 +105,30 @@ public class aroop.CCodeCompiler {
 			cc_command = "cc";
 		}
 		string cmdline = cc_command;
-		if (context.debug) {
+		if (context.ccode.debug) {
 			cmdline += " -g";
 			//if (context.profile == Profile.AROOP) {
 				cmdline += " -DAROOP_OPP_PROFILE -DMTRACE";
 			//}
 		}
-		if (context.compile_only) {
+		if (context.ccode.compile_only) {
 			cmdline += " -c";
-		} else if (context.output != null) {
-			string output = context.output;
-			if (context.directory != null && context.directory != "" && !Path.is_absolute (context.output)) {
-				output = "%s%c%s".printf (context.directory, Path.DIR_SEPARATOR, context.output);
+		} else if (context.ccode.output != null) {
+			string output = context.ccode.output;
+			if (context.ccode.directory != null && context.ccode.directory != "" && !Path.is_absolute (context.ccode.output)) {
+				output = "%s%c%s".printf (context.ccode.directory, Path.DIR_SEPARATOR, context.ccode.output);
 			}
 			cmdline += " -o " + Shell.quote (output);
 		}
 
 		/* we're only interested in non-pkg source files */
-		var source_files = context.get_source_files ();
+		var source_files = context.ccode.get_source_files ();
 		foreach (SourceFile file in source_files) {
 			if (file.file_type == SourceFileType.SOURCE) {
 				cmdline += " " + Shell.quote (file.get_csource_filename ());
 			}
 		}
-		var c_source_files = context.get_c_source_files ();
+		var c_source_files = context.ccode.get_c_source_files ();
 		foreach (string file in c_source_files) {
 			cmdline += " " + Shell.quote (file);
 		}
@@ -135,7 +140,7 @@ public class aroop.CCodeCompiler {
 			cmdline += " " + Shell.quote (cc_option);
 		}
 
-		if (context.verbose_mode) {
+		if (context.ccode.verbose_mode) {
 			stdout.printf ("%s\n", cmdline);
 		}
 
@@ -152,7 +157,7 @@ public class aroop.CCodeCompiler {
 		/* remove generated C source and header files */
 		foreach (SourceFile file in source_files) {
 			if (file.file_type == SourceFileType.SOURCE) {
-				if (!context.save_csources) {
+				if (!context.ccode.save_csources) {
 					FileUtils.unlink (file.get_csource_filename ());
 				}
 			}

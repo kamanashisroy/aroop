@@ -39,7 +39,7 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 		return "_data%d_".printf (block_id);
 	}
 
-	void block_add_parameter(Block b, Parameter param, CCodeStruct block_struct, CCodeBlock free_block) {
+	void block_add_parameter(Block b, Vala.Parameter param, CCodeStruct block_struct, CCodeBlock free_block) {
 		generate_type_declaration (param.variable_type, cfile);
 		var param_type = param.variable_type.copy ();
 		//param_type.value_owned = true;
@@ -97,7 +97,8 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 			if (local.captured) {
 				generate_type_declaration (local.variable_type, decl_space);
 
-				block_struct.add_field (get_ccode_aroop_name (local.variable_type), get_variable_cname (local.name) + get_ccode_declarator_suffix (local.variable_type), null, generate_declarator_suffix_cexpr(local.variable_type));
+				//block_struct.add_field (get_ccode_aroop_name (local.variable_type), get_variable_cname (local.name) + get_ccode_declarator_suffix (local.variable_type), null, generate_declarator_suffix_cexpr(local.variable_type));
+				block_struct.add_field (get_ccode_aroop_name (local.variable_type), get_variable_cname (local.name), get_ccode_declarator_suffix (local.variable_type));
 			}
 		}
 		
@@ -215,7 +216,7 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 		// free in reverse order
 		for (int i = local_vars.size - 1; i >= 0; i--) {
 			var local = local_vars[i];
-			if (!local.floating && !local.captured && requires_destroy (local.variable_type)) {
+			if (/*!local.floating &&*/ !local.captured && requires_destroy (local.variable_type)) {
 				var ma = new MemberAccess.simple (local.name);
 				ma.symbol_reference = local;
 				ccode.add_statement (
@@ -232,8 +233,8 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 
 		if (b.parent_symbol is Method) {
 			var m = (Method) b.parent_symbol;
-			foreach (Parameter param in m.get_parameters ()) {
-				if (!param.captured && requires_destroy (param.variable_type) && param.direction == ParameterDirection.IN) {
+			foreach (Vala.Parameter param in m.get_parameters ()) {
+				if (!param.captured && requires_destroy (param.variable_type) && param.direction == Vala.ParameterDirection.IN) {
 					var ma = new MemberAccess.simple (param.name);
 					ma.symbol_reference = param;
 					ccode.add_statement (
@@ -266,7 +267,7 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 	}
 
 
-	void capture_parameter (Parameter param, Block b) {
+	void capture_parameter (Vala.Parameter param, Block b) {
 		var param_type = param.variable_type.copy ();
 		// create copy if necessary as captured variables may need to be kept alive
 		CCodeExpression cparam = get_variable_cexpression (param.name);
@@ -329,7 +330,7 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 		}
 	}
 	
-	protected CCodeExpression get_parameter_cvalue_for_block(Parameter p) {
+	protected CCodeExpression get_parameter_cvalue_for_block(Vala.Parameter p) {
 		// captured variables are stored on the heap
 		var block = p.parent_symbol as Block;
 		if (block == null) {

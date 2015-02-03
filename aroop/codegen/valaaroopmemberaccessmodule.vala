@@ -38,7 +38,7 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 		if(of_class.base_class != null) {
 			return get_vtable_var(cl, of_class.base_class);
 		}
-		if(of_class.has_vtables) {
+		if(hasVtables(of_class)) {
 			return get_ccode_vtable_var(cl, of_class);
 		}
 		return "unknown";
@@ -51,12 +51,12 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 			return "unknown";
 		}
 		if(of_class.base_class != null) {
-			if(of_class.base_class.has_vtables && of_class.base_class.get_methods().contains(m) ) {
+			if(hasVtables(of_class.base_class) && of_class.base_class.get_methods().contains(m) ) {
 				return get_vtable_var_for_method(cl, of_class.base_class, m);
 			}
 			return get_ccode_vtable_var(cl, of_class);
 		}
-		if(of_class.has_vtables) {
+		if(hasVtables(of_class)) {
 			return get_ccode_vtable_var(cl, of_class);
 		}
 		return "unknown";
@@ -154,8 +154,8 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 		} else if (expr.symbol_reference is Field) {
 			var f = (Field) expr.symbol_reference;
 			expr.target_value = load_field (f, expr.inner != null ? expr.inner.target_value : null);
-		} else if (expr.symbol_reference is EnumValue) {
-			var ev = (EnumValue) expr.symbol_reference;
+		} else if (expr.symbol_reference is Vala.EnumValue) {
+			var ev = (Vala.EnumValue) expr.symbol_reference;
 
 			generate_enum_declaration ((Enum) ev.parent_symbol, cfile);
 
@@ -219,8 +219,8 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 		} else if (expr.symbol_reference is LocalVariable) {
 			var local = (LocalVariable) expr.symbol_reference;
 			expr.target_value = load_local (local);
-		} else if (expr.symbol_reference is Parameter) {
-			var p = (Parameter) expr.symbol_reference;
+		} else if (expr.symbol_reference is Vala.Parameter) {
+			var p = (Vala.Parameter) expr.symbol_reference;
 			expr.target_value = load_parameter (p);
 		}
 	}
@@ -240,7 +240,7 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 		return result;
 	}
 
-	public TargetValue get_parameter_cvalue (Parameter p) {
+	public TargetValue get_parameter_cvalue (Vala.Parameter p) {
 		var result = new AroopValue (p.variable_type);
 
 		if (p.name == self_instance) {
@@ -260,7 +260,7 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 					result.cvalue = get_variable_cexpression (p.name);
 				} else {
 					var type_as_struct = p.variable_type.data_type as Struct;
-					if (p.direction != ParameterDirection.IN
+					if (p.direction != Vala.ParameterDirection.IN
 					    || (type_as_struct != null && !type_as_struct.is_simple_type () && !p.variable_type.nullable)) {
 						if (p.variable_type is GenericType) {
 							result.cvalue = get_variable_cexpression (p.name);
@@ -332,12 +332,20 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 		return load_variable (local, get_local_cvalue (local));
 	}
 
-	public override TargetValue load_parameter (Parameter param) {
+	public override TargetValue load_parameter (Vala.Parameter param) {
 		return load_variable (param, get_parameter_cvalue (param));
 	}
 
 	public override TargetValue load_field (Field field, TargetValue? instance) {
 		return load_variable (field, get_field_cvalue (field, instance));
+	}
+	protected bool hasVtables(Vala.Class given) {
+		foreach (Method m in given.get_methods ()) {
+			if (m.is_abstract || m.is_virtual) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

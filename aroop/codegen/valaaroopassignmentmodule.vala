@@ -107,7 +107,7 @@ public class aroop.AroopAssignmentModule : AroopMemberAccessModule {
 		// simple assignments do not work in C
 		var sizeof_call = new CCodeFunctionCall (new CCodeIdentifier ("sizeof"));
 		sizeof_call.add_argument (new CCodeIdentifier (get_ccode_name (array_type.element_type)));
-		var size = new CCodeBinaryExpression (CCodeBinaryOperator.MUL, new CCodeConstant ("%d".printf (array_type.length)), sizeof_call);
+		var size = new CCodeBinaryExpression (CCodeBinaryOperator.MUL, /*new CCodeConstant ("%d".printf (array_type.length))*/get_cvalue(array_type.length), sizeof_call);
 		var ccopy = new CCodeFunctionCall (new CCodeIdentifier ("memcpy"));
 		ccopy.add_argument (lhs);
 		ccopy.add_argument (rhs);
@@ -171,7 +171,7 @@ public class aroop.AroopAssignmentModule : AroopMemberAccessModule {
 		store_variable (local, get_local_cvalue (local), value, initializer);
 	}
 
-	public override void store_parameter (Parameter param, TargetValue value) {
+	public override void store_parameter (Vala.Parameter param, TargetValue value, bool capturing_parameter = false) {
 		store_variable (param, get_parameter_cvalue (param), value, false);
 	}
 

@@ -17,7 +17,7 @@ libaroopcodegen_la_VALAFLAGS = \
         --pkg gee-1.0 \
         --pkg $(VALA_PACKAGE) \
 	--vapi=codegen.vapi \
-	--use-header --header=valacodegen.h \
+	--use-header --header=aroopcodegen.h \
         -g \
         $(NULL)
 
@@ -26,18 +26,9 @@ lib_LTLIBRARIES = \
 	$(NULL)
 
 libaroopcodegen_la_SOURCES = \
-	valaccodearraymodule.vala \
-	valaccodeassignmentmodule.vala \
 	valaccodeattribute.vala \
 	valaccodebasemodule.vala \
 	valaccodecompiler.vala \
-	valaccodecontrolflowmodule.vala \
-	valaccodedelegatemodule.vala \
-	valaccodememberaccessmodule.vala \
-	valaccodemethodcallmodule.vala \
-	valaccodemethodmodule.vala \
-	valaccodestructmodule.vala \
-	valactype.vala \
 	valaarooparraymodule.vala \
 	valaaroopassignmentmodule.vala \
 	valaaroopbasemodule.vala \
@@ -52,21 +43,16 @@ libaroopcodegen_la_SOURCES = \
 	valaaroopblockmodule.vala \
 	valaaroopvaluemodule.vala \
 	valaarooperrormodule.vala \
-	valaclassregisterfunction.vala \
-	valaenumregisterfunction.vala \
-	valainterfaceregisterfunction.vala \
-	valastructregisterfunction.vala \
-	valatyperegisterfunction.vala \
 	$(NULL)
 
 libaroopcodegen_la_LDFLAGS = -no-undefined
 
-EXTRA_DIST = $(libaroopcodegen_la_VALASOURCES) codegen.vapi
+EXTRA_DIST = codegen.vapi config.vapi
 
 MAINTAINERCLEANFILES = \
 	codegen.vapi \
-	valacodegen.h \
-	$(libaroopcodegen_la_VALASOURCES:.vala=.c) \
+	aroopcodegen.h \
+	$(libaroopcodegen_la_SOURCES:.vala=.c) \
 	$(NULL)
 
 
