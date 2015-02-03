@@ -63,7 +63,6 @@ AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 AM_PROG_VALAC($VALA_REQUIRED)
 
-
 AC_CONFIG_FILES([Makefile
            libaroop.pc
            aroop/codegen/Makefile

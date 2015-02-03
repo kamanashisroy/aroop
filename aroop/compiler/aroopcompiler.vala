@@ -201,7 +201,14 @@ class aroop.Compiler {
 		} else {
 			context.ccode.directory = context.ccode.basedir;
 		}
-		context.ccode.vapi_directories = vapi_directories;
+		context.ccode.vapi_directories = new string[1024];
+		int i = 0;
+		foreach(string x in vapi_directories) {
+			context.ccode.vapi_directories[i] = x;
+			i++;
+		}
+		context.ccode.vapi_directories[i] = Config.VAPI_INSTALL_PREFIX;
+		//context.ccode.vapi_directories = vapi_directories;
 		context.ccode.gir_directories = gir_directories;
 		context.ccode.metadata_directories = metadata_directories;
 		context.ccode.debug = debug;
@@ -470,6 +477,7 @@ class aroop.Compiler {
 
 	static int main (string[] args) {
 		// initialize locale
+		//stdout.printf("datadir:%s\n", Config.VAPI_INSTALL_PREFIX);
 		Intl.setlocale (LocaleCategory.ALL, "");
 
 #if false
