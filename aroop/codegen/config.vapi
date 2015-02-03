@@ -24,4 +24,6 @@
 namespace Config {
 	public const string PACKAGE_VERSION;
 	public const string VAPI_INSTALL_PREFIX;
+	public const string C_INCLUDE_DIR;
+	public const string C_LIB_DIR;
 }

@@ -20,6 +20,8 @@ aroopc@PACKAGE_SUFFIX@_CFLAGS = \
         $(GEE_CFLAGS) \
         $(VALA_CFLAGS) \
 	-DVAPI_INSTALL_PREFIX=\"@datadir@/aroop@PACKAGE_SUFFIX@/vapi\" \
+	-DC_INCLUDE_DIR=\"@includedir@/aroop_core@PACKAGE_SUFFIX@\" \
+	-DC_LIB_DIR=\"@libdir@\" \
 	-I$(top_srcdir)/aroop/codegen/ \
         $(NULL)
 

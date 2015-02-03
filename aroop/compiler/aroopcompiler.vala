@@ -28,6 +28,9 @@ class aroop.Compiler {
 	static string basedir;
 	static string directory;
 	static bool version;
+	static bool show_vapi_install_prefix;
+	static bool show_c_includedir;
+	static bool show_c_libdir;
 	[CCode (array_length = false, array_null_terminated = true)]
 	static string[] sources;
 	[CCode (array_length = false, array_null_terminated = true)]
@@ -98,6 +101,9 @@ class aroop.Compiler {
 		{ "basedir", 'b', 0, OptionArg.FILENAME, ref basedir, "Base source directory", "DIRECTORY" },
 		{ "directory", 'd', 0, OptionArg.FILENAME, ref directory, "Output directory", "DIRECTORY" },
 		{ "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null },
+		{ "show-vapidir", 0, 0, OptionArg.NONE, ref show_vapi_install_prefix, "Display the default install prefix for vapi", null },
+		{ "show-c-includedir", 0, 0, OptionArg.NONE, ref show_c_includedir, "Display the includedir for C headers", null },
+		{ "show-c-libdir", 0, 0, OptionArg.NONE, ref show_c_libdir, "Display the libdir for C linker", null },
 		{ "ccode", 'C', 0, OptionArg.NONE, ref ccode_only, "Output C code", null },
 		{ "header", 'H', 0, OptionArg.FILENAME, ref header_filename, "Output C header file", "FILE" },
 		{ "static-link", 0, 0, OptionArg.NONE, ref static_link, "Tell the linker to link statically", null },
@@ -477,7 +483,6 @@ class aroop.Compiler {
 
 	static int main (string[] args) {
 		// initialize locale
-		//stdout.printf("datadir:%s\n", Config.VAPI_INSTALL_PREFIX);
 		Intl.setlocale (LocaleCategory.ALL, "");
 
 #if false
@@ -497,6 +502,18 @@ class aroop.Compiler {
 			return 1;
 		}
 		
+		if (show_vapi_install_prefix) {
+			stdout.printf ("%s\n", Config.VAPI_INSTALL_PREFIX);
+			return 0;
+		}
+		if (show_c_includedir) {
+			stdout.printf ("%s\n", Config.C_INCLUDE_DIR);
+			return 0;
+		}
+		if (show_c_libdir) {
+			stdout.printf ("%s\n", Config.C_LIB_DIR);
+			return 0;
+		}
 		if (version) {
 			stdout.printf ("Vala %s\n", Config.PACKAGE_VERSION);
 			return 0;
