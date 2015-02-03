@@ -10,6 +10,7 @@ dist_vapi_DATA = \
 	aroop_core-1.0.deps \
 	aroop_pthread-0.1.vapi \
 	aroop_pthread-0.1.deps \
+	fakeglib.vapi \
 	posix-0.1.vapi \
 	$(NULL)
 
