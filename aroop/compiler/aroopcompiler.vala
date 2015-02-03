@@ -223,9 +223,11 @@ class aroop.Compiler {
 			}
 		}
 
+#if false
 		for (int i = 2; i <= 16; i += 2) {
 			context.ccode.add_define ("VALA_0_%d".printf (i));
 		}
+#endif
 
 		if (!nostdpkg) {
 			context.profile = Profile.POSIX;
@@ -470,7 +472,7 @@ class aroop.Compiler {
 		// initialize locale
 		Intl.setlocale (LocaleCategory.ALL, "");
 
-#if 0
+#if false
 		if (Path.get_basename (args[0]) == "vala" || Path.get_basename (args[0]) == "vala" + Config.PACKAGE_SUFFIX) {
 			return run_source (args);
 		}

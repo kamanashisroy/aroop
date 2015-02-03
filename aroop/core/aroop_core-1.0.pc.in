@@ -5,7 +5,7 @@ bindir=@bindir@
 includedir=@includedir@/aroop_core-1.0
 datarootdir=@datarootdir@
 datadir=@datadir@
-vapidir=@datadir@/vala@PACKAGE_SUFFIX@/vapi
+vapidir=@datadir@/aroop@PACKAGE_SUFFIX@/vapi
 variant=static
 
 @vapigen_decl@

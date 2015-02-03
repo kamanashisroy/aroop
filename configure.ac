@@ -3,6 +3,7 @@ m4_define([aroop_minor], [1])
 m4_define([aroop_micro], [0])
 
 m4_define([aroop_version], [aroop_major.aroop_minor.aroop_micro])
+m4_define([aroop_suffix], [-aroop_version])
 m4_define([aroop_api_version], [0.1])
 
 m4_define([aroop_name], [aroop])
@@ -19,7 +20,8 @@ AROOP_MINOR_VERSION=aroop_minor
 AROOP_MICRO_VERSION=aroop_micro
 AROOP_VERSION=aroop_version
 AROOP_API_VERSION=aroop_api_version
-PACKAGE_SUFFIX=AROOP_VERSION
+PACKAGE_SUFFIX=aroop_suffix
+AC_SUBST(PACKAGE_SUFFIX)
 AC_SUBST(AROOP_MAJOR_VERSION)
 AC_SUBST(AROOP_MINOR_VERSION)
 AC_SUBST(AROOP_MICRO_VERSION)

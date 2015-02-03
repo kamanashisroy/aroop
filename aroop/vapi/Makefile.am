@@ -1,6 +1,6 @@
 NULL =
 
-vapidir=${datarootdir}/vala-0.16/vapi
+vapidir=${datarootdir}/aroop@PACKAGE_SUFFIX@/vapi
 #vapidir = $(pkgdatadir)/vapi
 
 dist_vapi_DATA = \
@@ -10,6 +10,7 @@ dist_vapi_DATA = \
 	aroop_core-1.0.deps \
 	aroop_pthread-0.1.vapi \
 	aroop_pthread-0.1.deps \
+	posix-0.1.vapi \
 	$(NULL)
 
 dist_noinst_DATA = \
