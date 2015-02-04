@@ -499,8 +499,8 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		}
 	}
 
-	public void generate_field_declaration (Field f, CCodeFile decl_space, bool force_cdecl) {
-		if (/*!force_cdecl && */add_symbol_declaration (decl_space, f, get_ccode_aroop_name (f))) {
+	public void generate_field_declaration (Field f, CCodeFile decl_space, bool defineHere = false) {
+		if (!defineHere && add_symbol_declaration (decl_space, f, get_ccode_aroop_name (f))) {
 			return;
 		}
 		generate_type_declaration (f.variable_type, decl_space);
@@ -512,12 +512,10 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 
 		var cdecl = new CCodeDeclaration (field_ctype);
 		cdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_name (f), null, get_ccode_declarator_suffix (f.variable_type)));
-		if (f.is_internal_symbol ()) {
+		if (f.is_private_symbol ()) {
 			cdecl.modifiers = CCodeModifiers.STATIC;
-		} else {
-			if(!force_cdecl) {
-				cdecl.modifiers = CCodeModifiers.EXTERN;
-			}
+		} else if(!defineHere) {
+			cdecl.modifiers = CCodeModifiers.EXTERN;
 		}
 
 		if (f.get_attribute ("ThreadLocal") != null) {
@@ -528,8 +526,13 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 	}
 
 	public override void visit_field (Field f) {
-		if (f.binding == MemberBinding.STATIC)  {
-			generate_field_declaration (f, cfile, f.is_internal_symbol ()?false:true);
+		if (f.binding == MemberBinding.CLASS) {
+			generate_field_declaration (f, cfile, true);
+			if (!f.is_internal_symbol ()) {
+				generate_field_declaration (f, header_file, false);
+			}
+		} else if (f.binding == MemberBinding.STATIC)  {
+			generate_field_declaration (f, cfile, true);
 
 			if (!f.is_internal_symbol ()) {
 				generate_field_declaration (f, header_file, false);
@@ -634,8 +637,25 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		}
 	}
 	
-	public virtual void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space) {
+	public virtual void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
 		if (f.binding != MemberBinding.INSTANCE)  {
+			//visit_field(f);
+			//print(" - we should have declared %s\n", get_ccode_name(f));
+#if false
+			generate_type_declaration (f.variable_type, decl_space);
+			string field_ctype =  get_ccode_aroop_name(f.variable_type);
+			if (f.is_volatile) {
+				field_ctype = "volatile " + field_ctype;
+			}
+			
+			var vbdecl = new CCodeDeclaration (field_ctype);
+			vbdecl.add_declarator (new CCodeVariableDeclarator (/*"aroop_file_var_" + */get_ccode_name (f)));
+			if(internalSymbol)
+				vbdecl.modifiers |= CCodeModifiers.STATIC;
+			else
+				vbdecl.modifiers &= ~CCodeModifiers.STATIC;
+			cfile.add_type_member_declaration(vbdecl);
+#endif
 			return;
 		}
 		generate_type_declaration (f.variable_type, decl_space);

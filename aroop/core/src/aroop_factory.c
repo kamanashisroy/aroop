@@ -58,7 +58,7 @@ int aroop_factory_action_all_internal(struct opp_factory*fac, int action, unsign
 }
 
 
-int aroop_cl_aroop_aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size) {
+int aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size) {
 	switch(callback) {
 	case OPPN_ACTION_IS_TYPE_OF:
 		return(opp_get_factory_donot_use(data)->property & OPPF_EXTENDED);
@@ -66,7 +66,7 @@ int aroop_cl_aroop_aroop_hashable_pray(void*data, int callback, void*cb_data, va
 	return 0;
 }
 
-int aroop_cl_aroop_aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size) {
+int aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size) {
 	switch(callback) {
 	case OPPN_ACTION_IS_TYPE_OF:
 		return(opp_get_factory_donot_use(data)->property & OPPF_SEARCHABLE);

@@ -80,7 +80,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			class_struct.add_field (get_ccode_aroop_definition(cl.base_class), "super_data");
 		}
 		foreach (Field f in cl.get_fields ()) {
-			generate_element_declaration(f, class_struct, decl_space);
+			generate_element_declaration(f, class_struct, decl_space, cl.is_internal_symbol());
 		}
 		int tparams = 0;
 		foreach (var type_parameter in cl.get_type_parameters ()) {

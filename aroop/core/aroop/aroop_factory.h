@@ -79,14 +79,16 @@ enum {
 	aroop_srcblefac_constr(x0, x2, x1(NULL, OPPN_ACTION_GET_SIZE, NULL, NULL, 0), x3, x4, x1);})
 #define aroop_srcblefac_constr_4_type_full(x0, x1, x2, x3, x4, x5) ({\
 	aroop_srcblefac_constr(x0, x2, x3 ,x4, x5, x1);})
-#define aroop_cl_aroop_aroop_searchable_type_system_init()
-// TODO set the hash while constructing searchable
-#define aroop_cl_aroop_aroop_searchable_construct(x)
-#define aroop_cl_aroop_aroop_hashable_construct(x)
-#define aroop_cl_aroop_aroop_hashable_type_system_init()
+#define aroop_searchable_type_system_init()
+#define aroop_searchable_prepare_internal(x)
+// TODO set the hash while aroop_initing searchable
+#define aroop_searchable_aroop_init(x)
+#define aroop_hashable_aroop_init(x)
+#define aroop_hashable_prepare_internal(x)
+#define aroop_hashable_type_system_init()
 #define aroop_search(a,h,cb,ret) ({(typeof((*ret)))opp_search(a, h, (obj_do_t)(cb).aroop_cb,(cb).aroop_closure_data, (void**)ret);})
 #define aroop_search_no_ret_arg(a,h,cb) ({opp_search(a, h, (obj_do_t)(cb).aroop_cb,(cb).aroop_closure_data, NULL);})
-#define aroop_cl_aroop_aroop_searchable_destruction(x)
+#define aroop_searchable_destruction(x)
 
 
 // ArrayList
@@ -141,7 +143,7 @@ enum {
 #define aroop_hash_table_get(x,y,z) ({*z = opp_hash_table_get(x, y);})
 #define aroop_hash_table_use_count(x) (OPP_FACTORY_USE_COUNT(&(x)->fac));
 #define aroop_hash_table_pointer_get_key(x,y) ({*(y) = (x)->key;})
-#define aroop_cl_aroop_aroop_hashable_destruction(x)
+#define aroop_hashable_destruction(x)
 
 // cleanup
 #define opp_object_ext_tiny_t_prepare_internal(x)
@@ -151,8 +153,12 @@ enum {
 #define aroop_factory_unmark_all(x,y) ({aroop_factory_action_all_internal(x,0,y);})
 #define aroop_factory_prune_marked(x,y) ({aroop_factory_action_all_internal(x,-1,y);})
 int aroop_factory_action_all_internal(struct opp_factory*opp, int action, unsigned int flag);
-int aroop_cl_aroop_aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
-int aroop_cl_aroop_aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
+typedef opp_object_ext_tiny_t aroop_hashable_ext;
+typedef opp_object_ext_tiny_t aroop_hashable;
+typedef opp_object_ext_t aroop_searchable_ext;
+typedef opp_object_ext_t aroop_searchable;
+int aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
+int aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
 
 //#define aroop_factory_free_function(unused1,unused2,x) opp_factory_destroy_and_remove_profile(x)
 #define aroop_factory_free_function(x, unused1, x2, unused2) opp_factory_destroy_and_remove_profile(x)

@@ -203,11 +203,11 @@ public struct aroop.Queue<G> {
 	public int count_unsafe();
 }
 
-[CCode (cname = "opp_object_ext_tiny_t", cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "aroop_hashable_ext"/*, cname = "opp_object_ext_tiny_t"*/, cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
 struct aroop.hashable_ext {
 }
 
-[CCode (cname = "opp_object_ext_t", cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
+[CCode (cprefix = "aroop_searchable_ext"/*, cname = "opp_object_ext_t"*/, cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
 public struct aroop.searchable_ext {
 	[CCode (cname = "aroop_unmark_searchable_ext")]
 	public void unmark(ulong flg);
@@ -287,7 +287,7 @@ public enum aroop.prayer {
 	DESCRIBE,
 }
 
-[CCode (cname = "opp_object_ext_tiny_t", cheader_filename = "aroop/aroop_factory.h", destroy_function = "")]
+[CCode (cname = "aroop_hashable", cheader_filename = "aroop/aroop_factory.h", destroy_function = "")]
 public abstract class aroop.Hashable : aroop.Replicable {
 	private hashable_ext _ext;
 	[CCode (cname = "aroop_donothing")]
@@ -302,7 +302,7 @@ public abstract class aroop.Hashable : aroop.Replicable {
 	protected void memclean(ulong size);
 }
 
-[CCode (cname = "opp_object_ext_t", cheader_filename = "aroop/aroop_factory.h", destroy_function = "")]
+[CCode (/*cname = "opp_object_ext_t"*/cname = "aroop_searchable", cheader_filename = "aroop/aroop_factory.h", destroy_function = "")]
 public abstract class aroop.Searchable : aroop.Hashable {
 	private searchable_ext _ext;
 	[CCode (cname = "aroop_donothing")]

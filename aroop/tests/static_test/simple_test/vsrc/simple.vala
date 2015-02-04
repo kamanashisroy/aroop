@@ -2,15 +2,17 @@
 using aroop;
 
 class Mango : Replicable {
+	public static int cvar = 15;
 	public static int get() {
-		return 10;
+		return cvar;
 	}
 }
 
 class test_array : Replicable {
 
 	public static int main() {
-		core.assert(Mango.get() == 10);
+		Mango.cvar = 20;
+		core.assert(Mango.get() == 20);
 		return 0;
 	}
 }
