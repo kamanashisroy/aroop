@@ -829,7 +829,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (sym is GenericType) {
 			return "aroop_generic_object_unref";
 		} else if (sym is Class) {
-#if false			
+#if true			
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
 				return lower_case_prefix + "unref";

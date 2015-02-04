@@ -920,6 +920,8 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 	public CCodeExpression? get_destroy_func_expression (DataType type, bool is_chainup = false) {
 		if (type is GenericType || type.type_parameter is GenericType) {
 			return new CCodeIdentifier ("aroop_generic_object_unref");
+		} else if (type.data_type is Class && ((Class)type.data_type).is_compact) {
+			return new CCodeIdentifier(get_ccode_unref_function((ObjectTypeSymbol)type.data_type)); //new CCodeIdentifier ("aroop_object_unref");
 		} else if (type is ObjectType) {
 			return new CCodeIdentifier ("aroop_object_unref");
 		} else if (type.data_type != null) {
