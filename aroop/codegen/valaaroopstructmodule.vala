@@ -25,7 +25,7 @@ using Vala;
 
 public abstract class aroop.AroopStructModule : AroopBaseModule {  
 	public override void generate_struct_declaration (Struct st, CCodeFile decl_space) {
-#if OLD_AROOP
+#if true
 		if (st.is_boolean_type ()) {
 			// typedef for boolean types
 			return;
@@ -48,7 +48,7 @@ public abstract class aroop.AroopStructModule : AroopBaseModule {
 		}
 #endif
 		var proto = new CCodeStructPrototype (get_ccode_name (st));
-#if OLD_AROOP
+#if true
 		if(st.is_internal_symbol() && decl_space.is_header) {
 			// declare prototype	
 			decl_space.add_type_definition (proto);
@@ -62,7 +62,7 @@ public abstract class aroop.AroopStructModule : AroopBaseModule {
 
 		if (st.base_struct != null) {
 			generate_struct_declaration (st.base_struct, decl_space);
-			return;
+			//return;
 		}
 
 		var instance_struct = proto.definition;

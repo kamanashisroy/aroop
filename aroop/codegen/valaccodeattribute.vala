@@ -640,10 +640,17 @@ public class aroop.CCodeAttribute : AttributeCache {
 					// typedef for floating types
 					return st.width == 64 ? "double" : "float";
 				} else {
-					return "aroop_st_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
+					//if(sym.parent_symbol == null)
+						return "aroop_st_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
+					//else 
+						//return "%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
 				}
 			} else if(sym is Class/* && !sym.external*/) {
-				return "aroop_cl_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
+				//if(sym.parent_symbol == null)
+					return "aroop_cl_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
+					//return CCodeBaseModule.get_ccode_lower_case_name (sym);
+				//else 
+					//return "%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
 			} else {
 				return CCodeBaseModule.get_ccode_lower_case_name (sym);
 			}

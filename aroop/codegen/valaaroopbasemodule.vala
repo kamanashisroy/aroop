@@ -424,7 +424,7 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 	}
 
 	public void generate_enum_declaration (Enum en, CCodeFile decl_space) {
-#if OLD_AROOP
+#if true
 		if(!en.is_internal_symbol() && !decl_space.is_header) {
 			generate_enum_declaration (en, header_file);
 			return;
@@ -638,6 +638,7 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		if (f.binding != MemberBinding.INSTANCE)  {
 			return;
 		}
+		generate_type_declaration (f.variable_type, decl_space);
 		string field_ctype =  get_ccode_aroop_name(f.variable_type);
 		if (f.is_volatile) {
 			field_ctype = "volatile " + field_ctype;

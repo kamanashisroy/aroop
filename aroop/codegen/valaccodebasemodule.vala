@@ -96,6 +96,9 @@ public abstract class aroop.CCodeBaseModule {
 				return "%s%s%s".printf (get_ccode_lower_case_prefix (sym.parent_symbol), infix, Symbol.camel_case_to_lower_case (sym.name));
 			} else if (sym is ErrorCode) {
 				return get_ccode_name (sym).down ();
+			} else if (sym is Class) {
+				return "%s%s".printf (get_ccode_lower_case_prefix (sym.parent_symbol), Symbol.camel_case_to_lower_case(sym.name)/*, get_ccode_lower_case_suffix (sym)*/);
+				//return "aroop_cl_%s%s".printf(get_ccode_lower_case_prefix (sym.parent_symbol), get_ccode_lower_case_suffix(sym));
 			} else {
 				return "%s%s%s".printf (get_ccode_lower_case_prefix (sym.parent_symbol), infix, get_ccode_lower_case_suffix (sym));
 			}
@@ -138,6 +141,11 @@ public abstract class aroop.CCodeBaseModule {
 	}
 
 	public static string get_ccode_lower_case_prefix (Symbol sym) {
+		/*if (sym != null) {
+			if (sym is Class) {
+				return "aroop_cl_%s%s".printf(get_ccode_lower_case_prefix (sym.parent_symbol), get_ccode_lower_case_suffix(sym));
+			}
+		}*/
 		return get_ccode_attribute(sym).lower_case_prefix;
 	}
 

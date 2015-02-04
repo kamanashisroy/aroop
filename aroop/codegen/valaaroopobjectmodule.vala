@@ -28,6 +28,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 	}
 	
 	public override void generate_class_declaration (Class cl, CCodeFile decl_space) {
+#if true
 		//print("%s is being declared\n", get_ccode_lower_case_name(cl));
 		//if(cl.base_class != null && cl.base_class.external_package && !decl_space.is_header) {
 			//print("Following ..\n");
@@ -42,13 +43,16 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			generate_class_declaration (cl, header_file);
 			return;
 		}
+#endif
 		var proto = new CCodeStructPrototype (get_ccode_aroop_name (cl));
+#if true
 		if(cl.is_internal_symbol() && decl_space.is_header) {
 			// declare prototype
 			decl_space.add_type_definition (proto);
 			proto.generate_type_declaration(decl_space);
 			return;
 		}
+#endif
 		if (add_symbol_declaration (decl_space, cl, get_ccode_lower_case_name (cl))) {
 			return;
 		}
@@ -364,8 +368,12 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		decl_space.add_type_declaration (func_macro);
 	}
 	
+	private string get_pray_function(Class cl) {
+		return "%s_pray".printf (get_ccode_aroop_name (cl));
+	}
+
 	private void add_pray_function (Class cl) {
-		string pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl));
+		string pray_function_name = get_pray_function(cl);
 		var function = new CCodeFunction (pray_function_name, "int");
 		if(cl.is_internal_symbol()) {
 			function.modifiers = CCodeModifiers.STATIC;
@@ -495,7 +503,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			, obj_cb_data_var);
 		CCodeExpression else_not_this_class = new CCodeConstant("0");
 		if(cl.base_class != null) {
-			string base_pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl.base_class));
+			string base_pray_function_name = get_pray_function(cl.base_class);
 			var super_pray_call = new CCodeFunctionCall (new CCodeIdentifier(base_pray_function_name));
 			super_pray_call.add_argument(obj_arg_var);
 			super_pray_call.add_argument(new CCodeIdentifier ("callback"));
@@ -565,7 +573,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		}
 
 		if(cl.base_class != null) {
-			string base_pray_function_name = "%spray".printf (get_ccode_lower_case_prefix (cl.base_class));
+			string base_pray_function_name = get_pray_function(cl.base_class);
 			var super_pray_call = new CCodeFunctionCall (new CCodeIdentifier(base_pray_function_name));
 			super_pray_call.add_argument(obj_arg_var);
 			super_pray_call.add_argument(new CCodeIdentifier ("callback"));
@@ -866,7 +874,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 
 			var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_alloc"));
 			alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (get_ccode_aroop_name(current_class))));
-			alloc_call.add_argument (new CCodeIdentifier("%spray".printf (get_ccode_lower_case_prefix (current_class))));
+			alloc_call.add_argument (new CCodeIdentifier(get_pray_function(current_class)));
 			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (get_ccode_aroop_name (current_type_symbol))))));
 
 #if false
