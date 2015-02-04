@@ -105,7 +105,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			if (_lower_case_prefix == null) {
 				if (ccode != null) {
 					_lower_case_prefix = ccode.get_string ("lower_case_cprefix");
-					if (_lower_case_prefix == null && (sym is ObjectTypeSymbol || sym is Struct)) {
+					if (_lower_case_prefix == null && (sym is ObjectTypeSymbol || sym is Struct || sym is Vala.Enum)) {
 						_lower_case_prefix = ccode.get_string ("cprefix");
 					}
 				}
@@ -575,6 +575,8 @@ public class aroop.CCodeAttribute : AttributeCache {
 					return sym.name;
 				}
 				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).ascii_up (), sym.name);
+			} else if (sym is Vala.EnumValue) {
+				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).ascii_up (), sym.name);
 			} else if (sym is Field) {
 				var cname = sym.name;
 				if (((Field) sym).binding == MemberBinding.STATIC) {
@@ -589,7 +591,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				var m = (CreationMethod) sym;
 				string infix;
 				if (m.parent_symbol is Struct) {
-					infix = "init";
+					infix = "aroop_init";
 				} else {
 					infix = "new";
 				}
@@ -626,8 +628,24 @@ public class aroop.CCodeAttribute : AttributeCache {
 				return Symbol.camel_case_to_lower_case (sym.name);
 			} else if (sym is LocalVariable || sym is Vala.Parameter) {
 				return sym.name;
+			} else if (sym is Struct/* && !sym.external*/) {
+				var st = (Struct) sym;
+				if (st.is_boolean_type ()) {
+					// typedef for boolean types
+					return "aroop_bool";
+				} else if (st.is_integer_type ()) {
+					// typedef for integral types
+					return "%sint%d_t".printf (st.signed ? "" : "u", st.width);
+				} else if (st.is_floating_type ()) {
+					// typedef for floating types
+					return st.width == 64 ? "double" : "float";
+				} else {
+					return "aroop_st_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
+				}
+			} else if(sym is Class/* && !sym.external*/) {
+				return "aroop_cl_%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
 			} else {
-				return "%s%s".printf (CCodeBaseModule.get_ccode_prefix (sym.parent_symbol), sym.name);
+				return CCodeBaseModule.get_ccode_lower_case_name (sym);
 			}
 		} else if (node is ObjectType) {
 			var type = (ObjectType) node;
@@ -669,10 +687,10 @@ public class aroop.CCodeAttribute : AttributeCache {
 			return "void";
 		} else if (node is ClassType) {
 			var type = (ClassType) node;
-			return "%sClass*".printf (CCodeBaseModule.get_ccode_name (type.class_symbol));
+			return "%s*".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
 		} else if (node is InterfaceType) {
 			var type = (InterfaceType) node;
-			return "%s*".printf (CCodeBaseModule.get_ccode_type_name (type.interface_symbol));
+			return "%s*".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
 		} else if (node is ValueType) {
 			var type = (ValueType) node;
 			var cname = CCodeBaseModule.get_ccode_name (type.type_symbol);
@@ -772,7 +790,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 	}
 
 	private string? get_default_ref_function () {
-		if (sym is Class) {
+		if (sym is GenericType) {
+			return "aroop_generic_object_ref";
+		} else if (sym is Class) {
 #if false
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
@@ -799,8 +819,10 @@ public class aroop.CCodeAttribute : AttributeCache {
 	}
 
 	private string? get_default_unref_function () {
-		if (sym is Class) {
-#if false
+		if (sym is GenericType) {
+			return "aroop_generic_object_unref";
+		} else if (sym is Class) {
+#if false			
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
 				return lower_case_prefix + "unref";
@@ -1244,6 +1266,12 @@ public class aroop.CCodeAttribute : AttributeCache {
 			if (base_st != null) {
 				return CCodeBaseModule.get_ccode_default_value (base_st);
 			}
+
+			if (st.is_boolean_type ()) {
+				return "false";
+			} else if (st.is_integer_type () || st.is_floating_type ()) {
+				return "0";
+			}
 		}
 		return "";
 	}
@@ -1265,7 +1293,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				return name;
 			}
 
-			string infix = "init";
+			string infix = "aroop_init";
 
 			if (m.name == ".new") {
 				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (parent), infix);
