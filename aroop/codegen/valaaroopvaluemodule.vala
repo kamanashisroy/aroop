@@ -41,6 +41,7 @@ public class aroop.AroopValueModule : AroopObjectModule {
 			return;
 		}
 
+		if(type_class != null)
 		generate_class_declaration (type_class, decl_space);
 
 #if false

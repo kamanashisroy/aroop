@@ -93,8 +93,12 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 				if (m.base_method != null/* && !m.base_method.is_abstract*/) {
 
 					//generate_type_declaration (m.base_method.parent_symbol, cfile);
-					var mb_class = (Class) m.base_method.parent_symbol;
-					var b_class = (Class) current_class.base_class;
+					Class?mb_class = null;
+					Class?b_class = null;
+					if(m.base_method.parent_symbol is Class)
+						mb_class = (Class) m.base_method.parent_symbol;
+					if(current_class.base_class is Class)
+						b_class = (Class) current_class.base_class;
 					assert(b_class != null);
 					if(b_class.base_class != null) {
 						//b_class = b_class.base_class;
@@ -300,7 +304,7 @@ public abstract class aroop.AroopMemberAccessModule : AroopControlFlowModule {
 
 			var instance_target_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
 
-			var cl = instance_target_type.data_type as Class;
+			//var cl = instance_target_type.data_type as Class;
 			bool aroop_priv = false;
 			if ((f.access == SymbolAccessibility.PRIVATE || f.access == SymbolAccessibility.INTERNAL)) {
 				aroop_priv = true;

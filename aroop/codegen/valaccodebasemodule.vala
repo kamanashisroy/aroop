@@ -239,7 +239,9 @@ public abstract class aroop.CCodeBaseModule {
 	}
 
 	public static string get_ccode_type_check_function (TypeSymbol sym) {
-		var cl = sym as Class;
+		Class?cl = null;
+		if(sym is Class)
+			cl = sym as Class;
 		var a = sym.get_attribute_string ("CCode", "type_check_function");
 		if (cl != null && a != null) {
 			return a;
@@ -356,7 +358,9 @@ public abstract class aroop.CCodeBaseModule {
 	public static string get_ccode_constructv_name (CreationMethod m) {
 		const string infix = "constructv";
 
-		var parent = m.parent_symbol as Class;
+		Class?parent = null;
+		if(m.parent_symbol is Class)
+			parent = m.parent_symbol as Class;
 
 		if (m.name == ".new") {
 			return "%s%s".printf (get_ccode_lower_case_prefix (parent), infix);

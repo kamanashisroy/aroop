@@ -48,6 +48,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 			m = ((MethodType) itype).method_symbol;
 		} else if (itype is ObjectType) {
 			// constructor
+			assert(((ObjectType) itype).type_symbol is Class);
 			var cl = (Class) ((ObjectType) itype).type_symbol;
 			m = cl.default_construction_method;
 			generate_method_declaration (m, cfile);
@@ -84,7 +85,7 @@ public class aroop.AroopMethodCallModule : AroopAssignmentModule {
 		}
 
 		if (m is CreationMethod) {
-			var cl = (Class) m.parent_symbol;
+			var cl = m.parent_symbol;
 
 			if (cl == current_class) {
 				ccall.add_argument (new CCodeIdentifier (self_instance));

@@ -169,6 +169,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		type_struct.add_declaration (vdecl);
 	}
 
+#if false
 	bool has_instance_struct (Class cl) {
 		foreach (Field f in cl.get_fields ()) {
 			if (f.binding == MemberBinding.INSTANCE)  {
@@ -194,6 +195,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		}
 		return false;
 	}
+#endif
 	
 #if false
 	string get_base_vtable_name() {
@@ -558,7 +560,9 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 					var this_access = new MemberAccess.simple (self_instance);
 					this_access.value_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
 
-					var field_st = f.parent_symbol as Struct;
+					Struct?field_st = null;
+					if(f.parent_symbol is Struct)
+						field_st = f.parent_symbol as Struct;
 					if (field_st != null && !field_st.is_simple_type ()) {
 						set_cvalue (this_access, new CCodeIdentifier ("(*this)"));
 					} else {
@@ -789,7 +793,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 
 			decl_space.add_function_declaration (function);
 		}
-		if (m is CreationMethod && m.parent_symbol is Class) {
+		if (m is CreationMethod && m.parent_symbol != null && m.parent_symbol is Class) {
 			generate_class_declaration ((Class) m.parent_symbol, decl_space);
 
 			// _init function
@@ -979,7 +983,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 				var base_type = new ObjectType ((Interface) m.base_interface_method.parent_symbol);
 				instance_param = new CCodeParameter ("base_instance", get_ccode_aroop_name (base_type));
 			} else if (m.overrides) {
-				var base_type = new ObjectType ((Class) m.base_method.parent_symbol);
+				var base_type = new ObjectType ((Class)m.base_method.parent_symbol);
 				generate_type_declaration (base_type, decl_space);
 				instance_param = new CCodeParameter ("base_instance", get_ccode_aroop_name (base_type));
 			} else {
@@ -998,7 +1002,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		}
 
 		if (m is CreationMethod) {
-			generate_class_declaration ((Class) type_class, decl_space);
+			if(type_class != null)generate_class_declaration (type_class, decl_space);
 
 			if (m.parent_symbol is Class) {
 				var cl = (Class) m.parent_symbol;
@@ -1061,7 +1065,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		}
 
 		if (m.parent_symbol is Class && m is CreationMethod && vcall != null) {
-			func.return_type = get_ccode_aroop_name (((Class) m.parent_symbol)) + "*";
+			func.return_type = get_ccode_aroop_name ((m.parent_symbol)) + "*";
 		} else {
 			if (m.return_type is GenericType) {
 				func.add_parameter (new CCodeParameter ("result", "void **"));
@@ -1069,7 +1073,9 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 					vdeclarator.add_parameter (new CCodeParameter ("result", "void **"));
 				}
 			} else {
-				var st = m.parent_symbol as Struct;
+				Struct?st = null;
+				if(m.parent_symbol is Struct)
+					st = m.parent_symbol as Struct;
 				if (m is CreationMethod && st != null && (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ())) {
 					func.return_type = get_ccode_aroop_name (st);
 				} else {

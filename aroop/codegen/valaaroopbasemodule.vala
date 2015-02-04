@@ -503,6 +503,7 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		if (!defineHere && add_symbol_declaration (decl_space, f, get_ccode_aroop_name (f))) {
 			return;
 		}
+		assert(f.variable_type != null);
 		generate_type_declaration (f.variable_type, decl_space);
 
 		string field_ctype = get_ccode_aroop_name (f.variable_type);
@@ -626,14 +627,16 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		} else if (type is ArrayType) {
 			var array_type = (ArrayType) type;
 			generate_struct_declaration (array_struct, decl_space);
+			assert(array_type.element_type != null);
 			generate_type_declaration (array_type.element_type, decl_space);
 		} else if (type is PointerType) {
 			var pointer_type = (PointerType) type;
+			assert(pointer_type.base_type != null);
 			generate_type_declaration (pointer_type.base_type, decl_space);
 		}
 
 		foreach (DataType type_arg in type.get_type_arguments ()) {
-			generate_type_declaration (type_arg, decl_space);
+			if(type_arg != null)generate_type_declaration (type_arg, decl_space);
 		}
 	}
 	
@@ -719,7 +722,9 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 	public abstract void initialize_local_variable_in_block(LocalVariable local, CCodeExpression rhs, CCodeFunction decl_space);
 
 	bool has_simple_struct_initializer (LocalVariable local) {
-		var st = local.variable_type.data_type as Struct;
+		Struct?st = null;
+		if(local.variable_type.data_type is Struct)
+			st = local.variable_type.data_type as Struct;
 		var initializer = local.initializer as ObjectCreationExpression;
 		if (st != null && (!st.is_simple_type () || get_ccode_name (st) == "va_list") && !local.variable_type.nullable &&
 		    initializer != null && initializer.get_object_initializer ().size == 0) {
@@ -879,8 +884,7 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 			if(for_type_custing) {
 				return ret;
 			}
-			var cl = (ObjectTypeSymbol)type.data_type as Class;
-			if(cl != null) {			
+			if(((ObjectTypeSymbol)type.data_type) != null && ((ObjectTypeSymbol)type.data_type) is Class) {
 				var tmp = new CCodeFunctionCall(new CCodeIdentifier ("aroop_generic_type_for_class"));
 				tmp.add_argument(ret);
 				return tmp;
@@ -1085,8 +1089,12 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		var vardecl = new CCodeVariableDeclarator (local.name, null, get_ccode_declarator_suffix (local.variable_type));
 		cdecl.add_declarator (vardecl);
 
-		var st = local.variable_type.data_type as Struct;
-		var array_type = local.variable_type as ArrayType;
+		Struct?st = null;
+		if(local.variable_type.data_type is Struct)
+			st = local.variable_type.data_type as Struct;
+		ArrayType?array_type = null;
+		if(local.variable_type is ArrayType)
+			array_type = local.variable_type as ArrayType;
 
 		if (local.name.has_prefix ("*")) {
 			// do not dereference unintialized variable
@@ -1296,6 +1304,7 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 	}
 
 	public override void visit_base_access (BaseAccess expr) {
+		if(expr.value_type != null)
 		generate_type_declaration (expr.value_type, cfile);
 		//set_cvalue (expr, new CCodeCastExpression (new CCodeIdentifier (self_instance), get_ccode_aroop_name (expr.value_type)));
 		var aroop_base_access = new CCodeFunctionCall (new CCodeIdentifier ("aroop_base_access"));
@@ -1348,11 +1357,12 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 			return false;
 		}
 
-		var cl = type.data_type as Class;
-		if (cl != null && is_reference_counting (cl)
-		    && get_ccode_ref_function (cl) == "") {
-			// empty ref_function => no ref necessary
-			return false;
+		if(type.data_type != null && type.data_type is Class) {
+			var cl = type.data_type;
+			if (is_reference_counting (cl) && get_ccode_ref_function (cl) == "") {
+				// empty ref_function => no ref necessary
+				return false;
+			}
 		}
 
 		if (type.type_parameter != null) {
@@ -1377,11 +1387,13 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 			return requires_destroy (array_type.element_type);
 		}
 
-		var cl = type.data_type as Class;
-		if (cl != null && is_reference_counting (cl)
-		    && get_ccode_unref_function (cl) == "") {
-			// empty unref_function => no unref necessary
-			return false;
+		if(type.data_type != null && type.data_type is Class) {
+			var cl = type.data_type as Class;
+			if (is_reference_counting (cl)
+			    && get_ccode_unref_function (cl) == "") {
+				// empty unref_function => no unref necessary
+				return false;
+			}
 		}
 
 		if (type.type_parameter != null) {
@@ -1392,12 +1404,12 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 	}
 
 	bool is_ref_function_void (DataType type) {
-		var cl = type.data_type as Class;
-		if (cl != null && get_ccode_ref_function_void (cl)) {
-			return true;
-		} else {
-			return false;
+		if(type.data_type != null && type.data_type is Class) {
+			var cl = type.data_type as Class;
+			if (get_ccode_ref_function_void (cl))
+				return true;
 		}
+		return false;
 	}
 
 	public virtual CCodeExpression? get_ref_cexpression (DataType expression_type, CCodeExpression cexpr, Expression? expr, CodeNode node) {
@@ -1512,7 +1524,9 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		CCodeExpression instance = null;
 		CCodeExpression creation_expr = null;
 
-		var st = expr.type_reference.data_type as Struct;
+		Struct?st = null;
+		if(expr.type_reference.data_type is Struct)
+			st = expr.type_reference.data_type as Struct;
 
 		bool struct_by_ref = false;
 		if (st != null && !st.is_boolean_type () && !st.is_integer_type () && !st.is_floating_type ()) {
@@ -1550,7 +1564,9 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 
 			generate_method_declaration (m, cfile);
 
-			var cl = expr.type_reference.data_type as Class;
+			Class?cl = null;
+			if(expr.type_reference.data_type is Class)
+				cl = expr.type_reference.data_type as Class;
 
 			if (!CCodeBaseModule.get_ccode_has_new_function (m)) {
 				// use construct function directly
@@ -1872,8 +1888,12 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 
 		if (expr.operator == BinaryOperator.EQUALITY ||
 		    expr.operator == BinaryOperator.INEQUALITY) {
-			var left_type_as_struct = expr.left.value_type.data_type as Struct;
-			var right_type_as_struct = expr.right.value_type.data_type as Struct;
+			Struct?left_type_as_struct = null;
+			if(expr.left.value_type.data_type is Struct)
+				left_type_as_struct = expr.left.value_type.data_type as Struct;
+			Struct?right_type_as_struct = null;
+			if(expr.right.value_type.data_type is Struct)
+				right_type_as_struct = expr.right.value_type.data_type as Struct;
 
 			if (expr.left.value_type.data_type is Class && !((Class) expr.left.value_type.data_type).is_compact &&
 			    expr.right.value_type.data_type is Class && !((Class) expr.right.value_type.data_type).is_compact) {
@@ -2046,13 +2066,19 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 			return generate_method_to_delegate_cast_expression_as_comma_2(source_cexpr, expression_type, target_type, expr);
 		}
 
-		var cl = target_type.data_type as Class;
-		var iface = target_type.data_type as Interface;
+		Class? cl = null;
+		Interface? iface = null;
+		if(target_type.data_type is Class)
+			cl = target_type.data_type as Class;
+		if(target_type.data_type is Interface)
+			iface = target_type.data_type as Interface;
 		if (context.checking && (iface != null || (cl != null && !cl.is_compact))) {
 			// checked cast for strict subtypes of GTypeInstance
 			return generate_instance_cast (cexpr, target_type.data_type);
 		} else if (target_type.data_type != null && get_ccode_aroop_name (expression_type) != get_ccode_aroop_name (target_type)) {
-			var st = target_type.data_type as Struct;
+			Struct?st = null;
+			if(target_type.data_type is Struct)
+				st = target_type.data_type as Struct;
 			if (target_type.data_type.is_reference_type () || (st != null && st.is_simple_type ())) {
 				// don't cast non-simple structs
 				return new CCodeCastExpression (cexpr, get_ccode_aroop_name (target_type));
@@ -2130,8 +2156,12 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 	}
 
 	public CCodeExpression? default_value_for_type (DataType type, bool initializer_expression) {
-		var st = type.data_type as Struct;
-		var array_type = type as ArrayType;
+		Struct?st = null;
+		if(type.data_type is Struct)
+			st = type.data_type as Struct;
+		ArrayType? array_type = null;
+		if(type.data_type is ArrayType)
+			array_type = type as ArrayType;
 		if (type is GenericType) {
 			var gen_init = new CCodeFunctionCall (new CCodeIdentifier ("aroop_generic_type_init_val"));
 			gen_init.add_argument (get_type_id_expression (type));

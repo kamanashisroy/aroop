@@ -1294,7 +1294,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 	private string get_default_real_name () {
 		if (sym is CreationMethod) {
 			var m = (CreationMethod) sym;
-			var parent = m.parent_symbol as Class;
+			Class?parent = null;
+			if(m.parent_symbol is Class)
+				parent = m.parent_symbol as Class;
 
 			if (parent == null || parent.is_compact) {
 				return name;
