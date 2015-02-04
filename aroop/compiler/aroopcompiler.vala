@@ -236,11 +236,9 @@ class aroop.Compiler {
 			}
 		}
 
-#if false
-		for (int i = 2; i <= 16; i += 2) {
+		for (i = 2; i <= 26; i += 2) {
 			context.ccode.add_define ("VALA_0_%d".printf (i));
 		}
-#endif
 
 		if (!nostdpkg) {
 			context.profile = Profile.POSIX;

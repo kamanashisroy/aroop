@@ -607,7 +607,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				}
 				if (sym.name == "main" && sym.parent_symbol.name == null) {
 					// avoid conflict with generated main function
-					return "_vala_main";
+					return "_aroop_main";
 				} else if (sym.name.has_prefix ("_")) {
 					return "_%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name.substring (1));
 				} else {
@@ -651,18 +651,13 @@ public class aroop.CCodeAttribute : AttributeCache {
 			var type = (DelegateType) node;
 			return CCodeBaseModule.get_ccode_name (type.delegate_symbol);
 		} else if (node is Vala.ErrorType) {
-			return "GError*";
+			return "aroop_wrong*";
 		} else if (node is GenericType) {
-			var type = (GenericType) node;
-			if (type.value_owned) {
-				return "gpointer";
-			} else {
-				return "gconstpointer";
-			}
+			return "aroop_none*";
 		} else if (node is MethodType) {
 			return "gpointer";
 		} else if (node is NullType) {
-			return "gpointer";
+			return "aroop_none*";
 		} else if (node is PointerType) {
 			var type = (PointerType) node;
 			if (type.base_type.data_type != null && type.base_type.data_type.is_reference_type ()) {
@@ -684,10 +679,15 @@ public class aroop.CCodeAttribute : AttributeCache {
 			if (type.nullable) {
 				return "%s*".printf (cname);
 			} else {
+				if(cname == "bool") {
+					return "aroop_bool";
+				}
 				return cname;
 			}
-		/*} else if (node is CType) {
-			return ((CType) node).ctype_name;*/
+#if false
+		} else if (node is CType) {
+			return ((CType) node).ctype_name;
+#endif
 		} else {
 			Report.error (node.source_reference, "Unresolved type reference");
 			return "";
@@ -743,7 +743,11 @@ public class aroop.CCodeAttribute : AttributeCache {
 			// for lambda expressions
 			return "";
 		} else {
+#if true
 			return "%s_".printf (CCodeBaseModule.get_ccode_lower_case_name (sym));
+#else
+			return "%s_".printf(get_default_name());
+#endif			
 		}
 	}
 
@@ -769,38 +773,54 @@ public class aroop.CCodeAttribute : AttributeCache {
 
 	private string? get_default_ref_function () {
 		if (sym is Class) {
+#if false
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
 				return lower_case_prefix + "ref";
 			} else if (cl.base_class != null) {
 				return CCodeBaseModule.get_ccode_ref_function (cl.base_class);
 			}
+#else
+			return "aroop_object_ref";
+#endif
 		} else if (sym is Interface) {
+#if false
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
 				var ref_func = CCodeBaseModule.get_ccode_ref_function ((ObjectTypeSymbol) prereq.data_type);
 				if (ref_func != null) {
 					return ref_func;
 				}
 			}
+#else
+			return "aroop_object_ref";
+#endif
 		}
 		return null;
 	}
 
 	private string? get_default_unref_function () {
 		if (sym is Class) {
+#if false
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
 				return lower_case_prefix + "unref";
 			} else if (cl.base_class != null) {
 				return CCodeBaseModule.get_ccode_unref_function (cl.base_class);
 			}
+#else
+			return "aroop_object_unref";
+#endif
 		} else if (sym is Interface) {
+#if false
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
 				string unref_func = CCodeBaseModule.get_ccode_unref_function ((ObjectTypeSymbol) prereq.data_type);
 				if (unref_func != null) {
 					return unref_func;
 				}
 			}
+#else
+			return "aroop_object_unref";
+#endif
 		}
 		return null;
 	}
@@ -1245,7 +1265,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				return name;
 			}
 
-			string infix = "construct";
+			string infix = "init";
 
 			if (m.name == ".new") {
 				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (parent), infix);

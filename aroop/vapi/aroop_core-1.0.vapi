@@ -46,7 +46,7 @@ public struct aroop.aroop_hash {
 public struct aroop.aroop_magic {
 }
 
-[CCode (lower_case_cprefix = "AROOP_FLAG_")]
+[CCode (cprefix = "AROOP_FLAG_")]
 enum aroop.factory_flags {
 	HAS_LOCK = 1,
 	SWEEP_ON_UNREF = 1<<1,
@@ -125,7 +125,7 @@ public struct aroop.ArrayList<G> : aroop.SearchableSet {
 	public void set(aroop_hash index, G item);
 }
 
-[CCode (cname = "opp_pointer_ext_t", cheader_filename = "aroop/opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
+[CCode (cname = "opp_pointer_ext_t", unref_function="aroop_object_unref", cheader_filename = "aroop/opp/opp_list.h", has_copy_function=false, has_destroy_function=false)]
 public class aroop.AroopPointer<G> : Hashable {
 	[CCode (cname = "aroop_list_item_get")]
 	public unowned G getUnowned();
@@ -262,7 +262,7 @@ public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
 	public int do_preorder(iterator_cb do_func, void*func_data, uint if_flag, uint if_not_flag, aroop_hash hash);
 }
 
-[CCode (lower_case_cprefix = "OPPN_", cname = "int", cheader_filename = "aroop/opp/opp_factory.h")]
+[CCode (cprefix = "OPPN_", cname = "int", cheader_filename = "aroop/opp/opp_factory.h")]
 public enum aroop.Replica_flags {
 	ALL = 1<<15,
 	INTERNAL_1 = 1<<14,
@@ -271,7 +271,7 @@ public enum aroop.Replica_flags {
 	// you can use 1, 1<<1, 1<<2 etc .
 }
 
-[CCode (lower_case_cprefix = "OPPN_ACTION_", cprefix = "OPPN_ACTION_", cname = "int")]
+[CCode (cprefix = "OPPN_ACTION_", cprefix = "OPPN_ACTION_", cname = "int")]
 public enum aroop.prayer {
 	INITIALIZE = 512,
 	FINALIZE,

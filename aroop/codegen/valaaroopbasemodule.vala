@@ -54,7 +54,7 @@ public class aroop.CCodeStructPrototype : Vala.CCodeNode {
 /**
  * Code visitor generating C Code.
  */
-public abstract class Vala.AroopBaseModule : CodeGenerator {
+public abstract class aroop.AroopBaseModule : CodeGenerator {
 	public class EmitContext {
 		public Symbol? current_symbol;
 		public ArrayList<Symbol> symbol_stack = new ArrayList<Symbol> ();
@@ -93,7 +93,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 
 	public EmitContext emit_context = new EmitContext ();
 
-	List<EmitContext> emit_context_stack = new ArrayList<EmitContext> ();
+	Vala.List<EmitContext> emit_context_stack = new ArrayList<EmitContext> ();
 
 	public Symbol current_symbol { get { return emit_context.current_symbol; } }
 
@@ -199,7 +199,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	/* (constant) hash table with all reserved identifiers in the generated code */
 	Set<string> reserved_identifiers;
 
-	public List<Field> static_fields = new ArrayList<Field> ();
+	public Vala.List<Field> static_fields = new ArrayList<Field> ();
 
 	public int next_temp_var_id {
 		get { return emit_context.next_temp_var_id; }
@@ -234,9 +234,9 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		set { emit_context.current_method_inner_error = value; }
 	}
 
+
 	public AroopBaseModule () {
 		reserved_identifiers = new HashSet<string> (str_hash, str_equal);
-
 		// C99 keywords
 		reserved_identifiers.add ("_Bool");
 		reserved_identifiers.add ("_Complex");
@@ -310,11 +310,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		if (context.nostdpkg) {
 			header_file.add_include ("aroop/aroop_core.h");
 			header_file.add_include ("aroop/core/xtring.h");
+			header_file.add_include ("aroop/aroop_factory.h");
 			cfile.add_include ("aroop/aroop_core.h");
 			cfile.add_include ("aroop/core/xtring.h");
 		} else {
 			header_file.add_include ("aroop/aroop_core.h");
 			header_file.add_include ("aroop/core/xtring.h");
+			header_file.add_include ("aroop/aroop_factory.h");
 			cfile.add_include ("aroop/aroop_core.h");
 			cfile.add_include ("aroop/core/xtring.h");
 		}
@@ -389,7 +391,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 					, header_filename
 					, name
 					, decl_space.is_header?"Headerfile":"C file");*/
-				decl_space.add_include (header_filename, !sym.external_package);
+				//decl_space.add_include (header_filename, !sym.external_package);
+				decl_space.add_include (header_filename, !sym.external_package ||
+				                                         (sym.external_package &&
+				                                          sym.from_commandline));
 			}
 			// declaration complete
 			return true;
@@ -419,6 +424,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public void generate_enum_declaration (Enum en, CCodeFile decl_space) {
+#if OLD_AROOP
 		if(!en.is_internal_symbol() && !decl_space.is_header) {
 			generate_enum_declaration (en, header_file);
 			return;
@@ -426,13 +432,14 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		if(en.is_internal_symbol() && decl_space.is_header) {
 			return;
 		}
+#endif
 		if (add_symbol_declaration (decl_space, en, get_ccode_aroop_name (en))) {
 			return;
 		}
 
 		var cenum = new CCodeEnum (get_ccode_aroop_name (en));
 
-		foreach (EnumValue ev in en.get_values ()) {
+		foreach (Vala.EnumValue ev in en.get_values ()) {
 			if (ev.value == null) {
 				cenum.add_value (new CCodeEnumValue (get_ccode_name (ev)));
 			} else {
@@ -456,6 +463,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public void generate_constant_declaration (Constant c, CCodeFile decl_space) {
+		if (c.parent_symbol is Block) {
+			// local constant
+			return;
+		}
 		if (add_symbol_declaration (decl_space, c, get_ccode_aroop_name (c))) {
 			return;
 		}
@@ -489,7 +500,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public void generate_field_declaration (Field f, CCodeFile decl_space, bool force_cdecl) {
-		if (!force_cdecl && add_symbol_declaration (decl_space, f, get_ccode_aroop_name (f))) {
+		if (/*!force_cdecl && */add_symbol_declaration (decl_space, f, get_ccode_aroop_name (f))) {
 			return;
 		}
 		generate_type_declaration (f.variable_type, decl_space);
@@ -579,7 +590,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		return false;
 	}
 
-	public override void visit_formal_parameter (Parameter p) {
+	public override void visit_formal_parameter (Vala.Parameter p) {
 	}
 
 	public override void visit_property (Property prop) {
@@ -888,6 +899,8 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public CCodeExpression? get_destroy_func_expression (DataType type, bool is_chainup = false) {
 		if (type is GenericType || type.type_parameter is GenericType) {
 			return new CCodeIdentifier ("aroop_generic_object_unref");
+		} else if (type is ObjectType) {
+			return new CCodeIdentifier ("aroop_object_unref");
 		} else if (type.data_type != null) {
 			string unref_function;
 			if (type is ReferenceType) {
@@ -1010,7 +1023,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		 * expression
 		 */
 
-		if (((List<LocalVariable>) temp_ref_vars).size == 0) {
+		if (((Vala.List<LocalVariable>) temp_ref_vars).size == 0) {
 			/* nothing to do without temporary variables */
 			return;
 		}
@@ -1153,7 +1166,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public abstract void generate_block_finalization(Block b, CCodeFunction decl_space);
 
 	private void append_param_free (Method m) {
-		foreach (Parameter param in m.get_parameters ()) {
+		foreach (Vala.Parameter param in m.get_parameters ()) {
 			if (requires_destroy (param.variable_type) && param.direction == ParameterDirection.IN) {
 				var ma = new MemberAccess.simple (param.name);
 				ma.symbol_reference = param;
@@ -1460,14 +1473,14 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	public virtual void generate_method_declaration (Method m, CCodeFile decl_space) {
 	}
 
-	public void add_generic_type_arguments (CCodeFunctionCall ccall, List<DataType> type_args, CodeNode expr, bool is_chainup = false) {
+	public void add_generic_type_arguments (CCodeFunctionCall ccall,Vala.List<DataType> type_args, CodeNode expr, bool is_chainup = false) {
 		foreach (var type_arg in type_args) {
 			var targ = get_type_id_expression (type_arg, is_chainup);
 			ccall.add_argument (targ);
 		}
 	}
 
-	public virtual CCodeExpression? generate_cargument_for_struct (Parameter param, Expression arg, CCodeExpression? cexpr) {
+	public virtual CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		assert_not_reached();
 		return null;
 	}
@@ -1537,10 +1550,10 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 			bool ellipsis = false;
 
 			int i = 1;
-			Iterator<Parameter> params_it = params.iterator ();
+			Iterator<Vala.Parameter> params_it = params.iterator ();
 			foreach (Expression arg in expr.get_argument_list ()) {
 				CCodeExpression cexpr = get_cvalue (arg);
-				Parameter param = null;
+				Vala.Parameter param = null;
 				if (params_it.next ()) {
 					param = params_it.get ();
 					ellipsis = param.ellipsis;
@@ -1666,7 +1679,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 		}
 	}
 
-	public virtual CCodeExpression? handle_struct_argument (Parameter param, Expression arg, CCodeExpression? cexpr) {
+	public virtual CCodeExpression? handle_struct_argument (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		assert_not_reached();
 		return null;
 	}
@@ -2084,7 +2097,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 				type = new StructValueType (st);
 			}
 		} else if (sym is Enum) {
-			type = new EnumValueType ((Enum) sym);
+			type = new Vala.EnumValueType ((Enum) sym);
 		} else {
 			Report.error (null, "internal error: `%s' is not a supported type".printf (sym.get_full_name ()));
 			return new InvalidType ();
@@ -2129,7 +2142,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public string get_ccode_aroop_name(CodeNode node) {
-		return CCodeBaseModule.get_ccode_name (node);
+#if false
+		string output = CCodeBaseModule.get_ccode_name (node);
+		print(" ccode_aroop_name: %s\n", output);
+		return output;
+#else
+		return  CCodeBaseModule.get_ccode_name (node);
+#endif
 	}
 
 	public string get_ccode_aroop_definition(ObjectTypeSymbol node) {
@@ -2141,7 +2160,13 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public string get_ccode_name (CodeNode node) {
-		return CCodeBaseModule.get_ccode_name (node);
+#if false
+		string output = CCodeBaseModule.get_ccode_name (node);
+		print(" ccode_name: %s . prefix: %s\n", output,  CCodeBaseModule.get_ccode_lower_case_name(node));
+		return output;
+#else
+		return  CCodeBaseModule.get_ccode_name (node);
+#endif
 	}
 
 	public string get_ccode_const_name (CodeNode node) {
@@ -2167,7 +2192,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 
 	public string get_ccode_free_function (TypeSymbol node) {
-		if (node is ErrorType || node is ErrorDomain || node is ErrorCode) {
+		if (node is Vala.ErrorType || node is ErrorDomain || node is ErrorCode) {
 			return "aroop_free_error";
 		}
 		return CCodeBaseModule.get_ccode_free_function (node);
@@ -2194,7 +2219,7 @@ public abstract class Vala.AroopBaseModule : CodeGenerator {
 	}
 	
 	public string get_ccode_lower_case_name (CodeNode node, string? infix = null) {
-		if (node is ErrorType || node is ErrorDomain || node is ErrorCode) {
+		if (node is Vala.ErrorType || node is ErrorDomain || node is ErrorCode) {
 			//assert(false);
 			return get_error_module_lower_case_name(node,infix);
 		}

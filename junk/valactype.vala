@@ -21,10 +21,11 @@
  */
 
 using Vala;
+
 /**
  * A C type, used only for code generation purposes.
  */
-public class aroop.CType : DataType {
+public class aroop.CType : Vala.DataType {
 	/**
 	 * The name of the C type.
 	 */

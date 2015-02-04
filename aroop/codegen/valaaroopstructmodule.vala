@@ -25,6 +25,7 @@ using Vala;
 
 public abstract class aroop.AroopStructModule : AroopBaseModule {  
 	public override void generate_struct_declaration (Struct st, CCodeFile decl_space) {
+#if OLD_AROOP
 		if (st.is_boolean_type ()) {
 			// typedef for boolean types
 			return;
@@ -45,13 +46,16 @@ public abstract class aroop.AroopStructModule : AroopBaseModule {
 			generate_struct_declaration (st, header_file);
 			return;
 		}
+#endif
 		var proto = new CCodeStructPrototype (get_ccode_name (st));
+#if OLD_AROOP
 		if(st.is_internal_symbol() && decl_space.is_header) {
 			// declare prototype	
 			decl_space.add_type_definition (proto);
 			proto.generate_type_declaration(decl_space);
 			return;
 		}
+#endif
 		if (add_symbol_declaration (decl_space, st, get_ccode_name (st))) {
 			return;
 		}

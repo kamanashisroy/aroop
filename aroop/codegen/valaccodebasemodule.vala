@@ -27,40 +27,9 @@ using Vala;
 /**
  * Code visitor generating C Code.
  */
-public abstract class aroop.CCodeBaseModule : CodeGenerator {
-#if false
-	public class EmitContext {
-		public Symbol? current_symbol;
-		public ArrayList<Symbol> symbol_stack = new ArrayList<Symbol> ();
-		public TryStatement current_try;
-		public CatchClause current_catch;
-		public CCodeFunction ccode;
-		public ArrayList<CCodeFunction> ccode_stack = new ArrayList<CCodeFunction> ();
-		public ArrayList<TargetValue> temp_ref_values = new ArrayList<TargetValue> ();
-		public int next_temp_var_id;
-		public bool current_method_inner_error;
-		public bool current_method_return;
-		public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
-		public Map<string,int> closure_variable_count_map = new HashMap<string,int> (str_hash, str_equal);
-		public Map<LocalVariable,int> closure_variable_clash_map = new HashMap<LocalVariable,int> ();
+public abstract class aroop.CCodeBaseModule {
 
-		public EmitContext (Symbol? symbol = null) {
-			current_symbol = symbol;
-		}
-
-		public void push_symbol (Symbol symbol) {
-			symbol_stack.add (current_symbol);
-			current_symbol = symbol;
-		}
-
-		public void pop_symbol () {
-			current_symbol = symbol_stack[symbol_stack.size - 1];
-			symbol_stack.remove_at (symbol_stack.size - 1);
-		}
-	}
-#endif
-
-	public static int ccode_attribute_cache_index = CodeNode.get_attribute_cache_index ();
+	public static int ccode_attribute_cache_index = -1;
 	public static DataType get_data_type_for_symbol (TypeSymbol sym) {
 		DataType type = null;
 
@@ -93,8 +62,10 @@ public abstract class aroop.CCodeBaseModule : CodeGenerator {
 		return type;
 	}
 
-#if false
 	public static CCodeAttribute get_ccode_attribute (CodeNode node) {
+		if(ccode_attribute_cache_index == -1) {
+			ccode_attribute_cache_index = CodeNode.get_attribute_cache_index ();
+		}
 		var attr = node.get_attribute_cache (ccode_attribute_cache_index);
 		if (attr == null) {
 			attr = new CCodeAttribute (node);
@@ -102,7 +73,6 @@ public abstract class aroop.CCodeBaseModule : CodeGenerator {
 		}
 		return (CCodeAttribute) attr;
 	}
-#endif
 
 	public static string get_ccode_name (CodeNode node) {
 		return get_ccode_attribute(node).name;
@@ -157,6 +127,9 @@ public abstract class aroop.CCodeBaseModule : CodeGenerator {
 	}
 
 	public static string get_ccode_header_filenames (Symbol sym) {
+		if(ccode_attribute_cache_index == -1) {
+			ccode_attribute_cache_index = CodeNode.get_attribute_cache_index ();
+		}
 		return get_ccode_attribute(sym).header_filenames;
 	}
 
@@ -469,16 +442,6 @@ public abstract class aroop.CCodeBaseModule : CodeGenerator {
 
 		return new CCodeConstant (str.str);
 	}
-
-	public static CCodeAttribute get_ccode_attribute (CodeNode node) {
-		var attr = node.get_attribute_cache (ccode_attribute_cache_index);
-		if (attr == null) {
-			attr = new CCodeAttribute (node);
-			node.set_attribute_cache (ccode_attribute_cache_index, attr);
-		}
-		return (CCodeAttribute) attr;
-	}
-
 
 }
 
