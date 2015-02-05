@@ -29,20 +29,20 @@ libaroopcodegen_la_SOURCES = \
 	valaccodeattribute.vala \
 	valaccodebasemodule.vala \
 	valaccodecompiler.vala \
-	valaarooparraymodule.vala \
-	valaaroopassignmentmodule.vala \
-	valaaroopbasemodule.vala \
-	valaaroopccodegenimpl.vala \
-	valaaroopcontrolflowmodule.vala \
-	valaaroopdelegatemodule.vala \
-	valaaroopmemberaccessmodule.vala \
-	valaaroopmethodcallmodule.vala \
-	valaaroopmethodmodule.vala \
-	valaaroopobjectmodule.vala \
-	valaaroopstructmodule.vala \
-	valaaroopblockmodule.vala \
-	valaaroopvaluemodule.vala \
-	valaarooperrormodule.vala \
+	arooparraymodule.vala \
+	aroopassignmentmodule.vala \
+	aroopbasemodule.vala \
+	aroopccodegenimpl.vala \
+	aroopcontrolflowmodule.vala \
+	aroopdelegatemodule.vala \
+	aroopmemberaccessmodule.vala \
+	aroopmethodcallmodule.vala \
+	aroopmethodmodule.vala \
+	aroopobjectmodule.vala \
+	aroopstructmodule.vala \
+	aroopblockmodule.vala \
+	aroopvaluemodule.vala \
+	arooperrormodule.vala \
 	$(NULL)
 
 libaroopcodegen_la_LDFLAGS = -no-undefined
