@@ -108,6 +108,27 @@ Hello world
 You may optionally put a `--debug` option while doing static linking. This will create a debug build, which you may want to trace and debug.
 You may learn more about vala code compiling [here](https://wiki.gnome.org/Projects/Vala/Documentation) and [here](https://wiki.gnome.org/Projects/Vala/BasicSample).
 
+###Compiling genie
+
+[Genie](http://en.wikipedia.org/wiki/Genie_%28programming_language%29) syntax is derived from numerous modern languages like Python, Boo, D and Delphi.
+
+```genie
+// file hello_world.gs
+uses aroop
+
+init
+        print "Hello world"
+
+```
+The following commands will compile genie.
+
+```
+a/tmp$ /opt/aroop/bin/aroopc hello_world.gs
+a/tmp$ ./hello_world
+Hello world
+```
+
+
 ###Compiling a bare metal image for raspberry pi
 
 Details is [here](aroop/core/build/raspberry_pi_bare_metal/README.md).
