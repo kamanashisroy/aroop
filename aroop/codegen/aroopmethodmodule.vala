@@ -177,19 +177,31 @@ public abstract class aroop.AroopMethodModule : AroopBlockModule {
 
 			push_function (cmain);
 
+#if false
 			var aroop_init_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_init"));
 			aroop_init_call.add_argument (new CCodeIdentifier ("argc"));
 			aroop_init_call.add_argument (new CCodeIdentifier ("argv"));
 			ccode.add_statement (new CCodeExpressionStatement (aroop_init_call));
-
-			add_module_init ();
-
+#endif
 			var cdecl = new CCodeDeclaration ("int");
 			cdecl.add_declarator (new CCodeVariableDeclarator ("result", new CCodeConstant ("0")));
 			ccode.add_statement (cdecl);
 
-			var main_call = new CCodeFunctionCall (new CCodeIdentifier (function.name));
+			var main_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_main0"));
+			if (m.get_parameters ().size == 1) {
+				main_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_main1"));
+			}
+			main_call.add_argument (new CCodeIdentifier ("argc"));
+			main_call.add_argument (new CCodeIdentifier ("argv"));
+			main_call.add_argument (new CCodeIdentifier (function.name));
+			//ccode.add_statement (new CCodeExpressionStatement (aroop_init_call));
 
+			add_module_init ();
+
+
+			//var main_call = new CCodeFunctionCall (new CCodeIdentifier (function.name));
+
+#if false
 			if (m.get_parameters ().size == 1) {
 				// create Aroop array from C array
 				// should be replaced by Aroop list
@@ -224,6 +236,7 @@ public abstract class aroop.AroopMethodModule : AroopBlockModule {
 
 				main_call.add_argument (new CCodeIdentifier ("args"));
 			}
+#endif
 
 			var aroop_deinit_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_deinit"));
 			if (m.return_type is VoidType) {

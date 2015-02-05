@@ -293,8 +293,9 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		uint_type = new IntegerType ((Struct) root_symbol.scope.lookup ("uint"));
 		string_type = new ObjectType ((Class) root_symbol.scope.lookup ("string"));
 
-		var aroop_ns = (Namespace) root_symbol.scope.lookup ("Aroop");
-		object_class = (Class) aroop_ns.scope.lookup ("Object");
+		var aroop_ns = (Namespace) root_symbol.scope.lookup ("aroop");
+		//object_class = (Class) aroop_ns.scope.lookup ("Object");
+		object_class = (Class) aroop_ns.scope.lookup ("Replicable");
 		type_class = (Class) aroop_ns.scope.lookup ("Type");
 		value_class = (Class) aroop_ns.scope.lookup ("Value");
 		string_class = (Class) root_symbol.scope.lookup ("string");

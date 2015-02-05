@@ -75,6 +75,22 @@ int aroop_init(int argc, char ** argv) {
 	return 0;
 }
 
+int aroop_main0(int argc, char ** argv, int (*cb)()) {
+	aroop_init(argc,argv);
+	return cb();
+}
+
+int aroop_main1(int argc, char ** argv, int (*cb)(char*args)) {
+	int i = 0;
+	aroop_init(argc,argv);
+	char*args = alloca(argc+1);
+	for(i=0;i<argc;i++) {
+		args[i] = argv[i];
+	}
+	args[i] = NULL;
+	return cb(args);
+}
+
 void aroop_core_gc_unsafe() {
 	opp_any_obj_gc_unsafe();
 }

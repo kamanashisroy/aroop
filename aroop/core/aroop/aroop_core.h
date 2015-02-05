@@ -49,7 +49,9 @@ typedef char string;
 
 C_CAPSULE_START
 
-int aroop_init(int argc, char ** argv);
+int aroop_init(int argc, char ** argv); // deprecated, use aroop_main0 instead
+int aroop_main0(int argc, char ** argv, int (*cb)());
+int aroop_main1(int argc, char ** argv, int (*cb)(char*args));
 int aroop_deinit();
 
 #define aroop_object_alloc(x,y) opp_any_obj_alloc(x,y,NULL)

@@ -46,6 +46,29 @@ public struct aroop.aroop_hash {
 public struct aroop.aroop_magic {
 }
 
+[CCode (cprefix = "todovtable", cheader_filename = "aroop/aroop_core.h", destroy_function = "")]
+public struct aroop.Type {
+}
+
+[CCode (cprefix = "todovaluevtable", cheader_filename = "aroop/aroop_core.h", destroy_function = "")]
+public struct aroop.Value {
+}
+
+/*
+[Compact]
+[Immutable]
+[CCode (cname = "char", const_cname = "const char", copy_function = "strdup", free_function = "free", cheader_filename = "stdlib.h,string.h")]
+public class aroop.string {
+	[CCode (cname="atoi")]
+	public int to_int();
+	[CCode (cname="atol")]
+	public long to_long();
+	[CCode (cname="atoll")]
+	public int64 to_int64();
+	[CCode (cname="strlen")]
+	public int len();
+}*/
+
 [CCode (cprefix = "AROOP_FLAG_")]
 enum aroop.factory_flags {
 	HAS_LOCK = 1,

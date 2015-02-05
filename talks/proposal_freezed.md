@@ -70,7 +70,7 @@ It has ways to hide the blocks of code and structures inside a package. It uses 
 
 #### Python like language integration.
 
-Life is short. It is possible to write code in python and compile it with this Vala compiler. This is added by [Genie](http://en.wikipedia.org/wiki/Genie_(programming_language)). The same feature for Aroop is yet to come. 
+Life is short. It is possible to write code in python and compile it with this Vala compiler. This is added by [Genie](http://en.wikipedia.org/wiki/Genie_(programming_language)).
 
 #### Deferred statements 
 
