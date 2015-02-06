@@ -55,6 +55,48 @@ You can copy a string into stack for processing.
 extring sandbox = extring.stack_copy_extring(immutablextring);
 ```
 
+Heap memory
+===========
+Heap memory is obvious in some cases. The `extring.rebuild_in_heap(int size)` can be used to allocate memory space in any string type.
+
+```vala
+extring heap = extring();
+heap.rebuild_in_heap(128);
+heap.concat_string("I shall be in the heap memory");
+```
+
+Heap memory can be used if the string is set as output. For example, the following method adds suffix to a given string.
+
+```vala
+void addSuffix(extring*input, extring*suffix, extring*output) {
+	output.rebuild_in_heap(input.length()+suffix.length()+1);
+	output.concat(input);
+	output.concat(suffix);
+}
+```
+
+Traversing
+===========
+
+Each byte of the xtring can be accessed as follows,
+
+```vala
+extring content = extring.stack(128); // allocate 128 bytes in stack memory
+content.concat_string("hello\nworld\n"); // copy "hello\nworld\n"
+extring line = extring.stack(content.length()); // allocate memory space for each line
+int i = 0;
+for(i = 0; i < content.length(); i++) { // traverse all the elements starting from 0 to content.length()
+	uchar ch = content.char_at(i); // get the character at index i
+	if(ch == '\n') { // check if it is line break
+		line.zero_terminate(); // null terminate the string (as in C strings are null terminated, so printing the string needs to be null terminated)
+		print("%s\n", line.to_string()); // show the line
+		line.truncate(); // it sets the line length to 0, so that new line can be added here
+		continue;
+	}
+	line.concat_char(ch); // concat ch to the line 
+}
+```
+
 Factory
 ========
 
