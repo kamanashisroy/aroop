@@ -90,7 +90,7 @@ for(i = 0; i < content.length(); i++) { // traverse all the elements starting fr
 	if(ch == '\n') { // check if it is line break
 		line.zero_terminate(); // null terminate the string (as in C strings are null terminated, so printing the string needs to be null terminated)
 		print("%s\n", line.to_string()); // show the line
-		line.truncate(); // it sets the line length to 0, so that new line can be added here
+		line.truncate(); // it sets the line length to 0, so that next line can be added here
 		continue;
 	}
 	line.concat_char(ch); // concat ch to the line 
