@@ -124,3 +124,19 @@ Suppose you have an instance variable of type extring. If you return this in a m
 
 TODO: write more about copying and referencing strings.
 
+Common mistakes
+===============
+
+#### extring x = extring() will not allocate any memory
+
+There is a common mistake to think that the extring() constructor may allocate intelligent things to allocate memory. And with that wrong concept, it is wrong to concat character to `x`.
+
+```vala
+extring x = extring(); // in this declaration x.size() = 0
+x.concat_string("great"); // this will not work as the x does not have memory
+```
+
+
+
+
+
