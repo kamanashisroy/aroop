@@ -6,6 +6,7 @@ includedir=@includedir@
 datarootdir=@datarootdir@
 datadir=@datadir@
 vapidir=@datadir@/aroop@PACKAGE_SUFFIX@/vapi
+aroopc=${bindir}/aroopc@PACKAGE_SUFFIX@
 
 @vapigen_decl@
 @gen_introspect_decl@
