@@ -2402,6 +2402,7 @@ namespace Posix {
 		}
 	}
 
+#if false
 	[Compact]
 	[CCode(cheader_filename = "sched.h", cname = "cpu_set_t", free_function = "CPU_FREE", copy_function="memcpy")]
 	public class CpuSet {
@@ -2489,6 +2490,7 @@ namespace Posix {
 			return cpus;
 		}
 	}
+#endif
 
 	[CCode (has_target = false)]
 	public delegate int GlobErrorFunction (string filename, int errcode);

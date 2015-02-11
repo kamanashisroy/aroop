@@ -123,9 +123,9 @@ public struct aroop.HashTable<K,G> : aroop.CountableSet {
 [CCode (cname = "struct opp_iterator", cheader_filename = "aroop/opp/opp_iterator.h", has_copy_function=false, copy_function="aroop_iterator_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_iterator_destroy", has_free_function = true, free_function = "aroop_iterator_cpy_or_destroy")]
 public struct aroop.Iterator<G> {
 	[CCode (cname = "aroop_memclean_raw_2args")]
-	public Iterator.EMPTY();
+	public Iterator();
 	[CCode (cname = "aroop_iterator_create")]
-	public Iterator(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
+	public Iterator.forFactory(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_iterator_next")]
 	public bool next();
 	[CCode (cname = "aroop_iterator_get")]
@@ -266,7 +266,7 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	[CCode (cname = "opp_factory_unlock_donot_use")]
 	public int unlock_donot_use();
 	[CCode (cname = "aroop_factory_iterator_get")]
-	public int iterator(aroop.Iterator<G>*it, uint if_flag, uint ifnflag, aroop_hash hash);
+	public int iterator(aroop.Iterator<G>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_factory_do_full")]
 	public int verb(iterator_cb do_func, factory_log log, void*log_data);
 }
