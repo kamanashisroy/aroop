@@ -26,8 +26,8 @@ internal class Orchard : Replicable {
   }
 
   static void test1() {
-    int i = 5;
-		Iterator<Mango> it = Iterator<Mango>(&mangoes, Replica_flags.ALL, 0, i);
+	int i = 5;
+		Iterator<Mango> it = Iterator<Mango>.forFactory(&mangoes, Replica_flags.ALL, 0, i);
 		core.assert(it.next());
 		Mango x = it.get();
 		print("Here we are %d-%d\n", x.id, i);

@@ -547,7 +547,7 @@ public class aroop.xtring : aroop.Replicable {
  *
  */
 [Compact]
-[CCode (cname = "char", has_free_function = false)]
+[CCode (cname = "char", has_free_function = true, has_destroy_function=true, destroy_function="aroop_donothing4", free_function="aroop_donothing4")]
 public class aroop.mem {
 	[CCode (cname = "aroop_mem_copy")]
 	public bool copy_from(aroop.mem other, uint len);
