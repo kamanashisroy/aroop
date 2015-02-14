@@ -546,8 +546,8 @@ public class aroop.xtring : aroop.Replicable {
  * Most of the time it is kind of hack, so you may want to use unowned variable to avoid object reference.
  *
  */
-[Compact]
-[CCode (cname = "char", has_free_function = true, has_destroy_function=true, destroy_function="aroop_donothing4", free_function="aroop_donothing4")]
+//[Compact]
+[CCode (cname = "char", has_free_function = false)]
 public class aroop.mem {
 	[CCode (cname = "aroop_mem_copy")]
 	public bool copy_from(aroop.mem other, uint len);
