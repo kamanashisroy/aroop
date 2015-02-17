@@ -230,7 +230,7 @@ public struct aroop.Queue<G> {
 struct aroop.hashable_ext {
 }
 
-[CCode (cprefix = "aroop_searchable_ext"/*, cname = "opp_object_ext_t"*/, cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
+[CCode (cname = "aroop_searchable_ext"/*, cname = "opp_object_ext_t"*/, cheader_filename = "aroop/opp/opp_factory.h", destroy_function = "")]
 public struct aroop.searchable_ext {
 	[CCode (cname = "aroop_unmark_searchable_ext")]
 	public void unmark(ulong flg);
