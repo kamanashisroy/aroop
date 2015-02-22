@@ -342,10 +342,12 @@ public struct aroop.Substance { // We can call it, Substance(in religion)
 	public void describe();
 }
 
+//[CCode (copy_function = "g_error_copy", free_function = "g_error_free")]
 #if true
-// XXX This should be hidden from user ?
+[Compact]
+[ErrorBase]
 [CCode (cname = "aroop_wrong", cheader_filename = "aroop/aroop_error.h")]
-public struct aroop.AroopWrong {
+public class aroop.AroopError {
 	[CCode (cname = "aroop_error_to_string")]
 	public unowned string to_string();
 }

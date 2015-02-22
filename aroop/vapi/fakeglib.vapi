@@ -27,8 +27,12 @@ public struct Array {
 [CCode (cname = "aroop_none")]
 public struct ValueArray {
 }
-[CCode (cname = "aroop_none")]
-public struct Error {
+[Compact]
+[ErrorBase]
+[CCode (cname = "aroop_wrong", cheader_filename = "aroop/aroop_error.h")]
+public class Error {
+	[CCode (cname = "aroop_error_to_string")]
+	public unowned string to_string();
 }
 [CCode (cname = "aroop_none")]
 public struct Regex {

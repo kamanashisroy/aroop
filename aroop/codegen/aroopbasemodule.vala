@@ -301,7 +301,7 @@ public abstract class aroop.AroopBaseModule : CodeGenerator {
 		string_class = (Class) root_symbol.scope.lookup ("string");
 		array_struct = (Struct) aroop_ns.scope.lookup ("Array");
 		delegate_class = (Class) aroop_ns.scope.lookup ("Delegate");
-		error_class = (Class) aroop_ns.scope.lookup ("Error");
+		error_class = (Class) aroop_ns.scope.lookup ("AroopError");
 
 		header_file = new CCodeFile ();
 		header_file.is_header = true;

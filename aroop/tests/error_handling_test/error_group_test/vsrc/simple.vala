@@ -30,6 +30,7 @@ class MainClass : Replicable {
 			x.describe();
 			x.test_throw_error();
 		} catch (SomeErrorGroup.SomeErrorType e) {
+			print("Error: %s\n", e.to_string());
 		} finally {
 		}
 		return 0;

@@ -23,7 +23,8 @@ class MainClass : Replicable {
 			BotanicalGarden y = new BotanicalGarden();
 			y.test_throw_error();
 		} catch (SomeErrorType e) {
-			print("error:%s\n", ((AroopWrong*)e).to_string());
+			//print("error:%s\n", ((AroopError*)e).to_string());
+			print("error:%s\n", ((AroopError)e).to_string());
 		} finally {
 		}
 		return 0;
