@@ -522,11 +522,11 @@ public class aroop.xtring : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new_copy_content_deep")]
 	public xtring.copy_content(char*content, uint len = 0, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_string")]
-	public xtring.copy_string(string*content, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_string(string content, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_static_string")]
-	public xtring.copy_static_string(string*content, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_static_string(string content, aroop.Factory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_set_static_string")]
-	public xtring.set_static_string(string*content, aroop.Factory<xtring>*pool = null);
+	public xtring.set_static_string(string content, aroop.Factory<xtring>*pool = null);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~str();
 	[CCode (cname = "aroop_txt_to_embeded_pointer")]
