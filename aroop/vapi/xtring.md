@@ -28,7 +28,8 @@ String types
 	- [Traversing extring](#traversing-extring)
 	- [Common mistakes](#common-mistakes-with-extring)
 	- [Generated code](#generated-code-for-extring)
-	- [Convertion to primitive type](#extring-to-primitive-type)
+	- [Convertion to primitive type](#extring-to-primitive-types)
+	- [Convertion from primitive type and formatting](#primitive-types-to-extring)
 	- [Equality](#extring-equality)
 	- [Concatanation](#extring-concatanation)
 	- [Substring](#extring-substring)
@@ -368,6 +369,16 @@ extring x = extring.set_static_string("10");
 int i = x.to_int();
 ```
 
+
+#### Primitive types to extring
+
+The following code formats different types into extring.
+
+```vala
+extring buffer = extring.stack(128);
+buffer.printf("number:%d, long:%l, character:%c", 4, 4L, 'a');
+// buffer now contains "number:4, long:4, character:a" 
+```
 
 #### Common mistakes
 
