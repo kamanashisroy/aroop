@@ -241,10 +241,10 @@ aroop_txt_t*aroop_txt_cat_static(aroop_txt_t*text, char*suffix);
 aroop_txt_t*aroop_txt_set_len(aroop_txt_t*text, int len);
 #define aroop_txt_indexof_char(haystack, niddle) ({const char*haystack##pos = strchr((haystack)->str, niddle);int haystack##i = -1;if(haystack##pos && haystack##pos < ((haystack)->str+(haystack)->len))haystack##i = haystack##pos-(haystack)->str;haystack##i;})
 #endif
-#define aroop_txt_size(x) ({(x)->size;})
+#define aroop_txt_capacity(x) ({(x)->size;})
 #define aroop_txt_length(x) ({(x)->len;})
 #define aroop_txt_set_length(x,y) ({if(y <= (x)->size)(x)->len = y;})
-#define aroop_txt_trim_to_length(x,y) ({if(y < (x)->len)(x)->len = y;})
+#define aroop_txt_truncate(x,y) ({if(y < (x)->len)(x)->len = y;})
 #define aroop_txt_get_hash(x) ({((x)->hash != 0)?(x)->hash:((x)->hash = opp_get_hash_bin(aroop_txt_to_string(x), (x)->len));})
 #define aroop_txt_to_string_cb(x,cb,defaultval) ({((!(x) || (x)->len ==0)?defaultval:(((x)->internal_flag & XTRING_IS_ARRAY)?(cb((x)->content.str)):(cb((x)->content.pointer.str))));})
 #define aroop_txt_to_string_suffix(x,suffix,defaultval) ({((!(x) || (x)->len ==0)?defaultval:(((x)->internal_flag & XTRING_IS_ARRAY)?((x)->content.str suffix):((x)->content.pointer.str suffix)));})
