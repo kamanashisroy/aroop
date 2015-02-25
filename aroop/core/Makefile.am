@@ -12,7 +12,7 @@ src/aroop_core.c     src/opp_any_obj.c           src/opp_hash.c          src/opp
 src/aroop_factory.c  src/opp_factory.c           src/opp_hash_table.c    src/opp_queue.c            src/opp_str2.c \
 src/aroop_txt.c      src/opp_factory_profiler.c  src/opp_indexed_list.c  src/opp_rbtree_internal.c
 
-#pkgincludedir=$(includedir)/aroop_core@PACKAGE_SUFFIX@
+pkgincludedir=$(includedir)/aroop_core@PACKAGE_SUFFIX@
 nobase_pkginclude_HEADERS= \
 aroop/aroop_array.h       aroop/aroop_core.h                  aroop/aroop_core_type_info.h aroop/aroop_int_type.h  aroop/aroop_factory.h \
 aroop/aroop_assignment.h  aroop/aroop_core_type_conversion.h  aroop/aroop_error.h           aroop/aroop_memory_profiler.h  \
