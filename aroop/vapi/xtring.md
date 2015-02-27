@@ -26,13 +26,13 @@ String types
 	- [Sandboxing](#sandboxing)
 	- [Heap memory for extring](#heap-memory-for-extring)
 	- [Traversing extring](#traversing-extring)
-	- [Common mistakes](#common-mistakes-with-extring)
-	- [Generated code](#generated-code-for-extring)
 	- [Convertion to primitive type](#extring-to-primitive-types)
 	- [Convertion from primitive type and formatting](#primitive-types-to-extring)
 	- [Equality](#extring-equality)
 	- [Concatanation](#extring-concatanation)
 	- [Substring](#extring-substring)
+	- [Generated code](#generated-code-for-extring)
+	- [Common mistakes](#common-mistakes-with-extring)
 
 There is a [comparison table](#comparison-table) for better understanding of string types.
 
@@ -313,7 +313,7 @@ public class A : Replicable {
 It is possible to copy a string into stack for processing.
 
 ```vala
-extring sandbox = extring.stack_copy_extring(immutablextring);
+extring sandbox = extring.stack_copy_extring(immutablextring); // mutable
 ```
 
 #### Heap memory for extring
@@ -380,22 +380,6 @@ buffer.printf("number:%d, long:%l, character:%c", 4, 4L, 'a');
 // buffer now contains "number:4, long:4, character:a" 
 ```
 
-#### Common mistakes
-
-Suppose you have an instance variable of type extring. If you return this in a method, then it will be freed in the caller function resulting in double free. You need to take special care about this.
-
-TODO: write more about copying and referencing strings.
-
-
-#### extring x = extring() will not allocate any memory
-
-There is a common mistake to think that the extring() constructor may allocate intelligent things to allocate memory. And with that wrong concept, it is wrong to concat character to `x`.
-
-```vala
-extring x = extring(); // in this definition x.capacity() = 0
-x.concat_string("great"); // this will not work as the x does not have memory
-```
-
 #### Extring equality
 
 The following table shows the method available for extring comparison.
@@ -408,18 +392,61 @@ The following table shows the method available for extring comparison.
  `bool equals_static_string( string other )` | `x. equals_static_string( "hello" )` | boolean | sensitive
  `int cmp( extring * other )` | `x.cmp( &y ) == 0` | integer | sensitive
 
+Here are some examples of string comparisons.
+
+```vala
+
+string nice = "nice";
+extring x1 = extring.set_string(nice); // contains immutable "nice"
+extring x2 = extring.set_string("nice"); // contains immutable "nice"
+xtring x3 = new xtring.set_string(nice); // contains immutable "nice"
+xtring x4 = new xtring.copy_deep(x3); // contains mutable "nice"
+
+// the variables are different in value
+(x1 == nice); // false
+(x2 == nice); // false
+(x3 == nice); // false
+(x1 == x2); // false
+(x1 == x3); // false
+(x1 == x4); // false
+
+// The to_string() returns the underlying source string
+(x1.to_string() == nice); // true
+(x1.to_string() == x2.to_string()); // Depends on the compiler, if interned then true otherwise false
+(x1.to_string() == x3.fly().to_string()); // true
+(x1.to_string() == x4.fly().to_string()); // false
+
+// equals function checks the hashcode equality or every byte if the lengths are equal
+(x1.get_hash() == x2.get_hash()); // true
+(x1.equals(&x2)); // true
+(x1.get_hash() == x3.fly().get_hash()); // true
+(x1.equals(x3)); // true
+(x1.get_hash() == x4.fly().get_hash()); // true
+(x1.equals(x4)); // true
+x.equals_static_string("nice"); // true
+
+// case sensitive matching
+extring xcap = extring.set_static_string("Nice");
+x.iequals(&xcap); // true
+
+// compare function is 0 when two strings are equal
+
+x1.cmp(&x2); // 0
+
+```
+
 #### Extring concatanation
 
 Concatanation into mutable extring is done by calling one of `concat(extring*other)` or `concat_string(string*other)` and `concat_char(uchar c)` methods.
 
 ```vala
-string hello = "hello";
+string hello = "hello"; // immutable string
 
 // define mutable extring
 extring x = extring.stack(128);
 
 // concat string containing "hello"
-x.concat_string(hello);
+x.concat_string(hello); // now it contains mutable "hello"
 
 // concat character
 x.concat_char(' ');
@@ -427,12 +454,12 @@ x.concat_char(' ');
 extring world = extring.set_static_string("world"); // this is immutable
 
 // concat extring
-x.concat(&world);
+x.concat(&world); // now it contains mutable "hello world"
 
 xtring y = new xtring.copy_static_string(" from xtring .."); // this is xtring object
 
 // concat xtring object
-x.concat(y); // it contains "hello world from xtring .."
+x.fly().concat(y); // it contains "hello world from xtring .."
 ```
 
 Note that concatanation may happen if there is enough space for concatanation and if the destination is mutable.
@@ -452,12 +479,28 @@ There is no method named `substring()`. But it is possible to do substring using
 ```vala
 extring x = extring.set_static_string("hello world"); // immutable
 extring hello = extring.set_content(x.to_string(), 5); // contains immutable "hello"
-extring world = extring.copy_shallow(&x);
+extring world = extring.copy_shallow(&x); // contains immutable "hello world"
 world.shift(6); // after this statement, world contains immutable "world"
-extring hello2 = extring.copy_shallow(&x);
-hello2.trim_to_length(5); // after this statement, hello2 contains immutable "hello"
+extring hello2 = extring.copy_shallow(&x); // contains immutable "hello world"
+hello2.truncate(5); // after this statement, hello2 contains immutable "hello"
 xtring hello3 = new xtring.copy_shallow(&x); // immutable xtring object
-hello3.trim_to_length(5); // after this statement, hello3 contains immutable "hello"
+hello3.fly().truncate(5); // after this statement, hello3 contains immutable "hello"
+```
+
+#### Common mistakes
+
+Suppose you have an instance variable of type extring. If you return this in a method, then it will be freed in the caller function resulting in double free. You need to take special care about this.
+
+TODO: write more about copying and referencing strings.
+
+
+#### extring x = extring() will not allocate any memory
+
+There is a common mistake to think that the extring() constructor may allocate intelligent things to allocate memory. And with that wrong concept, it is wrong to concat character to `x`.
+
+```vala
+extring x = extring(); // in this definition x.capacity() = 0
+x.concat_string("great"); // this will not work as the x does not have memory
 ```
 
 Comparison table
@@ -494,7 +537,7 @@ access character | `x[ i ];` | NA | `x. fly() . char_at( i );` | `x. char_at( i 
 set character | `x[ i ] = 'h';` | NA | `x. fly() . set_char_at( i , 'h' );` | `x. set_char_char( i , 'h' );`
 add character | `x[ len ] = 'h';` | NA | `x. fly() . concat_char( 'h' );` | `x. concat_char( 'h' );`
 null terminate | `x[ len ] = '\0';` | NA | `x. fly() . zero_terminate( );` | `x. zero_terminate( );`
-trim | `x[ i ] = '\0';` | NA | `x. fly() . trim_to_length( i );` | `x. trim_to_length( i );`
+trim | `x[ i ] = '\0';` | NA | `x. fly() . truncate( i );` | `x. truncate( i );`
 shift | `x++;` | NA | `x. fly() . shift( 1 );` | `x. shift( 1 );`
 string tokenizer | `char* token = strtok_r( x, delim, &handle )` | NA | `extring token = extring(); x. fly() . shift_token( delim, &token );` | `x. shift_token( delim, &token );`
 free | `free(x);` | NA (garbage collected) | NA (garbage collected) | `y. destroy(); /* optional */`

@@ -181,8 +181,8 @@ typedef int xultb_bool_t;
 #define aroop_txt_embeded_rebuild_and_set_static_string(x,y) ({aroop_txt_destroy(x);aroop_txt_embeded_set_static_string(x,y);})
 
 #define aroop_txtcmp(x,y) ({int min = (x)->len>(y)->len?(y)->len:(x)->len;memcmp(aroop_txt_to_string(x), aroop_txt_to_string(y), min);})
-#define aroop_txt_equals(x,y) ({((x) && (y) && (x)->len == (y)->len && !memcmp(aroop_txt_to_string(x), aroop_txt_to_string(y), (x)->len));})
-#define aroop_txt_iequals(x,y) ({((x) && (y) && (x)->len == (y)->len && !strncasecmp(aroop_txt_to_string(x), aroop_txt_to_string(y), (x)->len));})
+#define aroop_txt_equals(x,y) ({((x) && (y) && (x)->len == (y)->len && ((aroop_txt_to_string(x) == aroop_txt_to_string(y)) || (((x)->hash == (y)->hash && (x)->hash != 0) || !memcmp(aroop_txt_to_string(x), aroop_txt_to_string(y), (x)->len))));})
+#define aroop_txt_iequals(x,y) ({((x) && (y) && (x)->len == (y)->len && ((aroop_txt_to_string(x) == aroop_txt_to_string(y)) || (((x)->hash == (y)->hash && (x)->hash != 0) || !strncasecmp(aroop_txt_to_string(x), aroop_txt_to_string(y), (x)->len))));})
 
 #define aroop_txt_equals_chararray_helper(x,y,calclen) ({((x) && (y) && (x)->len == (calclen) && !memcmp(aroop_txt_to_string(x), y,(x)->len));})
 #define aroop_txt_equals_static(x,static_y) aroop_txt_equals_chararray_helper(x,static_y,sizeof(static_y)-1)
