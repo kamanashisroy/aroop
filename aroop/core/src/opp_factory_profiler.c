@@ -39,7 +39,7 @@ static struct {
 	int signature;
 	int check;
 	OPP_VOLATILE_VAR int total_allocated;
-	struct opp_factory list;
+	struct opp_factory pool;
 } prof;
 
 #if 0
@@ -73,7 +73,7 @@ static int check_stop(int from, int to) {
 
 void opp_factory_profiler_visit(obj_do_t obj_do, void*func_data) {
 	RETURN_IF_PROFILER_OFF();
-	opp_factory_do_full(&prof.list, obj_do, func_data, OPPN_ALL, 0, 0);
+	opp_factory_do_full(&prof.pool, obj_do, func_data, OPPN_ALL, 0, 0);
 }
 
 OPP_CB(opp_factory_profiler) {
@@ -92,25 +92,25 @@ int opp_factory_profiler_init() {
 	if(prof.signature == PROFILER_SIGNATURE) {
 		return -2;
 	}
-	if(opp_factory_create_full(&prof.list, 4, sizeof(struct opp_factory_profiler_info), 1,  OPPF_HAS_LOCK, OPP_CB_FUNC(opp_factory_profiler))) {
+	if(opp_factory_create_full(&prof.pool, 4, sizeof(struct opp_factory_profiler_info), 1,  OPPF_HAS_LOCK, OPP_CB_FUNC(opp_factory_profiler))) {
 		return -1;
 	}
-	struct opp_factory_profiler_info*x = OPP_ALLOC1(&prof.list);
+	struct opp_factory_profiler_info*x = OPP_ALLOC1(&prof.pool);
 	x->source_file = "profiler_itself";
 	x->source_line = 0;
 	x->module_name = "opp_profiler";
 	time_t now = time(NULL);
 	gmtime_r(&now, &x->birth);
-	x->obuff = &prof.list;
+	x->obuff = &prof.pool;
 	prof.check = 1;
-	prof.total_allocated = prof.list.memory_chunk_size;
+	prof.total_allocated = prof.pool.memory_chunk_size;
 	prof.signature = PROFILER_SIGNATURE;
 	return 0;
 }
 
 int opp_factory_profiler_deinit() {
 	prof.signature = 0;
-	opp_factory_destroy(&prof.list);
+	opp_factory_destroy(&prof.pool);
 	return 0;
 }
 
@@ -127,7 +127,7 @@ int opp_factory_create_full_and_profile(struct opp_factory*obuff
 		return -1;
 	}
 	RETURN_IF_PROFILER_OFF(0);
-	struct opp_factory_profiler_info*x = OPP_ALLOC1(&prof.list);
+	struct opp_factory_profiler_info*x = OPP_ALLOC1(&prof.pool);
 	x->source_file = source_file;
 	x->source_line = source_line;
 	x->module_name = module_name;
