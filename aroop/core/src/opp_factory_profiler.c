@@ -92,7 +92,7 @@ int opp_factory_profiler_init() {
 	if(prof.signature == PROFILER_SIGNATURE) {
 		return -2;
 	}
-	if(opp_factory_create_full(&prof.pool, 4, sizeof(struct opp_factory_profiler_info), 1,  OPPF_HAS_LOCK, OPP_CB_FUNC(opp_factory_profiler))) {
+	if(opp_factory_create_full(&prof.pool, 16, sizeof(struct opp_factory_profiler_info), 1,  OPPF_HAS_LOCK, OPP_CB_FUNC(opp_factory_profiler))) {
 		return -1;
 	}
 	struct opp_factory_profiler_info*x = OPP_ALLOC1(&prof.pool);

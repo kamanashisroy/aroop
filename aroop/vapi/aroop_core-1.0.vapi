@@ -579,7 +579,7 @@ public class aroop.core {
 	[CCode (cname = "aroop_memclean_raw")]
 	public static void memclean_raw(void*ptr, ulong size);
 	[CCode (cname = "aroop_memory_profiler_dump")]
-	public static void memory_profiler_dump(writeOutputStream dump);
+	public static void memory_profiler_dump(writeOutputStream dump, extring*select_module = null);
 	[CCode (cname = "aroop_string_buffer_dump")]
 	public static void string_buffer_dump(writeOutputStream dump);
 	//[CCode (cname = "opp_factory_profiler_get_total_memory")]

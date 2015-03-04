@@ -193,7 +193,13 @@ OPP_CB_NOSTATIC(aroop_txt) {
 }
 
 void aroop_txt_system_init() {
-	SYNC_ASSERT(!OPP_PFACTORY_CREATE(&txt_pool, 128, sizeof(aroop_txt_t)+32, OPP_CB_FUNC(aroop_txt)));
+	SYNC_ASSERT(!OPP_PFACTORY_CREATE(&txt_pool,
+#ifdef AROOP_LOW_MEMORY
+		 128
+#else
+		 1024
+#endif
+		, sizeof(aroop_txt_t)+32, OPP_CB_FUNC(aroop_txt)));
 	BLANK_STRING = aroop_txt_new_set_content("", 0, NULL, 0);
 	ASTERISKS_STRING = aroop_txt_new_set_content("***********************************************", 30, NULL, 0);
 	DOT = aroop_txt_new_set_content(".", 1, NULL, 0);

@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 enum {
-#ifdef SYNC_LOW_MEMORY
+#ifdef AROOP_LOW_MEMORY
 	OPP_STR2_BUFFER_INC = 32
 #else
 	OPP_STR2_BUFFER_INC = 1024

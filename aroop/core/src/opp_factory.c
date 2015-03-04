@@ -221,7 +221,7 @@ enum {
 	OPP_INTERNAL_FLAG_NO_GC_NOW = 1,
 };
 
-#ifdef LOW_MEMORY
+#ifdef AROOP_LOW_MEMORY
 #define refcount_t OPP_VOLATILE_VAR SYNC_UWORD16_T
 #else
 #define refcount_t OPP_VOLATILE_VAR SYNC_UWORD32_T

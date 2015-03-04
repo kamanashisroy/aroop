@@ -126,7 +126,7 @@ int aroop_deinit() {
 		opp_queuesystem_deinit();
 #ifdef PROFILER_CRASH_DEBUG
 		aroop_write_output_stream_t log = {NULL, profiler_logger_debug};
-		aroop_memory_profiler_dump(log);
+		aroop_memory_profiler_dump(log, NULL);
 #endif
 		opp_factory_profiler_deinit();
 	}
@@ -140,6 +140,7 @@ struct aroop_internal_memory_profiler_dumper {
 	aroop_write_output_stream_t log;
 	long total_memory_used;
 	long total_memory;
+	struct aroop_txt*select_module;
 };
 
 #define PROFILER_DUMP_LINE_SIZE 256
@@ -147,6 +148,9 @@ struct aroop_internal_memory_profiler_dumper {
 static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 	struct opp_factory_profiler_info*x = data;
 	struct aroop_internal_memory_profiler_dumper*cb_data = func_data;
+	if(cb_data->select_module && !aroop_txt_equals_chararray(cb_data->select_module, x->module_name)) {
+		return 0;
+	}
 	cb_data->total_memory_used += x->obuff->slot_use_count*x->obuff->obj_size;
 	cb_data->total_memory += (x->obuff->pool_count*x->obuff->memory_chunk_size);
 	struct aroop_txt content;
@@ -172,8 +176,8 @@ void aroop_string_buffer_dump(aroop_write_output_stream_t log) {
 	opp_str2system_traverse(aroop_string_buffer_dump_helper, &log);
 }
 
-int aroop_memory_profiler_dump(aroop_write_output_stream_t log) {
-	struct aroop_internal_memory_profiler_dumper cb_data = {log, 0, 0};
+int aroop_memory_profiler_dump(aroop_write_output_stream_t log, struct aroop_txt*select_module) {
+	struct aroop_internal_memory_profiler_dumper cb_data = {log, 0, 0, select_module};
 	struct aroop_txt content;
 	aroop_txt_embeded_stackbuffer(&content, PROFILER_DUMP_LINE_SIZE);
 	aroop_txt_printf(&content, OPP_FACTORY_PROFILER_DUMP_HEADER_FMT2()" -- " OPP_FACTORY_DUMP_HEADER_FMT()"\n", OPP_FACTORY_PROFILER_DUMP_HEADER_ARG2(), OPP_FACTORY_DUMP_HEADER_ARG());

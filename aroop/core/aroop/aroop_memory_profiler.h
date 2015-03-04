@@ -14,6 +14,6 @@ typedef struct {
 }aroop_write_output_stream_t;
 
 void aroop_string_buffer_dump(aroop_write_output_stream_t log);
-int aroop_memory_profiler_dump(aroop_write_output_stream_t log);
+int aroop_memory_profiler_dump(aroop_write_output_stream_t log, struct aroop_txt*select_module);
 
 #endif // AROOP_MEMORY_PROFILER_DUMP_H_
