@@ -104,6 +104,7 @@ public delegate aroop_hash aroop.getHashCb(Replicable data);
 [CCode (cname = "opp_equals_t", cheader_filename = "aroop/opp/opp_hash_table.h", has_copy_function=false, has_destroy_function=false)]
 public delegate bool aroop.equalsCb(Replicable x, Replicable y);
 
+/* IMPORTANT: The Generic class K must be Hashable */
 [CCode (cname = "opp_hash_table_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_hash_table_destroy")]
 public struct aroop.HashTable<K,G> : aroop.CountableSet {
 	[CCode (cname = "aroop_hash_table_create")]
@@ -579,7 +580,7 @@ public class aroop.core {
 	[CCode (cname = "aroop_memclean_raw")]
 	public static void memclean_raw(void*ptr, ulong size);
 	[CCode (cname = "aroop_memory_profiler_dump")]
-	public static void memory_profiler_dump(writeOutputStream dump, extring*select_module = null);
+	public static void memory_profiler_dump(writeOutputStream dump, extring*select_module = null, bool checkMemory = false);
 	[CCode (cname = "aroop_string_buffer_dump")]
 	public static void string_buffer_dump(writeOutputStream dump);
 	//[CCode (cname = "opp_factory_profiler_get_total_memory")]

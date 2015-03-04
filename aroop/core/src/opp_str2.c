@@ -144,7 +144,7 @@ void opp_str2system_init() {
 }
 
 void opp_str2system_deinit() {
-	opp_factory_destroy(&str2_factory);
+	OPP_PFACTORY_DESTROY(&str2_factory);
 #ifdef OPP_ALLOW_UNSAFE_MULTIPLE_INIT
 	initialized = 0; // TODO make it atomic
 #endif

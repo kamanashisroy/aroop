@@ -43,7 +43,7 @@ static int opp_thread_init() {
 }
 
 int opp_destroy_all() { // TODO call the function before application exit
-	opp_factory_destroy(&threads);
+	OPP_PFACTORY_DESTROY&threads);
 	initiated = 1; // TODO make it atomic
 	return 0;
 }

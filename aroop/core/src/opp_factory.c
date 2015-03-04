@@ -1658,6 +1658,10 @@ int opp_iterator_destroy(struct opp_iterator*iterator) {
 	return 0;
 }
 
+int opp_factory_is_initialized(struct opp_factory*obuff) {
+	return (obuff->sign == OPPF_INITIALIZED_INTERNAL);
+}
+
 void opp_factory_do_pre_order(struct opp_factory*obuff, obj_do_t obj_do, void*func_data, unsigned int if_flag
 		, unsigned int if_not_flag) {
 	SYNC_ASSERT(obuff->property & OPPF_SEARCHABLE);
@@ -1886,7 +1890,7 @@ void opp_factory_verb(struct opp_factory*obuff, opp_verb_t verb_obj, const void*
 #endif
 }
 
-void opp_factory_destroy(struct opp_factory*obuff) {
+void opp_factory_destroy_use_profiler_instead(struct opp_factory*obuff) {
 	BITSTRING_TYPE*bitstring;
 	int k;
 	struct opp_pool*pool;

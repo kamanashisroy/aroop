@@ -136,7 +136,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 void opp_factory_gc_donot_use(struct opp_factory*obuff);
 void opp_factory_lock_donot_use(struct opp_factory*obuff);
 void opp_factory_unlock_donot_use(struct opp_factory*obuff);
-void opp_factory_destroy(struct opp_factory*obuff);
+void opp_factory_destroy_use_profiler_instead(struct opp_factory*obuff);
 struct opp_pool*opp_factory_create_pool_donot_use(struct opp_factory*obuff, struct opp_pool*addpoint, void*nofreememory);
 
 #if 0 // useful to check memory corruption
@@ -184,6 +184,7 @@ int opp_exists(struct opp_factory*obuff, const void*data);
 int opp_callback(void*data, int callback, void*cb_data);
 int opp_callback2(void*data, int callback, void*cb_data, ...);
 struct opp_factory*opp_get_factory_donot_use(void*data);
+int opp_factory_is_initialized(struct opp_factory*obuff);
 
 #ifdef TEST_OBJ_FACTORY_UTILS
 int opp_utils_test(void (*log)(void *log_data, const char*fmt, ...), void*log_data);

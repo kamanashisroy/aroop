@@ -110,7 +110,7 @@ int opp_factory_profiler_init() {
 
 int opp_factory_profiler_deinit() {
 	prof.signature = 0;
-	opp_factory_destroy(&prof.pool);
+	opp_factory_destroy_use_profiler_instead(&prof.pool);
 	return 0;
 }
 
@@ -123,7 +123,12 @@ int opp_factory_create_full_and_profile(struct opp_factory*obuff
 		, char*source_file, int source_line, char*module_name
 	) {
 	//property |= OPPF_HAS_LOCK | OPPF_SWEEP_ON_UNREF;
-	if(opp_factory_create_full(obuff,inc,obj_size,token_offset,property,callback) != 0) {
+	if(!
+	//SYNC_ASSERT(
+	!opp_factory_create_full(obuff,inc,obj_size,token_offset,property,callback)
+	//);
+	//SYNC_ASSERT(opp_factory_is_initialized(obuff));
+	 ) {
 		return -1;
 	}
 	RETURN_IF_PROFILER_OFF(0);

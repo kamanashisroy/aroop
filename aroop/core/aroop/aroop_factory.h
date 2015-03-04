@@ -155,7 +155,7 @@ enum {
 int aroop_factory_action_all_internal(struct opp_factory*opp, int action, unsigned int flag);
 typedef opp_object_ext_tiny_t aroop_hashable_ext;
 typedef opp_object_ext_tiny_t aroop_hashable;
-typedef opp_object_ext_t aroop_searchable_ext;
+//typedef opp_object_ext_t aroop_searchable_ext;
 typedef opp_object_ext_t aroop_searchable;
 int aroop_hashable_pray(void*data, int callback, void*cb_data, va_list ap, int size);
 int aroop_searchable_pray(void*data, int callback, void*cb_data, va_list ap, int size);

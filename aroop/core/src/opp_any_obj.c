@@ -135,9 +135,9 @@ void opp_any_obj_system_init() {
 }
 
 void opp_any_obj_system_deinit() {
-	opp_factory_destroy(&deca_objs);
-	opp_factory_destroy(&hecto_objs);
-	opp_factory_destroy(&kilo_objs);
+	OPP_PFACTORY_DESTROY(&deca_objs);
+	OPP_PFACTORY_DESTROY(&hecto_objs);
+	OPP_PFACTORY_DESTROY(&kilo_objs);
 }
 
 

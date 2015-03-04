@@ -584,7 +584,7 @@ int opp_queuesystem_init() {
 void opp_queuesystem_deinit() {
 	int i;
 	for(i=0;i<OPP_QUEUE_FACTORY_COUNT;i++) {
-		opp_factory_destroy(queue_factorys+i);
+		OPP_PFACTORY_DESTROY(queue_factorys+i);
 	}
 }
 
@@ -618,7 +618,7 @@ int opp_queue_test_init() {
 
 int opp_queue_test_deinit() {
 	opp_queue_deinit(&test_queue);
-	opp_factory_destroy(&test_factory);
+	OPP_FACTORY_DESTROY(&test_factory);
 	return 0;
 }
 #endif // TEST_OBJ_FACTORY_UTILS

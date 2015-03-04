@@ -213,5 +213,5 @@ void aroop_txt_system_init() {
 }
 
 void aroop_txt_system_deinit() {
-	opp_factory_destroy(&txt_pool);
+	OPP_PFACTORY_DESTROY(&txt_pool);
 }
