@@ -1,4 +1,4 @@
-OPPList
+OPPList<G>
 ========
 
 The aroop core library is based on object pooling. The List contains collection of objects. By definition list is contains sequential objects. OPPList uses pool to keep the **reference** of objects. The references are called *[AroopPointers](arooppointer.md)*. It uses *tokens* to identify contained objects. The *tokens* makes the objects sequential in some sense.

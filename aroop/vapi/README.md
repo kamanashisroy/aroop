@@ -13,7 +13,7 @@ This api provides the following classes,
 	- [OPPList](opplist.md)
 	- [SearchableOPPList](opplist.md#searchableopplist)
 	- HashTable
-	- ArrayList
+	- ArrayList(arraylist.md)
 	- [Queue](queue.md)
 	- Factory
 	- SearchableFactory
