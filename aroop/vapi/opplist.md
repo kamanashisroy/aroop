@@ -53,6 +53,27 @@ int token = pt.get_token(); // get the token of the pointer
 AroopPointer<xtring> pt2 = mylist.get_by_token(token); // retrieve the AroopPointer from the list
 xtring x2 = pt2.get();
 
-print("x and x2 are %s.\n", x2 == x ? "equal" : "not equal");
+print("x and x2 are %s.\n", x2 == x ? "equal" : "not equal"); // prints "equal"
 
 ```
+
+#### Iteration
+
+It is possible to iterate OPPList using `foreach` statement.
+
+```vala
+foreach(AroopPointer<xtring> pt3 in mylist) {
+	unowned xtring x3 = pt3.getUnowned();
+	print("%s\n", x3.fly().to_string());
+}
+```
+
+#### Iteration revisited
+
+TODO show how the iterator_hacked() do hash and flag based iteration.
+
+#### Example source
+
+Please refer to [OPPListExample](../example/collection_example/opplist_example/vsrc/OPPListExample.vala) to get the example source.
+
+

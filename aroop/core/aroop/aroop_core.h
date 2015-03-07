@@ -63,6 +63,7 @@ int aroop_deinit();
 #define aroop_none_is_same(x,y) ({(x && y && x == y);})
 #define aroop_none_shrink(x,y) ({opp_shrink(x,sizeof(*x)+y);})
 #define aroop_factory_iterator_get(x,y,a,b,c) ({opp_iterator_create(y,x,a,b,c);})
+#define aroop_factory_iterator_get_wrapper(x) ({struct opp_iterator _it;opp_iterator_create(&_it,x,OPPN_ALL,0,0);_it;})
 #define aroop_list_item_get(x,y) ({*(y) = ((x)->obj_data);})
 #define aroop_list_item_set(x,y) ({OPPUNREF((x)->obj_data);(x)->obj_data = OPPREF(y);})
 #define aroop_get_token(x) ({(x)->token;})

@@ -197,6 +197,8 @@ public struct aroop.OPPList<G> : aroop.CountableSet { // TODO change the Set to 
 		, aroop_hash list_hash, aroop_hash hash);
 	[CCode (cname = "aroop_factory_iterator_get")]
 	public int iterator_hacked(aroop.Iterator<AroopPointer<G>>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
+	[CCode (cname = "aroop_factory_iterator_get_wrapper")]
+	public aroop.Iterator<AroopPointer<G>> iterator();
 }
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]

@@ -21,6 +21,11 @@ class OPPListExample : Replicable {
 
 		print("x and x2 are %s.\n", x2 == x ? "equal" : "not equal");
 
+		foreach(AroopPointer<xtring> pt3 in mylist) {
+			unowned xtring x3 = pt3.getUnowned();
+			print("%s\n", x3.fly().to_string());
+		}
+
 		//mylist.destroy();
 		return 0;
 	}
