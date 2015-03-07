@@ -199,14 +199,16 @@ public struct aroop.OPPList<G> : aroop.CountableSet { // TODO change the Set to 
 	public int iterator_hacked(aroop.Iterator<AroopPointer<G>>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_factory_iterator_get_wrapper")]
 	public aroop.Iterator<AroopPointer<G>> iterator();
+	[CCode (cname = "aroop_list_prune")]
+	public void prune(G item, uint if_flag = 0, uint if_not_flag = 0, aroop_hash hash = 0); // NOTE this iterates all over 
 }
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
 public struct aroop.SearchableOPPList<G> : aroop.OPPList<G> {
 	[CCode (cname = "aroop_searchable_list_create")]
 	public SearchableOPPList(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
-	[CCode (cname = "aroop_searchable_list_prune")]
-	public void prune(aroop_hash hash, G item);
+	[CCode (cname = "aroop_searchable_list_prune_does_not_work")]
+	public void prune_does_not_work(G item, aroop_hash hash);
 	/*! \brief Searches set for any entry.
 	 *
 	 * @param [in] compare_func  A function reference that returns 0 on match.

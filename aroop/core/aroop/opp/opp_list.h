@@ -42,7 +42,7 @@ int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_no
 #define OPP_PLIST_CREATE_FULL(olist, psize, prop) ({opp_list_create2_and_profile(olist, psize, prop, __FILE__, __LINE__, AROOP_MODULE_NAME);})
 int opp_list_create2_and_profile(struct opp_factory*olist, int pool_size, opp_property_t property, char*source_file, int source_line, char*module_name);
 int opp_list_find_from_factory(struct opp_factory*obuff, struct opp_factory*olist, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data);
-int opp_list_search_and_prune(struct opp_factory*obuff, opp_hash_t hash, const void*target);
+int opp_list_search_and_prune_does_not_work(struct opp_factory*obuff, const void*target, opp_hash_t hash);
 
 C_CAPSULE_END
 

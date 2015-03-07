@@ -100,7 +100,8 @@ enum {
 #define aroop_list_create(x0, x1, x2, x3) ({OPP_PLIST_CREATE_FULL(x0, x2, x3);})
 #define aroop_list_add(x,y) ({opp_alloc4(x,0,0,0,y) != NULL;})
 #define aroop_list_add_container(x,y,hash,flag) ({void*__mem = NULL;if((__mem = opp_alloc4(x,0,0,0,y)) != NULL){if(flag)opp_set_flag(__mem, flag);if(hash)opp_set_hash(__mem,hash);aroop_object_ref(__mem);};__mem;})
-#define aroop_searchable_list_prune(ls,h,x) ({opp_list_search_and_prune(ls, h, x);})
+#define aroop_list_prune(ls,x,ifset,if_not,h) ({opp_list_prune(ls, x, ifset, if_not, h);})
+#define aroop_searchable_list_prune_does_not_work(ls,x,h) ({opp_list_search_and_prune_does_not_work(ls, x, h);})
 #define aroop_searchable_list_create(x0, x1, x2, x3) ({OPP_PLIST_CREATE_FULL(x0, x2, x3 | AROOP_FLAG_SEARCHABLE | AROOP_FLAG_EXTENDED);})
 
 #define aroop_factory_cpy_or_destroy(x,nouse,y,nouse2) ({\

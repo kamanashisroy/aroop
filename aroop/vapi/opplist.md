@@ -72,8 +72,32 @@ foreach(AroopPointer<xtring> pt3 in mylist) {
 
 TODO show how the iterator_hacked() do hash and flag based iteration.
 
+#### Pruning
+
+Pruning is done by prune() method. Using the flag and hash may optimize the pruning operation.
+
 #### Example source
 
 Please refer to [OPPListExample](../example/collection_example/opplist_example/vsrc/OPPListExample.vala) to get the example source.
 
+SearchableOPPList
+===================
+
+SearchableOPPList has search() method. The search can be done on hash. It has a tree based on hash to aid the searching. SearchableOPPList is flagged EXTENDED and SEARCHABLE by default.
+
+#### Searching and pruning
+
+The `search()` method searches the tree for the given hashcode . It matches both the hashcode and the object(if not null).
+
+```vala
+AroopPointer<xtring> pt4 = mylist.search(x.fly().getStringHash(), null);
+```
+
+It can also prune based on hash code. The following prune **uses tree to find the object rather than iterating all the objects**.
+
+```vala
+mylist.prune(x, x.fly().getStringHash());
+```
+
+Please refer to [SearchableOPPListExample](../example/collection_example/searchableopplist_example/vsrc/SearchableOPPListExample.vala) to get the example source.
 

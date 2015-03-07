@@ -11,7 +11,7 @@ This api provides the following classes,
 	- [extring](xtring.md#extring)
 - Collection
 	- [OPPList](opplist.md)
-	- [SearchableOPPList](opplist.md#searchable-opp-list)
+	- [SearchableOPPList](opplist.md#searchableopplist)
 	- HashTable
 	- ArrayList
 	- [Queue](queue.md)

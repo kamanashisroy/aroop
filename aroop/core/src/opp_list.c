@@ -104,20 +104,20 @@ static int opp_list_prune_helper(void*data, void*target) {
 	return 0;
 }
 
-int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_not_flag, int hash) {
+int opp_list_prune_does_not_work(struct opp_factory*olist, void*target, int if_flag, int if_not_flag, int hash) {
 	opp_factory_do_full(olist, opp_list_prune_helper, target, if_flag, if_not_flag, hash);
 	return 0;
 }
 
-static int opp_list_search_and_prune_comparator(const void*data, const void*target) {
+static int opp_list_search_and_prune_comparator(const void*target, const void*data) {
 	if(((opp_pointer_ext_t*)data)->obj_data == target) {
 		OPPUNREF(data);
 	}
 	return -1;
 }
 
-int opp_list_search_and_prune(struct opp_factory*obuff
-	, opp_hash_t hash, const void*target) {
+int opp_list_search_and_prune(struct opp_factory*obuff, const void*target
+	, opp_hash_t hash) {
 	void*rval = NULL;
 	opp_search(obuff, hash, opp_list_search_and_prune_comparator, target, &rval);
 	SYNC_ASSERT(rval == NULL);
