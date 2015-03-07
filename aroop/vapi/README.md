@@ -4,13 +4,17 @@ Aroop core API
 This api provides the following classes,
 
 - Replicable 
-- [string](xtring.md#string)
-- [xtring](xtring.md#xtring)
-- [extring](xtring.md#extring)
-- HashTable
-- Set
-- SearchableSet
-- ArrayList
-- [Queue](queue.md)
-- Factory
-- SearchableFactory
+- [AroopPointer](arooppointer.md)
+- String types
+	- [string](xtring.md#string)
+	- [xtring](xtring.md#xtring)
+	- [extring](xtring.md#extring)
+- Collection
+	- [OPPList](opplist.md)
+	- [SearchableOPPList](opplist.md#searchable-opp-list)
+	- HashTable
+	- ArrayList
+	- [Queue](queue.md)
+	- Factory
+	- SearchableFactory
+

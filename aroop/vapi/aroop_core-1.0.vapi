@@ -140,7 +140,7 @@ public struct aroop.Iterator<G> {
 }
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_factory_cpy_or_destroy", has_free_function = true, free_function = "aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
-public struct aroop.ArrayList<G> : aroop.SearchableSet {
+public struct aroop.ArrayList<G> : aroop.SearchableOPPList {
 	[CCode (cname = "aroop_array_list_create")]
 	public ArrayList(int inc = 16);
 	[CCode (cname = "aroop_indexed_list_get")]
@@ -176,17 +176,17 @@ public delegate int aroop.iterator_cb(Replicable data);
 public delegate int aroop.pointer_iterator_cb<G>(AroopPointer<G> data);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
-public struct aroop.Set<G> : aroop.CountableSet { // TODO change the Set to Collection or something ..
+public struct aroop.OPPList<G> : aroop.CountableSet { // TODO change the Set to Collection or something ..
 	[CCode (cname = "aroop_list_create")]
-	public Set(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	public OPPList(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	//[CCode (cname = "opp_list_create2")]
 	//public int create(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_list_add")]
 	public bool add(G item);
 	[CCode (cname = "aroop_list_add_container")]
-	public AroopPointer<G> addPointer(G item, aroop_hash hash = 0, uint flag = 0);
+	public AroopPointer<G> add_pointer(G item, aroop_hash hash = 0, uint flag = 0);
 	[CCode (cname = "aroop_factory_get_by_token2")]
-	public AroopPointer<G>? getByToken(uint token);
+	public AroopPointer<G>? get_by_token(uint token);
 	//[CCode (cname = "aroop_list_remove")]
 	//public void remove(G item);
 	[CCode (cname = "aroop_factory_do_full")]
@@ -200,9 +200,9 @@ public struct aroop.Set<G> : aroop.CountableSet { // TODO change the Set to Coll
 }
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
-public struct aroop.SearchableSet<G> : aroop.Set<G> {
+public struct aroop.SearchableOPPList<G> : aroop.OPPList<G> {
 	[CCode (cname = "aroop_searchable_list_create")]
-	public SearchableSet(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	public SearchableOPPList(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_searchable_list_prune")]
 	public void prune(aroop_hash hash, G item);
 	/*! \brief Searches set for any entry.

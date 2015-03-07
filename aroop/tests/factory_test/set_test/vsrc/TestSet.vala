@@ -2,14 +2,14 @@
 using aroop;
 
 
-class TestSet : Replicable {
-	static Set<xtring> chain;
-	static SearchableSet<xtring> searchable_chain;
+class TestOPPList : Replicable {
+	static OPPList<xtring> chain;
+	static SearchableOPPList<xtring> searchable_chain;
 
 	public static int main() {
-		chain = Set<xtring>();
+		chain = OPPList<xtring>();
 		chain.destroy();
-		searchable_chain = SearchableSet<xtring>();
+		searchable_chain = SearchableOPPList<xtring>();
 		searchable_chain.destroy();
 		return 0;
 	}
