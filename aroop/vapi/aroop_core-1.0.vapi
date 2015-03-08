@@ -116,7 +116,9 @@ public struct aroop.HashTable<K,G> : aroop.CountableSet {
 	[CCode (cname = "aroop_hash_table_get")]
 	public unowned G? getProperty(extring*key); // Hack when K == xtring 
 	[CCode (cname = "aroop_factory_iterator_get")]
-	public int iterator_hacked(aroop.Iterator<AroopPointer<G>>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
+	public int iterator_hacked(aroop.Iterator<AroopHashTablePointer<G>>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
+	[CCode (cname = "aroop_factory_iterator_get_wrapper")]
+	public aroop.Iterator<AroopHashTablePointer<G>> iterator();
 	[CCode (cname = "aroop_hash_table_use_count")]
 	public int count_unsafe();
 }

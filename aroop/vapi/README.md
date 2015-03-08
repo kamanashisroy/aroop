@@ -12,8 +12,8 @@ This api provides the following classes,
 - Collection
 	- [OPPList](opplist.md)
 	- [SearchableOPPList](opplist.md#searchableopplist)
-	- HashTable
-	- ArrayList(arraylist.md)
+	- [HashTable](hashtable.md)
+	- [ArrayList](arraylist.md)
 	- [Queue](queue.md)
 	- Factory
 	- SearchableFactory
