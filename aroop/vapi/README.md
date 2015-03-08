@@ -16,6 +16,6 @@ This api provides the following classes,
 	- [HashTable](hashtable.md)
 	- [ArrayList](arraylist.md)
 	- [Queue](queue.md)
-	- Factory
-	- SearchableFactory
+	- [OPPFactory](oppfactory.md)
+	- [SearchableOPPFactory](oppfactory.md#searchableoppfactory.md)
 

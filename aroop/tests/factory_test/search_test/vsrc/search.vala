@@ -34,7 +34,7 @@ internal class Mango : Searchable {
 }
 
 internal class Orchard : Replicable {
-	static SearchableFactory<Mango> mangoes;
+	static SearchableOPPFactory<Mango> mangoes;
   
   static void buildall() {
 		int i = 0;
@@ -61,7 +61,7 @@ internal class Orchard : Replicable {
   }
 
 	public static int main() {
-		mangoes = SearchableFactory<Mango>.for_type(16, 1, 0);
+		mangoes = SearchableOPPFactory<Mango>.for_type(16, 1, 0);
     buildall();
     test1();
     test2();

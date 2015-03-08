@@ -32,7 +32,7 @@ internal class Mango : Replicable {
 }
 
 internal class Orchard : Replicable {
-	static Factory<Mango> tree;
+	static OPPFactory<Mango> tree;
 	static SearchableOPPList<Mango> buscket;
   
   static void buildall() {
@@ -60,7 +60,7 @@ internal class Orchard : Replicable {
   }
 
 	public static int main() {
-		tree = Factory<Mango>.for_type(16, 1, 0);
+		tree = OPPFactory<Mango>.for_type(16, 1, 0);
 		buscket = SearchableOPPList<Mango>();
     buildall();
     test1();

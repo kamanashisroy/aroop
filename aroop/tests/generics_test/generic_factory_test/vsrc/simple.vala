@@ -7,9 +7,9 @@ class SomeThing<G> : Replicable {
 }
 
 class ContainerThing<G> : Replicable {
-	Factory<SomeThing<G>> sandbox;
+	OPPFactory<SomeThing<G>> sandbox;
 	public ContainerThing(G x) {
-		sandbox = Factory<SomeThing<G>>.for_type();
+		sandbox = OPPFactory<SomeThing<G>>.for_type();
 		SomeThing<G> a = sandbox.alloc_full();
 	}
 }

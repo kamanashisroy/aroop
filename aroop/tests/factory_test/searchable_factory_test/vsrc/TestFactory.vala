@@ -2,11 +2,11 @@
 using aroop;
 
 
-class TestFactory : Replicable {
-	static SearchableFactory<SearchableString> fac;
+class TestOPPFactory : Replicable {
+	static SearchableOPPFactory<SearchableString> fac;
 
 	public static int main() {
-		fac = SearchableFactory<SearchableString>.for_type();
+		fac = SearchableOPPFactory<SearchableString>.for_type();
 		extring fine = extring.set_string("It is working fine");
 		SearchableString?elem = fac.alloc_added_size((uint16)(fine.length()+1));
 		elem.tdata.factory_build_and_copy_on_tail_no_length_check(&fine);

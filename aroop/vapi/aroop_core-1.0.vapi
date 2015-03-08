@@ -82,7 +82,7 @@ enum aroop.factory_flags {
 //public delegate void aroop.verb_func(Replicable data, void*func_data);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile", has_free_function = true, free_function="aroop_factory_cpy_or_destroy")]
-public struct aroop.CountableSet {
+public struct aroop.Collection {
 	[CCode (cname = "aroop_factory_mark_all")]
 	public void markAll(ulong flg);
 	[CCode (cname = "aroop_factory_unmark_all")]
@@ -106,7 +106,7 @@ public delegate bool aroop.equalsCb(Replicable x, Replicable y);
 
 /* IMPORTANT: The Generic class K must be Hashable */
 [CCode (cname = "opp_hash_table_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy", has_destroy_function=true, destroy_function="opp_hash_table_destroy")]
-public struct aroop.HashTable<K,G> : aroop.CountableSet {
+public struct aroop.HashTable<K,G> : aroop.Collection {
 	[CCode (cname = "aroop_hash_table_create")]
 	public HashTable(aroop.getHashCb hcb, aroop.equalsCb ecb, int inc = 16, uchar flag = 0);
 	[CCode (cname = "opp_hash_table_set")]
@@ -128,7 +128,7 @@ public struct aroop.Iterator<G> {
 	[CCode (cname = "aroop_memclean_raw_2args")]
 	public Iterator();
 	[CCode (cname = "aroop_iterator_create")]
-	public Iterator.forFactory(aroop.Factory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
+	public Iterator.forFactory(aroop.OPPFactory*fac, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_iterator_next")]
 	public bool next();
 	[CCode (cname = "aroop_iterator_get")]
@@ -178,7 +178,7 @@ public delegate int aroop.iterator_cb(Replicable data);
 public delegate int aroop.pointer_iterator_cb<G>(AroopPointer<G> data);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=true, copy_function="aroop_memcpy_struct",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
-public struct aroop.OPPList<G> : aroop.CountableSet { // TODO change the Set to Collection or something ..
+public struct aroop.OPPList<G> : aroop.Collection { // TODO change the Set to Collection or something ..
 	[CCode (cname = "aroop_list_create")]
 	public OPPList(int inc = 16, uchar mark = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	//[CCode (cname = "opp_list_create2")]
@@ -253,13 +253,13 @@ public delegate int aroop.factory_cb(void*data, int callback, void*cb_data, /*va
 public delegate int aroop.factory_log(void*log_data, char*fmt, ...);
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
-public struct aroop.Factory<G> : aroop.CountableSet {
+public struct aroop.OPPFactory<G> : aroop.Collection {
 	[CCode (cname = "aroop_assert_factory_creation_full")]
-	private Factory(uint inc=16, uint datalen, int token_offset, uchar flags, aroop.factory_cb callback);
+	private OPPFactory(uint inc=16, uint datalen, int token_offset, uchar flags, aroop.factory_cb callback);
 	[CCode (cname = "aroop_assert_factory_creation_for_type_full")]
-	public Factory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	public OPPFactory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_assert_factory_creation_for_type")]
-	public Factory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
+	public OPPFactory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF);
 	[CCode (cname = "aroop_alloc_full")]
 	public G? alloc_full(uint16 size = 0, int doubleref = 0, bool mclean = false, void*init_data = null);
 	[CCode (cname = "aroop_alloc_added_size")]
@@ -272,20 +272,22 @@ public struct aroop.Factory<G> : aroop.CountableSet {
 	public int lock_donot_use();
 	[CCode (cname = "opp_factory_unlock_donot_use")]
 	public int unlock_donot_use();
+	[CCode (cname = "aroop_factory_iterator_get_wrapper")]
+	public aroop.Iterator<G> iterator();
 	[CCode (cname = "aroop_factory_iterator_get")]
-	public int iterator(aroop.Iterator<G>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
+	public int iterator_full(aroop.Iterator<G>*it, uint if_flag = Replica_flags.ALL, uint ifnflag = 0, aroop_hash hash = 0);
 	[CCode (cname = "aroop_factory_do_full")]
 	public int verb(iterator_cb do_func, factory_log log, void*log_data);
 }
 
 [CCode (cname = "opp_factory_t", cheader_filename = "aroop/aroop_factory.h", has_copy_function=false, copy_function="aroop_factory_cpy_or_destroy",has_free_function=true, free_function = "aroop_factory_cpy_or_destroy",  has_destroy_function=true, destroy_function="opp_factory_destroy_and_remove_profile")]
-public struct aroop.SearchableFactory<G> : aroop.Factory<G> {
+public struct aroop.SearchableOPPFactory<G> : aroop.OPPFactory<G> {
 	[CCode (cname = "aroop_srcblefac_constr")]
-	private SearchableFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE, aroop.factory_cb callback);
+	private SearchableOPPFactory(uint inc=16, uint datalen, int token_offset, uchar flags = factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE, aroop.factory_cb callback);
 	[CCode (cname = "aroop_srcblefac_constr_4_type_full")]
-	public SearchableFactory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE);
+	public SearchableOPPFactory.for_type_full(uint inc=16, uint datalen, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE);
 	[CCode (cname = "aroop_srcblefac_constr_4_type")]
-	public SearchableFactory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE);
+	public SearchableOPPFactory.for_type(uint inc=16, int token_offset = 0, uchar flags = factory_flags.HAS_LOCK | factory_flags.SWEEP_ON_UNREF | factory_flags.EXTENDED | factory_flags.SEARCHABLE);
 	[CCode (cname = "aroop_search")]
 	public G? search(aroop_hash hash, iterator_cb compare_func);
 	[CCode (cname = "opp_factory_do_pre_order")]
@@ -402,7 +404,7 @@ public class aroop.SearchableString : aroop.Searchable {
 	[CCode (cname = "aroop_searchable_string_rehash")]
 	public void rehash();
 	[CCode (cname = "aroop_txt_searchable_factory_build_and_copy_deep")]
-	public static SearchableString factory_build_and_copy_deep(Factory*fac, extring*src);
+	public static SearchableString factory_build_and_copy_deep(OPPFactory*fac, extring*src);
 }
 
 [CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/xtring.h", has_destroy_function = true, destroy_function="aroop_txt_destroy", has_copy_function = true, copy_function="aroop_extring_copy_or_destroy", has_free_function = true, free_function = "aroop_extring_copy_or_destroy")]
@@ -517,23 +519,23 @@ public struct aroop.extring : aroop.Substance { // embeded txt
 [CCode (cname = "aroop_txt_t", cheader_filename = "aroop/core/xtring.h", ref_function="aroop_object_ref", unref_function="aroop_object_unref", has_destroy_function=true, destroy_function="aroop_txt_destroy")]
 public class aroop.xtring : aroop.Replicable {
 	[CCode (cname = "aroop_txt_new")]
-	public xtring(char*content, uint len = 0, aroop.Replicable? proto = null, aroop.Factory<xtring>*pool = null);
+	public xtring(char*content, uint len = 0, aroop.Replicable? proto = null, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_alloc")]
-	public xtring.alloc(uint len = 0, aroop.Factory<xtring>*pool = null);
+	public xtring.alloc(uint len = 0, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_on_demand")]
-	public xtring.copy_on_demand(extring*src, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_on_demand(extring*src, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_shallow")]
-	public xtring.copy_shallow(extring*src, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_shallow(extring*src, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_deep")]
-	public xtring.copy_deep(extring*src, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_deep(extring*src, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_new_copy_content_deep")]
-	public xtring.copy_content(char*content, uint len = 0, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_content(char*content, uint len = 0, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_string")]
-	public xtring.copy_string(string content, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_string(string content, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_copy_static_string")]
-	public xtring.copy_static_string(string content, aroop.Factory<xtring>*pool = null);
+	public xtring.copy_static_string(string content, aroop.OPPFactory<xtring>*pool = null);
 	[CCode (cname = "aroop_txt_set_static_string")]
-	public xtring.set_static_string(string content, aroop.Factory<xtring>*pool = null);
+	public xtring.set_static_string(string content, aroop.OPPFactory<xtring>*pool = null);
 	//[CCode (cname = "aroop_txt_destroy")]
 	//~str();
 	[CCode (cname = "aroop_txt_to_embeded_pointer")]
@@ -547,7 +549,7 @@ public class aroop.xtring : aroop.Replicable {
 	[CCode (cname = "aroop_txt_get_hash_cb")]
 	public static aroop.getHashCb hCb;
 	//[CCode (cname = "aroop_txt_factory_build_and_copy_deep")]
-	//public static xtring factory_build_and_copy_deep(Factory*fac, extring*src);
+	//public static xtring factory_build_and_copy_deep(OPPFactory*fac, extring*src);
 }
 
 

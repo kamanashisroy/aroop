@@ -5,11 +5,11 @@ using aroop;
 class MainClass : Replicable {
 	protected xtring mango;
 	extring emango;
-	Factory<xtring> fac;
+	OPPFactory<xtring> fac;
 	MainClass() {
 		mango = new xtring.copy_static_string("mango");
 		emango = extring.copy_deep(mango);
-		fac = Factory<xtring>.for_type();
+		fac = OPPFactory<xtring>.for_type();
 		mango = new xtring.copy_static_string("mango", &fac);
 	}
 	~MainClass() {
