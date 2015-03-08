@@ -4,7 +4,8 @@ Aroop core API
 This api provides the following classes,
 
 - Replicable 
-- [AroopPointer](arooppointer.md)
+- [AroopPointer](hashtable.md#iteration)
+	- [AroopHashTablePointer](hashtable.md#iteration)
 - String types
 	- [string](xtring.md#string)
 	- [xtring](xtring.md#xtring)

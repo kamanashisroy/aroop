@@ -26,7 +26,7 @@ ht.set(key, value); // set value "Mango" in space of key "fruit:1"
 var ft = ht.get(key); // returns "Mango"
 ```
 
-#### HashTable is a OPPList
+#### Iteration
 
 Note that internaly the hashtable is managed by AroopPointer and it is possible to get the pointer using the `OPPList` methods.
 
