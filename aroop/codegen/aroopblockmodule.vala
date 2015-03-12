@@ -82,16 +82,17 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 
 		} else if ((current_method != null && current_method.binding == MemberBinding.INSTANCE) ||
 				   (current_property_accessor != null && current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
-			block_struct.add_field ("%s *".printf (get_ccode_aroop_name (current_class)), self_instance);
+			//block_struct.add_field ("%s *".printf (get_ccode_aroop_name(current_symbol)), self_instance);
+			block_struct.add_field ("%s *".printf (get_ccode_aroop_name(current_type_symbol)), self_instance);
 
 			var ma = new MemberAccess.simple (self_instance);
-			ma.symbol_reference = current_class;
+			ma.symbol_reference = current_symbol;
 			free_block.add_statement (
 				new CCodeExpressionStatement (get_unref_expression (
 				new CCodeMemberAccess.pointer (
 				new CCodeIdentifier (
 					generate_block_var_name(b)
-				), self_instance), new ObjectType (current_class), ma)));
+				), self_instance), get_data_type_for_symbol(current_type_symbol), ma)));
 		}
 		foreach (var local in local_vars) {
 			if (local.captured) {
@@ -185,7 +186,7 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 				generate_block_parent_assignment(b);
 			} else if ((current_method != null && current_method.binding == MemberBinding.INSTANCE) ||
 			           (current_property_accessor != null && current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
-				var ref_call = new CCodeFunctionCall (get_dup_func_expression (new ObjectType (current_class), b.source_reference));
+				var ref_call = new CCodeFunctionCall (get_dup_func_expression (get_data_type_for_symbol(current_type_symbol), b.source_reference));
 				ref_call.add_argument (new CCodeIdentifier (self_instance));
 
 				ccode.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess (get_variable_cexpression (generate_block_var_name(b)), self_instance), ref_call)));
@@ -323,7 +324,7 @@ public abstract class aroop.AroopBlockModule : AroopStructModule {
 			var cself = new CCodeMemberAccess.pointer (
 				new CCodeIdentifier (generate_block_var_name(closure_block))
 				, self_instance);
-			var cdecl = new CCodeDeclaration ("%s *".printf (get_ccode_aroop_name (current_class)));
+			var cdecl = new CCodeDeclaration ("%s *".printf (get_ccode_aroop_name (current_type_symbol)));
 			cdecl.add_declarator (new CCodeVariableDeclarator (self_instance, cself));
 
 			decl_space.add_statement (cdecl);

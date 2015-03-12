@@ -74,6 +74,8 @@ public abstract class aroop.AroopStructModule : AroopBaseModule {
 		decl_space.add_type_definition (instance_struct);
 		var func_macro = new CCodeMacroReplacement("%s(x,xindex,y,yindex)".printf(get_ccode_free_function(st)), "({%s(x,xindex,y,yindex);})".printf(get_ccode_copy_function(st)));
 		decl_space.add_type_declaration (func_macro);
+		var dup_func_macro = new CCodeMacroReplacement("%s(x)".printf(get_ccode_dup_function(st)), "({x;})");
+		decl_space.add_type_declaration (dup_func_macro);
 	}
 
 	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
