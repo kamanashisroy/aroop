@@ -1,10 +1,10 @@
 
 TARGET_O=libaroop_core.o
 TARGET_BASIC_O=libaroop_core_basic.o
-TARGET_HAS_THREAD_O=libaroop_core_has_thread.o
+#TARGET_HAS_THREAD_O=libaroop_core_has_thread.o
 TARGET_LAR=libaroop_core.la
 TARGET_AR=libaroop_core_static.a libaroop_core_debug.a
-bin_PROGRAMS=$(TARGET_O) $(TARGET_BASIC_O)
+bin_PROGRAMS=$(TARGET_O) $(TARGET_BASIC_O) $(TARGET_HAS_THREAD_O)
 lib_LTLIBRARIES=$(TARGET_LAR)
 lib_LIBRARIES=$(TARGET_AR)
 AROOP_CORE_SOURCE_FILES = \

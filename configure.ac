@@ -12,8 +12,9 @@ AC_PREREQ([2.64])
 AC_INIT([Aroop], [aroop_version], [kamanashisroy@github.com])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([dist-bzip2])
+AM_INIT_AUTOMAKE([subdir-objects dist-bzip2])
 AM_MAINTAINER_MODE
+
 
 AROOP_MAJOR_VERSION=aroop_major
 AROOP_MINOR_VERSION=aroop_minor
@@ -63,8 +64,11 @@ AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 AM_PROG_VALAC($VALA_REQUIRED)
 
+
 AC_CONFIG_FILES([Makefile
            libaroop.pc
+	   shotodolplug/Makefile
+	   codegenplug/Makefile
            aroop/codegen/Makefile
            aroop/compiler/Makefile
            aroop/core/Makefile
