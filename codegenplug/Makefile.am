@@ -29,6 +29,7 @@ libcodegenplug_la_VALAFLAGS = \
 	$(NULL)
 
 libcodegenplug_la_SOURCES = \
+	valaccodebasemodule.vala \
 	compilermodule.vala \
 	csymbolresolve.vala \
 	structmodule.vala \

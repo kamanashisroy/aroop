@@ -1,0 +1,4 @@
+*.c
+Makefile
+shotodolplug.vapi
+shotodolplug.h

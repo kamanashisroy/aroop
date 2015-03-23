@@ -18,13 +18,13 @@ public class aroop.ccodegen.ElementModule {
 				var fld = new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), get_ccode_name(f));
 				var element = new CCodeElementAccess (fld, new CCodeConstant (i.to_string ()));
 				if (requires_destroy (array_type.element_type))  {
-					stmt.add_statement(new CCodeExpressionStatement(get_unref_expression(element, array_type.element_type)));
+					stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(element, array_type.element_type)));
 				}
 			//}
 			return;
 		}
 		if (requires_destroy (f.variable_type))  {
-			stmt.add_statement(new CCodeExpressionStatement(get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), get_ccode_name(f)), f.variable_type)));
+			stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), get_ccode_name(f)), f.variable_type)));
 		}
 	}
 
@@ -38,14 +38,14 @@ public class aroop.ccodegen.ElementModule {
 		function.add_parameter (new CCodeParameter ("nouse1", "int"));
 		function.add_parameter (new CCodeParameter ("dest", "void*"));
 		function.add_parameter (new CCodeParameter ("nouse2", "int"));
-		push_function (function); // XXX I do not know what push does 
+		compiler.push_function (function); // XXX I do not know what push does 
 		if(st.is_internal_symbol()) {
 			compiler.cfile.add_function_declaration (function);
 		} else {
 			header_file.add_function_declaration (function);
 		}
 		
-		pop_function (); // XXX I do not know what pop does 
+		compiler.pop_function (); // XXX I do not know what pop does 
 		var vblock = new CCodeBlock ();
 
 		var cleanupblock = new CCodeBlock();
@@ -66,7 +66,7 @@ public class aroop.ccodegen.ElementModule {
 	}
 
 	public override void visit_struct (Struct st) {
-		push_context (new EmitContext (st));
+		compiler.push_context (new EmitContext (st));
 
 		generate_struct_copy_function(st);
 		if (st.is_internal_symbol ()) {
@@ -77,7 +77,7 @@ public class aroop.ccodegen.ElementModule {
 
 		st.accept_children (this);
 
-		pop_context ();
+		compiler.pop_context ();
 	}
 	
 	public bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {

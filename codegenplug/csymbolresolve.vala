@@ -67,5 +67,37 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	public string get_ccode_vfunc_name(CodeNode node) {
 		// TODO fill me
 	}
-}
 
+	public CCodeExpression get_unref_expression (CCodeExpression cvar, DataType type, Expression? expr = null) {
+		return destroy_value (new AroopValue (type, cvar));
+	}
+
+	public void set_cvalue (Expression expr, CCodeExpression? cvalue) {
+		var aroop_value = (AroopValue) expr.target_value;
+		if (aroop_value == null) {
+			aroop_value = new AroopValue (expr.value_type);
+			expr.target_value = aroop_value;
+		}
+		aroop_value.cvalue = cvalue;
+	}
+
+	public CCodeExpression? get_cvalue (Expression expr) {
+		if (expr.target_value == null) {
+			return null;
+		}
+		var aroop_value = (AroopValue) expr.target_value;
+		return aroop_value.cvalue;
+	}
+	public CCodeExpression? get_cvalue_ (TargetValue value) {
+		var aroop_value = (AroopValue) value;
+		return aroop_value.cvalue;
+	}
+}
+public class Vala.AroopValue : TargetValue {
+	public CCodeExpression cvalue;
+
+	public AroopValue (DataType? value_type = null, CCodeExpression? cvalue = null) {
+		base (value_type);
+		this.cvalue = cvalue;
+	}
+}

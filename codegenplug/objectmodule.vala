@@ -96,14 +96,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				if(prop.binding == MemberBinding.INSTANCE) {
 					gfunc.add_parameter (new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (cl) + "*"));
 				}
-				push_function (gfunc);
+				compiler.push_function (gfunc);
 				if(prop.is_internal_symbol()) {
 					compiler.cfile.add_function_declaration (gfunc);
 				} else {
 					compiler.header_file.add_function_declaration (gfunc);
 				}
 				visit_property_accessor2(prop.get_accessor);
-				pop_function ();
+				compiler.pop_function ();
 				compiler.cfile.add_function(gfunc);
 #else
 				var macro_function = "%sget_%s(%s)".printf (resolve.get_ccode_lower_case_prefix (cl)
@@ -249,14 +249,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		add_vtable_ovrd_variables(cl, cl);
 
 		var ifunc = new CCodeFunction ("%stype_system_init".printf (resolve.get_ccode_lower_case_prefix (cl)), "int");
-		push_function (ifunc); // XXX I do not know what push does 
+		compiler.push_function (ifunc); // XXX I do not know what push does 
 
 		if(cl.is_internal_symbol()) {
 			compiler.cfile.add_function_declaration (ifunc);
 		} else {
 			compiler.header_file.add_function_declaration (ifunc);
 		}
-		pop_function (); // XXX I do not know what pop does 
+		compiler.pop_function (); // XXX I do not know what pop does 
 
 		// Now add definition
 		var iblock = new CCodeBlock ();
@@ -358,7 +358,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		function.add_parameter (new CCodeParameter ("ap", "va_list"));
 		function.add_parameter (new CCodeParameter ("size", "int"));
 
-		push_function (function); // XXX I do not know what push does 
+		compiler.push_function (function); // XXX I do not know what push does 
 
 		if(cl.is_internal_symbol()) {
 			compiler.cfile.add_function_declaration (function);
@@ -366,7 +366,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			compiler.header_file.add_function_declaration (function);
 		}
 		
-		pop_function (); // XXX I do not know what pop does 
+		compiler.pop_function (); // XXX I do not know what pop does 
 
 		// Now add definition
 		var vblock = new CCodeBlock ();
@@ -506,7 +506,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 		function.add_parameter (new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (cl) + "*"));
 
-		push_function (function);
+		compiler.push_function (function);
 
 
 		if(cl.is_internal_symbol()) {
@@ -535,14 +535,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 					if(f.parent_symbol is Struct)
 						field_st = f.parent_symbol as Struct;
 					if (field_st != null && !field_st.is_simple_type ()) {
-						set_cvalue (this_access, new CCodeIdentifier ("(*this)"));
+						resolve.set_cvalue (this_access, new CCodeIdentifier ("(*this)"));
 					} else {
-						set_cvalue (this_access, new CCodeIdentifier (resolve.self_instance));
+						resolve.set_cvalue (this_access, new CCodeIdentifier (resolve.self_instance));
 					}
 
 					var ma = new MemberAccess (this_access, f.name);
 					ma.symbol_reference = f;
-					ccode.add_expression (get_unref_expression (lhs, f.variable_type, ma));
+					ccode.add_expression (resolve.get_unref_expression (lhs, f.variable_type, ma));
 				}
 			}
 		}
@@ -578,7 +578,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			}
 		}
 
-		pop_function ();
+		compiler.pop_function ();
 
 		compiler.cfile.add_function (function);
 	}
@@ -586,7 +586,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	bool cleanup_is_already_declared;
 	public override void visit_class (Class cl) {
 		cleanup_is_already_declared = false;
-		push_context (new EmitContext (cl));
+		compiler.push_context (new EmitContext (cl));
 
 		add_destruction_function (cl);
 		add_pray_function (cl);
@@ -599,17 +599,17 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 
 		cl.accept_children (this);
-		pop_context ();
+		compiler.pop_context ();
 	}
 
 	public override void visit_interface (Interface iface) {
-		push_context (new EmitContext (iface));
+		compiler.push_context (new EmitContext (iface));
 
 		generate_interface_declaration (iface, compiler.cfile);
 
 		iface.accept_children (this);
 
-		pop_context ();
+		compiler.pop_context ();
 	}
 
 #if false
@@ -675,7 +675,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 #if USE_MACRO_GETTER_SETTER
 	public void visit_property_accessor2 (PropertyAccessor acc) {
-		//push_context (new EmitContext (acc));
+		//compiler.push_context (new EmitContext (acc));
 		if (acc.result_var != null) {
 			acc.result_var.accept (this);
 		}
@@ -1076,7 +1076,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			expr.accept_children (this);
 
 			Vala.List<Expression> indices = expr.get_indices ();
-			var cindex = get_cvalue (indices[0]);
+			var cindex = resolve.get_cvalue (indices[0]);
 
 			if (array_type.inline_allocated) {
 				if (array_type.element_type is GenericType) {
@@ -1084,21 +1084,21 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 					// calculate offset in bytes based on value size
 					var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
 					value_size.add_argument (get_type_id_expression (array_type.element_type));
-					set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (get_cvalue (expr.container), "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
+					resolve.set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (resolve.get_cvalue (expr.container), "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
 				} else {
-					set_cvalue (expr, new CCodeElementAccess (get_cvalue (expr.container), cindex));
+					resolve.set_cvalue (expr, new CCodeElementAccess (resolve.get_cvalue (expr.container), cindex));
 				}
 			} else {
-				var ccontainer = get_cvalue (expr.container);
+				var ccontainer = resolve.get_cvalue (expr.container);
 
 				if (array_type.element_type is GenericType) {
 					// generic array
 					// calculate offset in bytes based on value size
 					var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
 					value_size.add_argument (get_type_id_expression (array_type.element_type));
-					set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (ccontainer, "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
+					resolve.set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (ccontainer, "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
 				} else {
-					set_cvalue (expr, new CCodeElementAccess (new CCodeCastExpression (ccontainer, "%s*".printf (resolve.get_ccode_aroop_name (array_type.element_type))), cindex));
+					resolve.set_cvalue (expr, new CCodeElementAccess (new CCodeCastExpression (ccontainer, "%s*".printf (resolve.get_ccode_aroop_name (array_type.element_type))), cindex));
 				}
 			}
 
