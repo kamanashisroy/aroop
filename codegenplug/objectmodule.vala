@@ -192,7 +192,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	private void add_vtable_ovrd_variables_external(Class cl, Class of_class) {
 		if(of_class.external_package && hasVtables(of_class)) {
 			var vbdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
-			vbdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(
+			vbdecl.add_declarator (new CCodeVariableDeclarator (resolve.get_ccode_vtable_var(
 				cl, of_class)));
 			vbdecl.modifiers |= CCodeModifiers.EXTERN;
 			compiler.cfile.add_type_member_declaration(vbdecl);
@@ -211,7 +211,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			return;
 		}
 		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
-		vdecl.add_declarator (new CCodeVariableDeclarator (get_ccode_vtable_var(cl, of_class)));
+		vdecl.add_declarator (new CCodeVariableDeclarator (resolve.get_ccode_vtable_var(cl, of_class)));
 		compiler.cfile.add_type_member_declaration(vdecl);
 	}
 	
@@ -225,8 +225,8 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		block.add_statement (
 			new CCodeExpressionStatement (
 				new CCodeAssignment (
-					new CCodeIdentifier (get_ccode_vtable_var(cl, of_class))
-					, new CCodeIdentifier (get_ccode_vtable_var(cl.base_class, of_class))
+					new CCodeIdentifier (resolve.get_ccode_vtable_var(cl, of_class))
+					, new CCodeIdentifier (resolve.get_ccode_vtable_var(cl.base_class, of_class))
 				)
 			)
 		);
@@ -237,9 +237,9 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 					new CCodeAssignment (
 						new CCodeIdentifier (
 							"%s.%s".printf(
-							get_ccode_vtable_var(cl, of_class)
+							resolve.get_ccode_vtable_var(cl, of_class)
 							, get_base_vtable_name()))
-						, new CCodeIdentifier ( "&%s".printf(get_ccode_vtable_var(cl.base_class, of_class)) ))));
+						, new CCodeIdentifier ( "&%s".printf(resolve.get_ccode_vtable_var(cl.base_class, of_class)) ))));
 		//}
 #endif
 	}
@@ -295,7 +295,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 						new CCodeAssignment (
 							new CCodeIdentifier (
 								"%s.%s".printf(
-								get_ccode_vtable_var(cl, (Class) m.base_method.parent_symbol)
+								resolve.get_ccode_vtable_var(cl, (Class) m.base_method.parent_symbol)
 								, resolve.get_ccode_vfunc_name (m)))
 							, new CCodeIdentifier ( resolve.get_ccode_real_name (m) ))));
 			}
@@ -319,7 +319,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				new CCodeIdentifier (
 					"((%s*)%s)->vtable".printf(
 						resolve.get_ccode_aroop_name(of_class), resolve.self_instance)),
-				new CCodeIdentifier ("&%s".printf(get_ccode_vtable_var(cl, of_class))))));
+				new CCodeIdentifier ("&%s".printf(resolve.get_ccode_vtable_var(cl, of_class))))));
 	}
 
 	private void generate_generic_builder_macro(Class cl, CCodeFile decl_space) {
@@ -529,7 +529,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 				if (requires_destroy (f.variable_type)) {
 					var this_access = new MemberAccess.simple (resolve.self_instance);
-					this_access.value_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
+					this_access.value_type = resolve.get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
 
 					Struct?field_st = null;
 					if(f.parent_symbol is Struct)
@@ -634,7 +634,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			DataType this_type;
 			if (prop.parent_symbol is Struct) {
 				var st = (Struct) prop.parent_symbol;
-				this_type = SemanticAnalyzer.get_data_type_for_symbol (st);
+				this_type = SemanticAnalyzer.resolve.get_data_type_for_symbol (st);
 			} else {
 				var t = (ObjectTypeSymbol) prop.parent_symbol;
 				this_type = new ObjectType (t);
@@ -812,19 +812,19 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		visit_method (m);
 
 		DataType creturn_type;
-		if (resolve.current_type_symbol is Class) {
-			creturn_type = new ObjectType (resolve.current_class);
+		if (compiler.current_type_symbol is Class) {
+			creturn_type = new ObjectType (compiler.current_class);
 		} else {
 			creturn_type = new VoidType ();
 		}
 
-		if(resolve.current_type_symbol is Class) {
+		if(compiler.current_type_symbol is Class) {
 			if(!cleanup_is_already_declared) {
-				var vfunc_cleanup_constructor = new CCodeFunction ("%s_prepare_internal".printf(resolve.get_ccode_name (resolve.current_class)));
-				vfunc_cleanup_constructor.add_parameter(new CCodeParameter (resolve.self_instance, "%s *".printf(resolve.get_ccode_aroop_name (resolve.current_class))));
+				var vfunc_cleanup_constructor = new CCodeFunction ("%s_prepare_internal".printf(resolve.get_ccode_name (compiler.current_class)));
+				vfunc_cleanup_constructor.add_parameter(new CCodeParameter (resolve.self_instance, "%s *".printf(resolve.get_ccode_aroop_name (compiler.current_class))));
 				var vblock_cleanup_constructor = new CCodeBlock ();
-				cleanup_object_while_creation(resolve.current_class, vblock_cleanup_constructor);
-				if(!resolve.current_class.is_internal_symbol()) {
+				cleanup_object_while_creation(compiler.current_class, vblock_cleanup_constructor);
+				if(!compiler.current_class.is_internal_symbol()) {
 					compiler.header_file.add_function_declaration (vfunc_cleanup_constructor);
 				} else {
 					vfunc_cleanup_constructor.modifiers |= CCodeModifiers.STATIC;
@@ -837,26 +837,26 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 
 		// do not generate _new functions for creation methods of abstract classes
-		if (resolve.current_type_symbol is Class && !resolve.current_class.is_abstract) {
+		if (compiler.current_type_symbol is Class && !compiler.current_class.is_abstract) {
 			var vfunc = new CCodeFunction (resolve.get_ccode_name (m));
 
 			var vblock = new CCodeBlock ();
 
-			var cdecl = new CCodeDeclaration ("%s *".printf (resolve.get_ccode_aroop_name (resolve.current_type_symbol)));
+			var cdecl = new CCodeDeclaration ("%s *".printf (resolve.get_ccode_aroop_name (compiler.current_type_symbol)));
 			cdecl.add_declarator (new CCodeVariableDeclarator (resolve.self_instance));
 			vblock.add_statement (cdecl);
 
 
 			var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_alloc"));
-			alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (resolve.get_ccode_aroop_name(resolve.current_class))));
-			alloc_call.add_argument (new CCodeIdentifier(get_pray_function(resolve.current_class)));
-			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (resolve.self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (resolve.get_ccode_aroop_name (resolve.current_type_symbol))))));
+			alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (resolve.get_ccode_aroop_name(compiler.current_class))));
+			alloc_call.add_argument (new CCodeIdentifier(get_pray_function(compiler.current_class)));
+			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (resolve.self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (resolve.get_ccode_aroop_name (compiler.current_type_symbol))))));
 
 #if false
 			// allocate memory for fields of generic types
 			// this is only a temporary measure until this can be allocated inline at the end of the instance
 			// this also won't work for subclasses of classes that have fields of generic types
-			foreach (var f in resolve.current_class.get_fields ()) {
+			foreach (var f in compiler.current_class.get_fields ()) {
 				if (f.binding != MemberBinding.INSTANCE || !(f.variable_type is GenericType)) {
 					continue;
 				}
@@ -868,15 +868,15 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				var calloc_call = new CCodeFunctionCall (new CCodeIdentifier ("calloc"));
 				calloc_call.add_argument (new CCodeConstant ("1"));
 				calloc_call.add_argument (type_get_value_size);
-				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (resolve.current_class, null))));
+				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (compiler.current_class, null))));
 				priv_call.add_argument (new CCodeIdentifier (resolve.self_instance));
 
 				vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, f.name), calloc_call)));
 			}
 #else
 			int i = 0;
-			foreach (var generic_type in  resolve.current_class.get_type_parameters ()) {
-			//foreach (var f in resolve.current_class.get_fields ()) {
+			foreach (var generic_type in  compiler.current_class.get_type_parameters ()) {
+			//foreach (var f in compiler.current_class.get_fields ()) {
 				//if (f.binding != MemberBinding.INSTANCE || !(f.variable_type is GenericType)) {
 					//continue;
 				//}
@@ -895,7 +895,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 #endif
 
 
-			var vcleanupcall = new CCodeFunctionCall (new CCodeIdentifier ("%s_prepare_internal".printf(resolve.get_ccode_aroop_name (resolve.current_class))));
+			var vcleanupcall = new CCodeFunctionCall (new CCodeIdentifier ("%s_prepare_internal".printf(resolve.get_ccode_aroop_name (compiler.current_class))));
 			vcleanupcall.add_argument (new CCodeIdentifier (resolve.self_instance));
 			vblock.add_statement (new CCodeExpressionStatement (vcleanupcall));
 
@@ -946,7 +946,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			}
 		} else if (m.binding == MemberBinding.INSTANCE) {
 			TypeSymbol parent_type = find_parent_type (m);
-			var this_type = get_data_type_for_symbol (parent_type);
+			var this_type = resolve.get_data_type_for_symbol (parent_type);
 
 			generate_type_declaration (this_type, decl_space);
 

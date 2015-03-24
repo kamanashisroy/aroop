@@ -4,21 +4,6 @@ using shotodolplug;
 using codegenplug;
 
 public class codegenplug.CSymbolResolve : shotodolplug.Module {
-	public TypeSymbol? current_type_symbol {
-		get {
-			var sym = current_symbol;
-			while (sym != null) {
-				if (sym is TypeSymbol) {
-					return (TypeSymbol) sym;
-				}
-				sym = sym.parent_symbol;
-			}
-			return null;
-		}
-	}
-	public Class? current_class {
-		get { return current_type_symbol as Class; }
-	}
 
 	public string self_instance = "self_data";
 	public CSymbolResolve() {
@@ -60,6 +45,9 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		// TODO fill me
 	}
 
+	public string get_ccode_lower_case_name(CodeNode node) {
+		// TODO fill me
+	}
 	public string get_ccode_real_name(CodeNode node) {
 		// TODO fill me
 	}
@@ -92,6 +80,38 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		var aroop_value = (AroopValue) value;
 		return aroop_value.cvalue;
 	}
+
+	public string get_ccode_vtable_var(Class cl, Class of_class) {
+		return "vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl)
+			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));
+	}
+	public static DataType get_data_type_for_symbol (TypeSymbol sym) {
+		DataType type = null;
+
+		if (sym is Class) {
+			type = new ObjectType ((Class) sym);
+		} else if (sym is Interface) {
+			type = new ObjectType ((Interface) sym);
+		} else if (sym is Struct) {
+			var st = (Struct) sym;
+			if (st.is_boolean_type ()) {
+				type = new BooleanType (st);
+			} else if (st.is_integer_type ()) {
+				type = new IntegerType (st);
+			} else if (st.is_floating_type ()) {
+				type = new FloatingType (st);
+			} else {
+				type = new StructValueType (st);
+			}
+		} else if (sym is Enum) {
+			type = new Vala.EnumValueType ((Enum) sym);
+		} else {
+			Report.error (null, "internal error: `%s' is not a supported type".printf (sym.get_full_name ()));
+			return new InvalidType ();
+		}
+
+		return type;
+	}
 }
 public class Vala.AroopValue : TargetValue {
 	public CCodeExpression cvalue;
@@ -101,3 +121,34 @@ public class Vala.AroopValue : TargetValue {
 		this.cvalue = cvalue;
 	}
 }
+
+/**
+ * Represents a struct declaration in the C code.
+ */
+public class codegenplug.CCodeStructPrototype : Vala.CCodeNode {
+        /**
+         * The struct name.
+         */
+		private string type_name { get; set; }
+		private string name { get; set; }
+		public CCodeStruct definition;
+        public CCodeStructPrototype (string name) {
+            this.name = "_%s".printf (name);
+			this.type_name = name;
+			definition = new CCodeStruct(this.name);
+        }
+
+		public void generate_type_declaration(CCodeFile decl_space) {
+			decl_space.add_type_declaration (new CCodeTypeDefinition ("struct _%s".printf (type_name), new CCodeVariableDeclarator (type_name)));
+		}
+	
+        public override void write (CCodeWriter writer) {
+                writer.write_string ("struct ");
+                writer.write_string (name);
+                writer.write_string (";");
+                writer.write_newline ();
+                writer.write_newline ();
+        }
+}
+
+

@@ -4,6 +4,7 @@ using shotodolplug;
 using codegenplug;
 
 public class codegenplug.CompilerModule : shotodolplug.Module {
+
 	public class EmitContext {
 		public Symbol? current_symbol;
 		public ArrayList<Symbol> symbol_stack = new ArrayList<Symbol> ();
@@ -30,6 +31,25 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 			symbol_stack.remove_at (symbol_stack.size - 1);
 		}
 	}
+	public EmitContext emit_context = new EmitContext ();
+	public Symbol current_symbol { get { return emit_context.current_symbol; } }
+	public TypeSymbol? current_type_symbol {
+		get {
+			var sym = current_symbol;
+			while (sym != null) {
+				if (sym is TypeSymbol) {
+					return (TypeSymbol) sym;
+				}
+				sym = sym.parent_symbol;
+			}
+			return null;
+		}
+	}
+	public Class? current_class {
+		get { return current_type_symbol as Class; }
+	}
+
+
 	public CCodeFile header_file;
 	public CCodeFile cfile;
 	public CompilerModule() {
@@ -69,6 +89,38 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 	public void pop_function () {
 		/*emit_context.ccode = emit_context.ccode_stack[emit_context.ccode_stack.size - 1];
 		emit_context.ccode_stack.remove_at (emit_context.ccode_stack.size - 1);*/
+	}
+
+	public bool add_symbol_declaration (CCodeFile decl_space, Symbol sym, string name) {
+#if false
+		if (decl_space.add_declaration (name)) {
+			return true;
+		}
+		/*print("%s(%s) Something may happen(%s)\n"
+			, name
+			, sym.external_package?"External":"Internal"
+			, decl_space.is_header?"Headerfile":"C file");*/
+		if (sym.external_package || (!decl_space.is_header && CodeContext.get ().use_header && !sym.is_internal_symbol ())) {
+			// add appropriate include file
+			foreach (string header_filename in CCodeBaseModule.get_ccode_header_filenames (sym).split (",")) {
+				/*print("%s is being added for symbol %s in %s\n"
+					, header_filename
+					, name
+					, decl_space.is_header?"Headerfile":"C file");*/
+				//decl_space.add_include (header_filename, !sym.external_package);
+				decl_space.add_include (header_filename, !sym.external_package ||
+				                                         (sym.external_package &&
+				                                          sym.from_commandline));
+			}
+			// declaration complete
+			return true;
+		} else {
+			// require declaration
+			return false;
+		}
+#else
+		return false;
+#endif
 	}
 
 

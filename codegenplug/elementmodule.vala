@@ -15,7 +15,7 @@ public class aroop.ccodegen.ElementModule {
 			// TODO cleanup array
 			int i = 0;
 			//for (int i = 0; i < array_type.length; i++) {
-				var fld = new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), get_ccode_name(f));
+				var fld = new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), resolve.get_ccode_name(f));
 				var element = new CCodeElementAccess (fld, new CCodeConstant (i.to_string ()));
 				if (requires_destroy (array_type.element_type))  {
 					stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(element, array_type.element_type)));
@@ -24,7 +24,7 @@ public class aroop.ccodegen.ElementModule {
 			return;
 		}
 		if (requires_destroy (f.variable_type))  {
-			stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), get_ccode_name(f)), f.variable_type)));
+			stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), resolve.get_ccode_name(f)), f.variable_type)));
 		}
 	}
 
@@ -91,15 +91,15 @@ public class aroop.ccodegen.ElementModule {
 	
 	public CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
 		if(is_current_instance_struct((TypeSymbol) f.parent_symbol, cexpr)) {
-			return new CCodeMemberAccess.pointer (cexpr, get_ccode_name (f));
+			return new CCodeMemberAccess.pointer (cexpr, resolve.get_ccode_name (f));
 		}
 		unowned CCodeUnaryExpression?cuop = null;
 		if((cexpr is CCodeUnaryExpression) 
 			&& (cuop = (CCodeUnaryExpression)cexpr) != null
 			&& cuop.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
-			return new CCodeMemberAccess.pointer (cuop.inner, get_ccode_name (f));
+			return new CCodeMemberAccess.pointer (cuop.inner, resolve.get_ccode_name (f));
 		}
-		return new CCodeMemberAccess (cexpr, get_ccode_name (f));
+		return new CCodeMemberAccess (cexpr, resolve.get_ccode_name (f));
 	}
 
 	
