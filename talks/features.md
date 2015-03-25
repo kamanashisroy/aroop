@@ -1,4 +1,6 @@
 
+Note, this file is under modification.
+
 Why use aroop ?
 
 It reduces friction and gives you motion inertia in several ways,
@@ -86,6 +88,10 @@ You may use the object introspection in your C implementation.
 #### Data programming best practices
 
 TODO say something here.
+
+#### Named arguments
+
+TODO: study named arguments and see if it is available here.
 
 #### Using the same language to write the compiler
 

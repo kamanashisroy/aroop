@@ -9,15 +9,16 @@ using GLib;
 /** \addtogroup Plugin
  *  @{
  */
-public delegate int shotodolplug.Hook(extring*msg, extring*output);
+//public delegate int shotodolplug.Hook(extring*msg, extring*output);
+public delegate int shotodolplug.Hook(Object x);
 public class shotodolplug.HookExtension : Extension {
 	shotodolplug.Hook hook;
 	public HookExtension(shotodolplug.Hook?gHook, Module mod) {
 		base(mod);
 		hook = gHook;
 	}
-	public override int act(extring*msg, extring*output) {
-		return hook(msg, output);
+	public override int act(Object x) {
+		return hook(x);
 	}
 #if false
 	public override int desc(OutputStream pad) {
@@ -28,4 +29,4 @@ public class shotodolplug.HookExtension : Extension {
 	}
 #endif
 }
-/** @}*/
+/** @} */

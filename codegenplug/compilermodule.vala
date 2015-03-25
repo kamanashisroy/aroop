@@ -5,32 +5,7 @@ using codegenplug;
 
 public class codegenplug.CompilerModule : shotodolplug.Module {
 
-	public class EmitContext {
-		public Symbol? current_symbol;
-		public ArrayList<Symbol> symbol_stack = new ArrayList<Symbol> ();
-		public TryStatement current_try;
-		public CatchClause current_catch;
-		public CCodeFunction ccode;
-		public ArrayList<CCodeFunction> ccode_stack = new ArrayList<CCodeFunction> ();
-		public ArrayList<LocalVariable> temp_ref_vars = new ArrayList<LocalVariable> ();
-		public int next_temp_var_id;
-		public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
-		public bool current_method_inner_error;
-		
-		public EmitContext (Symbol? symbol = null) {
-			current_symbol = symbol;
-		}
-
-		public void push_symbol (Symbol symbol) {
-			symbol_stack.add (current_symbol);
-			current_symbol = symbol;
-		}
-
-		public void pop_symbol () {
-			current_symbol = symbol_stack[symbol_stack.size - 1];
-			symbol_stack.remove_at (symbol_stack.size - 1);
-		}
-	}
+	
 	public EmitContext emit_context = new EmitContext ();
 	public Symbol current_symbol { get { return emit_context.current_symbol; } }
 	public TypeSymbol? current_type_symbol {
@@ -122,7 +97,30 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 		return false;
 #endif
 	}
-
-
 }
+public class codegenplug.EmitContext {
+	public Symbol? current_symbol;
+	public ArrayList<Symbol> symbol_stack = new ArrayList<Symbol> ();
+	public TryStatement current_try;
+	public CatchClause current_catch;
+	public CCodeFunction ccode;
+	public ArrayList<CCodeFunction> ccode_stack = new ArrayList<CCodeFunction> ();
+	public ArrayList<LocalVariable> temp_ref_vars = new ArrayList<LocalVariable> ();
+	public int next_temp_var_id;
+	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
+	public bool current_method_inner_error;
+	
+	public EmitContext (Symbol? symbol = null) {
+		current_symbol = symbol;
+	}
 
+	public void push_symbol (Symbol symbol) {
+		symbol_stack.add (current_symbol);
+		current_symbol = symbol;
+	}
+
+	public void pop_symbol () {
+		current_symbol = symbol_stack[symbol_stack.size - 1];
+		symbol_stack.remove_at (symbol_stack.size - 1);
+	}
+}

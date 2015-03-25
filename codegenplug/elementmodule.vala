@@ -29,7 +29,7 @@ public class aroop.ccodegen.ElementModule {
 	}
 
 	public void generate_struct_copy_function (Struct st) {
-		string copy_function_name = "%scopy".printf (get_ccode_lower_case_prefix (st));
+		string copy_function_name = "%scopy".printf (resolve.get_ccode_lower_case_prefix (st));
 		var function = new CCodeFunction (copy_function_name, "int");
 		if(st.is_internal_symbol()) {
 			function.modifiers = CCodeModifiers.STATIC;

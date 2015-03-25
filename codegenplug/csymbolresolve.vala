@@ -45,6 +45,9 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		// TODO fill me
 	}
 
+	public string get_ccode_lower_case_suffix(CodeNode node) {
+		// TODO fill me
+	}
 	public string get_ccode_lower_case_name(CodeNode node) {
 		// TODO fill me
 	}
@@ -112,6 +115,41 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 		return type;
 	}
+
+	public CCodeExpression get_type_id_expression (DataType type, bool is_chainup = false, bool for_type_custing = false) {
+		if (type is GenericType) {
+			string var_name = "%s_type".printf (type.type_parameter.name.down ());
+			if (is_in_generic_type (type) && !is_chainup) {
+				return get_type_private_from_type (
+					(ObjectTypeSymbol) type.type_parameter.parent_symbol
+					, new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname()));
+			} else {
+				return new CCodeIdentifier (var_name);
+			}
+		} else {
+			var ret = new CCodeIdentifier (get_ccode_aroop_name((ObjectTypeSymbol)type.data_type));
+			if(for_type_custing) {
+				return ret;
+			}
+			if(((ObjectTypeSymbol)type.data_type) != null && ((ObjectTypeSymbol)type.data_type) is Class) {
+				var tmp = new CCodeFunctionCall(new CCodeIdentifier ("aroop_generic_type_for_class"));
+				tmp.add_argument(ret);
+				return tmp;
+			}
+			return ret;
+		}
+	}
+
+	public bool hasVtables(Vala.Class given) {
+		foreach (Method m in given.get_methods ()) {
+			if (m.is_abstract || m.is_virtual) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 }
 public class Vala.AroopValue : TargetValue {
 	public CCodeExpression cvalue;

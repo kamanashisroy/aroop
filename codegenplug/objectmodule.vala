@@ -12,6 +12,8 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("visit/class", new HookExtension(visit_class, this));
+		PluginManager.register("visit/interface", new HookExtension(visit_interface, this));
+		PluginManager.register("visit/creation_method", new HookExtension(visit_creation_method, this));
 	}
 
 	public override int deinit() {
@@ -40,7 +42,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 		proto.generate_type_declaration(decl_space);
 		//decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (resolve.get_ccode_aroop_name (cl))));
-		bool has_vtables = hasVtables(cl);
+		bool has_vtables = resolve.hasVtables(cl);
 
 		if(has_vtables) {
 			generate_vtable(cl, decl_space);
@@ -190,7 +192,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 	private void add_vtable_ovrd_variables_external(Class cl, Class of_class) {
-		if(of_class.external_package && hasVtables(of_class)) {
+		if(of_class.external_package && resolve.hasVtables(of_class)) {
 			var vbdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
 			vbdecl.add_declarator (new CCodeVariableDeclarator (resolve.get_ccode_vtable_var(
 				cl, of_class)));
@@ -207,7 +209,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			add_vtable_ovrd_variables(cl, of_class.base_class);
 		}
 		add_vtable_ovrd_variables_external(of_class, of_class);
-		if(!hasVtables(of_class)) {
+		if(!resolve.hasVtables(of_class)) {
 			return;
 		}
 		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
@@ -219,7 +221,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		if(of_class.base_class != null) {
 			cpy_vtable_of_base_class(cl, of_class.base_class, block);			
 		}
-		if(!hasVtables(of_class)) {
+		if(!resolve.hasVtables(of_class)) {
 			return;
 		}
 		block.add_statement (
@@ -311,7 +313,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		if(of_class.base_class != null) {
 			set_vtables(cl, of_class.base_class, block);			
 		}
-		if(!hasVtables(of_class)) {
+		if(!resolve.hasVtables(of_class)) {
 			return;
 		}
 		block.add_statement (new CCodeExpressionStatement (
@@ -566,7 +568,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_base_destroy"));
 				var type_get_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_type_get".printf (resolve.get_ccode_aroop_name (object_type.type_symbol))));
 				foreach (var type_arg in base_type.get_type_arguments ()) {
-					type_get_call.add_argument (get_type_id_expression (type_arg, false));
+					type_get_call.add_argument (resolve.get_type_id_expression (type_arg, false));
 				}
 				ccall.add_argument (type_get_call);
 				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
@@ -602,7 +604,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		compiler.pop_context ();
 	}
 
-	public override void visit_interface (Interface iface) {
+	public void visit_interface (Interface iface) {
 		compiler.push_context (new EmitContext (iface));
 
 		generate_interface_declaration (iface, compiler.cfile);
@@ -806,7 +808,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 	}
 
-	public override void visit_creation_method (CreationMethod m) {
+	public void visit_creation_method (CreationMethod m) {
 		bool visible = !m.is_internal_symbol ();
 
 		visit_method (m);
@@ -1083,7 +1085,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 					// generic array
 					// calculate offset in bytes based on value size
 					var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
-					value_size.add_argument (get_type_id_expression (array_type.element_type));
+					value_size.add_argument (resolve.get_type_id_expression (array_type.element_type));
 					resolve.set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (resolve.get_cvalue (expr.container), "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
 				} else {
 					resolve.set_cvalue (expr, new CCodeElementAccess (resolve.get_cvalue (expr.container), cindex));
@@ -1095,7 +1097,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 					// generic array
 					// calculate offset in bytes based on value size
 					var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
-					value_size.add_argument (get_type_id_expression (array_type.element_type));
+					value_size.add_argument (resolve.get_type_id_expression (array_type.element_type));
 					resolve.set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (ccontainer, "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
 				} else {
 					resolve.set_cvalue (expr, new CCodeElementAccess (new CCodeCastExpression (ccontainer, "%s*".printf (resolve.get_ccode_aroop_name (array_type.element_type))), cindex));
