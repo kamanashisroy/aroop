@@ -97,6 +97,42 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 		return false;
 #endif
 	}
+	public void generate_type_declaration (DataType type, CCodeFile decl_space) {
+		// TODO fill me
+		/*if (type is ObjectType) {
+			var object_type = (ObjectType) type;
+			if (object_type.type_symbol is Class) {
+				generate_class_declaration ((Class) object_type.type_symbol, decl_space);
+			} else if (object_type.type_symbol is Interface) {
+				generate_interface_declaration ((Interface) object_type.type_symbol, decl_space);
+			}
+		} else if (type is DelegateType) {
+			var deleg_type = (DelegateType) type;
+			var d = deleg_type.delegate_symbol;
+			generate_delegate_declaration (d, decl_space);
+		} else if (type.data_type is Enum) {
+			var en = (Enum) type.data_type;
+			generate_enum_declaration (en, decl_space);
+		} else if (type is ValueType) {
+			var value_type = (ValueType) type;
+			generate_struct_declaration ((Struct) value_type.type_symbol, decl_space);
+		} else if (type is ArrayType) {
+			var array_type = (ArrayType) type;
+			generate_struct_declaration (array_struct, decl_space);
+			assert(array_type.element_type != null);
+			generate_type_declaration (array_type.element_type, decl_space);
+		} else if (type is PointerType) {
+			var pointer_type = (PointerType) type;
+			assert(pointer_type.base_type != null);
+			generate_type_declaration (pointer_type.base_type, decl_space);
+		}
+
+		foreach (DataType type_arg in type.get_type_arguments ()) {
+			if(type_arg != null)generate_type_declaration (type_arg, decl_space);
+		}*/
+	}
+	
+
 }
 public class codegenplug.EmitContext {
 	public Symbol? current_symbol;

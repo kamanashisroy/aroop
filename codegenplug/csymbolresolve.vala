@@ -59,6 +59,16 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		// TODO fill me
 	}
 
+	public string get_generic_class_variable_cname(int tparams = 0) {
+		return "_generic_type_%d".printf(tparams);
+	}
+	
+	public string get_aroop_type_cname() {
+		return "aroop_type_desc";
+	}
+
+
+
 	public CCodeExpression get_unref_expression (CCodeExpression cvar, DataType type, Expression? expr = null) {
 		return destroy_value (new AroopValue (type, cvar));
 	}
@@ -148,7 +158,36 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		}
 		return false;
 	}
+	public bool requires_destroy (DataType type) {
+		if (!type.is_disposable ()) {
+			return false;
+		}
 
+		var deleg_type = type as DelegateType;
+		if(deleg_type != null) {
+			return false;
+		}
+
+		var array_type = type as ArrayType;
+		if (array_type != null && array_type.inline_allocated) {
+			return requires_destroy (array_type.element_type);
+		}
+
+		if(type.data_type != null && type.data_type is Class) {
+			var cl = type.data_type as Class;
+			if (is_reference_counting (cl)
+			    && get_ccode_unref_function (cl) == "") {
+				// empty unref_function => no unref necessary
+				return false;
+			}
+		}
+
+		if (type.type_parameter != null) {
+			return false;
+		}
+
+		return true;
+	}
 
 }
 public class Vala.AroopValue : TargetValue {

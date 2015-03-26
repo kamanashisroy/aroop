@@ -17,13 +17,13 @@ public class aroop.ccodegen.ElementModule {
 			//for (int i = 0; i < array_type.length; i++) {
 				var fld = new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), resolve.get_ccode_name(f));
 				var element = new CCodeElementAccess (fld, new CCodeConstant (i.to_string ()));
-				if (requires_destroy (array_type.element_type))  {
+				if (resolve.requires_destroy (array_type.element_type))  {
 					stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(element, array_type.element_type)));
 				}
 			//}
 			return;
 		}
-		if (requires_destroy (f.variable_type))  {
+		if (resolve.requires_destroy (f.variable_type))  {
 			stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), resolve.get_ccode_name(f)), f.variable_type)));
 		}
 	}
@@ -86,7 +86,7 @@ public class aroop.ccodegen.ElementModule {
 			return false;
 		}
 		//print("[%s]member access identifier:%s\n", instanceType.name, cid.name);
-		return (instanceType == current_type_symbol && (cid.name) == resolve.self_instance);
+		return (instanceType == compiler.current_type_symbol && (cid.name) == resolve.self_instance);
 	}
 	
 	public CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
