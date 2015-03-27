@@ -3,9 +3,22 @@ using Vala;
 using shotodolplug;
 using codegenplug;
 
-public class aroop.ccodegen.ElementModule {  
+public class ccodegenplug.ElementModule : shotodolplug.Module {
 	CSymbolResolve resolve;
 	CompilerModule compiler;
+	CodeGenerator cgen;
+	AroopCodeGeneratorAdapter cgenAdapter;
+	public ElementModule() {
+		base("Element", "0.0");
+	}
+
+	public override int init() {
+		PluginManager.register("generate/element", new HookExtension(generate_element_destruction_code, this));
+	}
+
+	public override int deinit() {
+	}
+
 	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
 		if (f.binding != MemberBinding.INSTANCE)  {
 			return;
@@ -28,58 +41,38 @@ public class aroop.ccodegen.ElementModule {
 		}
 	}
 
-	public void generate_struct_copy_function (Struct st) {
-		string copy_function_name = "%scopy".printf (resolve.get_ccode_lower_case_prefix (st));
-		var function = new CCodeFunction (copy_function_name, "int");
-		if(st.is_internal_symbol()) {
-			function.modifiers = CCodeModifiers.STATIC;
+	public void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
+		if (f.binding != MemberBinding.INSTANCE)  {
+			//visit_field(f);
+			//print(" - we should have declared %s\n", get_ccode_name(f));
+#if false
+			compiler.generate_type_declaration (f.variable_type, decl_space);
+			string field_ctype =  resolve.get_ccode_aroop_name(f.variable_type);
+			if (f.is_volatile) {
+				field_ctype = "volatile " + field_ctype;
+			}
+			
+			var vbdecl = new CCodeDeclaration (field_ctype);
+			vbdecl.add_declarator (new CCodeVariableDeclarator (/*"aroop_file_var_" + */resolve.get_ccode_name (f)));
+			if(internalSymbol)
+				vbdecl.modifiers |= CCodeModifiers.STATIC;
+			else
+				vbdecl.modifiers &= ~CCodeModifiers.STATIC;
+			cfile.add_type_member_declaration(vbdecl);
+#endif
+			return;
 		}
-		function.add_parameter (new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name(st)+"*"));
-		function.add_parameter (new CCodeParameter ("nouse1", "int"));
-		function.add_parameter (new CCodeParameter ("dest", "void*"));
-		function.add_parameter (new CCodeParameter ("nouse2", "int"));
-		compiler.push_function (function); // XXX I do not know what push does 
-		if(st.is_internal_symbol()) {
-			compiler.cfile.add_function_declaration (function);
-		} else {
-			header_file.add_function_declaration (function);
+		compiler.generate_type_declaration (f.variable_type, decl_space);
+		string field_ctype =  resolve.get_ccode_aroop_name(f.variable_type);
+		if (f.is_volatile) {
+			field_ctype = "volatile " + field_ctype;
 		}
 		
-		compiler.pop_function (); // XXX I do not know what pop does 
-		var vblock = new CCodeBlock ();
-
-		var cleanupblock = new CCodeBlock();
-		foreach (Field f in st.get_fields ()) {
-			generate_element_destruction_code(f, cleanupblock);
-		}
-
-		var destroy_if_null = new CCodeIfStatement(
-			new CCodeBinaryExpression(CCodeBinaryOperator.EQUALITY, new CCodeIdentifier("dest"), new CCodeConstant("0"))
-			, cleanupblock
-		);
-		vblock.add_statement(destroy_if_null);
-		vblock.add_statement(new CCodeReturnStatement(new CCodeConstant("0")));
-
-
-		function.block = vblock;
-		compiler.cfile.add_function(function);
+		container.add_field (field_ctype, resolve.get_ccode_name (f) 
+			//+ get_ccode_declarator_suffix (f.variable_type), null, generate_declarator_suffix_cexpr(f.variable_type));
+			, get_ccode_declarator_suffix (f.variable_type));
 	}
 
-	public override void visit_struct (Struct st) {
-		compiler.push_context (new EmitContext (st));
-
-		generate_struct_copy_function(st);
-		if (st.is_internal_symbol ()) {
-			generate_struct_declaration (st, compiler.cfile);
-		} else {
-			generate_struct_declaration (st, header_file);
-		}
-
-		st.accept_children (this);
-
-		compiler.pop_context ();
-	}
-	
 	public bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {
 		CCodeIdentifier?cid = null;
 		if(!(cexpr is CCodeIdentifier) || (cid = (CCodeIdentifier)cexpr) == null || cid.name == null) {
@@ -132,29 +125,18 @@ public class aroop.ccodegen.ElementModule {
 			// (tmp = expr, &tmp)
 			var ccomma = new CCodeCommaExpression ();
 
-			var temp_var = get_temp_variable (ma.inner.target_type);
+			var temp_var = compiler.get_temp_variable (ma.inner.target_type);
 			emit_temp_var (temp_var);
-			ccomma.append_expression (new CCodeAssignment (get_variable_cexpression (temp_var.name), instance));
-			ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, get_variable_cexpression (temp_var.name)));
+			ccomma.append_expression (new CCodeAssignment (compiler.get_variable_cexpression (temp_var.name), instance));
+			ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, compiler.get_variable_cexpression (temp_var.name)));
 
 			returnval = ccomma;
 		}
 		return returnval;
 	}
 	
-	public CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
-		var returnparam = param;
-		var st = (Struct) m.parent_symbol;
-		if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
-			// use return value
-		} else {
-			returnparam = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type)+"*");
-			//returnparam = new CCodeUnaryExpression((CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)));
-		}
-		return returnparam;
-	}
 
-	public override CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
+	public CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		if (!((arg.formal_target_type is StructValueType) || (arg.formal_target_type is PointerType))) {
 			return cexpr;
 		}
@@ -194,7 +176,7 @@ public class aroop.ccodegen.ElementModule {
 		return cexpr;
 	}
 	
-	public override CCodeExpression? handle_struct_argument (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
+	public CCodeExpression? handle_struct_argument (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		assert_not_reached ();
 		return null;
 	}

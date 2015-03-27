@@ -7,6 +7,7 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 
 	
 	public EmitContext emit_context = new EmitContext ();
+	public CCodeFunction ccode { get { return emit_context.ccode; } }
 	public Symbol current_symbol { get { return emit_context.current_symbol; } }
 	public TypeSymbol? current_type_symbol {
 		get {
@@ -23,6 +24,44 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 	public Class? current_class {
 		get { return current_type_symbol as Class; }
 	}
+
+	public Block? current_closure_block {
+		get {
+			return next_closure_block (current_symbol);
+		}
+	}
+	public int next_temp_var_id;
+	int next_block_id = 0;
+	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
+	Map<Block,int> block_map = new HashMap<Block,int> ();
+	public unowned Block? next_closure_block (Symbol sym) {
+		unowned Block block = null;
+		while (true) {
+			block = sym as Block;
+			if (!(sym is Block || sym is Method)) {
+				// no closure block
+				break;
+			}
+			if (block != null && block.captured) {
+				// closure block found
+				break;
+			}
+			sym = sym.parent_symbol;
+		}
+		return block;
+	}
+
+	public int get_block_id (Block b) {
+		int result = block_map[b];
+		if (result == 0) {
+			result = ++next_block_id;
+			block_map[b] = result;
+		}
+		return result;
+	}
+	public bool current_method_inner_error;
+
+
 
 
 	public CCodeFile header_file;
@@ -131,7 +170,51 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 			if(type_arg != null)generate_type_declaration (type_arg, decl_space);
 		}*/
 	}
-	
+	public string get_variable_cname (string name) {
+		if (name[0] == '.') {
+			// compiler-internal variable
+			if (!variable_name_map.contains (name)) {
+				variable_name_map.set (name, "_tmp%d_".printf (next_temp_var_id));
+				next_temp_var_id++;
+			}
+			return variable_name_map.get (name);
+		} else if (reserved_identifiers.contains (name)) {
+			return "_%s_".printf (name);
+		} else {
+			return name;
+		}
+	}
+	public LocalVariable get_temp_variable (DataType type, bool value_owned = true, CodeNode? node_reference = null) {
+		var var_type = type.copy ();
+		var_type.value_owned = value_owned;
+		var local = new LocalVariable (var_type, "_tmp%d_".printf (next_temp_var_id));
+
+		if (node_reference != null) {
+			local.source_reference = node_reference.source_reference;
+		}
+
+		next_temp_var_id++;
+		return local;
+	}
+
+
+
+	public CCodeExpression get_variable_cexpression (string name) {
+		if(name == "this") {
+			return new CCodeIdentifier (self_instance);
+		}
+		return new CCodeIdentifier (get_variable_cname (name));
+	}
+
+
+	public string generate_block_var_name(Block b) {
+		int block_id = get_block_id (b);
+		return "_data%d_".printf (block_id);
+	}
+	public string generate_block_name(Block b) {
+		int block_id = get_block_id (b);
+		return "Block%dData".printf (block_id);
+	}
 
 }
 public class codegenplug.EmitContext {

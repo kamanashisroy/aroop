@@ -59,6 +59,14 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		// TODO fill me
 	}
 
+	public string get_ccode_aroop_definition(ObjectTypeSymbol node) {
+		if(node.external_package) {
+			return get_ccode_aroop_name(node);
+		} else {
+			return "struct _%s".printf (get_ccode_aroop_name (node));
+		}
+	}
+
 	public string get_generic_class_variable_cname(int tparams = 0) {
 		return "_generic_type_%d".printf(tparams);
 	}
@@ -66,8 +74,6 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	public string get_aroop_type_cname() {
 		return "aroop_type_desc";
 	}
-
-
 
 	public CCodeExpression get_unref_expression (CCodeExpression cvar, DataType type, Expression? expr = null) {
 		return destroy_value (new AroopValue (type, cvar));

@@ -6,6 +6,8 @@ using codegenplug;
 public class ccodegenplug.StructModule : shotodolplug.Module {
 	CompilerModule compiler;
 	CSymbolResolve resolve;
+	CodeGenerator cgen;
+	AroopCodeGeneratorAdapter cgenAdapter;
 	public StructModule() {
 		base("Struct", "0.0");
 	}
@@ -59,7 +61,7 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 		var instance_struct = proto.definition;
 
 		foreach (Field f in st.get_fields ()) {
-			generate_element_declaration(f, instance_struct, decl_space);
+			cgenAdapter.generate_element_declaration(f, instance_struct, decl_space);
 		}
 		proto.generate_type_declaration(decl_space);
 		decl_space.add_type_definition (instance_struct);
@@ -136,10 +138,20 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 			generate_declaration (st, compiler.header_file);
 		}
 
-		st.accept_children (this);
+		st.accept_children (cgen);
 
 		compiler.pop_context ();
 	}
 	
+	public CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
+		var returnparam = param;
+		var st = (Struct) m.parent_symbol;
+		if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
+			// use return value
+		} else {
+			returnparam = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type)+"*");
+			//returnparam = new CCodeUnaryExpression((CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)));
+		}
+	}
 }
 

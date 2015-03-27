@@ -6,8 +6,12 @@ using codegenplug;
 public class codegenplug.ObjectModule : shotodolplug.Module {
 	CompilerModule compiler;
 	CSymbolResolve resolve;
+	CodeGenerator cgen;
+	AroopCodeGeneratorAdapter cgenAdapter;
+	public Class type_class;
 	public ObjectModule() {
 		base("Object", "0.0");
+		//type_class = (Class) aroop_ns.scope.lookup ("Type");
 	}
 
 	public override int init() {
@@ -41,7 +45,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		generate_generic_builder_macro(cl, decl_space);
 
 		proto.generate_type_declaration(decl_space);
-		//decl_space.add_type_declaration(new CCodeTypeDefinition (get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (resolve.get_ccode_aroop_name (cl))));
+		//decl_space.add_type_declaration(new CCodeTypeDefinition (resolve.get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (resolve.get_ccode_aroop_name (cl))));
 		bool has_vtables = resolve.hasVtables(cl);
 
 		if(has_vtables) {
@@ -50,14 +54,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		
 		var class_struct = proto.definition;
 		if (cl.base_class != null) {
-			class_struct.add_field (get_ccode_aroop_definition(cl.base_class), "super_data");
+			class_struct.add_field (resolve.get_ccode_aroop_definition(cl.base_class), "super_data");
 		}
 		foreach (Field f in cl.get_fields ()) {
-			generate_element_declaration(f, class_struct, decl_space, cl.is_internal_symbol());
+			cgenAdapter.generate_element_declaration(f, class_struct, decl_space, cl.is_internal_symbol());
 		}
 		int tparams = 0;
 		foreach (var type_parameter in cl.get_type_parameters ()) {
-			class_struct.add_field (resolve.get_aroop_type_cname(), get_generic_class_variable_cname(tparams));
+			class_struct.add_field (resolve.get_aroop_type_cname(), resolve.get_generic_class_variable_cname(tparams));
 			tparams++;
 		}
 		if(has_vtables) {
@@ -104,7 +108,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				} else {
 					compiler.header_file.add_function_declaration (gfunc);
 				}
-				visit_property_accessor2(prop.get_accessor);
+				cgen.visit_property_accessor2(prop.get_accessor);
 				compiler.pop_function ();
 				compiler.cfile.add_function(gfunc);
 #else
@@ -334,7 +338,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		var macro_body = "({";
 		for (i=0; i<gtype_count; i++) {
 			macro_function = "%s,g_type_%d".printf(macro_function, i);
-			macro_body = "%s(x)->%s=g_type_%d;".printf(macro_body, get_generic_class_variable_cname(i), i);
+			macro_body = "%s(x)->%s=g_type_%d;".printf(macro_body, resolve.get_generic_class_variable_cname(i), i);
 			i++;
 		}
 		macro_function = "%s)".printf(macro_function);
@@ -436,7 +440,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			switch_stat.add_statement (
 				new CCodeExpressionStatement (
 					new CCodeAssignment (
-						new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), get_generic_class_variable_cname(i))
+						new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), resolve.get_generic_class_variable_cname(i))
 						, typearg
 					)
 				)
@@ -518,11 +522,11 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 
 		if (cl.destructor != null) {
-			cl.destructor.body.emit (this);
+			cl.destructor.body.emit (cgen);
 		}
 
 		foreach (Field f in cl.get_fields ()) {
-			generate_element_destruction_code(f, ccode.block);
+			cgenAdapter.generate_element_destruction_code(f, compiler.ccode.block);
 		}
 #if false
 		foreach (var f in cl.get_fields ()) {
@@ -544,7 +548,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 					var ma = new MemberAccess (this_access, f.name);
 					ma.symbol_reference = f;
-					ccode.add_expression (resolve.get_unref_expression (lhs, f.variable_type, ma));
+					compiler.ccode.add_expression (resolve.get_unref_expression (lhs, f.variable_type, ma));
 				}
 			}
 		}
@@ -572,11 +576,11 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				}
 				ccall.add_argument (type_get_call);
 				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
-				ccode.add_statement (new CCodeExpressionStatement (ccall));
+				compiler.ccode.add_statement (new CCodeExpressionStatement (ccall));
 #endif
 				var ccall = new CCodeFunctionCall (new CCodeIdentifier("%sdestruction".printf (resolve.get_ccode_lower_case_prefix (cl.base_class))));
 				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
-				ccode.add_statement (new CCodeExpressionStatement (ccall));
+				compiler.ccode.add_statement (new CCodeExpressionStatement (ccall));
 			}
 		}
 
@@ -600,7 +604,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			generate_class_declaration (cl, compiler.header_file);
 		}
 
-		cl.accept_children (this);
+		cl.accept_children (cgen);
 		compiler.pop_context ();
 	}
 
@@ -609,7 +613,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 		generate_interface_declaration (iface, compiler.cfile);
 
-		iface.accept_children (this);
+		iface.accept_children (cgen);
 
 		compiler.pop_context ();
 	}
@@ -679,16 +683,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	public void visit_property_accessor2 (PropertyAccessor acc) {
 		//compiler.push_context (new EmitContext (acc));
 		if (acc.result_var != null) {
-			acc.result_var.accept (this);
+			acc.result_var.accept (cgen);
 		}
 		if(acc.body != null) {
-			ccode.add_declaration (resolve.get_ccode_name (acc.value_type), new CCodeVariableDeclarator ("result"));
-			acc.body.emit (this);
+			compiler.ccode.add_declaration (resolve.get_ccode_name (acc.value_type), new CCodeVariableDeclarator ("result"));
+			acc.body.emit (cgen);
 		}
 	}
 #endif
-	public void visit_property_accessor (PropertyAccessor acc) {
-	}
 
 	public void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
 		if (compiler.add_symbol_declaration (decl_space, iface, resolve.get_ccode_lower_case_name (iface))) {
@@ -811,7 +813,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	public void visit_creation_method (CreationMethod m) {
 		bool visible = !m.is_internal_symbol ();
 
-		visit_method (m);
+		cgen.visit_method (m);
 
 		DataType creturn_type;
 		if (compiler.current_type_symbol is Class) {
@@ -887,7 +889,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				vblock.add_statement (
 					new CCodeExpressionStatement (
 						new CCodeAssignment (
-							new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), get_generic_class_variable_cname(i))
+							new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), resolve.get_generic_class_variable_cname(i))
 							, new CCodeConstant("g_type")
 						)
 					)
@@ -938,10 +940,10 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	public void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
 		CCodeParameter instance_param = null;
 		if (m.closure) {
-			var closure_block = current_closure_block;
+			var closure_block = compiler.current_closure_block;
 			instance_param = new CCodeParameter (
-				generate_block_var_name (closure_block)
-				, generate_block_name (closure_block) + "*");
+				compiler.generate_block_var_name (closure_block)
+				, compiler.generate_block_name (closure_block) + "*");
 		} else if (m.parent_symbol is Class && m is CreationMethod) {
 			if (vcall == null) {
 				instance_param = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
@@ -961,7 +963,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				instance_param = new CCodeParameter ("base_instance", resolve.get_ccode_aroop_name (base_type));
 			} else {
 				if (m.parent_symbol is Struct) {
-					instance_param = generate_instance_cparameter_for_struct(m, instance_param, this_type);
+					instance_param = cgenAdapter.generate_instance_cparameter_for_struct(m, instance_param, this_type);
 				} else {
 					instance_param = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type));
 				}
@@ -1010,7 +1012,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 					ctypename += "*";
 				}
 
-				cparam = new CCodeParameter (get_variable_cname (param.name), ctypename);
+				cparam = new CCodeParameter (compiler.get_variable_cname (param.name), ctypename);
 			} else {
 				cparam = new CCodeParameter.with_ellipsis ();
 			}
@@ -1021,7 +1023,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			}
 #if false
 			if (param.variable_type is DelegateType) {
-				CCodeParameter xparam = new CCodeParameter (get_variable_cname (param.name)+"_closure_data", "void*");
+				CCodeParameter xparam = new CCodeParameter (compiler.get_variable_cname (param.name)+"_closure_data", "void*");
 				func.add_parameter (xparam);
 				if (vdeclarator != null) {
 					vdeclarator.add_parameter (xparam);
@@ -1032,7 +1034,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			
 			if (vcall != null) {
 				if (param.name != null) {
-					vcall.add_argument (get_variable_cexpression (param.name));
+					vcall.add_argument (compiler.get_variable_cexpression (param.name));
 				}
 			}
 		}
@@ -1061,7 +1063,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		
 		if(m.tree_can_fail) {
 			var cparam = new CCodeParameter ("aroop_internal_err", "aroop_wrong**");
-			current_method_inner_error = true;
+			compiler.current_method_inner_error = true;
 
 			func.add_parameter (cparam);
 			if (vdeclarator != null) {
@@ -1075,7 +1077,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		if (array_type != null) {
 			// access to element in an array
 
-			expr.accept_children (this);
+			expr.accept_children (cgen);
 
 			Vala.List<Expression> indices = expr.get_indices ();
 			var cindex = resolve.get_cvalue (indices[0]);
@@ -1105,7 +1107,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			}
 
 		} else {
-			base.visit_element_access (expr);
+			//TODO fix me cgen.visit_element_access (expr);
 		}
 	}
 
