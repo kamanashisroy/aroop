@@ -70,7 +70,7 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 		
 		container.add_field (field_ctype, resolve.get_ccode_name (f) 
 			//+ get_ccode_declarator_suffix (f.variable_type), null, generate_declarator_suffix_cexpr(f.variable_type));
-			, get_ccode_declarator_suffix (f.variable_type));
+			, resolve.get_ccode_declarator_suffix (f.variable_type));
 	}
 
 	public bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {

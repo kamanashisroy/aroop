@@ -194,6 +194,18 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 		return true;
 	}
+	public CCodeDeclaratorSuffix? get_ccode_declarator_suffix (DataType type) {
+		var array_type = type as ArrayType;
+		if (array_type != null) {
+			if (array_type.fixed_length) {
+				return new CCodeDeclaratorSuffix.with_array (get_ccodenode (array_type.length));
+			} else if (array_type.inline_allocated) {
+				return new CCodeDeclaratorSuffix.with_array ();
+			}
+		}
+		return null;
+	}
+
 
 }
 public class Vala.AroopValue : TargetValue {
