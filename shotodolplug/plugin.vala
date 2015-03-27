@@ -29,13 +29,13 @@ public class shotodolplug.PluginManager : Module {
 	public static int unregister(string target, Extension e) {
 		return x.unregister(target, e);
 	}
-	public static string? swarm(string target, string inmsg) {
-		string?output = x.swarm(target, inmsg);
+	public static Object? swarmObject(string target, Object inmsg) {
+		Object?output = x.swarmObject(target, inmsg);
 		string composite = "extension/composite";
 		Extension?root = x.get(composite);
 		while(root != null) {
 			CompositeExtension cx = (CompositeExtension)root;
-			output = cx.swarm(target, inmsg);
+			output = cx.swarmObject(target, inmsg);
 			Extension?next = root.getNext();
 			root = next;
 		}

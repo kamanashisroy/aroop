@@ -5,7 +5,6 @@ using codegenplug;
 
 public class codegenplug.CompilerModule : shotodolplug.Module {
 
-	
 	public EmitContext emit_context = new EmitContext ();
 	public CCodeFunction ccode { get { return emit_context.ccode; } }
 	public Symbol current_symbol { get { return emit_context.current_symbol; } }
@@ -21,6 +20,17 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 			return null;
 		}
 	}
+	public Method? current_method {
+		get {
+			var sym = current_symbol;
+			while (sym is Block) {
+				sym = sym.parent_symbol;
+			}
+			return sym as Method;
+		}
+	}
+
+
 	public Class? current_class {
 		get { return current_type_symbol as Class; }
 	}
@@ -32,7 +42,6 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 	}
 	public int next_temp_var_id;
 	int next_block_id = 0;
-	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
 	Map<Block,int> block_map = new HashMap<Block,int> ();
 	public unowned Block? next_closure_block (Symbol sym) {
 		unowned Block block = null;
@@ -68,13 +77,16 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 	public CCodeFile cfile;
 	public CompilerModule() {
 		base("Compiler", "0.0");
+		
 	}
 
 	public override int init() {
 		//PluginManager.register("visit/compiler", new HookExtension(visit_struct, this));
+		return 0;
 	}
 
 	public override int deinit() {
+		return 0;
 	}
 
 	public void push_context (EmitContext emit_context) {
@@ -170,20 +182,6 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 			if(type_arg != null)generate_type_declaration (type_arg, decl_space);
 		}*/
 	}
-	public string get_variable_cname (string name) {
-		if (name[0] == '.') {
-			// compiler-internal variable
-			if (!variable_name_map.contains (name)) {
-				variable_name_map.set (name, "_tmp%d_".printf (next_temp_var_id));
-				next_temp_var_id++;
-			}
-			return variable_name_map.get (name);
-		} else if (reserved_identifiers.contains (name)) {
-			return "_%s_".printf (name);
-		} else {
-			return name;
-		}
-	}
 	public LocalVariable get_temp_variable (DataType type, bool value_owned = true, CodeNode? node_reference = null) {
 		var var_type = type.copy ();
 		var_type.value_owned = value_owned;
@@ -198,13 +196,6 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 	}
 
 
-
-	public CCodeExpression get_variable_cexpression (string name) {
-		if(name == "this") {
-			return new CCodeIdentifier (self_instance);
-		}
-		return new CCodeIdentifier (get_variable_cname (name));
-	}
 
 
 	public string generate_block_var_name(Block b) {

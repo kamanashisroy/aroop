@@ -13,13 +13,17 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("generate/element", new HookExtension(generate_element_destruction_code, this));
+		PluginManager.register("generate/element/destruction", new HookExtension((shotodolplug.Hook)generate_element_destruction_code, this));
+		return 0;
 	}
 
 	public override int deinit() {
+		return 0;
 	}
 
-	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
+	void generate_element_destruction_code(Object args[]) {
+		Field f = (Field)args[0];
+		CCodeBlock stmt = (CCodeBlock)args[1];
 		if (f.binding != MemberBinding.INSTANCE)  {
 			return;
 		}
@@ -41,7 +45,7 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 		}
 	}
 
-	public void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
+	void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
 		if (f.binding != MemberBinding.INSTANCE)  {
 			//visit_field(f);
 			//print(" - we should have declared %s\n", get_ccode_name(f));
@@ -73,7 +77,7 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 			, resolve.get_ccode_declarator_suffix (f.variable_type));
 	}
 
-	public bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {
+	bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {
 		CCodeIdentifier?cid = null;
 		if(!(cexpr is CCodeIdentifier) || (cid = (CCodeIdentifier)cexpr) == null || cid.name == null) {
 			return false;
@@ -82,7 +86,7 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 		return (instanceType == compiler.current_type_symbol && (cid.name) == resolve.self_instance);
 	}
 	
-	public CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
+	CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
 		if(is_current_instance_struct((TypeSymbol) f.parent_symbol, cexpr)) {
 			return new CCodeMemberAccess.pointer (cexpr, resolve.get_ccode_name (f));
 		}
@@ -96,7 +100,7 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 	}
 
 	
-	public CCodeExpression generate_instance_cargument_for_struct(MemberAccess ma, Method m, CCodeExpression instance) { 
+	CCodeExpression generate_instance_cargument_for_struct(MemberAccess ma, Method m, CCodeExpression instance) { 
 		var returnval = instance;
 		// we need to pass struct instance by reference
 		var unary = instance as CCodeUnaryExpression;
@@ -126,9 +130,9 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 			var ccomma = new CCodeCommaExpression ();
 
 			var temp_var = compiler.get_temp_variable (ma.inner.target_type);
-			emit_temp_var (temp_var);
-			ccomma.append_expression (new CCodeAssignment (compiler.get_variable_cexpression (temp_var.name), instance));
-			ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, compiler.get_variable_cexpression (temp_var.name)));
+			cgenAdapter.generate_temp_variable (temp_var);
+			ccomma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (temp_var.name), instance));
+			ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, resolve.get_variable_cexpression (temp_var.name)));
 
 			returnval = ccomma;
 		}
@@ -136,7 +140,7 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 	}
 	
 
-	public CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
+	CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		if (!((arg.formal_target_type is StructValueType) || (arg.formal_target_type is PointerType))) {
 			return cexpr;
 		}
@@ -176,7 +180,7 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 		return cexpr;
 	}
 	
-	public CCodeExpression? handle_struct_argument (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
+	CCodeExpression? handle_struct_argument (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		assert_not_reached ();
 		return null;
 	}

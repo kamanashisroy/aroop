@@ -13,13 +13,15 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("visit/struct", new HookExtension(visit_struct, this));
+		PluginManager.register("visit/struct", new HookExtension((shotodolplug.Hook)visit_struct, this));
+		return 0;
 	}
 
 	public override int deinit() {
+		return 0;
 	}
 
-	public void generate_declaration (Struct st, CCodeFile decl_space) {
+	void generate_declaration (Struct st, CCodeFile decl_space) {
 		if (st.is_boolean_type ()) {
 			// typedef for boolean types
 			return;
@@ -69,29 +71,7 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 		decl_space.add_type_declaration (func_macro);
 	}
 
-	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
-		if (f.binding != MemberBinding.INSTANCE)  {
-			return;
-		}
-		var array_type = f.variable_type as ArrayType;
-		if (array_type != null && array_type.fixed_length) {
-			// TODO cleanup array
-			int i = 0;
-			//for (int i = 0; i < array_type.length; i++) {
-				var fld = new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), resolve.get_ccode_name(f));
-				var element = new CCodeElementAccess (fld, new CCodeConstant (i.to_string ()));
-				if (resolve.requires_destroy (array_type.element_type))  {
-					stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(element, array_type.element_type)));
-				}
-			//}
-			return;
-		}
-		if (resolve.requires_destroy (f.variable_type))  {
-			stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), resolve.get_ccode_name(f)), f.variable_type)));
-		}
-	}
-
-	public void generate_struct_copy_function (Struct st) {
+	void generate_struct_copy_function (Struct st) {
 		string copy_function_name = "%scopy".printf (resolve.get_ccode_lower_case_prefix (st));
 		var function = new CCodeFunction (copy_function_name, "int");
 		if(st.is_internal_symbol()) {
@@ -113,7 +93,7 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 
 		var cleanupblock = new CCodeBlock();
 		foreach (Field f in st.get_fields ()) {
-			generate_element_destruction_code(f, cleanupblock);
+			cgenAdapter.generate_element_destruction_code(f, cleanupblock);
 		}
 
 		var destroy_if_null = new CCodeIfStatement(
@@ -128,7 +108,7 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 		compiler.cfile.add_function(function);
 	}
 
-	public void visit_struct (Struct st) {
+	Object? visit_struct (Struct st) {
 		compiler.push_context (new EmitContext (st));
 
 		generate_struct_copy_function(st);
@@ -141,9 +121,10 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 		st.accept_children (cgen);
 
 		compiler.pop_context ();
+		return null;
 	}
 	
-	public CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
+	CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
 		var returnparam = param;
 		var st = (Struct) m.parent_symbol;
 		if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
@@ -152,6 +133,7 @@ public class ccodegenplug.StructModule : shotodolplug.Module {
 			returnparam = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type)+"*");
 			//returnparam = new CCodeUnaryExpression((CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)));
 		}
+		return returnparam;
 	}
 }
 

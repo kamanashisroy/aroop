@@ -29,6 +29,7 @@ libshotodolplug_la_VALAFLAGS = \
 libshotodolplug_la_SOURCES = \
 	module.vala \
 	extension.vala \
+	hookextension.vala \
 	compositeextension.vala \
 	plugin.vala \
 	$(NULL)

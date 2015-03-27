@@ -5,58 +5,123 @@ using codegenplug;
 
 public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
+	Set<string> reserved_identifiers;
 	public string self_instance = "self_data";
+	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
+	CompilerModule compiler;
+	CodeGenerator cgen;
 	public CSymbolResolve() {
 		base("C Symbol Resolver", "0.0");
+		reserved_identifiers = new HashSet<string> (str_hash, str_equal);
+		// C99 keywords
+		reserved_identifiers.add ("_Bool");
+		reserved_identifiers.add ("_Complex");
+		reserved_identifiers.add ("_Imaginary");
+		reserved_identifiers.add ("auto");
+		reserved_identifiers.add ("break");
+		reserved_identifiers.add ("case");
+		reserved_identifiers.add ("char");
+		reserved_identifiers.add ("const");
+		reserved_identifiers.add ("continue");
+		reserved_identifiers.add ("default");
+		reserved_identifiers.add ("do");
+		reserved_identifiers.add ("double");
+		reserved_identifiers.add ("else");
+		reserved_identifiers.add ("enum");
+		reserved_identifiers.add ("extern");
+		reserved_identifiers.add ("float");
+		reserved_identifiers.add ("for");
+		reserved_identifiers.add ("goto");
+		reserved_identifiers.add ("if");
+		reserved_identifiers.add ("inline");
+		reserved_identifiers.add ("int");
+		reserved_identifiers.add ("long");
+		reserved_identifiers.add ("register");
+		reserved_identifiers.add ("restrict");
+		reserved_identifiers.add ("return");
+		reserved_identifiers.add ("short");
+		reserved_identifiers.add ("signed");
+		reserved_identifiers.add ("sizeof");
+		reserved_identifiers.add ("static");
+		reserved_identifiers.add ("struct");
+		reserved_identifiers.add ("switch");
+		reserved_identifiers.add ("typedef");
+		reserved_identifiers.add ("union");
+		reserved_identifiers.add ("unsigned");
+		reserved_identifiers.add ("void");
+		reserved_identifiers.add ("volatile");
+		reserved_identifiers.add ("while");
+
+		// reserved for Vala naming conventions
+		reserved_identifiers.add ("result");
+		reserved_identifiers.add ("this");
+		reserved_identifiers.add (self_instance);
 	}
 
 	public override int init() {
-		PluginManager.register("c/symbol", new AnyInterfaceExtension(this, this));
+		PluginManager.register("c/symbol", new HookExtension((shotodolplug.Hook)getInstance, this));
+		return 0;
 	}
 
 	public override int deinit() {
+		return 0;
+	}
+
+	CSymbolResolve?getInstance(Object unsed) {
+		return this;
 	}
 
 	public string get_ccode_aroop_name(CodeNode node) {
-		// TODO fill me
+		return  CCodeBaseModule.get_ccode_name (node);
 	}
 
 	public string get_ccode_name(CodeNode node) {
-		// TODO fill me
+		return  CCodeBaseModule.get_ccode_name (node);
 	}
 
-	public string get_ccode_copy_function(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_copy_function(TypeSymbol node) {
+		return CCodeBaseModule.get_ccode_copy_function (node);
 	}
 
-	public string get_ccode_dup_function(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_dup_function(TypeSymbol node) {
+		return CCodeBaseModule.get_ccode_dup_function (node);
 	}
 
-	public string get_ccode_ref_function(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_ref_function(TypeSymbol node) {
+		return CCodeBaseModule.get_ccode_ref_function (node);
 	}
 
-	public string get_ccode_free_function(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_free_function(TypeSymbol node) {
+		if (node is Vala.ErrorType || node is ErrorDomain || node is ErrorCode) {
+			return "aroop_free_error";
+		}
+		return CCodeBaseModule.get_ccode_free_function (node);
 	}
 
-	public string get_ccode_lower_case_prefix(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_lower_case_prefix(Symbol node) {
+		return CCodeBaseModule.get_ccode_lower_case_prefix (node);
 	}
 
-	public string get_ccode_lower_case_suffix(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_lower_case_suffix(Symbol node) {
+		return CCodeBaseModule.get_ccode_lower_case_suffix (node);
 	}
-	public string get_ccode_lower_case_name(CodeNode node) {
+	public string get_error_module_lower_case_name (CodeNode node, string? infix = null) {
 		// TODO fill me
+		return "";
 	}
-	public string get_ccode_real_name(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_lower_case_name(CodeNode node, string?infix=null) {
+		if (node is Vala.ErrorType || node is ErrorDomain || node is ErrorCode) {
+			//assert(false);
+			return get_error_module_lower_case_name(node,infix);
+		}
+		return CCodeBaseModule.get_ccode_lower_case_name (node, infix);
+	}
+	public string get_ccode_real_name(Method node) {
+		return CCodeBaseModule.get_ccode_real_name (node);
 	}
 
-	public string get_ccode_vfunc_name(CodeNode node) {
-		// TODO fill me
+	public string get_ccode_vfunc_name(Method node) {
+		return CCodeBaseModule.get_ccode_vfunc_name (node);
 	}
 
 	public string get_ccode_aroop_definition(ObjectTypeSymbol node) {
@@ -78,6 +143,144 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	public CCodeExpression get_unref_expression (CCodeExpression cvar, DataType type, Expression? expr = null) {
 		return destroy_value (new AroopValue (type, cvar));
 	}
+
+	public CCodeExpression destroy_value (TargetValue value) {
+		var type = value.value_type;
+		var cvar = get_cvalue_ (value);
+
+		var ccall = new CCodeFunctionCall (get_destroy_func_expression (type));
+
+		if ((type is ValueType && !type.nullable) || type is DelegateType) {
+			// normal value type, no null check
+			ccall.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cvar));
+			ccall.add_argument (new CCodeConstant ("0"));
+			ccall.add_argument (new CCodeConstant ("NULL"));
+			ccall.add_argument (new CCodeConstant ("0"));
+
+			return ccall;
+		}
+
+#if false
+		/* (foo == NULL ? NULL : foo = (unref (foo), NULL)) */
+
+		/* can be simplified to
+		 * foo = (unref (foo), NULL)
+		 * if foo is of static type non-null
+		 */
+
+		var cisnull = new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, cvar, new CCodeConstant ("NULL"));
+		if (type.type_parameter != null) {
+			if (!(compiler.current_type_symbol is Class) || compiler.current_class.is_compact) {
+				return new CCodeConstant ("NULL");
+			}
+
+			// unref functions are optional for type parameters
+			var cunrefisnull = new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, get_destroy_func_expression (type), new CCodeConstant ("NULL"));
+			cisnull = new CCodeBinaryExpression (CCodeBinaryOperator.OR, cisnull, cunrefisnull);
+		}
+#else
+		ccall.add_argument (new CCodeIdentifier(get_ccode_aroop_name(type)));
+		if(type is ClassType) {
+			ccall.add_argument (new CCodeConstant("NULL"));
+		} else if(type is GenericType) {
+			ccall.add_argument(new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname()));
+		} else {
+			ccall.add_argument (new CCodeConstant("NULL"));
+		}
+#endif
+		ccall.add_argument (cvar);
+		
+#if false
+		/* set freed references to NULL to prevent further use */
+		var ccomma = new CCodeCommaExpression ();
+
+		ccomma.append_expression (ccall);
+		ccomma.append_expression (new CCodeConstant ("NULL"));
+
+		var castexpr = new CCodeCastExpression (ccomma, get_ccode_aroop_name (type));
+		var cassign = new CCodeAssignment (cvar, castexpr);
+
+		return new CCodeConditionalExpression (cisnull, new CCodeConstant ("NULL"), cassign);
+#else
+#if false
+		var castexpr = new CCodeCastExpression (ccall, get_ccode_aroop_name (type));
+		var cassign = new CCodeAssignment (cvar, castexpr);
+		return cassign;
+#else
+		return new CCodeAssignment (cvar, ccall);
+#endif
+#endif
+	}
+	public string get_variable_cname (string name) {
+		if (name[0] == '.') {
+			// compiler-internal variable
+			if (!variable_name_map.contains (name)) {
+				variable_name_map.set (name, "_tmp%d_".printf (compiler.next_temp_var_id));
+				compiler.next_temp_var_id++;
+			}
+			return variable_name_map.get (name);
+		} else if (reserved_identifiers.contains (name)) {
+			return "_%s_".printf (name);
+		} else {
+			return name;
+		}
+	}
+
+	public CCodeExpression? generate_delegate_init_expr() {
+			var clist = new CCodeInitializerList ();
+			clist.append (new CCodeConstant ("0"));
+			clist.append (new CCodeConstant ("0"));
+			return clist;
+	}
+	public CCodeExpression? get_destroy_func_expression (DataType type, bool is_chainup = false) {
+		if (type is GenericType || type.type_parameter is GenericType) {
+			return new CCodeIdentifier ("aroop_generic_object_unref");
+		} else if (type.data_type is Class && ((Class)type.data_type).is_compact) {
+			return new CCodeIdentifier(get_ccode_unref_function((ObjectTypeSymbol)type.data_type)); //new CCodeIdentifier ("aroop_object_unref");
+		} else if (type is ObjectType) {
+			return new CCodeIdentifier ("aroop_object_unref");
+		} else if (type.data_type != null) {
+			string unref_function;
+			if (type is ReferenceType) {
+				if (is_reference_counting (type.data_type)) {
+					unref_function = get_ccode_unref_function ((ObjectTypeSymbol) type.data_type);
+				} else {
+					unref_function = get_ccode_free_function (type.data_type);
+				}
+			} else {
+				if (type.nullable) {
+					unref_function = get_ccode_free_function (type.data_type);
+					if (unref_function == null) {
+						unref_function = "free";
+					}
+				} else {
+					var st = (Struct) type.data_type;
+					unref_function = get_ccode_free_function (st);
+				}
+			}
+			if (unref_function == null) {
+				return new CCodeConstant ("aroop_no_unref");
+			}
+			return new CCodeIdentifier (unref_function);
+		} else if (type.type_parameter != null && compiler.current_type_symbol is Class) {
+			// FIXME ask type for dup/ref function
+			return new CCodeIdentifier ("aroop_object_unref");
+		} else if (type is ArrayType) {
+			return new CCodeIdentifier ("aroop_object_unref");
+		} else if (type is DelegateType) {
+			return new CCodeConstant ("aroop_donothing4");
+		} else if (type is PointerType) {
+			PointerType pt = (PointerType)type;
+			if(pt.base_type != null) {
+				return get_destroy_func_expression(pt.base_type, is_chainup);
+			}
+			return new CCodeIdentifier ("free");
+		} else {
+			return new CCodeConstant ("NULL");
+		}
+	}
+
+
 
 	public void set_cvalue (Expression expr, CCodeExpression? cvalue) {
 		var aroop_value = (AroopValue) expr.target_value;
@@ -104,7 +307,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return "vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl)
 			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));
 	}
-	public static DataType get_data_type_for_symbol (TypeSymbol sym) {
+	public /*static*/ DataType get_data_type_for_symbol (TypeSymbol sym) {
 		DataType type = null;
 
 		if (sym is Class) {
@@ -131,6 +334,27 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 		return type;
 	}
+	public CCodeExpression get_type_private_from_type (ObjectTypeSymbol type_symbol, CCodeExpression type_expression) {
+		if (type_symbol is Class) {
+			// class
+			return type_expression;/*CCodeIdentifier (get_ccode_aroop_name (type_symbol));*/
+		} else {
+			// interface
+			var get_interface = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_interface"));
+			get_interface.add_argument (type_expression);
+			get_interface.add_argument (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (type_symbol))));
+			return new CCodeCastExpression (get_interface, "%sTypePrivate *".printf (CCodeBaseModule.get_ccode_name (type_symbol)));
+		}
+	}
+	bool is_in_generic_type (DataType type) {
+		if (type.type_parameter.parent_symbol is TypeSymbol
+		    && (compiler.current_method == null || compiler.current_method.binding == MemberBinding.INSTANCE)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 
 	public CCodeExpression get_type_id_expression (DataType type, bool is_chainup = false, bool for_type_custing = false) {
 		if (type is GenericType) {
@@ -194,6 +418,11 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 		return true;
 	}
+	public string get_ccode_unref_function (ObjectTypeSymbol node) {
+		//return "OPPUNREF";
+		return CCodeBaseModule.get_ccode_unref_function (node);
+	}
+
 	public CCodeDeclaratorSuffix? get_ccode_declarator_suffix (DataType type) {
 		var array_type = type as ArrayType;
 		if (array_type != null) {
@@ -205,7 +434,24 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		}
 		return null;
 	}
+	public CCodeExpression? get_ccodenode (Expression node) {
+		if (get_cvalue (node) == null) {
+			node.emit (cgen);
+		}
+		return get_cvalue (node);
+	}
 
+
+	public bool is_reference_counting (TypeSymbol node) {
+		return CCodeBaseModule.is_reference_counting (node);
+	}
+
+	public CCodeExpression get_variable_cexpression (string name) {
+		if(name == "this") {
+			return new CCodeIdentifier (self_instance);
+		}
+		return new CCodeIdentifier (get_variable_cname (name));
+	}
 
 }
 public class Vala.AroopValue : TargetValue {

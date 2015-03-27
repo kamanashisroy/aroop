@@ -31,6 +31,7 @@ libcodegenplug_la_VALAFLAGS = \
 libcodegenplug_la_SOURCES = \
 	valaccodebasemodule.vala \
 	aroopcodegenerator.vala \
+	tempvariablemodule.vala \
 	compilermodule.vala \
 	csymbolresolve.vala \
 	structmodule.vala \

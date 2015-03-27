@@ -8,27 +8,29 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	CSymbolResolve resolve;
 	CodeGenerator cgen;
 	AroopCodeGeneratorAdapter cgenAdapter;
-	public Class type_class;
+	Class type_class;
 	public ObjectModule() {
 		base("Object", "0.0");
 		//type_class = (Class) aroop_ns.scope.lookup ("Type");
 	}
 
 	public override int init() {
-		PluginManager.register("visit/class", new HookExtension(visit_class, this));
-		PluginManager.register("visit/interface", new HookExtension(visit_interface, this));
-		PluginManager.register("visit/creation_method", new HookExtension(visit_creation_method, this));
+		PluginManager.register("visit/class", new HookExtension((shotodolplug.Hook)visit_class, this));
+		PluginManager.register("visit/interface", new HookExtension((shotodolplug.Hook)visit_interface, this));
+		PluginManager.register("visit/creation_method", new HookExtension((shotodolplug.Hook)visit_creation_method, this));
+		return 0;
 	}
 
 	public override int deinit() {
+		return 0;
 	}
 
 
-	private string get_ccode_vtable_struct(Class cl) {
+	string get_ccode_vtable_struct(Class cl) {
 		return "struct aroop_vtable_%s".printf(resolve.get_ccode_lower_case_suffix(cl));
 	}
 	
-	public void generate_class_declaration (Class cl, CCodeFile decl_space) {
+	void generate_class_declaration (Class cl, CCodeFile decl_space) {
 		var proto = new CCodeStructPrototype (resolve.get_ccode_aroop_name (cl));
 		if (compiler.add_symbol_declaration (decl_space, cl, resolve.get_ccode_lower_case_name (cl))) {
 			return;
@@ -70,7 +72,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		decl_space.add_type_definition (class_struct);
 	}
 
-	public void generate_getter_setter_declaration(Class cl, CCodeFile decl_space) {
+	void generate_getter_setter_declaration(Class cl, CCodeFile decl_space) {
 		foreach (Property prop in cl.get_properties ()) {
 			if (prop.is_abstract && prop.is_virtual) {
 				// say we do not support that
@@ -131,9 +133,9 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 	}
 
-	void generate_virtual_method_declaration (Method m, CCodeFile decl_space, CCodeStruct type_struct) {
+	Object?generate_virtual_method_declaration (Method m, CCodeFile decl_space, CCodeStruct type_struct) {
 		if (!m.is_abstract && !m.is_virtual) {
-			return;
+			return null;
 		}
 
 		// add vfunc field to the type struct
@@ -144,6 +146,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		var vdecl = new CCodeDeclaration (resolve.get_ccode_aroop_name (m.return_type));
 		vdecl.add_declarator (vdeclarator);
 		type_struct.add_declaration (vdecl);
+		return null;
 	}
 
 #if false
@@ -180,7 +183,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 #endif
 
-	private void generate_vtable(Class cl, CCodeFile decl_space) {
+	void generate_vtable(Class cl, CCodeFile decl_space) {
 		var vtable_struct = new CCodeStruct ("aroop_vtable_%s".printf(resolve.get_ccode_lower_case_suffix(cl)));
 		foreach (Method m in cl.get_methods ()) {
 			generate_virtual_method_declaration (m, decl_space, vtable_struct);
@@ -195,7 +198,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		decl_space.add_type_definition (vtable_struct);
 	}
 
-	private void add_vtable_ovrd_variables_external(Class cl, Class of_class) {
+	void add_vtable_ovrd_variables_external(Class cl, Class of_class) {
 		if(of_class.external_package && resolve.hasVtables(of_class)) {
 			var vbdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
 			vbdecl.add_declarator (new CCodeVariableDeclarator (resolve.get_ccode_vtable_var(
@@ -208,7 +211,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 	}
 
-	private void add_vtable_ovrd_variables(Class cl, Class of_class) {
+	void add_vtable_ovrd_variables(Class cl, Class of_class) {
 		if (of_class.base_class != null) {
 			add_vtable_ovrd_variables(cl, of_class.base_class);
 		}
@@ -221,7 +224,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		compiler.cfile.add_type_member_declaration(vdecl);
 	}
 	
-	private void cpy_vtable_of_base_class(Class cl, Class of_class, CCodeBlock block) {
+	void cpy_vtable_of_base_class(Class cl, Class of_class, CCodeBlock block) {
 		if(of_class.base_class != null) {
 			cpy_vtable_of_base_class(cl, of_class.base_class, block);			
 		}
@@ -250,7 +253,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 #endif
 	}
 
-	private void add_class_system_init_function(Class cl) {
+	void add_class_system_init_function(Class cl) {
 		// create the vtable instances
 		add_vtable_ovrd_variables(cl, cl);
 
@@ -313,7 +316,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		compiler.cfile.add_function (ifunc);
 	}
 
-	private void set_vtables(Class cl, Class of_class, CCodeBlock block) {
+	void set_vtables(Class cl, Class of_class, CCodeBlock block) {
 		if(of_class.base_class != null) {
 			set_vtables(cl, of_class.base_class, block);			
 		}
@@ -328,7 +331,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				new CCodeIdentifier ("&%s".printf(resolve.get_ccode_vtable_var(cl, of_class))))));
 	}
 
-	private void generate_generic_builder_macro(Class cl, CCodeFile decl_space) {
+	void generate_generic_builder_macro(Class cl, CCodeFile decl_space) {
 		var params = cl.get_type_parameters();
 		return_if_fail(params != null);
 		int gtype_count = params.size;
@@ -347,11 +350,11 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		decl_space.add_type_declaration (func_macro);
 	}
 	
-	private string get_pray_function(Class cl) {
+	string get_pray_function(Class cl) {
 		return "%s_pray".printf (resolve.get_ccode_aroop_name (cl));
 	}
 
-	private void add_pray_function (Class cl) {
+	void add_pray_function (Class cl) {
 		string pray_function_name = get_pray_function(cl);
 		var function = new CCodeFunction (pray_function_name, "int");
 		if(cl.is_internal_symbol()) {
@@ -590,7 +593,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 	bool cleanup_is_already_declared;
-	public void visit_class (Class cl) {
+	Object?visit_class (Class cl) {
 		cleanup_is_already_declared = false;
 		compiler.push_context (new EmitContext (cl));
 
@@ -606,9 +609,10 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 		cl.accept_children (cgen);
 		compiler.pop_context ();
+		return null;
 	}
 
-	public void visit_interface (Interface iface) {
+	Object? visit_interface (Interface iface) {
 		compiler.push_context (new EmitContext (iface));
 
 		generate_interface_declaration (iface, compiler.cfile);
@@ -616,10 +620,11 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		iface.accept_children (cgen);
 
 		compiler.pop_context ();
+		return null;
 	}
 
 #if false
-	public void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
+	void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
 		if (compiler.add_symbol_declaration (decl_space, acc.prop, resolve.get_ccode_name (acc))) {
 			return;
 		}
@@ -680,7 +685,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 #endif
 
 #if USE_MACRO_GETTER_SETTER
-	public void visit_property_accessor2 (PropertyAccessor acc) {
+	void visit_property_accessor2 (PropertyAccessor acc) {
 		//compiler.push_context (new EmitContext (acc));
 		if (acc.result_var != null) {
 			acc.result_var.accept (cgen);
@@ -692,7 +697,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 #endif
 
-	public void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
+	void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
 		if (compiler.add_symbol_declaration (decl_space, iface, resolve.get_ccode_lower_case_name (iface))) {
 			return;
 		}
@@ -709,11 +714,11 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 
-	public bool method_has_wrapper (Method method) {
+	bool method_has_wrapper (Method method) {
 		return (method.get_attribute ("NoWrapper") == null);
 	}
 
-	public string? get_custom_creturn_type (Method m) {
+	string? get_custom_creturn_type (Method m) {
 		var attr = m.get_attribute ("CCode");
 		if (attr != null) {
 			string type = attr.get_string ("type");
@@ -724,7 +729,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		return null;
 	}
 
-	public void generate_method_declaration (Method m, CCodeFile decl_space) {
+	void generate_method_declaration (Method m, CCodeFile decl_space) {
 		if (compiler.add_symbol_declaration (decl_space, m, resolve.get_ccode_name (m))) {
 			return;
 		}
@@ -810,7 +815,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 	}
 
-	public void visit_creation_method (CreationMethod m) {
+	Object? visit_creation_method (CreationMethod m) {
 		bool visible = !m.is_internal_symbol ();
 
 		cgen.visit_method (m);
@@ -925,9 +930,10 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			compiler.cfile.add_function (vfunc);
 
 		}
+		return null;
 	}
 
-	private TypeSymbol? find_parent_type (Symbol sym) {
+	TypeSymbol? find_parent_type (Symbol sym) {
 		while (sym != null) {
 			if (sym is TypeSymbol) {
 				return (TypeSymbol) sym;
@@ -937,7 +943,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		return null;
 	}
 
-	public void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
+	void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
 		CCodeParameter instance_param = null;
 		if (m.closure) {
 			var closure_block = compiler.current_closure_block;
@@ -1012,7 +1018,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 					ctypename += "*";
 				}
 
-				cparam = new CCodeParameter (compiler.get_variable_cname (param.name), ctypename);
+				cparam = new CCodeParameter (resolve.get_variable_cname (param.name), ctypename);
 			} else {
 				cparam = new CCodeParameter.with_ellipsis ();
 			}
@@ -1023,7 +1029,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			}
 #if false
 			if (param.variable_type is DelegateType) {
-				CCodeParameter xparam = new CCodeParameter (compiler.get_variable_cname (param.name)+"_closure_data", "void*");
+				CCodeParameter xparam = new CCodeParameter (resolve.get_variable_cname (param.name)+"_closure_data", "void*");
 				func.add_parameter (xparam);
 				if (vdeclarator != null) {
 					vdeclarator.add_parameter (xparam);
@@ -1034,7 +1040,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			
 			if (vcall != null) {
 				if (param.name != null) {
-					vcall.add_argument (compiler.get_variable_cexpression (param.name));
+					vcall.add_argument (resolve.get_variable_cexpression (param.name));
 				}
 			}
 		}
@@ -1072,7 +1078,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 	}
 
-	public void visit_element_access (ElementAccess expr) {
+	void visit_element_access (ElementAccess expr) {
 		var array_type = expr.container.value_type as ArrayType;
 		if (array_type != null) {
 			// access to element in an array

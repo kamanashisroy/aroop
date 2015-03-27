@@ -10,14 +10,14 @@ using GLib;
  *  @{
  */
 //public delegate int shotodolplug.Hook(extring*msg, extring*output);
-public delegate int shotodolplug.Hook(Object x);
+public delegate Object? shotodolplug.Hook(Object x);
 public class shotodolplug.HookExtension : Extension {
 	shotodolplug.Hook hook;
 	public HookExtension(shotodolplug.Hook?gHook, Module mod) {
 		base(mod);
 		hook = gHook;
 	}
-	public override int act(Object x) {
+	public override Object?actObject(Object x) {
 		return hook(x);
 	}
 #if false

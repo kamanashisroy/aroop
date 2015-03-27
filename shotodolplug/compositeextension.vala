@@ -49,11 +49,11 @@ public class shotodolplug.CompositeExtension : Extension {
 		}
 		return 0;
 	}
-	public string?swarm(string target, string inmsg) {
+	public Object? swarmObject(string target, Object inmsg) {
 		Extension?root = get(target);
-		string?output = null;
+		Object?output = null;
 		while(root != null) {
-			output = root.act(inmsg); // Note we did not concat the output for shake of simplicity
+			output = root.actObject(inmsg); // Note we did not concat the output for shake of simplicity
 			Extension?next = root.getNext();
 			root = next;
 		}
