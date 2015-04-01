@@ -14,9 +14,11 @@ Building
 
 ### Requirements
 The following projects are needed to build aroopc.
+- autoconf
 - automake
 - libtool
-- valac (If the aroop project does not come with generated C files)
+- valac (If the aroop project does not come with generated C files) (currently it is compiled with vala-26 version)
+- libgee (please install the development version too)
 - C compiler (gnu C compiler for example)
 
 ### Getting aroop source
@@ -41,6 +43,7 @@ Well if _autogen_ command above fails and it says it needs right version of vala
 
 ```
 a/aroop$ export VALAC=/opt/vala-26/bin/valac # skip this if it is installed right version to default location
+a/aroop$ cp /opt/vala-26/lib/pkgconfig/libvala-0.26.pc /usr/lib/pkgconfig/ # skip this if it is installed right version to default location
 a/aroop$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/vala-26/lib # skip this if it is installed right version to default location
 a/aroop$ ldconfig # skip this if it is installed right version to default location
 ```
