@@ -10,6 +10,7 @@ libcodegenplug_la_CFLAGS = \
         $(GLIB_CFLAGS) \
         $(GEE_CFLAGS) \
         $(VALA_CFLAGS) \
+	-I$(top_srcdir)/shotodolplug/ \
 	$(NULL)
 
 libcodegenplug_la_LIBADD = \

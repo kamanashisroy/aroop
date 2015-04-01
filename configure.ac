@@ -1,3 +1,5 @@
+# please refer to https://wiki.gnome.org/Projects/Vala/GameDevelopmentSeries/Setup
+
 m4_define([aroop_major], [0])
 m4_define([aroop_minor], [1])
 m4_define([aroop_micro], [0])
@@ -12,9 +14,8 @@ AC_PREREQ([2.64])
 AC_INIT([Aroop], [aroop_version], [kamanashisroy@github.com])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([subdir-objects dist-bzip2])
+AM_INIT_AUTOMAKE([dist-bzip2 subdir-objects])
 AM_MAINTAINER_MODE
-
 
 AROOP_MAJOR_VERSION=aroop_major
 AROOP_MINOR_VERSION=aroop_minor
@@ -32,26 +33,6 @@ AC_SUBST(AROOP_API_VERSION)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 
-GLIB_REQUIRED=2.16.0
-GEE_REQUIRED=0.5.0
-VALA_REQUIRED=0.17.0
-
-# Checks for libraries.
-PKG_CHECK_MODULES(GEE, gee-1.0 >= $GEE_REQUIRED)
-AC_SUBST(GEE_CFLAGS)
-AC_SUBST(GEE_LIBS)
-PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED)
-AC_SUBST(GLIB_CFLAGS)
-AC_SUBST(GLIB_LIBS)
-
-
-VALA_PACKAGE=libvala-0.26
-AC_SUBST(VALA_PACKAGE)
-
-PKG_CHECK_MODULES(VALA, $VALA_PACKAGE >= $VALA_REQUIRED)
-AC_SUBST(VALA_CFLAGS)
-AC_SUBST(VALA_LIBS)
-
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h])
 
@@ -62,8 +43,30 @@ AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_PROG_RANLIB
-AM_PROG_VALAC($VALA_REQUIRED)
 
+
+# get vala sources and libraries
+VALA_REQUIRED=0.26
+PKG_CHECK_MODULES(VALA, libvala-0.26 >= $VALA_REQUIRED)
+AC_SUBST(VALA_CFLAGS)
+AC_SUBST(VALA_LIBS)
+
+# get valac compiler binary
+AC_PATH_PROG(VALAC, valac, valac)
+AC_SUBST(VALAC)
+
+GLIB_REQUIRED=2.12.0
+GEE_REQUIRED=0.1.3
+
+PKG_CHECK_MODULES(GEE, gee-1.0 >= $GEE_REQUIRED)
+AC_SUBST(GEE_CFLAGS)
+AC_SUBST(GEE_LIBS)
+PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED)
+AC_SUBST(GLIB_CFLAGS)
+AC_SUBST(GLIB_LIBS)
+
+# XXX we do not do anything with VALA_PACKAGE
+# AC_SUBST(VALA_PACKAGE)
 
 AC_CONFIG_FILES([Makefile
            libaroop.pc
