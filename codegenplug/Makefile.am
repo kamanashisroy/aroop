@@ -19,9 +19,9 @@ libcodegenplug_la_LIBADD = \
         $(VALA_LIBS) \
         $(NULL)
 
+#--pkg $(VALA_PACKAGE) \
 libcodegenplug_la_VALAFLAGS = \
         --pkg gee-1.0 \
-        --pkg $(VALA_PACKAGE) \
         --vapidir $(top_srcdir)/shotodolplug \
         --pkg shotodolplug \
         --vapidir $(top_srcdir)/codegenplug \

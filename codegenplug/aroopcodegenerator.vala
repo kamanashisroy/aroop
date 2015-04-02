@@ -33,7 +33,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	
 	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
 		string visit_exten= "generate/element/destruction";
-		Object args[] = {(Object)f,(Object)stmt};
+		Object[] args = {(Object)f,(Object)stmt};
 		PluginManager.swarmObject(visit_exten, (Object)args);
 	}
 
