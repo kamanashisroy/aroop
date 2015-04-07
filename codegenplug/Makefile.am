@@ -19,14 +19,13 @@ libcodegenplug_la_LIBADD = \
         $(VALA_LIBS) \
         $(NULL)
 
-#--pkg $(VALA_PACKAGE) \
 libcodegenplug_la_VALAFLAGS = \
-        --pkg gee-1.0 \
         --vapidir $(top_srcdir)/shotodolplug \
+	--pkg $(VALA_PACKAGE) \
         --pkg shotodolplug \
-        --vapidir $(top_srcdir)/codegenplug \
 	--vapi=codegenplug.vapi \
 	--use-header --header=codegenplug.h \
+        -g \
 	$(NULL)
 
 libcodegenplug_la_SOURCES = \
@@ -40,10 +39,13 @@ libcodegenplug_la_SOURCES = \
 	objectmodule.vala \
 	$(NULL)
 
-EXTRA_DIST = 
+libcodegenplug_la_LDFLAGS = -no-undefined
+
+EXTRA_DIST = codegenplug.vapi codegenplug.h
 
 MAINTAINERCLEANFILES = \
 	codegenplug.vapi \
 	codegenplug.h \
 	$(libcodegenplug_la_SOURCES:.vala=.c) \
 	$(NULL)
+
