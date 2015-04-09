@@ -19,9 +19,8 @@ libshotodolplug_la_LIBADD = \
         $(NULL)
 
 libshotodolplug_la_VALAFLAGS = \
+	--pkg $(VALA_PACKAGE) \
         --vapidir $(top_srcdir)/shotodolplug \
-        --pkg gee-1.0 \
-        --pkg $(VALA_PACKAGE) \
 	--vapi=shotodolplug.vapi \
 	--use-header --header=shotodolplug.h \
 	$(NULL)
@@ -34,7 +33,9 @@ libshotodolplug_la_SOURCES = \
 	plugin.vala \
 	$(NULL)
 
-EXTRA_DIST = 
+libshotodolplug_la_LDFLAGS = -no-undefined
+
+EXTRA_DIST = shotodolplug.vapi shotodolplug.h
 
 MAINTAINERCLEANFILES = \
 	shotodolplug.vapi \

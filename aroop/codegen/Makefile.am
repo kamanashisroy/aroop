@@ -14,8 +14,7 @@ libaroopcodegen_la_LIBADD = \
 
 libaroopcodegen_la_VALAFLAGS = \
         --vapidir $(top_srcdir)/aroop/codegen \
-        --pkg gee-1.0 \
-        --pkg $(VALA_PACKAGE) \
+	--pkg $(VALA_PACKAGE) \
 	--vapi=codegen.vapi \
 	--use-header --header=aroopcodegen.h \
         -g \
