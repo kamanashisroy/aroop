@@ -33,24 +33,36 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	
 	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
 		string visit_exten= "generate/element/destruction";
-		Object[] args = {(Object)f,(Object)stmt};
+		var args = new HashMap<string,Object>();
+		args["field"] = (Object)f;
+		args["stmt"] = (Object)stmt;
 		PluginManager.swarmObject(visit_exten, (Object)args);
 	}
 
 	public void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
 		string visit_exten= "generate/element/declaration";
-		Object args[] = {(Object)f,(Object)container,(Object)decl_space,(Object)internalSymbol};
+		var args = new HashMap<string,Object>();
+		args["field"] = (Object)f;
+		args["container"] = (Object)container;
+		args["decl_space"] = (Object)decl_space;
+		args["internalSymbol"] = internalSymbol?(Object)"1":(Object)"0";
 		PluginManager.swarmObject(visit_exten, (Object)args);
 	}
 	public void generate_struct_declaration (Struct st, CCodeFile decl_space) {
 		string visit_exten= "generate/struct/declaration";
-		Object args[] = {(Object)st,(Object)decl_space};
+		var args = new HashMap<string,Object>();
+		args["struct"] = (Object)st;
+		args["decl_space"] = (Object)decl_space;
 		PluginManager.swarmObject(visit_exten, (Object)args);
 	}
 
 	public CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
 		string visit_exten= "generate/instance_cparam/struct";
-		Object args[] = {(Object)m,(Object)param,(Object)this_type};
+		//Object args[] = {(Object)m,(Object)param,(Object)this_type};
+		var args = new HashMap<string,Object>();
+		args["method"] = (Object)m;
+		args["param"] = (Object)param;
+		args["type"] = (Object)this_type;
 		return (CCodeParameter)PluginManager.swarmObject(visit_exten, (Object)args);
 	}
 

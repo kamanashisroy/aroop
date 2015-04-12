@@ -21,9 +21,9 @@ public class ccodegenplug.ElementModule : shotodolplug.Module {
 		return 0;
 	}
 
-	void generate_element_destruction_code(Object args[]) {
-		Field f = (Field)args[0];
-		CCodeBlock stmt = (CCodeBlock)args[1];
+	void generate_element_destruction_code(HashMap<string,Object> args) {
+		Field f = (Field)args["field"];
+		CCodeBlock stmt = (CCodeBlock)args["stmt"];
 		if (f.binding != MemberBinding.INSTANCE)  {
 			return;
 		}
