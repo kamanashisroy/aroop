@@ -133,6 +133,11 @@ Hello world
 
 Details is [here](aroop/core/build/raspberry_pi_bare_metal/README.md).
 
+###Compiling HLL
+
+FILLME
+[tools](http://stackoverflow.com/questions/5603285/c-to-hardware-compiler-hll-synthesis)
+
 More
 =====
 Please refer to [vala readme](README) for more information. There are more documents in the [talks](talks) directory,
