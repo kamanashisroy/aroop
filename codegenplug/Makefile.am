@@ -30,9 +30,10 @@ libcodegenplug_la_VALAFLAGS = \
 
 libcodegenplug_la_SOURCES = \
 	valaccodebasemodule.vala \
+	valaccodecompiler.vala \
 	generator/aroopcodegenerator.vala \
 	tempvariablemodule.vala \
-	compilermodule.vala \
+	sourcemodule.vala \
 	generator/csymbolresolve.vala \
 	symbols/structmodule.vala \
 	symbols/elementmodule.vala \

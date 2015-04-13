@@ -3,7 +3,7 @@ using Vala;
 using shotodolplug;
 using codegenplug;
 
-public class codegenplug.CompilerModule : shotodolplug.Module {
+public class codegenplug.SourceModule : shotodolplug.Module {
 
 	public EmitContext emit_context = new EmitContext ();
 	public CCodeFunction ccode { get { return emit_context.ccode; } }
@@ -75,8 +75,8 @@ public class codegenplug.CompilerModule : shotodolplug.Module {
 
 	public CCodeFile header_file;
 	public CCodeFile cfile;
-	public CompilerModule() {
-		base("Compiler", "0.0");
+	public SourceModule() {
+		base("Source", "0.0");
 		
 	}
 

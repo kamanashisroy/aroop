@@ -6,17 +6,21 @@ using codegenplug;
 public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 	AroopCodeGenerator cgen;	
 	public AroopCodeGeneratorModule() {
-		base("Codevisitor", "0.0");
+		base("CodeGenerator", "0.0");
 		cgen = new AroopCodeGenerator();
 	}
 
 	public override int init() {
-		PluginManager.register("compiler/c/codegen", new InterfaceExtension((Object)cgen, this));
+		PluginManager.register("compiler/c/codegen", new HookExtension((Hook)getInstance, this));
 		return 0;
 	}
 
 	public override int deinit() {
 		return 0;
+	}
+
+	Object getInstance(Object?param) {
+		return (Object)cgen;
 	}
 }
 

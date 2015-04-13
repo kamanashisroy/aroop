@@ -4,7 +4,7 @@ using shotodolplug;
 using codegenplug;
 
 public class ccodegenplug.StructModule : shotodolplug.Module {
-	CompilerModule compiler;
+	SourceModule compiler;
 	CSymbolResolve resolve;
 	CodeGenerator cgen;
 	AroopCodeGeneratorAdapter cgenAdapter;

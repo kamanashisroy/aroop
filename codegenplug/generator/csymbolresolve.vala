@@ -8,7 +8,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	Set<string> reserved_identifiers;
 	public string self_instance = "self_data";
 	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
-	CompilerModule compiler;
+	SourceModule compiler;
 	CodeGenerator cgen;
 	public CSymbolResolve() {
 		base("C Symbol Resolver", "0.0");

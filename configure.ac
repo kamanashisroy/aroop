@@ -77,7 +77,6 @@ AC_CONFIG_FILES([Makefile
            libaroop.pc
 	   shotodolplug/Makefile
 	   codegenplug/Makefile
-           aroop/codegen/Makefile
            aroop/compiler/Makefile
            aroop/core/Makefile
 	   aroop/core/aroop_core.pc

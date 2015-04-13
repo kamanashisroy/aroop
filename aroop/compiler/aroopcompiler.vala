@@ -161,7 +161,16 @@ class aroop.Compiler {
 		}
 	}
 
+	ArrayList<shotodolplug.Module> modules = new ArrayList<shotodolplug.Module>();
+	void loadModules() {
+		int count = 0;
+		shotodolplug.Module x = new codegenplug.AroopCodeGeneratorModule();
+		x.init();
+		modules[count++] = x;
+	}
+
 	private int run () {
+		loadModules();
 		context = CodeCompilerContext();
 		CodeContext.push (context.ccode);
 
@@ -268,7 +277,7 @@ class aroop.Compiler {
 			return quit ();
 		}
 
-		context.ccode.codegen = new AroopCCodegenImpl ();
+		context.ccode.codegen = (CodeGenerator)shotodolplug.PluginManager.swarmObject("compiler/c/codegen", null); //new AroopCCodegenImpl ();
 
 		bool has_c_files = false;
 

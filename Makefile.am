@@ -3,7 +3,6 @@ NULL =
 SUBDIRS = \
 	shotodolplug/ \
 	codegenplug/ \
-	aroop/codegen \
 	aroop/compiler \
 	aroop/vapi \
 	aroop/core \
@@ -12,7 +11,6 @@ SUBDIRS = \
 DIST_SUBDIRS = \
 	shotodolplug/ \
 	codegenplug/ \
-	aroop/codegen \
 	aroop/compiler \
 	aroop/vapi \
 	aroop/core \

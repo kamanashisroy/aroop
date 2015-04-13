@@ -5,7 +5,7 @@ using codegenplug;
 
 public class ccodegenplug.ElementModule : shotodolplug.Module {
 	CSymbolResolve resolve;
-	CompilerModule compiler;
+	SourceModule compiler;
 	CodeGenerator cgen;
 	AroopCodeGeneratorAdapter cgenAdapter;
 	public ElementModule() {
