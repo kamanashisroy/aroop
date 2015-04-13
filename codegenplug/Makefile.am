@@ -33,7 +33,7 @@ libcodegenplug_la_SOURCES = \
 	generator/aroopcodegenerator.vala \
 	tempvariablemodule.vala \
 	compilermodule.vala \
-	csymbolresolve.vala \
+	generator/csymbolresolve.vala \
 	symbols/structmodule.vala \
 	symbols/elementmodule.vala \
 	symbols/objectmodule.vala \

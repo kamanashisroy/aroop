@@ -4,13 +4,14 @@ using shotodolplug;
 using codegenplug;
 
 public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
-	
+	AroopCodeGenerator cgen;	
 	public AroopCodeGeneratorModule() {
 		base("Codevisitor", "0.0");
+		cgen = new AroopCodeGenerator();
 	}
 
 	public override int init() {
-		PluginManager.register("compiler/ccodegen", new InterfaceExtension((Object)new AroopCodeGenerator(), this));
+		PluginManager.register("compiler/c/codegen", new InterfaceExtension((Object)cgen, this));
 		return 0;
 	}
 
@@ -404,47 +405,55 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmObject(visit_exten, (Object)expr);
 	}
 
-	TargetValue load_variable (Variable variable, TargetValue value) {
-		return value;
-	}
-
 	public override LocalVariable create_local (DataType type) {
-		// TODO fill me
+		string exten= "create/local";
+		return (LocalVariable)PluginManager.swarmObject(exten, (Object)type);
 	}
 
 	public override TargetValue load_local (LocalVariable local) {
-		return load_variable (local, get_local_cvalue (local));
+		string exten= "load/local";
+		return (TargetValue)PluginManager.swarmObject(exten, (Object)local);
 	}
 
 	public override void store_local (LocalVariable local, TargetValue value, bool initializer) {
-		store_variable (local, get_local_cvalue (local), value, initializer);
+		string exten= "store/local";
+		var args = new HashMap<string,Object>();
+		args["local"] = (Object)local;
+		args["value"] = (Object)value;
+		args["initializer"] = (Object)initializer;
+		PluginManager.swarmObject(exten, (Object)args);
 	}
 
 	public override TargetValue load_parameter (Vala.Parameter param) {
-		return load_variable (param, get_parameter_cvalue (param));
+		string exten= "load/parameter";
+		return (TargetValue)PluginManager.swarmObject(exten, (Object)param);
 	}
 
 	public override void store_parameter (Vala.Parameter param, TargetValue value, bool capturing_parameter = false) {
-		store_variable (param, get_parameter_cvalue (param), value, false);
+		string exten= "store/parameter";
+		var args = new HashMap<string,Object>();
+		args["param"] = (Object)param;
+		args["value"] = (Object)value;
+		args["capturing_parameter"] = (Object)(capturing_parameter?"1":"0");
+		PluginManager.swarmObject(exten, (Object)args);
 	}
 
 	public override TargetValue load_field (Field field, TargetValue? instance) {
-		store_variable (param, get_parameter_cvalue (param), value, false);
+		string exten= "store/field";
+		var args = new HashMap<string,Object>();
+		args["field"] = (Object)field;
+		args["instance"] = (Object)instance;
+		return (TargetValue)PluginManager.swarmObject(exten, (Object)args);
 	}
 
 	public override void store_field (Field field, TargetValue? instance, TargetValue value) {
-		store_variable (field, get_field_cvalue (field, instance), value, false);
+		string exten= "store/field";
+		var args = new HashMap<string,Object>();
+		args["field"] = (Object)field;
+		args["instance"] = (Object)instance;
+		args["value"] = (Object)value;
+		PluginManager.swarmObject(exten, (Object)args);
 	}
-	void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {
-		if (!initializer && requires_destroy (variable.variable_type)) {
-			/* unref old value */
-			ccode.add_expression (destroy_value (lvalue));
-		}
-
-		ccode.add_assignment (get_cvalue_ (lvalue), get_cvalue_ (value));
-	}
-
-
 }
 
 internal class codegenplug.AroopCodeGeneratorAdapter {
@@ -476,7 +485,6 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 
 	public CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
 		string visit_exten= "generate/instance_cparam/struct";
-		//Object args[] = {(Object)m,(Object)param,(Object)this_type};
 		var args = new HashMap<string,Object>();
 		args["method"] = (Object)m;
 		args["param"] = (Object)param;

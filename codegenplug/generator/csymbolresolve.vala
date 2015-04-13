@@ -59,7 +59,10 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("c/symbol", new HookExtension((shotodolplug.Hook)getInstance, this));
+		PluginManager.register("compiler/c/symbol", new HookExtension((Hook)getInterface, this));
+		PluginManager.register("load/local", new HookExtension((Hook)get_local_cvalue, this));
+		PluginManager.register("load/parameter", new HookExtension((Hook)get_parameter_cvalue, this));
+		PluginManager.register("load/field", new HookExtension((Hook)get_field_cvalue, this));
 		return 0;
 	}
 
@@ -67,8 +70,8 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return 0;
 	}
 
-	CSymbolResolve?getInstance(Object unsed) {
-		return this;
+	public Object getInterface(Object x) {
+		return (Object)this;
 	}
 
 	public string get_ccode_aroop_name(CodeNode node) {
@@ -452,6 +455,116 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		}
 		return new CCodeIdentifier (get_variable_cname (name));
 	}
+
+	public TargetValue get_local_cvalue (LocalVariable local) {
+		var result = new AroopValue (local.variable_type);
+
+		if (local.is_result) {
+			// used in postconditions
+			result.cvalue = new CCodeIdentifier ("result");
+		} else if (local.captured) {
+			result.cvalue = (CCodeExpression?)PluginManager.swarmObject("load/local/block", (Object)local);//get_local_cvalue_for_block(local);
+		} else {
+			result.cvalue = get_variable_cexpression (local.name);
+		}
+
+		return result;
+	}
+
+	public TargetValue get_parameter_cvalue (Vala.Parameter p) {
+		var result = new AroopValue (p.variable_type);
+
+		if (p.name == self_instance) {
+			if (compiler.current_method != null && compiler.current_method.coroutine) {
+				// use closure
+				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), self_instance);
+			} else {
+				var st = compiler.current_type_symbol as Struct;
+				result.cvalue = new CCodeIdentifier (self_instance);
+			}
+		} else {
+			if (p.captured) {
+				result.cvalue = (CCodeExpression?)PluginManager.swarmObject("load/parameter/block", (Object)p);
+				//result.cvalue = get_parameter_cvalue_for_block(p);
+			} else {
+				if (compiler.current_method != null && compiler.current_method.coroutine) {
+					// use closure
+					result.cvalue = get_variable_cexpression (p.name);
+				} else {
+					var type_as_struct = p.variable_type.data_type as Struct;
+					if (p.direction != Vala.ParameterDirection.IN
+					    || (type_as_struct != null && !type_as_struct.is_simple_type () && !p.variable_type.nullable)) {
+						if (p.variable_type is GenericType) {
+							result.cvalue = get_variable_cexpression (p.name);
+						} else {
+							result.cvalue = get_variable_cexpression (p.name);
+							//result.cvalue = new CCodeIdentifier ("(*%s)".printf (get_variable_cname (p.name)));
+						}
+					} else {
+						// Property setters of non simple structs shall replace all occurences
+						// of the "value" formal parameter with a dereferencing version of that
+						// parameter.
+						var current_property_accessor = (PropertyAccessor)PluginManager.swarmObject("current/property_accessor", (Object)null);
+						if (current_property_accessor != null &&
+						    current_property_accessor.writable &&
+						    current_property_accessor.value_parameter == p &&
+						    current_property_accessor.prop.property_type.is_real_struct_type ()) {
+							result.cvalue = new CCodeIdentifier ("(*value)");
+						} else {
+							result.cvalue = get_variable_cexpression (p.name);
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	//public TargetValue get_field_cvalue (Field f, TargetValue? instance) {
+	public TargetValue get_field_cvalue (HashMap<string,Object> args) {
+		Field f = (Field)args["field"];
+		TargetValue? instance = (TargetValue?)args["instance"];
+		var result = new AroopValue (f.variable_type);
+		
+		if (f.binding == MemberBinding.INSTANCE) {
+			CCodeExpression pub_inst = null;
+
+			if (instance != null) {
+				pub_inst = get_cvalue_ (instance);
+			}
+
+			var instance_target_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
+
+			//var cl = instance_target_type.data_type as Class;
+			bool aroop_priv = false;
+			if ((f.access == SymbolAccessibility.PRIVATE || f.access == SymbolAccessibility.INTERNAL)) {
+				aroop_priv = true;
+			}
+
+			CCodeExpression inst = pub_inst;
+			if (instance.value_type is StructValueType) {
+				//result.cvalue = get_field_cvalue_for_struct(f, inst);
+				result.cvalue = (CCodeExpression?)PluginManager.swarmObject("load/field/struct", (Object)args);
+			} else if (instance_target_type.data_type.is_reference_type () || (instance != null 
+					&& (instance.value_type is PointerType))) {
+				result.cvalue = new CCodeMemberAccess.pointer (inst, get_ccode_name (f));
+			} else {
+				result.cvalue = new CCodeMemberAccess (inst, get_ccode_name (f));
+			}
+		} else {
+			var fargs = new HashMap<string,Object>();
+			fargs["field"] = (Object)f;
+			PluginManager.swarmObject("generate/field/declaration", (Object)fargs);
+			//generate_field_declaration (f, cfile, false);
+
+			result.cvalue = new CCodeIdentifier (get_ccode_name (f));
+		}
+
+		return result;
+	}
+
+
 
 }
 public class Vala.AroopValue : TargetValue {
