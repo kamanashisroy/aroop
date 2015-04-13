@@ -10,6 +10,7 @@ public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 	}
 
 	public override int init() {
+		PluginManager.register("compiler/ccodegen", new InterfaceExtension((Object)new AroopCodeGenerator(), this));
 		return 0;
 	}
 
@@ -18,7 +19,7 @@ public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 	}
 }
 
-internal abstract class codegenplug.AroopCodeGenerator : CodeGenerator {
+internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	public override void visit_source_file(SourceFile source_file) {
 		string visit_exten= "visit/source_file";
 		PluginManager.swarmObject(visit_exten, (Object)source_file);
@@ -402,6 +403,48 @@ internal abstract class codegenplug.AroopCodeGenerator : CodeGenerator {
 		string visit_exten= "visit/full_expression";
 		PluginManager.swarmObject(visit_exten, (Object)expr);
 	}
+
+	TargetValue load_variable (Variable variable, TargetValue value) {
+		return value;
+	}
+
+	public override LocalVariable create_local (DataType type) {
+		// TODO fill me
+	}
+
+	public override TargetValue load_local (LocalVariable local) {
+		return load_variable (local, get_local_cvalue (local));
+	}
+
+	public override void store_local (LocalVariable local, TargetValue value, bool initializer) {
+		store_variable (local, get_local_cvalue (local), value, initializer);
+	}
+
+	public override TargetValue load_parameter (Vala.Parameter param) {
+		return load_variable (param, get_parameter_cvalue (param));
+	}
+
+	public override void store_parameter (Vala.Parameter param, TargetValue value, bool capturing_parameter = false) {
+		store_variable (param, get_parameter_cvalue (param), value, false);
+	}
+
+	public override TargetValue load_field (Field field, TargetValue? instance) {
+		store_variable (param, get_parameter_cvalue (param), value, false);
+	}
+
+	public override void store_field (Field field, TargetValue? instance, TargetValue value) {
+		store_variable (field, get_field_cvalue (field, instance), value, false);
+	}
+	void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {
+		if (!initializer && requires_destroy (variable.variable_type)) {
+			/* unref old value */
+			ccode.add_expression (destroy_value (lvalue));
+		}
+
+		ccode.add_assignment (get_cvalue_ (lvalue), get_cvalue_ (value));
+	}
+
+
 }
 
 internal class codegenplug.AroopCodeGeneratorAdapter {

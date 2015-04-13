@@ -30,13 +30,13 @@ libcodegenplug_la_VALAFLAGS = \
 
 libcodegenplug_la_SOURCES = \
 	valaccodebasemodule.vala \
-	aroopcodegenerator.vala \
+	generator/aroopcodegenerator.vala \
 	tempvariablemodule.vala \
 	compilermodule.vala \
 	csymbolresolve.vala \
-	structmodule.vala \
-	elementmodule.vala \
-	objectmodule.vala \
+	symbols/structmodule.vala \
+	symbols/elementmodule.vala \
+	symbols/objectmodule.vala \
 	$(NULL)
 
 libcodegenplug_la_LDFLAGS = -no-undefined
