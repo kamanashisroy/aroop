@@ -29,7 +29,6 @@ aroopc@PACKAGE_SUFFIX@_CFLAGS = \
 aroopc@PACKAGE_SUFFIX@_VALAFLAGS = \
         --vapidir $(top_srcdir)/aroop/codegen --pkg codegen \
         --pkg config \
-        --pkg gee-1.0 \
         --pkg $(VALA_PACKAGE) \
         -g \
         $(NULL)
