@@ -17,6 +17,7 @@ libcodegenplug_la_LIBADD = \
         $(GLIB_LIBS) \
         $(GEE_LIBS) \
         $(VALA_LIBS) \
+	$(top_srcdir)/shotodolplug/libshotodolplug.la \
         $(NULL)
 
 libcodegenplug_la_VALAFLAGS = \
