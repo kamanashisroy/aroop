@@ -606,6 +606,9 @@ public class aroop.core {
 	public static void gc_unsafe();
 	[CCode (cname = "aroop_get_source_module")]
 	public static unowned string sourceModuleName();
+	[CCode (cname = "aroop_debug_printf")]
+	[PrintfFormat]
+	public static int debug_print(string format,...);
 }
 
 [Compact]
