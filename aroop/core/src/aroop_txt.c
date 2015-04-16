@@ -162,8 +162,6 @@ int aroop_debug_printf(const char*format, ...) {
 			continue;
 		}
 		if(format[i+1] == '%') {
-			putc(format[i], stream);
-			olen++;
 			i++;
 			putc(format[i], stream);
 			olen++;
@@ -174,14 +172,21 @@ int aroop_debug_printf(const char*format, ...) {
 			{
 				const char*x = va_arg(arg, const char*);
 				if(x != NULL)
-					olen+=fwrite(x, 1, strlen(x), stream);
+					//olen+=fwrite(x, 1, strlen(x), stream);
+					olen+=fputs(x, stream);
 				break;
 			}
 			case 'S':
 			{
 				aroop_txt_t*x = va_arg(arg, aroop_txt_t*);
-				if(x != NULL)
-					olen+=fwrite(aroop_txt_to_string(x), 1, x->len, stream);
+				if(x != NULL) {
+					int idx = 0;
+					for(idx=0;idx<x->len;idx++) {
+						putc(aroop_txt_char_at(x,idx), stream);
+						olen++;
+					}
+					//olen+=fwrite(aroop_txt_to_string(x), 1, x->len, stream);
+				}
 				break;
 			}
 			case 'd':
