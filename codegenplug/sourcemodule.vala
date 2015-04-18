@@ -82,11 +82,16 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 
 	public override int init() {
 		//PluginManager.register("visit/compiler", new HookExtension(visit_struct, this));
+		PluginManager.register("source", new HookExtension((shotodolplug.Hook)getInstance, this));
 		return 0;
 	}
 
 	public override int deinit() {
 		return 0;
+	}
+
+	public SourceModule getInstance(Object param) {
+		return this;
 	}
 
 	public void push_context (EmitContext emit_context) {

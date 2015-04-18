@@ -161,12 +161,21 @@ class aroop.Compiler {
 		}
 	}
 
-	ArrayList<shotodolplug.Module> modules = new ArrayList<shotodolplug.Module>();
-	void loadModules() {
-		int count = 0;
-		shotodolplug.Module x = new codegenplug.AroopCodeGeneratorModule();
+	//ArrayList<shotodolplug.Module> modules = new ArrayList<shotodolplug.Module>();
+	shotodolplug.Module[] modules = new shotodolplug.Module[128];
+	int moduleCount = 0;
+	void loadModulesHelper(shotodolplug.Module x) {
 		x.init();
-		modules[count++] = x;
+		modules[moduleCount++] = x;
+	}
+	void loadModules() {
+		loadModulesHelper(new codegenplug.AroopCodeGeneratorModule());
+		loadModulesHelper(new codegenplug.SourceModule());
+		loadModulesHelper(new codegenplug.TempVariableModule());
+		loadModulesHelper(new codegenplug.CSymbolResolve());
+		loadModulesHelper(new codegenplug.ElementModule());
+		loadModulesHelper(new codegenplug.StructModule());
+		loadModulesHelper(new codegenplug.ObjectModule());
 	}
 
 	private int run () {

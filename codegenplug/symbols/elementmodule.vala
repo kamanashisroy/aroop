@@ -3,7 +3,7 @@ using Vala;
 using shotodolplug;
 using codegenplug;
 
-public class ccodegenplug.ElementModule : shotodolplug.Module {
+public class codegenplug.ElementModule : shotodolplug.Module {
 	CSymbolResolve resolve;
 	SourceModule compiler;
 	CodeGenerator cgen;
