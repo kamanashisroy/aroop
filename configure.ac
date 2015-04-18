@@ -75,7 +75,8 @@ AC_SUBST(AROOP_CORE_CFLAGS)
 
 
 # XXX we do not do anything with VALA_PACKAGE
-# AC_SUBST(VALA_PACKAGE)
+VALA_PACKAGE=libvala-0.26
+AC_SUBST(VALA_PACKAGE)
 
 AC_CONFIG_FILES([Makefile
            libaroop.pc
