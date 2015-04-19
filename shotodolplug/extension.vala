@@ -38,7 +38,7 @@ public class shotodolplug.Extension {
 	}
 #endif
 	/* Message passing */
-	public virtual Object?actObject(Object x) /*throws M100CommandError.ActionFailed*/ {
+	public virtual Object?actObject(Object?x) /*throws M100CommandError.ActionFailed*/ {
 		return null;
 	}
 }

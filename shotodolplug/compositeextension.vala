@@ -16,6 +16,7 @@ public class shotodolplug.CompositeExtension : Extension {
 		base(mod);
 	}
 	public int register(string target, Extension e) {
+		assert(e != null);
 		assert(e.src != null);
 		Extension?root = registry.get(target);
 		if(root == null) {
@@ -49,7 +50,7 @@ public class shotodolplug.CompositeExtension : Extension {
 		}
 		return 0;
 	}
-	public Object? swarmObject(string target, Object inmsg) {
+	public Object? swarmObject(string target, Object?inmsg) {
 		Extension?root = get(target);
 		Object?output = null;
 		while(root != null) {

@@ -29,7 +29,7 @@ public class shotodolplug.PluginManager : Module {
 	public static int unregister(string target, Extension e) {
 		return x.unregister(target, e);
 	}
-	public static Object? swarmObject(string target, Object inmsg) {
+	public static Object? swarmObject(string target, Object?inmsg) {
 		Object?output = x.swarmObject(target, inmsg);
 		string composite = "extension/composite";
 		Extension?root = x.get(composite);

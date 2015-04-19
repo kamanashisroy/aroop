@@ -27,6 +27,7 @@ public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	public override void visit_source_file(SourceFile source_file) {
 		string visit_exten= "visit/source_file";
+		print("visiting source file\n");
 		PluginManager.swarmObject(visit_exten, (Object)source_file);
 	}
 	public override void visit_namespace(Namespace ns) {
@@ -35,10 +36,12 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 	public override void visit_class(Class cl) {
 		string visit_exten= "visit/class";
+		print("visiting class\n");
 		PluginManager.swarmObject(visit_exten, (Object)cl);
 	}
 	public override void visit_struct(Struct st) {
 		string visit_exten= "visit/struct";
+		print("visiting struct\n");
 		PluginManager.swarmObject(visit_exten, (Object)st);
 	}
 	public override void visit_interface(Interface iface) {
@@ -386,6 +389,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 
 	public override void visit_type_check (TypeCheck expr) {
 		string visit_exten= "visit/type_check";
+		print("visiting type check\n");
 		PluginManager.swarmObject(visit_exten, (Object)expr);
 	}
 
@@ -457,6 +461,11 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		args["instance"] = (Object)instance;
 		args["value"] = (Object)value;
 		PluginManager.swarmObject(exten, (Object)args);
+	}
+
+	public override void emit (CodeContext context) {
+		string exten= "source/emit";
+		PluginManager.swarmObject(exten, (Object)context);
 	}
 }
 

@@ -83,6 +83,7 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 	public override int init() {
 		//PluginManager.register("visit/compiler", new HookExtension(visit_struct, this));
 		PluginManager.register("source", new HookExtension((shotodolplug.Hook)getInstance, this));
+		PluginManager.register("source/emit", new HookExtension((shotodolplug.Hook)emitHook, this));
 		return 0;
 	}
 
@@ -93,6 +94,76 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 	public SourceModule getInstance(Object param) {
 		return this;
 	}
+
+	public void emitHook (CodeContext context) {
+		this.context = context;
+
+		root_symbol = context.root;
+
+		bool_type = new BooleanType ((Struct) root_symbol.scope.lookup ("bool"));
+		char_type = new IntegerType ((Struct) root_symbol.scope.lookup ("char"));
+		int_type = new IntegerType ((Struct) root_symbol.scope.lookup ("int"));
+		uint_type = new IntegerType ((Struct) root_symbol.scope.lookup ("uint"));
+		string_type = new ObjectType ((Class) root_symbol.scope.lookup ("string"));
+
+		var aroop_ns = (Namespace) root_symbol.scope.lookup ("aroop");
+		//object_class = (Class) aroop_ns.scope.lookup ("Object");
+		object_class = (Class) aroop_ns.scope.lookup ("Replicable");
+		type_class = (Class) aroop_ns.scope.lookup ("Type");
+		value_class = (Class) aroop_ns.scope.lookup ("Value");
+		string_class = (Class) root_symbol.scope.lookup ("string");
+		array_struct = (Struct) aroop_ns.scope.lookup ("Array");
+		delegate_class = (Class) aroop_ns.scope.lookup ("Delegate");
+		error_class = (Class) aroop_ns.scope.lookup ("AroopError");
+
+		header_file = new CCodeFile ();
+		header_file.is_header = true;
+
+		cfile = new CCodeFile ();
+
+		if (context.nostdpkg) {
+			header_file.add_include ("aroop/aroop_core.h");
+			header_file.add_include ("aroop/core/xtring.h");
+			header_file.add_include ("aroop/aroop_factory.h");
+			cfile.add_include ("aroop/aroop_core.h");
+			cfile.add_include ("aroop/core/xtring.h");
+		} else {
+			header_file.add_include ("aroop/aroop_core.h");
+			header_file.add_include ("aroop/core/xtring.h");
+			header_file.add_include ("aroop/aroop_factory.h");
+			cfile.add_include ("aroop/aroop_core.h");
+			cfile.add_include ("aroop/core/xtring.h");
+		}
+
+		generated_external_symbols = new HashSet<Symbol> ();
+
+
+		/* we're only interested in non-pkg source files */
+		var source_files = context.get_source_files ();
+		foreach (SourceFile file in source_files) {
+			if (file.file_type == SourceFileType.SOURCE) {
+				file.accept (this);
+			}
+		}
+
+		if (csource_filename != null) {
+			if (!cfile.store (csource_filename, null, context.version_header, context.debug)) {
+				Report.error (null, "unable to open `%s' for writing".printf (csource_filename));
+			}
+		}
+
+		cfile = null;
+
+
+		// generate C header file for public API
+		if (context.header_filename != null) {
+			if (!header_file.store (context.header_filename, null, context.version_header, false)) {
+				Report.error (null, "unable to open `%s' for writing".printf (context.header_filename));
+			}
+		}
+	}
+
+
 
 	public void push_context (EmitContext emit_context) {
 		/*

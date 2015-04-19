@@ -169,6 +169,7 @@ class aroop.Compiler {
 		modules[moduleCount++] = x;
 	}
 	void loadModules() {
+		loadModulesHelper(new shotodolplug.PluginManager());
 		loadModulesHelper(new codegenplug.AroopCodeGeneratorModule());
 		loadModulesHelper(new codegenplug.SourceModule());
 		loadModulesHelper(new codegenplug.TempVariableModule());
@@ -344,7 +345,9 @@ class aroop.Compiler {
 			return quit ();
 		}
 
+		print("emitting \n");
 		context.ccode.codegen.emit (context.ccode);
+		print("done \n");
 
 		if (context.ccode.report.get_errors () > 0 || (fatal_warnings && context.ccode.report.get_warnings () > 0)) {
 			return quit ();

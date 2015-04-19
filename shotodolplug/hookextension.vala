@@ -17,7 +17,7 @@ public class shotodolplug.HookExtension : Extension {
 		base(mod);
 		hook = gHook;
 	}
-	public override Object?actObject(Object x) {
+	public override Object?actObject(Object?x) {
 		return hook(x);
 	}
 #if false

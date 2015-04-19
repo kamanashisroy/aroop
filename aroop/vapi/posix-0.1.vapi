@@ -149,6 +149,19 @@ public class string {
 	public int len();
 }
 
+[SimpleType]
+[CCode (cheader_filename="stdarg.h", cprefix="va_", has_type_id = false, destroy_function = "va_end", lvalue_access = false)]
+public struct va_list {
+	[CCode (cname = "va_start")]
+	public va_list ();
+	[CCode (cname = "va_copy")]
+	public va_list.copy (va_list src);
+	[CCode (generic_type_pos = 1.1)]
+	public unowned G arg<G> ();
+}
+
+
+
 [CCode (cname="printf", cheader_filename = "stdio.h")]
 [PrintfFormat]
 public void print (string format,...);
