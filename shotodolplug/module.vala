@@ -4,7 +4,7 @@
  * 	Kamanashis Roy <kamanashisroy@gmail.com>
  */
 
-using GLib;
+using Vala;
 
 /** \addtogroup Plugin
  *  @{
@@ -16,6 +16,7 @@ public abstract class shotodolplug.Module {
 		name = nm;
 		version = ver;
 	}
+	
 	public virtual string getNameAs() {
 		return name;
 	}

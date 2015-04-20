@@ -4,16 +4,16 @@
  * 	Kamanashis Roy <kamanashisroy@gmail.com>
  */
 
-using GLib;
 using Vala;
 
 /** \addtogroup Plugin
  *  @{
  */
 public class shotodolplug.CompositeExtension : Extension {
-	HashMap<string, Extension> registry = new HashMap<string, Extension> ();
+	Vala.HashMap<string, Extension> registry;
 	public CompositeExtension(Module mod) {
 		base(mod);
+		registry = new Vala.HashMap<string, Extension>();
 	}
 	public int register(string target, Extension e) {
 		assert(e != null);
@@ -23,7 +23,10 @@ public class shotodolplug.CompositeExtension : Extension {
 		}
 		Extension?root = registry.get(target);
 		if(root == null) {
+			print("Registering extension at %s\n", target);
 			registry.set(target, e);
+			Extension?e2 = registry.get(target);
+			assert(e2 != null);
 			return 0;
 		}
 		while(root.next != null) {
@@ -33,7 +36,7 @@ public class shotodolplug.CompositeExtension : Extension {
 		root.next = e;
 		return 0;
 	}
-	public Extension?get(string target) {
+	public Extension?getExtension(string target) {
 		return registry.get(target);
 	}
 	public int unregister(string target, Extension e) {
@@ -54,7 +57,7 @@ public class shotodolplug.CompositeExtension : Extension {
 		return 0;
 	}
 	public Object? swarmObject(string target, Object?inmsg) {
-		Extension?root = get(target);
+		Extension?root = getExtension(target);
 		Object?output = null;
 		while(root != null) {
 			print("getting extension for %s\n", target);
@@ -67,7 +70,7 @@ public class shotodolplug.CompositeExtension : Extension {
 		return output;
 	}
 	public void acceptVisitor(string target, ExtensionVisitor visitor) {
-		Extension?root = get(target);
+		Extension?root = getExtension(target);
 		while(root != null) {
 			visitor(root);
 			Extension?next = root.getNext();
@@ -79,7 +82,11 @@ public class shotodolplug.CompositeExtension : Extension {
 		foreach(var entry in registry.get_keys()) {
 			print("\textension registered at %s\n", entry);
 			Extension e = registry.get(entry);
+			print("\textension is %s\n", (e == null)?"NULL":"available");
 			e.dump();
+		}
+		foreach(var entry in registry.get_values()) {
+			entry.dump();
 		}
 	}
 }

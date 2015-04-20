@@ -33,7 +33,7 @@ public class shotodolplug.PluginManager : Module {
 		print("PluginManager:getting extension for %s\n", target);
 		Object?output = x.swarmObject(target, inmsg);
 		string composite = "extension/composite";
-		Extension?root = x.get(composite);
+		Extension?root = x.getExtension(composite);
 		while(root != null) {
 			if(output != null)
 				break;
@@ -47,7 +47,7 @@ public class shotodolplug.PluginManager : Module {
 	public static void acceptVisitor(string target, ExtensionVisitor visitor) {
 		x.acceptVisitor(target, visitor);
 		string composite = "extension/composite";
-		Extension?root = x.get(composite);
+		Extension?root = x.getExtension(composite);
 		while(root != null) {
 			CompositeExtension cx = (CompositeExtension)root;
 			cx.acceptVisitor(target, visitor);
