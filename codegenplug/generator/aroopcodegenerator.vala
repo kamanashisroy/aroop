@@ -464,8 +464,11 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void emit (CodeContext context) {
-		string exten= "source/emit";
-		PluginManager.swarmObject(exten, (Object)context);
+		string exten= "store/field";
+		var args = new HashMap<string,Object>();
+		args["context"] = (Object)context;
+		args["visitor"] = (Object)this;
+		PluginManager.swarmObject(exten, (Object)args);
 	}
 }
 

@@ -91,12 +91,34 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 		return 0;
 	}
 
-	public SourceModule getInstance(Object param) {
+	SourceModule getInstance(Object param) {
 		return this;
 	}
 
-	public void emitHook (CodeContext context) {
-		this.context = context;
+	Symbol root_symbol;
+	DataType void_type = new VoidType ();
+	DataType bool_type;
+	DataType char_type;
+	DataType int_type;
+	DataType uint_type;
+	DataType string_type;
+	Class object_class;
+	Class type_class;
+	Class value_class;
+	Class string_class;
+	Struct array_struct;
+	Class delegate_class;
+	Class error_class;
+	CodeContext context { get; set; }
+
+	string? csource_filename;
+
+	Set<Symbol> generated_external_symbols;
+
+	void emitHook (HashMap<string,Object> args) {
+		
+		this.context = (CodeContext)args["context"];
+		CodeVisitor visitor = (CodeVisitor)args["visitor"];
 
 		root_symbol = context.root;
 
@@ -142,7 +164,7 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 		var source_files = context.get_source_files ();
 		foreach (SourceFile file in source_files) {
 			if (file.file_type == SourceFileType.SOURCE) {
-				file.accept (this);
+				file.accept (visitor);
 			}
 		}
 
