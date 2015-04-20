@@ -10,7 +10,7 @@ using GLib;
  *  @{
  */
 public abstract class shotodolplug.Module {
-	string name;
+	internal string name;
 	string version;
 	public Module(string nm,string ver) {
 		name = nm;

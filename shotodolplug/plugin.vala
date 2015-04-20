@@ -30,10 +30,13 @@ public class shotodolplug.PluginManager : Module {
 		return x.unregister(target, e);
 	}
 	public static Object? swarmObject(string target, Object?inmsg) {
+		print("PluginManager:getting extension for %s\n", target);
 		Object?output = x.swarmObject(target, inmsg);
 		string composite = "extension/composite";
 		Extension?root = x.get(composite);
 		while(root != null) {
+			if(output != null)
+				break;
 			CompositeExtension cx = (CompositeExtension)root;
 			output = cx.swarmObject(target, inmsg);
 			Extension?next = root.getNext();
@@ -52,11 +55,10 @@ public class shotodolplug.PluginManager : Module {
 			root = next;
 		}
 	}
-#if false
-	public static void list(OutputStream pad) {
-		x.list(pad);
+
+	public static void dump() {
+		x.dump();
 	}
-#endif
 	
 	public override int init() {
 		x = new CompositeExtension(this);

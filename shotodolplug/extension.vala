@@ -22,21 +22,9 @@ public class shotodolplug.Extension {
 	public virtual Object?getInterface(string service) {
 		return null;
 	}
-#if false
-	public virtual int desc(OutputStream pad) {
-		extring dlg = extring.stack(128);
-		extring name = extring();
-		src.getNameAs(&name);
-		dlg.concat_char('\t');
-		dlg.concat_char('[');
-		dlg.concat(&name);
-		dlg.concat_char(']');
-		dlg.concat_char('\t');
-		dlg.concat_char('\t');
-		pad.write(&dlg);
-		return 0;
+	public virtual void dump() {
+		print("\t[%s]\n", src.name);
 	}
-#endif
 	/* Message passing */
 	public virtual Object?actObject(Object?x) /*throws M100CommandError.ActionFailed*/ {
 		return null;

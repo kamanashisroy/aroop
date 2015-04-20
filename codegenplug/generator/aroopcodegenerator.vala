@@ -20,6 +20,10 @@ public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 	}
 
 	Object getInstance(Object?param) {
+		if(cgen == null)
+			print("giving back null code generator\n");
+		else
+			print("giving back current code generator\n");
 		return (Object)cgen;
 	}
 }

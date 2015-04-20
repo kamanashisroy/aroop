@@ -176,7 +176,6 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 
 		cfile = null;
 
-
 		// generate C header file for public API
 		if (context.header_filename != null) {
 			if (!header_file.store (context.header_filename, null, context.version_header, false)) {

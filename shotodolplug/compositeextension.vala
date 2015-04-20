@@ -18,6 +18,9 @@ public class shotodolplug.CompositeExtension : Extension {
 	public int register(string target, Extension e) {
 		assert(e != null);
 		assert(e.src != null);
+		if(e == null) {
+			print("Extension cannot be null\n");
+		}
 		Extension?root = registry.get(target);
 		if(root == null) {
 			registry.set(target, e);
@@ -54,7 +57,10 @@ public class shotodolplug.CompositeExtension : Extension {
 		Extension?root = get(target);
 		Object?output = null;
 		while(root != null) {
+			print("getting extension for %s\n", target);
 			output = root.actObject(inmsg); // Note we did not concat the output for shake of simplicity
+			if(output != null)
+				break;
 			Extension?next = root.getNext();
 			root = next;
 		}
@@ -66,6 +72,14 @@ public class shotodolplug.CompositeExtension : Extension {
 			visitor(root);
 			Extension?next = root.getNext();
 			root = next;
+		}
+	}
+	public override void dump() {
+		print("There are %d extensions registered\n", registry.size);
+		foreach(var entry in registry.get_keys()) {
+			print("\textension registered at %s\n", entry);
+			Extension e = registry.get(entry);
+			e.dump();
 		}
 	}
 }
