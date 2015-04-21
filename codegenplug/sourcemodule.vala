@@ -82,8 +82,8 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 
 	public override int init() {
 		//PluginManager.register("visit/compiler", new HookExtension(visit_struct, this));
-		PluginManager.register("source", new HookExtension((shotodolplug.Hook)getInstance, this));
-		PluginManager.register("source/emit", new HookExtension((shotodolplug.Hook)emitHook, this));
+		PluginManager.register("source", new HookExtension(getInstance, this));
+		PluginManager.register("source/emit", new HookExtension(emitHook, this));
 		return 0;
 	}
 
@@ -91,7 +91,7 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 		return 0;
 	}
 
-	SourceModule getInstance(Object param) {
+	Value? getInstance(Value?param) {
 		return this;
 	}
 
@@ -115,9 +115,13 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 
 	Set<Symbol> generated_external_symbols;
 
-	void emitHook (HashMap<string,Object> args) {
-		
+	Value?emitHook (Value?inmsg) {
+		var args = (HashTable<string,Value?>)inmsg;
+		print("SourceModule:Emitting\n");
+		print("SourceModule:Emitting length:%d\n", (int)args.length);
+		print("SourceModule:Emitting msg:%s\n", args["hello"].get_string());
 		this.context = (CodeContext)args["context"];
+		print("SourceModule:...\n");
 		CodeVisitor visitor = (CodeVisitor)args["visitor"];
 
 		root_symbol = context.root;
@@ -182,6 +186,7 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 				Report.error (null, "unable to open `%s' for writing".printf (context.header_filename));
 			}
 		}
+		return null;
 	}
 
 

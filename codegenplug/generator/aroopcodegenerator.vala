@@ -465,10 +465,14 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void emit (CodeContext context) {
-		string exten= "store/field";
+		string exten= "source/emit";
+		print("AroopCodeGenerator:emitting ..\n");
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["hello"] = "hello";
 		args["context"] = context;
 		args["visitor"] = this;
+		print("AroopCodeGenerator:Emitting length:%d\n", (int)args.length);
+		print("AroopCodeGenerator:Emitting msg:%s\n", args["hello"].get_string());
 		PluginManager.swarmValue(exten, args);
 	}
 }
