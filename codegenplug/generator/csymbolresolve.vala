@@ -59,7 +59,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("compiler/c/symbol", new HookExtension((Hook)getInterface, this));
+		PluginManager.register("compiler/c/symbol", new HookExtension(getInterface, this));
 		PluginManager.register("load/local", new HookExtension((Hook)get_local_cvalue, this));
 		PluginManager.register("load/parameter", new HookExtension((Hook)get_parameter_cvalue, this));
 		PluginManager.register("load/field", new HookExtension((Hook)get_field_cvalue, this));
@@ -70,8 +70,8 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return 0;
 	}
 
-	public Object getInterface(Object x) {
-		return (Object)this;
+	public Value?getInterface(Value?x) {
+		return this;
 	}
 
 	public string get_ccode_aroop_name(CodeNode node) {
@@ -463,7 +463,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			// used in postconditions
 			result.cvalue = new CCodeIdentifier ("result");
 		} else if (local.captured) {
-			result.cvalue = (CCodeExpression?)PluginManager.swarmObject("load/local/block", (Object)local);//get_local_cvalue_for_block(local);
+			result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/local/block", local);//get_local_cvalue_for_block(local);
 		} else {
 			result.cvalue = get_variable_cexpression (local.name);
 		}
@@ -484,7 +484,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			}
 		} else {
 			if (p.captured) {
-				result.cvalue = (CCodeExpression?)PluginManager.swarmObject("load/parameter/block", (Object)p);
+				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/parameter/block", p);
 				//result.cvalue = get_parameter_cvalue_for_block(p);
 			} else {
 				if (compiler.current_method != null && compiler.current_method.coroutine) {
@@ -504,7 +504,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 						// Property setters of non simple structs shall replace all occurences
 						// of the "value" formal parameter with a dereferencing version of that
 						// parameter.
-						var current_property_accessor = (PropertyAccessor)PluginManager.swarmObject("current/property_accessor", (Object)null);
+						var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
 						if (current_property_accessor != null &&
 						    current_property_accessor.writable &&
 						    current_property_accessor.value_parameter == p &&
@@ -522,7 +522,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 	
 	//public TargetValue get_field_cvalue (Field f, TargetValue? instance) {
-	public TargetValue get_field_cvalue (HashMap<string,Object> args) {
+	public TargetValue get_field_cvalue (HashMap<string,Value?> args) {
 		Field f = (Field)args["field"];
 		TargetValue? instance = (TargetValue?)args["instance"];
 		var result = new AroopValue (f.variable_type);
@@ -545,7 +545,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			CCodeExpression inst = pub_inst;
 			if (instance.value_type is StructValueType) {
 				//result.cvalue = get_field_cvalue_for_struct(f, inst);
-				result.cvalue = (CCodeExpression?)PluginManager.swarmObject("load/field/struct", (Object)args);
+				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/field/struct", args);
 			} else if (instance_target_type.data_type.is_reference_type () || (instance != null 
 					&& (instance.value_type is PointerType))) {
 				result.cvalue = new CCodeMemberAccess.pointer (inst, get_ccode_name (f));
@@ -553,9 +553,9 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 				result.cvalue = new CCodeMemberAccess (inst, get_ccode_name (f));
 			}
 		} else {
-			var fargs = new HashMap<string,Object>();
-			fargs["field"] = (Object)f;
-			PluginManager.swarmObject("generate/field/declaration", (Object)fargs);
+			var fargs = new HashMap<string,Value?>();
+			fargs["field"] = f;
+			PluginManager.swarmValue("generate/field/declaration", fargs);
 			//generate_field_declaration (f, cfile, false);
 
 			result.cvalue = new CCodeIdentifier (get_ccode_name (f));

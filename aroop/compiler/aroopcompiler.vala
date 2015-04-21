@@ -177,7 +177,6 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.ElementModule());
 		loadModulesHelper(new codegenplug.StructModule());
 		loadModulesHelper(new codegenplug.ObjectModule());
-		shotodolplug.PluginManager.dump();
 	}
 
 	private int run () {
@@ -288,9 +287,9 @@ class aroop.Compiler {
 			return quit ();
 		}
 
-		context.ccode.codegen = (CodeGenerator)shotodolplug.PluginManager.swarmObject("compiler/c/codegen", null); //new AroopCCodegenImpl ();
-		if(context.ccode.codegen == null)
-			print("Code generator is NULL\n");
+		//shotodolplug.PluginManager.dump();
+		context.ccode.codegen = (CodeGenerator)shotodolplug.PluginManager.swarmValue("compiler/c/codegen", null); //new AroopCCodegenImpl ();
+		assert(context.ccode.codegen != null);
 
 		bool has_c_files = false;
 

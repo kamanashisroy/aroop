@@ -4,19 +4,22 @@
  * 	Kamanashis Roy <kamanashisroy@gmail.com>
  */
 
-using GLib;
+using Vala;
 
 /** \addtogroup Plugin
  *  @{
  */
-public delegate Object? shotodolplug.Hook(Object?x);
+
+public delegate Value? shotodolplug.Hook(Value?x);
 public class shotodolplug.HookExtension : Extension {
 	shotodolplug.Hook hook;
 	public HookExtension(shotodolplug.Hook?gHook, Module mod) {
 		base(mod);
 		hook = gHook;
 	}
-	public override Object?actObject(Object?x) {
+	public override Value?actValue(Value?x) {
+		print("HookExtension:acting\n");
+		assert(hook != null);
 		return hook(x);
 	}
 	public override void dump() {

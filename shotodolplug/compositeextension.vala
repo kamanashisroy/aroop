@@ -10,23 +10,17 @@ using Vala;
  *  @{
  */
 public class shotodolplug.CompositeExtension : Extension {
-	Vala.HashMap<string, Extension> registry;
+	HashTable<string, Extension> registry;
 	public CompositeExtension(Module mod) {
 		base(mod);
-		registry = new Vala.HashMap<string, Extension>();
+		registry = new HashTable<string, Extension>(str_hash, str_equal);
 	}
 	public int register(string target, Extension e) {
 		assert(e != null);
 		assert(e.src != null);
-		if(e == null) {
-			print("Extension cannot be null\n");
-		}
 		Extension?root = registry.get(target);
 		if(root == null) {
-			print("Registering extension at %s\n", target);
 			registry.set(target, e);
-			Extension?e2 = registry.get(target);
-			assert(e2 != null);
 			return 0;
 		}
 		while(root.next != null) {
@@ -56,12 +50,13 @@ public class shotodolplug.CompositeExtension : Extension {
 		}
 		return 0;
 	}
-	public Object? swarmObject(string target, Object?inmsg) {
+	public Value? swarmValue(string target, Value?inmsg) {
+		print("CompositeExtension:getting extension for [%s]\n", target);
 		Extension?root = getExtension(target);
-		Object?output = null;
+		Value?output = null;
 		while(root != null) {
-			print("getting extension for %s\n", target);
-			output = root.actObject(inmsg); // Note we did not concat the output for shake of simplicity
+			print("CompositeExtension:acting [%s]\n", target);
+			output = root.actValue(inmsg); // Note we did not concat the output for shake of simplicity
 			if(output != null)
 				break;
 			Extension?next = root.getNext();
@@ -78,11 +73,10 @@ public class shotodolplug.CompositeExtension : Extension {
 		}
 	}
 	public override void dump() {
-		print("There are %d extensions registered\n", registry.size);
+		print("There are %d extensions registered\n", (int)registry.length);
 		foreach(var entry in registry.get_keys()) {
-			print("\textension registered at %s\n", entry);
 			Extension e = registry.get(entry);
-			print("\textension is %s\n", (e == null)?"NULL":"available");
+			print("\t[%s] extension is %s\n", entry, (e == null)?"NULL":"available");
 			e.dump();
 		}
 		foreach(var entry in registry.get_values()) {
