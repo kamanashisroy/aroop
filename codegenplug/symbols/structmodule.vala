@@ -4,21 +4,26 @@ using shotodolplug;
 using codegenplug;
 
 public class codegenplug.StructModule : shotodolplug.Module {
-	SourceEmitterModule compiler;
+	SourceEmitterModule emitter;
 	CSymbolResolve resolve;
-	CodeGenerator cgen;
-	AroopCodeGeneratorAdapter cgenAdapter;
 	public StructModule() {
 		base("Struct", "0.0");
 	}
 
 	public override int init() {
-		PluginManager.register("visit/struct", new HookExtension((shotodolplug.Hook)visit_struct, this));
+		PluginManager.register("visit/struct", new HookExtension(visit_struct, this));
+		PluginManager.register("generate/struct/declaration", new HookExtension(generate_declaration_helper, this));
 		return 0;
 	}
 
 	public override int deinit() {
 		return 0;
+	}
+
+	Value? generate_declaration_helper(Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		generate_declaration((Struct?)args["struct"], (CCodeFile?)args["descl_space"]);
+		return null;
 	}
 
 	void generate_declaration (Struct st, CCodeFile decl_space) {
@@ -39,7 +44,7 @@ public class codegenplug.StructModule : shotodolplug.Module {
 			return;
 		}
 		if(!st.is_internal_symbol() && !decl_space.is_header) {
-			generate_declaration (st, compiler.header_file);
+			generate_declaration (st, emitter.header_file);
 			return;
 		}
 		var proto = new CCodeStructPrototype (resolve.get_ccode_name (st));
@@ -51,7 +56,7 @@ public class codegenplug.StructModule : shotodolplug.Module {
 			return;
 		}
 #endif
-		if (compiler.add_symbol_declaration (decl_space, st, resolve.get_ccode_name (st))) {
+		if (emitter.add_symbol_declaration (decl_space, st, resolve.get_ccode_name (st))) {
 			return;
 		}
 
@@ -63,7 +68,7 @@ public class codegenplug.StructModule : shotodolplug.Module {
 		var instance_struct = proto.definition;
 
 		foreach (Field f in st.get_fields ()) {
-			cgenAdapter.generate_element_declaration(f, instance_struct, decl_space);
+			AroopCodeGeneratorAdapter.generate_element_declaration(f, instance_struct, decl_space);
 		}
 		proto.generate_type_declaration(decl_space);
 		decl_space.add_type_definition (instance_struct);
@@ -81,19 +86,19 @@ public class codegenplug.StructModule : shotodolplug.Module {
 		function.add_parameter (new CCodeParameter ("nouse1", "int"));
 		function.add_parameter (new CCodeParameter ("dest", "void*"));
 		function.add_parameter (new CCodeParameter ("nouse2", "int"));
-		compiler.push_function (function); // XXX I do not know what push does 
+		emitter.push_function (function); // XXX I do not know what push does 
 		if(st.is_internal_symbol()) {
-			compiler.cfile.add_function_declaration (function);
+			emitter.cfile.add_function_declaration (function);
 		} else {
-			compiler.header_file.add_function_declaration (function);
+			emitter.header_file.add_function_declaration (function);
 		}
 		
-		compiler.pop_function (); // XXX I do not know what pop does 
+		emitter.pop_function (); // XXX I do not know what pop does 
 		var vblock = new CCodeBlock ();
 
 		var cleanupblock = new CCodeBlock();
 		foreach (Field f in st.get_fields ()) {
-			cgenAdapter.generate_element_destruction_code(f, cleanupblock);
+			AroopCodeGeneratorAdapter.generate_element_destruction_code(f, cleanupblock);
 		}
 
 		var destroy_if_null = new CCodeIfStatement(
@@ -105,22 +110,23 @@ public class codegenplug.StructModule : shotodolplug.Module {
 
 
 		function.block = vblock;
-		compiler.cfile.add_function(function);
+		emitter.cfile.add_function(function);
 	}
 
-	Object? visit_struct (Struct st) {
-		compiler.push_context (new EmitContext (st));
+	Value? visit_struct (Value?args) {
+		Struct st = (Struct?)args;
+		emitter.push_context (new EmitContext (st));
 
 		generate_struct_copy_function(st);
 		if (st.is_internal_symbol ()) {
-			generate_declaration (st, compiler.cfile);
+			generate_declaration (st, emitter.cfile);
 		} else {
-			generate_declaration (st, compiler.header_file);
+			generate_declaration (st, emitter.header_file);
 		}
 
-		st.accept_children (cgen);
+		st.accept_children (emitter.visitor);
 
-		compiler.pop_context ();
+		emitter.pop_context ();
 		return null;
 	}
 	

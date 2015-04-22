@@ -6,8 +6,6 @@ using codegenplug;
 public class codegenplug.ElementModule : shotodolplug.Module {
 	CSymbolResolve resolve;
 	SourceEmitterModule compiler;
-	CodeGenerator cgen;
-	AroopCodeGeneratorAdapter cgenAdapter;
 	public ElementModule() {
 		base("Element", "0.0");
 	}
@@ -50,7 +48,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 			//visit_field(f);
 			//print(" - we should have declared %s\n", get_ccode_name(f));
 #if false
-			compiler.generate_type_declaration (f.variable_type, decl_space);
+			AroopCodeGeneratorAdapter.generate_type_declaration (f.variable_type, decl_space);
 			string field_ctype =  resolve.get_ccode_aroop_name(f.variable_type);
 			if (f.is_volatile) {
 				field_ctype = "volatile " + field_ctype;
@@ -66,7 +64,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 #endif
 			return;
 		}
-		compiler.generate_type_declaration (f.variable_type, decl_space);
+		AroopCodeGeneratorAdapter.generate_type_declaration (f.variable_type, decl_space);
 		string field_ctype =  resolve.get_ccode_aroop_name(f.variable_type);
 		if (f.is_volatile) {
 			field_ctype = "volatile " + field_ctype;
@@ -130,7 +128,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 			var ccomma = new CCodeCommaExpression ();
 
 			var temp_var = compiler.get_temp_variable (ma.inner.target_type);
-			cgenAdapter.generate_temp_variable (temp_var);
+			AroopCodeGeneratorAdapter.generate_temp_variable (temp_var);
 			ccomma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (temp_var.name), instance));
 			ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, resolve.get_variable_cexpression (temp_var.name)));
 

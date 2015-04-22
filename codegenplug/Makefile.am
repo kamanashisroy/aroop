@@ -38,6 +38,8 @@ libcodegenplug_la_SOURCES = \
 	generator/csymbolresolve.vala \
 	symbols/structmodule.vala \
 	symbols/elementmodule.vala \
+	symbols/parametermodule.vala \
+	symbols/methodmodule.vala \
 	symbols/objectmodule.vala \
 	symbols/sourcefilemodule.vala \
 	$(NULL)

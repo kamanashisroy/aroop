@@ -123,7 +123,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 					, get_ccode_aroop_name(prop.property_type)
 				);
 				if(prop.binding == MemberBinding.INSTANCE) {
-					gfunc.add_parameter (new CCodeParameter (self_instance, get_ccode_aroop_name (cl) + "*"));
+					gfunc.add_parameter (new CCodeParameter (resolve.self_instance, get_ccode_aroop_name (cl) + "*"));
 				}
 				push_function (gfunc);
 				if(prop.is_internal_symbol()) {
@@ -347,7 +347,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			new CCodeAssignment(
 				new CCodeIdentifier (
 					"((%s*)%s)->vtable".printf(
-						get_ccode_aroop_name(of_class), self_instance)),
+						get_ccode_aroop_name(of_class), resolve.self_instance)),
 				new CCodeIdentifier ("&%s".printf(get_ccode_vtable_var(cl, of_class))))));
 	}
 
@@ -401,12 +401,12 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		var vblock = new CCodeBlock ();
 
 		var stat = new CCodeDeclaration ("%s *".printf (get_ccode_aroop_name(cl)));
-		stat.add_declarator (new CCodeVariableDeclarator (self_instance));
+		stat.add_declarator (new CCodeVariableDeclarator (resolve.self_instance));
 		vblock.add_statement (stat);
 
 		var obj_arg_var = new CCodeIdentifier ("data");
 		var obj_cb_data_var = new CCodeIdentifier ("cb_data");
-		vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (self_instance), new CCodeCastExpression (obj_arg_var, "%s *".printf (get_ccode_aroop_name(cl))))));
+		vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (resolve.self_instance), new CCodeCastExpression (obj_arg_var, "%s *".printf (get_ccode_aroop_name(cl))))));
 
 		var switch_stat = new CCodeSwitchStatement (new CCodeIdentifier ("callback"));
 		switch_stat.add_statement (new CCodeCaseStatement(new CCodeIdentifier ("OPPN_ACTION_INITIALIZE")));
@@ -463,7 +463,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			switch_stat.add_statement (
 				new CCodeExpressionStatement (
 					new CCodeAssignment (
-						new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname(i))
+						new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), get_generic_class_variable_cname(i))
 						, typearg
 					)
 				)
@@ -533,7 +533,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			function.modifiers = CCodeModifiers.STATIC;
 		}
 
-		function.add_parameter (new CCodeParameter (self_instance, get_ccode_aroop_name (cl) + "*"));
+		function.add_parameter (new CCodeParameter (resolve.self_instance, get_ccode_aroop_name (cl) + "*"));
 
 		push_function (function);
 
@@ -554,10 +554,10 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 #if false
 		foreach (var f in cl.get_fields ()) {
 			if (f.binding == MemberBinding.INSTANCE)  {
-				CCodeExpression lhs = new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_ccode_name (f));
+				CCodeExpression lhs = new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), get_ccode_name (f));
 
 				if (requires_destroy (f.variable_type)) {
-					var this_access = new MemberAccess.simple (self_instance);
+					var this_access = new MemberAccess.simple (resolve.self_instance);
 					this_access.value_type = get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
 
 					Struct?field_st = null;
@@ -566,7 +566,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 					if (field_st != null && !field_st.is_simple_type ()) {
 						set_cvalue (this_access, new CCodeIdentifier ("(*this)"));
 					} else {
-						set_cvalue (this_access, new CCodeIdentifier (self_instance));
+						set_cvalue (this_access, new CCodeIdentifier (resolve.self_instance));
 					}
 
 					var ma = new MemberAccess (this_access, f.name);
@@ -598,11 +598,11 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 					type_get_call.add_argument (get_type_id_expression (type_arg, false));
 				}
 				ccall.add_argument (type_get_call);
-				ccall.add_argument (new CCodeIdentifier (self_instance));
+				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
 				ccode.add_statement (new CCodeExpressionStatement (ccall));
 #endif
 				var ccall = new CCodeFunctionCall (new CCodeIdentifier("%sdestruction".printf (get_ccode_lower_case_prefix (cl.base_class))));
-				ccall.add_argument (new CCodeIdentifier (self_instance));
+				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
 				ccode.add_statement (new CCodeExpressionStatement (ccall));
 			}
 		}
@@ -670,7 +670,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			}
 
 			generate_type_declaration (this_type, decl_space);
-			var cselfparam = new CCodeParameter (self_instance, get_ccode_aroop_name (this_type));
+			var cselfparam = new CCodeParameter (resolve.self_instance, get_ccode_aroop_name (this_type));
 
 			function.add_parameter (cselfparam);
 		}
@@ -812,7 +812,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 	void cleanup_object_while_creation(Class cls, CCodeBlock vblock) {
 		foreach (var f in cls.get_fields ()) {
 			if (f.binding == MemberBinding.INSTANCE)  {
-				CCodeExpression fieldexp = new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_ccode_name (f));
+				CCodeExpression fieldexp = new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), get_ccode_name (f));
 				if (requires_destroy (f.variable_type)) {
 					var bless_function = "aroop_cleanup_in_countructor_function";
 					if (f.variable_type.data_type is Struct) {
@@ -830,7 +830,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		Class?upper = cls.base_class;
 		if(upper != null && upper != cls) {
 			var vcall = new CCodeFunctionCall (new CCodeIdentifier ("%s_prepare_internal".printf(get_ccode_aroop_name (upper))));
-			vcall.add_argument (new CCodeIdentifier (self_instance));
+			vcall.add_argument (new CCodeIdentifier (resolve.self_instance));
 			vblock.add_statement (new CCodeExpressionStatement (vcall));
 		}
 	}
@@ -850,7 +850,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 		if(current_type_symbol is Class) {
 			if(!cleanup_is_already_declared) {
 				var vfunc_cleanup_constructor = new CCodeFunction ("%s_prepare_internal".printf(get_ccode_name (current_class)));
-				vfunc_cleanup_constructor.add_parameter(new CCodeParameter (self_instance, "%s *".printf(get_ccode_aroop_name (current_class))));
+				vfunc_cleanup_constructor.add_parameter(new CCodeParameter (resolve.self_instance, "%s *".printf(get_ccode_aroop_name (current_class))));
 				var vblock_cleanup_constructor = new CCodeBlock ();
 				cleanup_object_while_creation(current_class, vblock_cleanup_constructor);
 				if(!current_class.is_internal_symbol()) {
@@ -872,14 +872,14 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 			var vblock = new CCodeBlock ();
 
 			var cdecl = new CCodeDeclaration ("%s *".printf (get_ccode_aroop_name (current_type_symbol)));
-			cdecl.add_declarator (new CCodeVariableDeclarator (self_instance));
+			cdecl.add_declarator (new CCodeVariableDeclarator (resolve.self_instance));
 			vblock.add_statement (cdecl);
 
 
 			var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_alloc"));
 			alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (get_ccode_aroop_name(current_class))));
 			alloc_call.add_argument (new CCodeIdentifier(get_pray_function(current_class)));
-			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (get_ccode_aroop_name (current_type_symbol))))));
+			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (resolve.self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (get_ccode_aroop_name (current_type_symbol))))));
 
 #if false
 			// allocate memory for fields of generic types
@@ -898,7 +898,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 				calloc_call.add_argument (new CCodeConstant ("1"));
 				calloc_call.add_argument (type_get_value_size);
 				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (current_class, null))));
-				priv_call.add_argument (new CCodeIdentifier (self_instance));
+				priv_call.add_argument (new CCodeIdentifier (resolve.self_instance));
 
 				vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, f.name), calloc_call)));
 			}
@@ -914,7 +914,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 				vblock.add_statement (
 					new CCodeExpressionStatement (
 						new CCodeAssignment (
-							new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname(i))
+							new CCodeMemberAccess.pointer (new CCodeIdentifier (resolve.self_instance), get_generic_class_variable_cname(i))
 							, new CCodeConstant("g_type")
 						)
 					)
@@ -925,17 +925,17 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 
 
 			var vcleanupcall = new CCodeFunctionCall (new CCodeIdentifier ("%s_prepare_internal".printf(get_ccode_aroop_name (current_class))));
-			vcleanupcall.add_argument (new CCodeIdentifier (self_instance));
+			vcleanupcall.add_argument (new CCodeIdentifier (resolve.self_instance));
 			vblock.add_statement (new CCodeExpressionStatement (vcleanupcall));
 
 			var vcall = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_real_name (m)));
-			vcall.add_argument (new CCodeIdentifier (self_instance));
+			vcall.add_argument (new CCodeIdentifier (resolve.self_instance));
 			vblock.add_statement (new CCodeExpressionStatement (vcall));
 			generate_cparameters (m, cfile, vfunc, null, vcall);
 			if(m.tree_can_fail) {
 				vcall.add_argument (new CCodeIdentifier ("aroop_internal_err"));
 			}
-			CCodeStatement cstmt = new CCodeReturnStatement (new CCodeIdentifier (self_instance));
+			CCodeStatement cstmt = new CCodeReturnStatement (new CCodeIdentifier (resolve.self_instance));
 			cstmt.line = vfunc.line;
 			vblock.add_statement (cstmt);
 
@@ -971,7 +971,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 				, generate_block_name (closure_block) + "*");
 		} else if (m.parent_symbol is Class && m is CreationMethod) {
 			if (vcall == null) {
-				instance_param = new CCodeParameter (self_instance, get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
+				instance_param = new CCodeParameter (resolve.self_instance, get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
 			}
 		} else if (m.binding == MemberBinding.INSTANCE) {
 			TypeSymbol parent_type = find_parent_type (m);
@@ -990,7 +990,7 @@ public class aroop.AroopObjectModule : AroopArrayModule {
 				if (m.parent_symbol is Struct) {
 					instance_param = generate_instance_cparameter_for_struct(m, instance_param, this_type);
 				} else {
-					instance_param = new CCodeParameter (self_instance, get_ccode_aroop_name (this_type));
+					instance_param = new CCodeParameter (resolve.self_instance, get_ccode_aroop_name (this_type));
 				}
 			}
 		}

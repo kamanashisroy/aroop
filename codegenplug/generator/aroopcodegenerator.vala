@@ -475,44 +475,49 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 }
 
 internal class codegenplug.AroopCodeGeneratorAdapter {
+
+	private AroopCodeGeneratorAdapter() {
+	}
 	
-	public void generate_element_destruction_code(Field f, CCodeBlock stmt) {
-		string visit_exten= "generate/element/destruction";
+	public static void generate_element_destruction_code(Field f, CCodeBlock stmt) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = f;
 		args["stmt"] = stmt;
-		PluginManager.swarmValue(visit_exten, args);
+		PluginManager.swarmValue("generate/element/destruction", args);
 	}
 
-	public void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
-		string visit_exten= "generate/element/declaration";
+	public static void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = f;
 		args["container"] = container;
 		args["decl_space"] = decl_space;
 		args["internalSymbol"] = internalSymbol?"1":"0";
-		PluginManager.swarmValue(visit_exten, args);
+		PluginManager.swarmValue("generate/element/declaration", args);
 	}
-	public void generate_struct_declaration (Struct st, CCodeFile decl_space) {
-		string visit_exten= "generate/struct/declaration";
-		var args = new HashMap<string,Value?>();
+	public static void generate_struct_declaration (Struct st, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["struct"] = st;
 		args["decl_space"] = decl_space;
-		PluginManager.swarmValue(visit_exten, args);
+		PluginManager.swarmValue("generate/struct/declaration", args);
 	}
 
-	public CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
-		string visit_exten= "generate/instance_cparam/struct";
-		var args = new HashMap<string,Value?>();
+	public static void generate_class_declaration (Class cl, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["class"] = cl;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/class/declaration", args);
+	}
+
+	public static CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["method"] = m;
 		args["param"] = param;
 		args["type"] = this_type;
-		return (CCodeParameter)PluginManager.swarmValue(visit_exten, args);
+		return (CCodeParameter?)PluginManager.swarmValue("generate/instance_cparam/struct", args);
 	}
 
-	public CCodeParameter?generate_temp_variable(LocalVariable tmp) {
-		string visit_exten= "generate/temp";
-		return (CCodeParameter)PluginManager.swarmValue(visit_exten, tmp);
+	public static CCodeParameter?generate_temp_variable(LocalVariable tmp) {
+		return (CCodeParameter?)PluginManager.swarmValue("generate/temp", tmp);
 	}
 
 	/*public void set_context(CodeContext context) {
@@ -522,5 +527,49 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	public void set_csource_filename(string?fn) {
 		return PluginManager.swarmValue("set/csource_filename", fn);
 	}*/
+	public static void generate_type_declaration (DataType type, CCodeFile decl_space) {
+		// TODO fill me
+		/*if (type is ObjectType) {
+			var object_type = (ObjectType) type;
+			if (object_type.type_symbol is Class) {
+				generate_class_declaration ((Class) object_type.type_symbol, decl_space);
+			} else if (object_type.type_symbol is Interface) {
+				generate_interface_declaration ((Interface) object_type.type_symbol, decl_space);
+			}
+		} else if (type is DelegateType) {
+			var deleg_type = (DelegateType) type;
+			var d = deleg_type.delegate_symbol;
+			generate_delegate_declaration (d, decl_space);
+		} else if (type.data_type is Enum) {
+			var en = (Enum) type.data_type;
+			generate_enum_declaration (en, decl_space);
+		} else if (type is ValueType) {
+			var value_type = (ValueType) type;
+			generate_struct_declaration ((Struct) value_type.type_symbol, decl_space);
+		} else if (type is ArrayType) {
+			var array_type = (ArrayType) type;
+			generate_struct_declaration (array_struct, decl_space);
+			assert(array_type.element_type != null);
+			generate_type_declaration (array_type.element_type, decl_space);
+		} else if (type is PointerType) {
+			var pointer_type = (PointerType) type;
+			assert(pointer_type.base_type != null);
+			generate_type_declaration (pointer_type.base_type, decl_space);
+		}
+
+		foreach (DataType type_arg in type.get_type_arguments ()) {
+			if(type_arg != null)generate_type_declaration (type_arg, decl_space);
+		}*/
+	}
+
+	public static void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["method"] = m;
+		args["decl_space"] = decl_space;
+		args["func"] = func;
+		args["vdeclarator"] = vdeclarator;
+		args["vcall"] = vcall;
+		PluginManager.swarmValue("generate/cparameter", args);
+	}
 }
 	
