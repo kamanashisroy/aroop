@@ -4,8 +4,8 @@ using shotodolplug;
 using codegenplug;
 
 public class codegenplug.ObjectModule : shotodolplug.Module {
-	SourceModule compiler;
-	CSymbolResolve resolve;
+	SourceEmitterModule?emitter = null;
+	CSymbolResolve?resolve = null;
 	CodeGenerator cgen;
 	AroopCodeGeneratorAdapter cgenAdapter;
 	Class type_class;
@@ -15,14 +15,21 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("visit/class", new HookExtension((shotodolplug.Hook)visit_class, this));
-		PluginManager.register("visit/interface", new HookExtension((shotodolplug.Hook)visit_interface, this));
-		PluginManager.register("visit/creation_method", new HookExtension((shotodolplug.Hook)visit_creation_method, this));
+		PluginManager.register("visit/class", new HookExtension(visit_class, this));
+		PluginManager.register("visit/interface", new HookExtension(visit_interface, this));
+		PluginManager.register("visit/creation_method", new HookExtension(visit_creation_method, this));
+		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
 
 	public override int deinit() {
 		return 0;
+	}
+
+	Value?rehashHook(Value?arg) {
+		emitter = (SourceEmitterModule?)PluginManager.swarmValue("source/emitter", null);
+		resolve = (CSymbolResolve?)PluginManager.swarmValue("resolve/c/symbol",null);
+		return null;
 	}
 
 
@@ -32,15 +39,15 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	
 	void generate_class_declaration (Class cl, CCodeFile decl_space) {
 		var proto = new CCodeStructPrototype (resolve.get_ccode_aroop_name (cl));
-		if (compiler.add_symbol_declaration (decl_space, cl, resolve.get_ccode_lower_case_name (cl))) {
+		if (emitter.add_symbol_declaration (decl_space, cl, resolve.get_ccode_lower_case_name (cl))) {
 			return;
 		}
 
 		if (cl.base_class != null) {
 			if (cl.base_class.is_internal_symbol ()) {
-				generate_class_declaration (cl.base_class, compiler.cfile);
+				generate_class_declaration (cl.base_class, emitter.cfile);
 			} else {
-				generate_class_declaration (cl.base_class, compiler.header_file);
+				generate_class_declaration (cl.base_class, emitter.header_file);
 			}
 		}
 		generate_getter_setter_declaration(cl, decl_space);
@@ -78,7 +85,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				// say we do not support that
 				Report.error (prop.source_reference, "virtual or abstract property is not supported");
 			}
-			compiler.generate_type_declaration (prop.property_type, decl_space);
+			emitter.generate_type_declaration (prop.property_type, decl_space);
 			var prop_name = resolve.get_ccode_name (prop.field);
 #if false
 			// TODO add array accessor
@@ -104,15 +111,15 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				if(prop.binding == MemberBinding.INSTANCE) {
 					gfunc.add_parameter (new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (cl) + "*"));
 				}
-				compiler.push_function (gfunc);
+				emitter.push_function (gfunc);
 				if(prop.is_internal_symbol()) {
-					compiler.cfile.add_function_declaration (gfunc);
+					emitter.cfile.add_function_declaration (gfunc);
 				} else {
-					compiler.header_file.add_function_declaration (gfunc);
+					emitter.header_file.add_function_declaration (gfunc);
 				}
 				cgen.visit_property_accessor2(prop.get_accessor);
-				compiler.pop_function ();
-				compiler.cfile.add_function(gfunc);
+				emitter.pop_function ();
+				emitter.cfile.add_function(gfunc);
 #else
 				var macro_function = "%sget_%s(%s)".printf (resolve.get_ccode_lower_case_prefix (cl)
 				                                            , prop.name, get_params);
@@ -204,7 +211,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			vbdecl.add_declarator (new CCodeVariableDeclarator (resolve.get_ccode_vtable_var(
 				cl, of_class)));
 			vbdecl.modifiers |= CCodeModifiers.EXTERN;
-			compiler.cfile.add_type_member_declaration(vbdecl);
+			emitter.cfile.add_type_member_declaration(vbdecl);
 		}
 		if(of_class.base_class != null) {
 			add_vtable_ovrd_variables_external(cl, of_class.base_class);
@@ -221,7 +228,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 		var vdecl = new CCodeDeclaration (get_ccode_vtable_struct(of_class));
 		vdecl.add_declarator (new CCodeVariableDeclarator (resolve.get_ccode_vtable_var(cl, of_class)));
-		compiler.cfile.add_type_member_declaration(vdecl);
+		emitter.cfile.add_type_member_declaration(vdecl);
 	}
 	
 	void cpy_vtable_of_base_class(Class cl, Class of_class, CCodeBlock block) {
@@ -258,14 +265,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		add_vtable_ovrd_variables(cl, cl);
 
 		var ifunc = new CCodeFunction ("%stype_system_init".printf (resolve.get_ccode_lower_case_prefix (cl)), "int");
-		compiler.push_function (ifunc); // XXX I do not know what push does 
+		emitter.push_function (ifunc); // XXX I do not know what push does 
 
 		if(cl.is_internal_symbol()) {
-			compiler.cfile.add_function_declaration (ifunc);
+			emitter.cfile.add_function_declaration (ifunc);
 		} else {
-			compiler.header_file.add_function_declaration (ifunc);
+			emitter.header_file.add_function_declaration (ifunc);
 		}
-		compiler.pop_function (); // XXX I do not know what pop does 
+		emitter.pop_function (); // XXX I do not know what pop does 
 
 		// Now add definition
 		var iblock = new CCodeBlock ();
@@ -313,7 +320,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		iblock.add_statement(new CCodeExpressionStatement(new CCodeAssignment (new CCodeIdentifier ("done"), new CCodeConstant ("true"))));
 		iblock.add_statement (finish);
 		ifunc.block = iblock;
-		compiler.cfile.add_function (ifunc);
+		emitter.cfile.add_function (ifunc);
 	}
 
 	void set_vtables(Class cl, Class of_class, CCodeBlock block) {
@@ -367,15 +374,15 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		function.add_parameter (new CCodeParameter ("ap", "va_list"));
 		function.add_parameter (new CCodeParameter ("size", "int"));
 
-		compiler.push_function (function); // XXX I do not know what push does 
+		emitter.push_function (function); // XXX I do not know what push does 
 
 		if(cl.is_internal_symbol()) {
-			compiler.cfile.add_function_declaration (function);
+			emitter.cfile.add_function_declaration (function);
 		} else {
-			compiler.header_file.add_function_declaration (function);
+			emitter.header_file.add_function_declaration (function);
 		}
 		
-		compiler.pop_function (); // XXX I do not know what pop does 
+		emitter.pop_function (); // XXX I do not know what pop does 
 
 		// Now add definition
 		var vblock = new CCodeBlock ();
@@ -503,7 +510,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 		function.block = vblock;
 
-		compiler.cfile.add_function (function);
+		emitter.cfile.add_function (function);
 
 	}
 
@@ -515,21 +522,21 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 		function.add_parameter (new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (cl) + "*"));
 
-		compiler.push_function (function);
+		emitter.push_function (function);
 
 
 		if(cl.is_internal_symbol()) {
-			compiler.cfile.add_function_declaration (function);
+			emitter.cfile.add_function_declaration (function);
 		} else {
-			compiler.header_file.add_function_declaration (function);
+			emitter.header_file.add_function_declaration (function);
 		}
 
 		if (cl.destructor != null) {
-			cl.destructor.body.emit (cgen);
+			cl.destructor.body.emit (emitter.visitor);
 		}
 
 		foreach (Field f in cl.get_fields ()) {
-			cgenAdapter.generate_element_destruction_code(f, compiler.ccode.block);
+			cgenAdapter.generate_element_destruction_code(f, emitter.ccode.block);
 		}
 #if false
 		foreach (var f in cl.get_fields ()) {
@@ -551,7 +558,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 					var ma = new MemberAccess (this_access, f.name);
 					ma.symbol_reference = f;
-					compiler.ccode.add_expression (resolve.get_unref_expression (lhs, f.variable_type, ma));
+					emitter.ccode.add_expression (resolve.get_unref_expression (lhs, f.variable_type, ma));
 				}
 			}
 		}
@@ -579,60 +586,62 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				}
 				ccall.add_argument (type_get_call);
 				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
-				compiler.ccode.add_statement (new CCodeExpressionStatement (ccall));
+				emitter.ccode.add_statement (new CCodeExpressionStatement (ccall));
 #endif
 				var ccall = new CCodeFunctionCall (new CCodeIdentifier("%sdestruction".printf (resolve.get_ccode_lower_case_prefix (cl.base_class))));
 				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
-				compiler.ccode.add_statement (new CCodeExpressionStatement (ccall));
+				emitter.ccode.add_statement (new CCodeExpressionStatement (ccall));
 			}
 		}
 
-		compiler.pop_function ();
+		emitter.pop_function ();
 
-		compiler.cfile.add_function (function);
+		emitter.cfile.add_function (function);
 	}
 
 	bool cleanup_is_already_declared;
-	Object?visit_class (Class cl) {
+	Value?visit_class (Value?args) {
+		Class cl = (Class)args;
 		print("visiting class ....\n");
 		cleanup_is_already_declared = false;
-		compiler.push_context (new EmitContext (cl));
+		emitter.push_context (new EmitContext (cl));
 
 		add_destruction_function (cl);
 		add_pray_function (cl);
 		add_class_system_init_function(cl);
 
 		if (cl.is_internal_symbol ()) {
-			generate_class_declaration (cl, compiler.cfile);
+			generate_class_declaration (cl, emitter.cfile);
 		} else {
-			generate_class_declaration (cl, compiler.header_file);
+			generate_class_declaration (cl, emitter.header_file);
 		}
 
-		cl.accept_children (cgen);
-		compiler.pop_context ();
+		cl.accept_children (emitter.visitor);
+		emitter.pop_context ();
 		return null;
 	}
 
-	Object? visit_interface (Interface iface) {
-		compiler.push_context (new EmitContext (iface));
+	Value? visit_interface (Value?args) {
+		Interface iface = (Interface)args;
+		emitter.push_context (new EmitContext (iface));
 
-		generate_interface_declaration (iface, compiler.cfile);
+		generate_interface_declaration (iface, emitter.cfile);
 
-		iface.accept_children (cgen);
+		iface.accept_children (emitter.visitor);
 
-		compiler.pop_context ();
+		emitter.pop_context ();
 		return null;
 	}
 
 #if false
 	void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
-		if (compiler.add_symbol_declaration (decl_space, acc.prop, resolve.get_ccode_name (acc))) {
+		if (emitter.add_symbol_declaration (decl_space, acc.prop, resolve.get_ccode_name (acc))) {
 			return;
 		}
 
 		var prop = (Property) acc.prop;
 
-		compiler.generate_type_declaration (acc.value_type, decl_space);
+		emitter.generate_type_declaration (acc.value_type, decl_space);
 
 		CCodeFunction function;
 
@@ -652,7 +661,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				this_type = new ObjectType (t);
 			}
 
-			compiler.generate_type_declaration (this_type, decl_space);
+			emitter.generate_type_declaration (this_type, decl_space);
 			var cselfparam = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type));
 
 			function.add_parameter (cselfparam);
@@ -687,19 +696,19 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 
 #if USE_MACRO_GETTER_SETTER
 	void visit_property_accessor2 (PropertyAccessor acc) {
-		//compiler.push_context (new EmitContext (acc));
+		//emitter.push_context (new EmitContext (acc));
 		if (acc.result_var != null) {
-			acc.result_var.accept (cgen);
+			acc.result_var.accept (emitter.visitor);
 		}
 		if(acc.body != null) {
-			compiler.ccode.add_declaration (resolve.get_ccode_name (acc.value_type), new CCodeVariableDeclarator ("result"));
-			acc.body.emit (cgen);
+			emitter.ccode.add_declaration (resolve.get_ccode_name (acc.value_type), new CCodeVariableDeclarator ("result"));
+			acc.body.emit (emitter.visitor);
 		}
 	}
 #endif
 
 	void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
-		if (compiler.add_symbol_declaration (decl_space, iface, resolve.get_ccode_lower_case_name (iface))) {
+		if (emitter.add_symbol_declaration (decl_space, iface, resolve.get_ccode_lower_case_name (iface))) {
 			return;
 		}
 		decl_space.add_type_declaration(new CCodeTypeDefinition ("void*", new CCodeVariableDeclarator (resolve.get_ccode_aroop_name (iface))));
@@ -731,7 +740,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 	void generate_method_declaration (Method m, CCodeFile decl_space) {
-		if (compiler.add_symbol_declaration (decl_space, m, resolve.get_ccode_name (m))) {
+		if (emitter.add_symbol_declaration (decl_space, m, resolve.get_ccode_name (m))) {
 			return;
 		}
 
@@ -816,57 +825,58 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 	}
 
-	Object? visit_creation_method (CreationMethod m) {
+	Value? visit_creation_method (Value? args) {
+		CreationMethod m = (CreationMethod)args;
 		bool visible = !m.is_internal_symbol ();
 
-		cgen.visit_method (m);
+		emitter.visitor.visit_method (m);
 
 		DataType creturn_type;
-		if (compiler.current_type_symbol is Class) {
-			creturn_type = new ObjectType (compiler.current_class);
+		if (emitter.current_type_symbol is Class) {
+			creturn_type = new ObjectType (emitter.current_class);
 		} else {
 			creturn_type = new VoidType ();
 		}
 
-		if(compiler.current_type_symbol is Class) {
+		if(emitter.current_type_symbol is Class) {
 			if(!cleanup_is_already_declared) {
-				var vfunc_cleanup_constructor = new CCodeFunction ("%s_prepare_internal".printf(resolve.get_ccode_name (compiler.current_class)));
-				vfunc_cleanup_constructor.add_parameter(new CCodeParameter (resolve.self_instance, "%s *".printf(resolve.get_ccode_aroop_name (compiler.current_class))));
+				var vfunc_cleanup_constructor = new CCodeFunction ("%s_prepare_internal".printf(resolve.get_ccode_name (emitter.current_class)));
+				vfunc_cleanup_constructor.add_parameter(new CCodeParameter (resolve.self_instance, "%s *".printf(resolve.get_ccode_aroop_name (emitter.current_class))));
 				var vblock_cleanup_constructor = new CCodeBlock ();
-				cleanup_object_while_creation(compiler.current_class, vblock_cleanup_constructor);
-				if(!compiler.current_class.is_internal_symbol()) {
-					compiler.header_file.add_function_declaration (vfunc_cleanup_constructor);
+				cleanup_object_while_creation(emitter.current_class, vblock_cleanup_constructor);
+				if(!emitter.current_class.is_internal_symbol()) {
+					emitter.header_file.add_function_declaration (vfunc_cleanup_constructor);
 				} else {
 					vfunc_cleanup_constructor.modifiers |= CCodeModifiers.STATIC;
-					compiler.cfile.add_function_declaration (vfunc_cleanup_constructor);
+					emitter.cfile.add_function_declaration (vfunc_cleanup_constructor);
 				}
 				vfunc_cleanup_constructor.block = vblock_cleanup_constructor;
-				compiler.cfile.add_function (vfunc_cleanup_constructor);
+				emitter.cfile.add_function (vfunc_cleanup_constructor);
 				cleanup_is_already_declared = true;
 			}
 		}
 
 		// do not generate _new functions for creation methods of abstract classes
-		if (compiler.current_type_symbol is Class && !compiler.current_class.is_abstract) {
+		if (emitter.current_type_symbol is Class && !emitter.current_class.is_abstract) {
 			var vfunc = new CCodeFunction (resolve.get_ccode_name (m));
 
 			var vblock = new CCodeBlock ();
 
-			var cdecl = new CCodeDeclaration ("%s *".printf (resolve.get_ccode_aroop_name (compiler.current_type_symbol)));
+			var cdecl = new CCodeDeclaration ("%s *".printf (resolve.get_ccode_aroop_name (emitter.current_type_symbol)));
 			cdecl.add_declarator (new CCodeVariableDeclarator (resolve.self_instance));
 			vblock.add_statement (cdecl);
 
 
 			var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_alloc"));
-			alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (resolve.get_ccode_aroop_name(compiler.current_class))));
-			alloc_call.add_argument (new CCodeIdentifier(get_pray_function(compiler.current_class)));
-			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (resolve.self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (resolve.get_ccode_aroop_name (compiler.current_type_symbol))))));
+			alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (resolve.get_ccode_aroop_name(emitter.current_class))));
+			alloc_call.add_argument (new CCodeIdentifier(get_pray_function(emitter.current_class)));
+			vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (resolve.self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (resolve.get_ccode_aroop_name (emitter.current_type_symbol))))));
 
 #if false
 			// allocate memory for fields of generic types
 			// this is only a temporary measure until this can be allocated inline at the end of the instance
 			// this also won't work for subclasses of classes that have fields of generic types
-			foreach (var f in compiler.current_class.get_fields ()) {
+			foreach (var f in emitter.current_class.get_fields ()) {
 				if (f.binding != MemberBinding.INSTANCE || !(f.variable_type is GenericType)) {
 					continue;
 				}
@@ -878,15 +888,15 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				var calloc_call = new CCodeFunctionCall (new CCodeIdentifier ("calloc"));
 				calloc_call.add_argument (new CCodeConstant ("1"));
 				calloc_call.add_argument (type_get_value_size);
-				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (compiler.current_class, null))));
+				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (emitter.current_class, null))));
 				priv_call.add_argument (new CCodeIdentifier (resolve.self_instance));
 
 				vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, f.name), calloc_call)));
 			}
 #else
 			int i = 0;
-			foreach (var generic_type in  compiler.current_class.get_type_parameters ()) {
-			//foreach (var f in compiler.current_class.get_fields ()) {
+			foreach (var generic_type in  emitter.current_class.get_type_parameters ()) {
+			//foreach (var f in emitter.current_class.get_fields ()) {
 				//if (f.binding != MemberBinding.INSTANCE || !(f.variable_type is GenericType)) {
 					//continue;
 				//}
@@ -905,14 +915,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 #endif
 
 
-			var vcleanupcall = new CCodeFunctionCall (new CCodeIdentifier ("%s_prepare_internal".printf(resolve.get_ccode_aroop_name (compiler.current_class))));
+			var vcleanupcall = new CCodeFunctionCall (new CCodeIdentifier ("%s_prepare_internal".printf(resolve.get_ccode_aroop_name (emitter.current_class))));
 			vcleanupcall.add_argument (new CCodeIdentifier (resolve.self_instance));
 			vblock.add_statement (new CCodeExpressionStatement (vcleanupcall));
 
 			var vcall = new CCodeFunctionCall (new CCodeIdentifier (resolve.get_ccode_real_name (m)));
 			vcall.add_argument (new CCodeIdentifier (resolve.self_instance));
 			vblock.add_statement (new CCodeExpressionStatement (vcall));
-			generate_cparameters (m, compiler.cfile, vfunc, null, vcall);
+			generate_cparameters (m, emitter.cfile, vfunc, null, vcall);
 			if(m.tree_can_fail) {
 				vcall.add_argument (new CCodeIdentifier ("aroop_internal_err"));
 			}
@@ -924,11 +934,11 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				vfunc.modifiers |= CCodeModifiers.STATIC;
 			}
 
-			compiler.cfile.add_function_declaration (vfunc);
+			emitter.cfile.add_function_declaration (vfunc);
 
 			vfunc.block = vblock;
 
-			compiler.cfile.add_function (vfunc);
+			emitter.cfile.add_function (vfunc);
 
 		}
 		return null;
@@ -947,10 +957,10 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
 		CCodeParameter instance_param = null;
 		if (m.closure) {
-			var closure_block = compiler.current_closure_block;
+			var closure_block = emitter.current_closure_block;
 			instance_param = new CCodeParameter (
-				compiler.generate_block_var_name (closure_block)
-				, compiler.generate_block_name (closure_block) + "*");
+				emitter.generate_block_var_name (closure_block)
+				, emitter.generate_block_name (closure_block) + "*");
 		} else if (m.parent_symbol is Class && m is CreationMethod) {
 			if (vcall == null) {
 				instance_param = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
@@ -959,14 +969,14 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			TypeSymbol parent_type = find_parent_type (m);
 			var this_type = resolve.get_data_type_for_symbol (parent_type);
 
-			compiler.generate_type_declaration (this_type, decl_space);
+			emitter.generate_type_declaration (this_type, decl_space);
 
 			if (m.base_interface_method != null && !m.is_abstract && !m.is_virtual) {
 				var base_type = new ObjectType ((Interface) m.base_interface_method.parent_symbol);
 				instance_param = new CCodeParameter ("base_instance", resolve.get_ccode_aroop_name (base_type));
 			} else if (m.overrides) {
 				var base_type = new ObjectType ((Class)m.base_method.parent_symbol);
-				compiler.generate_type_declaration (base_type, decl_space);
+				emitter.generate_type_declaration (base_type, decl_space);
 				instance_param = new CCodeParameter ("base_instance", resolve.get_ccode_aroop_name (base_type));
 			} else {
 				if (m.parent_symbol is Struct) {
@@ -1013,7 +1023,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			if (!param.ellipsis) {
 				string ctypename = resolve.get_ccode_aroop_name (param.variable_type);
 
-				compiler.generate_type_declaration (param.variable_type, decl_space);
+				emitter.generate_type_declaration (param.variable_type, decl_space);
 
 				if (param.direction != Vala.ParameterDirection.IN && !(param.variable_type is GenericType)) {
 					ctypename += "*";
@@ -1065,12 +1075,12 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				}
 			}
 
-			compiler.generate_type_declaration (m.return_type, decl_space);
+			emitter.generate_type_declaration (m.return_type, decl_space);
 		}
 		
 		if(m.tree_can_fail) {
 			var cparam = new CCodeParameter ("aroop_internal_err", "aroop_wrong**");
-			compiler.current_method_inner_error = true;
+			emitter.current_method_inner_error = true;
 
 			func.add_parameter (cparam);
 			if (vdeclarator != null) {
@@ -1084,7 +1094,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		if (array_type != null) {
 			// access to element in an array
 
-			expr.accept_children (cgen);
+			expr.accept_children (emitter.visitor);
 
 			Vala.List<Expression> indices = expr.get_indices ();
 			var cindex = resolve.get_cvalue (indices[0]);
@@ -1114,7 +1124,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 			}
 
 		} else {
-			//TODO fix me cgen.visit_element_access (expr);
+			//TODO fix me emitter.visitor.visit_element_access (expr);
 		}
 	}
 

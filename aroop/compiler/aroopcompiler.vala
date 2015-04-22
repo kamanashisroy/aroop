@@ -171,12 +171,14 @@ class aroop.Compiler {
 	void loadModules() {
 		loadModulesHelper(new shotodolplug.PluginManager());
 		loadModulesHelper(new codegenplug.AroopCodeGeneratorModule());
-		loadModulesHelper(new codegenplug.SourceModule());
+		loadModulesHelper(new codegenplug.SourceEmitterModule());
 		loadModulesHelper(new codegenplug.TempVariableModule());
 		loadModulesHelper(new codegenplug.CSymbolResolve());
 		loadModulesHelper(new codegenplug.ElementModule());
 		loadModulesHelper(new codegenplug.StructModule());
 		loadModulesHelper(new codegenplug.ObjectModule());
+		loadModulesHelper(new codegenplug.SourceFileModule());
+		shotodolplug.PluginManager.swarmValue("rehash", null);
 	}
 
 	private int run () {

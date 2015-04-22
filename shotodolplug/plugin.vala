@@ -30,29 +30,10 @@ public class shotodolplug.PluginManager : Module {
 		return x.unregister(target, e);
 	}
 	public static Value? swarmValue(string target, Value?inmsg) {
-		Value?output = x.swarmValue(target, inmsg);
-		string composite = "extension/composite";
-		Extension?root = x.getExtension(composite);
-		while(root != null) {
-			if(output != null)
-				break;
-			CompositeExtension cx = (CompositeExtension)root;
-			output = cx.swarmValue(target, inmsg);
-			Extension?next = root.getNext();
-			root = next;
-		}
-		return output;
+		return x.swarmValue(target, inmsg);
 	}
 	public static void acceptVisitor(string target, ExtensionVisitor visitor) {
 		x.acceptVisitor(target, visitor);
-		string composite = "extension/composite";
-		Extension?root = x.getExtension(composite);
-		while(root != null) {
-			CompositeExtension cx = (CompositeExtension)root;
-			cx.acceptVisitor(target, visitor);
-			Extension?next = root.getNext();
-			root = next;
-		}
 	}
 
 	public static void dump() {

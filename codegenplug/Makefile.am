@@ -34,11 +34,12 @@ libcodegenplug_la_SOURCES = \
 	valaccodecompiler.vala \
 	generator/aroopcodegenerator.vala \
 	tempvariablemodule.vala \
-	sourcemodule.vala \
+	sourceemittermodule.vala \
 	generator/csymbolresolve.vala \
 	symbols/structmodule.vala \
 	symbols/elementmodule.vala \
 	symbols/objectmodule.vala \
+	symbols/sourcefilemodule.vala \
 	$(NULL)
 
 libcodegenplug_la_LDFLAGS = -no-undefined

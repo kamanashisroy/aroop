@@ -3,7 +3,7 @@ using Vala;
 using shotodolplug;
 using codegenplug;
 
-public class codegenplug.SourceModule : shotodolplug.Module {
+public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 
 	public EmitContext emit_context = new EmitContext ();
 	public CCodeFunction ccode { get { return emit_context.ccode; } }
@@ -75,15 +75,15 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 
 	public CCodeFile header_file;
 	public CCodeFile cfile;
-	public SourceModule() {
+	public SourceEmitterModule() {
 		base("Source", "0.0");
 		
 	}
 
 	public override int init() {
-		//PluginManager.register("visit/compiler", new HookExtension(visit_struct, this));
-		PluginManager.register("source", new HookExtension(getInstance, this));
+		PluginManager.register("source/emitter", new HookExtension(getInstance, this));
 		PluginManager.register("source/emit", new HookExtension(emitHook, this));
+		PluginManager.register("set/csource_filename", new HookExtension(set_csource_filename, this));
 		return 0;
 	}
 
@@ -93,6 +93,11 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 
 	Value? getInstance(Value?param) {
 		return this;
+	}
+	string? csource_filename;
+	Value? set_csource_filename(Value?param) {
+		csource_filename = (string?)param;
+		return null;
 	}
 
 	Symbol root_symbol;
@@ -110,19 +115,19 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 	Class delegate_class;
 	Class error_class;
 	CodeContext context { get; set; }
+	public CodeGenerator?visitor = null;
 
-	string? csource_filename;
 
 	Set<Symbol> generated_external_symbols;
 
 	Value?emitHook (Value?inmsg) {
 		var args = (HashTable<string,Value?>)inmsg;
-		print("SourceModule:Emitting\n");
-		print("SourceModule:Emitting length:%d\n", (int)args.length);
-		print("SourceModule:Emitting msg:%s\n", args["hello"].get_string());
+		print("SourceEmitterModule:Emitting\n");
+		print("SourceEmitterModule:Emitting length:%d\n", (int)args.length);
 		this.context = (CodeContext)args["context"];
-		print("SourceModule:...\n");
-		CodeVisitor visitor = (CodeVisitor)args["visitor"];
+		PluginManager.swarmValue("set/context", context);
+		print("SourceEmitterModule:...\n");
+		visitor = (CodeGenerator)args["visitor"];
 
 		root_symbol = context.root;
 
@@ -191,32 +196,32 @@ public class codegenplug.SourceModule : shotodolplug.Module {
 
 
 
+	Vala.List<EmitContext> emit_context_stack = new ArrayList<EmitContext> ();
 	public void push_context (EmitContext emit_context) {
-		/*
 		if (this.emit_context != null) {
 			emit_context_stack.add (this.emit_context);
 		}
 
-		this.emit_context = emit_context;*/
+		this.emit_context = emit_context;
 	}
 
 	public void pop_context () {
-		/*if (emit_context_stack.size > 0) {
+		if (emit_context_stack.size > 0) {
 			this.emit_context = emit_context_stack[emit_context_stack.size - 1];
 			emit_context_stack.remove_at (emit_context_stack.size - 1);
 		} else {
 			this.emit_context = null;
-		}*/
+		}
 	}
 
 	public void push_function (CCodeFunction func) {
-		/*emit_context.ccode_stack.add (ccode);
-		emit_context.ccode = func;*/
+		emit_context.ccode_stack.add (ccode);
+		emit_context.ccode = func;
 	}
 
 	public void pop_function () {
-		/*emit_context.ccode = emit_context.ccode_stack[emit_context.ccode_stack.size - 1];
-		emit_context.ccode_stack.remove_at (emit_context.ccode_stack.size - 1);*/
+		emit_context.ccode = emit_context.ccode_stack[emit_context.ccode_stack.size - 1];
+		emit_context.ccode_stack.remove_at (emit_context.ccode_stack.size - 1);
 	}
 
 	public bool add_symbol_declaration (CCodeFile decl_space, Symbol sym, string name) {

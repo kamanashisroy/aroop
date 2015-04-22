@@ -29,7 +29,9 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	public override void visit_source_file(SourceFile source_file) {
 		string visit_exten= "visit/source_file";
 		print("visiting source file\n");
-		PluginManager.swarmValue(visit_exten, source_file);
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["source_file"] = source_file;
+		PluginManager.swarmValue(visit_exten, args);
 	}
 	public override void visit_namespace(Namespace ns) {
 		string visit_exten= "visit/namespace";
@@ -390,7 +392,6 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 
 	public override void visit_type_check (TypeCheck expr) {
 		string visit_exten= "visit/type_check";
-		print("visiting type check\n");
 		PluginManager.swarmValue(visit_exten, expr);
 	}
 
@@ -466,13 +467,9 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 
 	public override void emit (CodeContext context) {
 		string exten= "source/emit";
-		print("AroopCodeGenerator:emitting ..\n");
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
-		args["hello"] = "hello";
 		args["context"] = context;
 		args["visitor"] = this;
-		print("AroopCodeGenerator:Emitting length:%d\n", (int)args.length);
-		print("AroopCodeGenerator:Emitting msg:%s\n", args["hello"].get_string());
 		PluginManager.swarmValue(exten, args);
 	}
 }
@@ -518,5 +515,12 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		return (CCodeParameter)PluginManager.swarmValue(visit_exten, tmp);
 	}
 
+	/*public void set_context(CodeContext context) {
+		return PluginManager.swarmValue("set/context", context);
+	}
+
+	public void set_csource_filename(string?fn) {
+		return PluginManager.swarmValue("set/csource_filename", fn);
+	}*/
 }
 	

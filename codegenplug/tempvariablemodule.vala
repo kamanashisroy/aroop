@@ -5,7 +5,7 @@ using codegenplug;
 
 public class codegenplug.TempVariableModule : shotodolplug.Module {
 	CSymbolResolve resolve;
-	SourceModule compiler;
+	SourceEmitterModule compiler;
 	CodeGenerator cgen;
 	public TempVariableModule() {
 		base("TempVariableModule", "0.0");

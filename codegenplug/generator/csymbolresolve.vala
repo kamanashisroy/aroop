@@ -8,7 +8,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	Set<string> reserved_identifiers;
 	public string self_instance = "self_data";
 	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
-	SourceModule compiler;
+	SourceEmitterModule compiler;
 	CodeGenerator cgen;
 	public CSymbolResolve() {
 		base("C Symbol Resolver", "0.0");
@@ -59,7 +59,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("compiler/c/symbol", new HookExtension(getInterface, this));
+		PluginManager.register("resolve/c/symbol", new HookExtension(getInterface, this));
 		PluginManager.register("load/local", new HookExtension((Hook)get_local_cvalue, this));
 		PluginManager.register("load/parameter", new HookExtension((Hook)get_parameter_cvalue, this));
 		PluginManager.register("load/field", new HookExtension((Hook)get_field_cvalue, this));
