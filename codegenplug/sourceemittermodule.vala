@@ -105,11 +105,11 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	DataType int_type;
 	DataType uint_type;
 	DataType string_type;
-	Class object_class;
-	Class type_class;
+	public Class object_class;
+	public Class type_class;
 	Class value_class;
 	Class string_class;
-	Struct array_struct;
+	public Struct array_struct;
 	Class delegate_class;
 	Class error_class;
 	CodeContext context { get; set; }

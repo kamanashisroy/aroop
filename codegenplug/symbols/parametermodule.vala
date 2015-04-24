@@ -77,7 +77,7 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 		}
 
 		if (m is CreationMethod) {
-			if(type_class != null)generate_class_declaration (type_class, decl_space);
+			if(emitter.type_class != null)AroopCodeGeneratorAdapter.generate_class_declaration (emitter.type_class, decl_space);
 
 			if (m.parent_symbol is Class) {
 				var cl = (Class) m.parent_symbol;

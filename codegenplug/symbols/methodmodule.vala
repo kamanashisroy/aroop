@@ -30,11 +30,11 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 		return null;
 	}
 
-	public override bool method_has_wrapper (Method method) {
+	/*public override bool method_has_wrapper (Method method) {
 		return (method.get_attribute ("NoWrapper") == null);
-	}
+	}*/
 
-	public override string? get_custom_creturn_type (Method m) {
+	/*public override string? get_custom_creturn_type (Method m) {
 		var attr = m.get_attribute ("CCode");
 		if (attr != null) {
 			string type = attr.get_string ("type");
@@ -43,7 +43,7 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 			}
 		}
 		return null;
-	}
+	}*/
 
 	public void generate_method_declaration (Method m, CCodeFile decl_space) {
 		if (emitter.add_symbol_declaration (decl_space, m, resolve.get_ccode_name (m))) {
@@ -157,7 +157,7 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 				}
 		
 
-				if (context.module_init_method == m) {
+				if (emitter.context.module_init_method == m) {
 					add_module_init ();
 				}
 
@@ -177,7 +177,7 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 					if (t != null && t.is_reference_type ()) {
 						if (param.direction == Vala.ParameterDirection.OUT) {
 							// ensure that the passed reference for output parameter is cleared
-							var a = new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)), new CCodeConstant ("NULL"));
+							var a = new CCodeAssignment (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, resolve.get_variable_cexpression (param.name)), new CCodeConstant ("NULL"));
 							var cblock = new CCodeBlock ();
 							cblock.add_statement (new CCodeExpressionStatement (a));
 
@@ -229,12 +229,12 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 		}
 
 		if (m.is_abstract || m.is_virtual) {
-			AroopCodeGeneratorAdapter.generate_class_declaration ((Class) object_class, emitter.cfile);
+			AroopCodeGeneratorAdapter.generate_class_declaration ((Class) emitter.object_class, emitter.cfile);
 		}
 		emitter.pop_context ();
 
 		if (m.entry_point) {
-			AroopCodeGeneratorAdapter.generate_type_declaration (new StructValueType (array_struct), emitter.cfile);
+			AroopCodeGeneratorAdapter.generate_type_declaration (new StructValueType (emitter.array_struct), emitter.cfile);
 
 			// m is possible entry point, add appropriate startup code
 			var cmain = new CCodeFunction ("AROOP_MAIN_ENTRY_POINT", "int");
