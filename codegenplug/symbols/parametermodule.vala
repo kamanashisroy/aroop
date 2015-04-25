@@ -49,7 +49,7 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 				instance_param = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");
 			}
 		} else if (m.binding == MemberBinding.INSTANCE) {
-			TypeSymbol parent_type = find_parent_type (m);
+			TypeSymbol parent_type = emitter.find_parent_type (m);
 			var this_type = resolve.get_data_type_for_symbol (parent_type);
 
 			AroopCodeGeneratorAdapter.generate_type_declaration (this_type, decl_space);
@@ -172,5 +172,5 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 		}
 	}
 
-
+	
 }

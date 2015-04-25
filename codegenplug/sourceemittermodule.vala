@@ -277,6 +277,17 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 		int block_id = get_block_id (b);
 		return "Block%dData".printf (block_id);
 	}
+	public TypeSymbol? find_parent_type (Symbol sym) {
+		while (sym != null) {
+			if (sym is TypeSymbol) {
+				return (TypeSymbol) sym;
+			}
+			sym = sym.parent_symbol;
+		}
+		return null;
+	}
+
+
 
 }
 public class codegenplug.EmitContext {
