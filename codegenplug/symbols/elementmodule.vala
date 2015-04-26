@@ -11,7 +11,9 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("generate/element/destruction", new HookExtension((shotodolplug.Hook)generate_element_destruction_code, this));
+		PluginManager.register("generate/element/destruction", new HookExtension(generate_element_destruction_code_helper, this));
+		PluginManager.register("generate/struct/cargument", new HookExtension(generate_cargument_for_struct_helper, this));
+		PluginManager.register("generate/struct/instance/cargument", new HookExtension(generate_instance_cargument_for_struct_helper, this));
 		return 0;
 	}
 
@@ -19,9 +21,12 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		return 0;
 	}
 
-	void generate_element_destruction_code(HashMap<string,Object> args) {
-		Field f = (Field)args["field"];
-		CCodeBlock stmt = (CCodeBlock)args["stmt"];
+	Value? generate_element_destruction_code_helper(Value?givenArgs) {
+		HashTable<string,Value?> args = (HashTable<string,Value?>)givenArgs;
+		generate_element_destruction_code((Field)args["field"], (CCodeBlock)args["stmt"]);
+		return null;
+	}
+	void generate_element_destruction_code(Field f, CCodeBlock stmt) {
 		if (f.binding != MemberBinding.INSTANCE)  {
 			return;
 		}
@@ -97,6 +102,10 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		return new CCodeMemberAccess (cexpr, resolve.get_ccode_name (f));
 	}
 
+	Value? generate_instance_cargument_for_struct_helper(Value?givenArgs) { 
+		HashTable<string,Value?> args = (HashTable<string,Value?>)givenArgs;
+		return generate_instance_cargument_for_struct((MemberAccess)args["ma"], (Method)args["m"], (CCodeExpression)args["instance"]);	
+	}
 	
 	CCodeExpression generate_instance_cargument_for_struct(MemberAccess ma, Method m, CCodeExpression instance) { 
 		var returnval = instance;
@@ -138,6 +147,10 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 	}
 	
 
+	Value? generate_cargument_for_struct_helper (Value?givenArgs) {
+		var args = (HashTable<string,Value?>)givenArgs;
+		return generate_cargument_for_struct((Vala.Parameter)args["param"], (Expression)args["arg"], (CCodeExpression)args["cexpr"]);
+	}
 	CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		if (!((arg.formal_target_type is StructValueType) || (arg.formal_target_type is PointerType))) {
 			return cexpr;

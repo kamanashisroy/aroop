@@ -289,8 +289,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_string_literal (StringLiteral lit) {
-		string visit_exten= "visit/string_literal";
-		PluginManager.swarmValue(visit_exten, lit);
+		PluginManager.swarmValue("visit/string_literal", lit);
 	}
 
 	public override void visit_template (Template tmpl) {
@@ -314,8 +313,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_method_call (MethodCall expr) {
-		string visit_exten= "visit/method_call";
-		PluginManager.swarmValue(visit_exten, expr);
+		PluginManager.swarmValue("visit/method_call", expr);
 	}
 	
 	public override void visit_element_access (ElementAccess expr) {
@@ -594,6 +592,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		PluginManager.swarmValue("populate/parent/closure", args);
         }
 	
+	public static CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
+		var args = new HashTable<string,Value?>(str_hash, str_equal);
+		args["param"] = param;
+		args["arg"] = arg;
+		args["cexpr"] = cexpr;
+		PluginManager.swarmValue("generate/struct/cargument", args);
+	}
 
 	public static void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
@@ -611,6 +616,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 
 	public static string? generate_block_var_name(Block b) {
 		return (string?)PluginManager.swarmValue("generate/block/var/name", b);
+	}
+	public static CCodeExpression?generate_instance_cargument_for_struct(MemberAccess ma, Method m, CCodeExpression instance) { 
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["ma"] = ma;
+		args["m"] = m;
+		args["instance"] = instance;
+		return (CCodeExpression?)PluginManager.swarmValue("generate/struct/instance/cargument", args);
 	}
 }
 	
