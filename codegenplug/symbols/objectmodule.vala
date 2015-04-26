@@ -43,8 +43,6 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 	void generate_class_declaration (Class cl, CCodeFile decl_space) {
-		if(cl == null);
-			print("Cl is null\n");
 		assert(cl != null);
 		var proto = new CCodeStructPrototype (resolve.get_ccode_aroop_name (cl));
 		if (emitter.add_symbol_declaration (decl_space, cl, resolve.get_ccode_lower_case_name (cl))) {

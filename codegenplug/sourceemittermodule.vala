@@ -113,7 +113,7 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	public Struct array_struct;
 	Class delegate_class;
 	Class error_class;
-	CodeContext context { get; set; }
+	public CodeContext context { get; set; }
 	public CodeGenerator?visitor = null;
 
 

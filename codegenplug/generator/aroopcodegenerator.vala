@@ -156,8 +156,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_expression_statement (ExpressionStatement stmt) {
-		string visit_exten= "visit/expression_statement";
-		PluginManager.swarmValue(visit_exten, stmt);
+		PluginManager.swarmValue("visit/expression_statement", stmt);
 	}
 
 	public override void visit_if_statement (IfStatement stmt) {
@@ -256,8 +255,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_expression (Expression expr) {
-		string visit_exten= "visit/expression";
-		PluginManager.swarmValue(visit_exten, expr);
+		PluginManager.swarmValue("visit/expression", expr);
 	}
 
 	public override void visit_array_creation_expression (ArrayCreationExpression expr) {

@@ -37,6 +37,7 @@ libcodegenplug_la_SOURCES = \
 	sourceemittermodule.vala \
 	generator/csymbolresolve.vala \
 	symbols/structmodule.vala \
+	symbols/expressionmodule.vala \
 	symbols/elementmodule.vala \
 	symbols/parametermodule.vala \
 	symbols/methodmodule.vala \

@@ -180,6 +180,7 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.BlockModule());
 		loadModulesHelper(new codegenplug.StructModule());
 		loadModulesHelper(new codegenplug.ObjectModule());
+		loadModulesHelper(new codegenplug.ExpressionModule());
 		loadModulesHelper(new codegenplug.SourceFileModule());
 		shotodolplug.PluginManager.swarmValue("rehash", null);
 	}

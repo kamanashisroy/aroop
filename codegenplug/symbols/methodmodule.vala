@@ -231,8 +231,6 @@ public class codegenplug.MethodModule : shotodolplug.Module {
 		}
 
 		if (m.is_abstract || m.is_virtual) {
-			if(emitter.object_class == null)
-				print("DEBUG:emitter.object_class is null\n");
 			AroopCodeGeneratorAdapter.generate_class_declaration ((Class) emitter.object_class, emitter.cfile);
 		}
 		emitter.pop_context ();
