@@ -13,6 +13,7 @@ public class codegenplug.StructModule : shotodolplug.Module {
 	public override int init() {
 		PluginManager.register("visit/struct", new HookExtension(visit_struct, this));
 		PluginManager.register("generate/struct/declaration", new HookExtension(generate_declaration_helper, this));
+		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
 
@@ -22,7 +23,13 @@ public class codegenplug.StructModule : shotodolplug.Module {
 
 	Value? generate_declaration_helper(Value?given_args) {
 		var args = (HashTable<string,Value?>)given_args;
-		generate_declaration((Struct?)args["struct"], (CCodeFile?)args["descl_space"]);
+		generate_declaration((Struct?)args["struct"], (CCodeFile?)args["decl_space"]);
+		return null;
+	}
+
+	Value?rehashHook(Value?arg) {
+		emitter = (SourceEmitterModule?)PluginManager.swarmValue("source/emitter", null);
+		resolve = (CSymbolResolve?)PluginManager.swarmValue("resolve/c/symbol",null);
 		return null;
 	}
 

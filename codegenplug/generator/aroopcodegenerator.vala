@@ -502,10 +502,34 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	}
 
 	public static void generate_class_declaration (Class cl, CCodeFile decl_space) {
+		if(cl == null);
+			print("Cl is null\n");
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		assert(cl != null);
 		args["class"] = cl;
 		args["decl_space"] = decl_space;
 		PluginManager.swarmValue("generate/class/declaration", args);
+	}
+
+	public static void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["interface"] = iface;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/interface/declaration", args);
+	}
+
+	public static void generate_delegate_declaration (Delegate d, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["delegate"] = d;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/delegate/declaration", args);
+	}
+
+	public static void generate_enum_declaration (Enum en, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["enum"] = en;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/enum/declaration", args);
 	}
 
 	public static CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
@@ -529,7 +553,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	}*/
 	public static void generate_type_declaration (DataType type, CCodeFile decl_space) {
 		// TODO fill me
-		/*if (type is ObjectType) {
+		if (type is ObjectType) {
 			var object_type = (ObjectType) type;
 			if (object_type.type_symbol is Class) {
 				generate_class_declaration ((Class) object_type.type_symbol, decl_space);
@@ -548,7 +572,9 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 			generate_struct_declaration ((Struct) value_type.type_symbol, decl_space);
 		} else if (type is ArrayType) {
 			var array_type = (ArrayType) type;
-			generate_struct_declaration (array_struct, decl_space);
+#if false
+			generate_struct_declaration (emitter.array_struct, decl_space);
+#endif
 			assert(array_type.element_type != null);
 			generate_type_declaration (array_type.element_type, decl_space);
 		} else if (type is PointerType) {
@@ -559,7 +585,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 
 		foreach (DataType type_arg in type.get_type_arguments ()) {
 			if(type_arg != null)generate_type_declaration (type_arg, decl_space);
-		}*/
+		}
 	}
 
 	public static void populate_variables_of_parent_closure(Block b, bool populate_self, CCodeFunction decl_space) {

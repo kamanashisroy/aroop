@@ -17,6 +17,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		PluginManager.register("visit/interface", new HookExtension(visit_interface, this));
 		PluginManager.register("visit/creation_method", new HookExtension(visit_creation_method, this));
 		PluginManager.register("generate/class/declaration", new HookExtension(generate_class_declaration_helper, this));
+		PluginManager.register("generate/interface/declaration", new HookExtension(generate_interface_declaration_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -31,18 +32,20 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		return null;
 	}
 
-
 	string get_ccode_vtable_struct(Class cl) {
 		return "struct aroop_vtable_%s".printf(resolve.get_ccode_lower_case_suffix(cl));
 	}
 	
 	Value? generate_class_declaration_helper(Value?given_args) {
 		var args = (HashTable<string,Value?>)given_args;
-		generate_class_declaration((Class?)args["class"], (CCodeFile?)args["descl_space"]);
+		generate_class_declaration((Class?)args["class"], (CCodeFile?)args["decl_space"]);
 		return null;
 	}
 
 	void generate_class_declaration (Class cl, CCodeFile decl_space) {
+		if(cl == null);
+			print("Cl is null\n");
+		assert(cl != null);
 		var proto = new CCodeStructPrototype (resolve.get_ccode_aroop_name (cl));
 		if (emitter.add_symbol_declaration (decl_space, cl, resolve.get_ccode_lower_case_name (cl))) {
 			return;
@@ -711,6 +714,12 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		}
 	}
 #endif
+
+	Value? generate_interface_declaration_helper (Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		generate_interface_declaration((Interface?)args["interface"], (CCodeFile?)args["decl_space"]);
+		return null;
+	}
 
 	void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
 		if (emitter.add_symbol_declaration (decl_space, iface, resolve.get_ccode_lower_case_name (iface))) {

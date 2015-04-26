@@ -106,7 +106,8 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	DataType uint_type;
 	DataType string_type;
 	public Class object_class;
-	public Class type_class;
+	//public Class type_class;
+	public Struct type_class;
 	Class value_class;
 	Class string_class;
 	public Struct array_struct;
@@ -138,7 +139,8 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 		var aroop_ns = (Namespace) root_symbol.scope.lookup ("aroop");
 		//object_class = (Class) aroop_ns.scope.lookup ("Object");
 		object_class = (Class) aroop_ns.scope.lookup ("Replicable");
-		type_class = (Class) aroop_ns.scope.lookup ("Type");
+		//type_class = (Class) aroop_ns.scope.lookup ("Type");
+		type_class = (Struct) aroop_ns.scope.lookup ("Type");
 		value_class = (Class) aroop_ns.scope.lookup ("Value");
 		string_class = (Class) root_symbol.scope.lookup ("string");
 		array_struct = (Struct) aroop_ns.scope.lookup ("Array");
