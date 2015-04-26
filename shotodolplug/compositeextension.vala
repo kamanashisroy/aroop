@@ -51,11 +51,13 @@ public class shotodolplug.CompositeExtension : Extension {
 		return 0;
 	}
 	public Value? swarmValue(string target, Value?inmsg) {
-		print("CompositeExtension:getting extension for [%s]\n", target);
+		//print("CompositeExtension:getting extension for [%s]\n", target);
 		Extension?root = getExtension(target);
+		if(root == null)
+			print("CompositeExtension:no extension found for [%s]\n", target);
 		Value?output = null;
 		while(root != null) {
-			print("CompositeExtension:acting [%s]\n", target);
+			//print("CompositeExtension:acting [%s]\n", target);
 			output = root.actValue(inmsg); // Note we did not concat the output for shake of simplicity
 			if(output != null)
 				break;

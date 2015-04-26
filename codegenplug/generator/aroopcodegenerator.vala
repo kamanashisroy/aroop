@@ -580,5 +580,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["vcall"] = vcall;
 		PluginManager.swarmValue("generate/cparameter", args);
 	}
+
+	public static string? generate_block_name(Block b) {
+		return (string?)PluginManager.swarmValue("generate/block/name", b);
+	}
+
+	public static string? generate_block_var_name(Block b) {
+		return (string?)PluginManager.swarmValue("generate/block/var/name", b);
+	}
 }
 	

@@ -5,21 +5,29 @@ using codegenplug;
 
 public class codegenplug.TempVariableModule : shotodolplug.Module {
 	CSymbolResolve resolve;
-	SourceEmitterModule compiler;
-	CodeGenerator cgen;
+	SourceEmitterModule emitter;
 	public TempVariableModule() {
 		base("TempVariableModule", "0.0");
 	}
 
 	public override int init() {
 		PluginManager.register("generate/temp", new HookExtension((shotodolplug.Hook)generate_temp_variable, this));
+		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
 
 	public override int deinit() {
 		return 0;
 	}
-	public void generate_temp_variable(LocalVariable local) {
+
+	Value?rehashHook(Value?arg) {
+		emitter = (SourceEmitterModule?)PluginManager.swarmValue("source/emitter", null);
+		resolve = (CSymbolResolve?)PluginManager.swarmValue("resolve/c/symbol",null);
+		return null;
+	}
+
+	Value? generate_temp_variable(Value?given) {
+		LocalVariable?local = (LocalVariable?)given;
 		var cdecl = new CCodeDeclaration (resolve.get_ccode_aroop_name (local.variable_type));
 
 		var vardecl = new CCodeVariableDeclarator (local.name, null, resolve.get_ccode_declarator_suffix (local.variable_type));
@@ -63,8 +71,9 @@ public class codegenplug.TempVariableModule : shotodolplug.Module {
 		}
 
 		//if(!local.is_imaginary) {
-			compiler.ccode.add_statement (cdecl);
+			emitter.ccode.add_statement (cdecl);
 		//}
+		return null;
 	}
 }
 

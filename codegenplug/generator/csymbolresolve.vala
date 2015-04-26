@@ -8,7 +8,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	Set<string> reserved_identifiers;
 	public string self_instance = "self_data";
 	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
-	SourceEmitterModule compiler;
+	SourceEmitterModule?emitter;
 	CodeGenerator cgen;
 	public CSymbolResolve() {
 		base("C Symbol Resolver", "0.0");
@@ -63,11 +63,17 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		PluginManager.register("load/local", new HookExtension((Hook)get_local_cvalue, this));
 		PluginManager.register("load/parameter", new HookExtension((Hook)get_parameter_cvalue, this));
 		PluginManager.register("load/field", new HookExtension((Hook)get_field_cvalue, this));
+		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
 
 	public override int deinit() {
 		return 0;
+	}
+
+	Value?rehashHook(Value?arg) {
+		emitter = (SourceEmitterModule?)PluginManager.swarmValue("source/emitter", null);
+		return null;
 	}
 
 	public Value?getInterface(Value?x) {
@@ -173,7 +179,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 		var cisnull = new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, cvar, new CCodeConstant ("NULL"));
 		if (type.type_parameter != null) {
-			if (!(compiler.current_type_symbol is Class) || compiler.current_class.is_compact) {
+			if (!(emitter.current_type_symbol is Class) || emitter.current_class.is_compact) {
 				return new CCodeConstant ("NULL");
 			}
 
@@ -218,8 +224,8 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		if (name[0] == '.') {
 			// compiler-internal variable
 			if (!variable_name_map.contains (name)) {
-				variable_name_map.set (name, "_tmp%d_".printf (compiler.next_temp_var_id));
-				compiler.next_temp_var_id++;
+				variable_name_map.set (name, "_tmp%d_".printf (emitter.next_temp_var_id));
+				emitter.next_temp_var_id++;
 			}
 			return variable_name_map.get (name);
 		} else if (reserved_identifiers.contains (name)) {
@@ -265,7 +271,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 				return new CCodeConstant ("aroop_no_unref");
 			}
 			return new CCodeIdentifier (unref_function);
-		} else if (type.type_parameter != null && compiler.current_type_symbol is Class) {
+		} else if (type.type_parameter != null && emitter.current_type_symbol is Class) {
 			// FIXME ask type for dup/ref function
 			return new CCodeIdentifier ("aroop_object_unref");
 		} else if (type is ArrayType) {
@@ -351,7 +357,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 	bool is_in_generic_type (DataType type) {
 		if (type.type_parameter.parent_symbol is TypeSymbol
-		    && (compiler.current_method == null || compiler.current_method.binding == MemberBinding.INSTANCE)) {
+		    && (emitter.current_method == null || emitter.current_method.binding == MemberBinding.INSTANCE)) {
 			return true;
 		} else {
 			return false;
@@ -475,11 +481,11 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		var result = new AroopValue (p.variable_type);
 
 		if (p.name == self_instance) {
-			if (compiler.current_method != null && compiler.current_method.coroutine) {
+			if (emitter.current_method != null && emitter.current_method.coroutine) {
 				// use closure
 				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), self_instance);
 			} else {
-				var st = compiler.current_type_symbol as Struct;
+				var st = emitter.current_type_symbol as Struct;
 				result.cvalue = new CCodeIdentifier (self_instance);
 			}
 		} else {
@@ -487,7 +493,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/parameter/block", p);
 				//result.cvalue = get_parameter_cvalue_for_block(p);
 			} else {
-				if (compiler.current_method != null && compiler.current_method.coroutine) {
+				if (emitter.current_method != null && emitter.current_method.coroutine) {
 					// use closure
 					result.cvalue = get_variable_cexpression (p.name);
 				} else {
@@ -600,7 +606,150 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return CCodeBaseModule.get_ccode_default_value (node);
 	}
 
+	public CCodeExpression? get_dup_func_expression (DataType type
+		, SourceReference? source_reference, bool is_chainup = false) {
+		if (type.data_type != null) {
+			string dup_function = "";
+			if (is_reference_counting (type.data_type)) {
+				dup_function = get_ccode_ref_function (type.data_type);
+			} else if (type is ValueType) {
+				dup_function = get_ccode_dup_function (type.data_type);
+				if (dup_function == null) {
+					dup_function = "";
+				}
+			}
 
+			return new CCodeIdentifier (dup_function);
+		} else if (type.type_parameter != null) {
+			return null;
+		} else if (type is ArrayType) {
+			return new CCodeIdentifier ("aroop_object_ref");
+		} else if (type is DelegateType) {
+			return null;
+		} else if (type is PointerType) {
+			var pointer_type = (PointerType) type;
+			return get_dup_func_expression (pointer_type.base_type, source_reference);
+		} else {
+			return new CCodeConstant ("NULL");
+		}
+	}
+
+	public bool requires_copy (DataType type) {
+		if (!type.is_disposable ()) {
+			return false;
+		}
+
+		if(type.data_type != null && type.data_type is Class) {
+			var cl = type.data_type;
+			if (is_reference_counting (cl) && get_ccode_ref_function (cl) == "") {
+				// empty ref_function => no ref necessary
+				return false;
+			}
+		}
+
+		if (type.type_parameter != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public bool get_ccode_ref_function_void (Class node) {
+		return CCodeBaseModule.get_ccode_ref_function_void (node);
+	}
+
+	bool is_ref_function_void (DataType type) {
+		if(type.data_type != null && type.data_type is Class) {
+			var cl = type.data_type as Class;
+			if (get_ccode_ref_function_void (cl))
+				return true;
+		}
+		return false;
+	}
+
+	public CCodeExpression? get_ref_cexpression (DataType expression_type, CCodeExpression cexpr, Expression? expr, CodeNode node) {
+		if(!requires_destroy (expression_type)) {
+			//return get_cvalue (expr);
+			return cexpr;
+		}
+
+		if (expression_type is ValueType && !expression_type.nullable) {
+			// normal value type, no null check
+			// (copy (&temp, 0, &expr, 0), temp)
+
+			var decl = emitter.get_temp_variable (expression_type, false, node);
+			PluginManager.swarmValue ("generate/temp", decl);
+
+			var ctemp = get_variable_cexpression (decl.name);
+
+			var vt = (ValueType) expression_type;
+			var st = (Struct) vt.type_symbol;
+			var copy_call = new CCodeFunctionCall (new CCodeIdentifier (get_ccode_copy_function (st)));
+			copy_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, ctemp));
+			copy_call.add_argument (new CCodeConstant ("0"));
+			copy_call.add_argument (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, cexpr));
+			copy_call.add_argument (new CCodeConstant ("0"));
+
+			var ccomma = new CCodeCommaExpression ();
+
+			ccomma.append_expression (copy_call);
+			ccomma.append_expression (ctemp);
+
+			return ccomma;
+		}
+
+		/* (temp = expr, temp == NULL ? NULL : ref (temp))
+		 *
+		 * can be simplified to
+		 * ref (expr)
+		 * if static type of expr is non-null
+		 */
+
+		var dupexpr = get_dup_func_expression (expression_type, node.source_reference);
+
+		if (dupexpr == null) {
+			node.error = true;
+			return null;
+		}
+
+		var ccall = new CCodeFunctionCall (dupexpr);
+
+		if (expr != null && expr.is_non_null ()
+		    && !is_ref_function_void (expression_type)) {
+			// expression is non-null
+			ccall.add_argument (get_cvalue (expr));
+
+			return new CCodeCastExpression(ccall, get_ccode_aroop_name (expression_type));
+		} else {
+			var decl = emitter.get_temp_variable (expression_type, false, node);
+			PluginManager.swarmValue ("generate/temp", decl);
+
+			var ctemp = get_variable_cexpression (decl.name);
+
+			var cisnull = new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, ctemp, new CCodeConstant ("NULL"));
+			if (expression_type.type_parameter != null) {
+				// dup functions are optional for type parameters
+				var cdupisnull = new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, get_dup_func_expression (expression_type, node.source_reference), new CCodeConstant ("NULL"));
+				cisnull = new CCodeBinaryExpression (CCodeBinaryOperator.OR, cisnull, cdupisnull);
+			}
+
+			ccall.add_argument (ctemp);
+
+			var ccomma = new CCodeCommaExpression ();
+			ccomma.append_expression (new CCodeAssignment (ctemp, cexpr));
+
+			var cifnull = new CCodeConstant ("NULL");
+			ccomma.append_expression (new CCodeConditionalExpression (cisnull, cifnull, new CCodeCastExpression(ccall, get_ccode_aroop_name (expression_type))));
+
+			// repeat temp variable at the end of the comma expression
+			// if the ref function returns void
+			if (is_ref_function_void (expression_type)) {
+				ccomma.append_expression (ctemp);
+			}
+
+			return ccomma;
+		}
+	}
 
 
 

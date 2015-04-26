@@ -266,17 +266,6 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 		return local;
 	}
 
-
-
-
-	public string generate_block_var_name(Block b) {
-		int block_id = get_block_id (b);
-		return "_data%d_".printf (block_id);
-	}
-	public string generate_block_name(Block b) {
-		int block_id = get_block_id (b);
-		return "Block%dData".printf (block_id);
-	}
 	public TypeSymbol? find_parent_type (Symbol sym) {
 		while (sym != null) {
 			if (sym is TypeSymbol) {

@@ -42,8 +42,8 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 		if (m.closure) {
 			var closure_block = emitter.current_closure_block;
 			instance_param = new CCodeParameter (
-				emitter.generate_block_var_name (closure_block)
-				, emitter.generate_block_name (closure_block) + "*");
+				AroopCodeGeneratorAdapter.generate_block_var_name (closure_block)
+				, AroopCodeGeneratorAdapter.generate_block_name (closure_block) + "*");
 		} else if (m.parent_symbol is Class && m is CreationMethod) {
 			if (vcall == null) {
 				instance_param = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (((Class) m.parent_symbol)) + "*");

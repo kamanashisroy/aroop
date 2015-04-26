@@ -18,7 +18,7 @@ public class shotodolplug.HookExtension : Extension {
 		hook = gHook;
 	}
 	public override Value?actValue(Value?x) {
-		print("HookExtension:acting\n");
+		//print("HookExtension:acting\n");
 		assert(hook != null);
 		return hook(x);
 	}
