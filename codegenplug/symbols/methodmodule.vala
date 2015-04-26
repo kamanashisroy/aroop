@@ -7,7 +7,7 @@ using codegenplug;
 /**
  * The link between a method and generated code.
  */
-public abstract class codegenplug.MethodModule : shotodolplug.Module {
+public class codegenplug.MethodModule : shotodolplug.Module {
 	SourceEmitterModule?emitter = null;
 	CSymbolResolve?resolve = null;
 	public MethodModule() {
@@ -156,14 +156,16 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 					emitter.ccode.add_assignment (lop, rop);
 				}
 		
-
+#if false
+				// what does it do ??
 				if (emitter.context.module_init_method == m) {
 					add_module_init ();
 				}
+#endif
 
 				if (m.closure) {
-					emitter.populate_variables_of_parent_closure(
-						current_closure_block
+					AroopCodeGeneratorAdapter.populate_variables_of_parent_closure(
+						emitter.current_closure_block
 						, m.binding == MemberBinding.INSTANCE
 						, emitter.ccode
 					);
@@ -209,7 +211,7 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 
 				if (!(m.return_type is VoidType) && !(m.return_type is GenericType)) {
 					var cdecl = new CCodeDeclaration (resolve.get_ccode_aroop_name (m.return_type));
-					cdecl.add_declarator (new CCodeVariableDeclarator.zero ("result", default_value_for_type (m.return_type, true)));
+					cdecl.add_declarator (new CCodeVariableDeclarator.zero ("result", resolve.default_value_for_type (m.return_type, true)));
 					emitter.ccode.add_statement (cdecl);
 
 					//ccode.add_statement (new CCodeReturnStatement (new CCodeIdentifier ("result")));
@@ -328,9 +330,12 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 
 			emitter.cfile.add_function (cmain);
 		}
+		return null;
 	}
 	
 	void add_module_init () {
+#if false
+// TODO write static init here ..
 		foreach (var field in static_fields) {
 			field.initializer.emit (emitter.visitor);
 
@@ -339,6 +344,7 @@ public abstract class codegenplug.MethodModule : shotodolplug.Module {
 
 			emitter.ccode.add_assignment (lhs, rhs);
 		}
+#endif
 	}
 }
 

@@ -562,6 +562,15 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		}*/
 	}
 
+	public static void populate_variables_of_parent_closure(Block b, bool populate_self, CCodeFunction decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["block"] = b;
+		args["populate_self"] = populate_self?"1":"0";
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("populate/parent/closure", args);
+        }
+	
+
 	public static void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["method"] = m;

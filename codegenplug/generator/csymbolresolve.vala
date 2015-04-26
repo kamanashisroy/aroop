@@ -564,6 +564,44 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return result;
 	}
 
+	public CCodeExpression? default_value_for_type (DataType type, bool initializer_expression) {
+		Struct?st = null;
+		if(type.data_type is Struct)
+			st = type.data_type as Struct;
+		ArrayType? array_type = null;
+		if(type.data_type is ArrayType)
+			array_type = type as ArrayType;
+		if (type is GenericType) {
+			var gen_init = new CCodeFunctionCall (new CCodeIdentifier ("aroop_generic_type_init_val"));
+			gen_init.add_argument (get_type_id_expression (type));
+			return gen_init;
+		} else if (initializer_expression && !type.nullable &&
+		    ((st != null && st.get_fields ().size > 0) ||
+		     array_type != null)) {
+			// 0-initialize struct with struct initializer { 0 }
+			// only allowed as initializer expression in C
+			var clist = new CCodeInitializerList ();
+			clist.append (new CCodeConstant ("0"));
+			return clist;
+		} else if ((type.data_type != null && type.data_type.is_reference_type ())
+		           || type.nullable
+		           || type is PointerType) {
+			return new CCodeConstant ("NULL");
+		} else if ((type.data_type != null && type.data_type.is_reference_type ())
+		           || type is DelegateType) {
+			return generate_delegate_init_expr();
+		} else if (type.data_type != null && get_ccode_default_value (type.data_type) != "") {
+			return new CCodeConstant (get_ccode_default_value (type.data_type));
+		}
+		return null;
+	}
+
+	public string get_ccode_default_value (TypeSymbol node) {
+		return CCodeBaseModule.get_ccode_default_value (node);
+	}
+
+
+
 
 
 }
