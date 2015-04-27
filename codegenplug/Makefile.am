@@ -50,6 +50,7 @@ libcodegenplug_la_SOURCES = \
 	symbols/delegatemodule.vala \
 	symbols/valuemodule.vala \
 	symbols/controlflowmodule.vala \
+	symbols/errormodule.vala \
 	symbols/sourcefilemodule.vala \
 	$(NULL)
 

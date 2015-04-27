@@ -119,7 +119,18 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return CCodeBaseModule.get_ccode_lower_case_suffix (node);
 	}
 	public string get_error_module_lower_case_name (CodeNode node, string? infix = null) {
-		// TODO fill me
+		if (node is Vala.ErrorType) {
+			Vala.ErrorType etype = node as Vala.ErrorType;
+			//return "aroop_error_%s".printf(Symbol.camel_case_to_lower_case (etype.name));
+			return "aroop_error";
+		} else if(node is ErrorDomain) {
+			ErrorDomain edomain = node as ErrorDomain;
+			return "aroop_error_domain_%s".printf(Symbol.camel_case_to_lower_case (edomain.name));
+		} else if(node is ErrorCode) {
+			ErrorCode ecode = node as ErrorCode;
+			return "aroop_error_code_%s".printf(Symbol.camel_case_to_lower_case (ecode.name));
+		}
+		assert_not_reached ();
 		return "";
 	}
 	public string get_ccode_lower_case_name(CodeNode node, string?infix=null) {

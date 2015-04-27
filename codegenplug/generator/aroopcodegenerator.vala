@@ -662,5 +662,20 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["instance"] = instance;
 		return (CCodeExpression?)PluginManager.swarmValue("generate/struct/instance/cargument", args);
 	}
+
+	public static void add_simple_check(CodeNode node, bool always_fails = false) { 
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["node"] = node;
+		args["always_fails"] = always_fails?"1":"0";
+		PluginManager.swarmValue("add/simple/check", args);
+	}
+
+	public static void append_local_free (Symbol sym, bool stop_at_loop = false, CodeNode? stop_at = null) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["sym"] = sym;
+		args["stop_at_loop"] = stop_at_loop?"1":"0";
+		args["stop_at"] = stop_at;
+		PluginManager.swarmValue("append/cleanup/local", args);
+	}
 }
 	

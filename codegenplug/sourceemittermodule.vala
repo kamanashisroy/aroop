@@ -20,6 +20,25 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 			return null;
 		}
 	}
+	public DataType? current_return_type {
+		get {
+			var m = current_method;
+			if (m != null) {
+				return m.return_type;
+			}
+
+			var acc = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
+			if (acc != null) {
+				if (acc.readable) {
+					return acc.value_type;
+				} else {
+					return void_type;
+				}
+			}
+
+			return null;
+		}
+	}
 	public Method? current_method {
 		get {
 			var sym = current_symbol;

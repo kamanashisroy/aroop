@@ -81,20 +81,14 @@ public class codegenplug.ControlFlowModule : shotodolplug.Module {
 
 	Value? visit_break_statement (Value?given_args) {
 		BreakStatement?stmt = (BreakStatement?)given_args;
-		var args = new HashTable<string,Value?>(str_hash,str_equal);
-		args["sym"] = emitter.current_symbol;
-		args["stop_at_loop"] = "1";
-		PluginManager.swarmValue("append/cleanup/local", args);
+		AroopCodeGeneratorAdapter.append_local_free (emitter.current_symbol, true);
 		emitter.ccode.add_break ();
 		return null;
 	}
 
 	Value? visit_continue_statement (Value?given_args) {
 		ContinueStatement stmt = (ContinueStatement?)given_args;
-		var args = new HashTable<string,Value?>(str_hash,str_equal);
-		args["sym"] = emitter.current_symbol;
-		args["stop_at_loop"] = "1";
-		PluginManager.swarmValue("append/cleanup/local", args);
+		AroopCodeGeneratorAdapter.append_local_free (emitter.current_symbol, true);
 		emitter.ccode.add_continue ();
 		return null;
 	}
