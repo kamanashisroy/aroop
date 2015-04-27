@@ -44,7 +44,9 @@ libcodegenplug_la_SOURCES = \
 	symbols/methodmodule.vala \
 	symbols/methodcallmodule.vala \
 	symbols/blockmodule.vala \
+	symbols/cleanupmodule.vala \
 	symbols/objectmodule.vala \
+	symbols/controlflowmodule.vala \
 	symbols/sourcefilemodule.vala \
 	$(NULL)
 

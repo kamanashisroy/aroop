@@ -633,6 +633,14 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	public static string? generate_block_var_name(Block b) {
 		return (string?)PluginManager.swarmValue("generate/block/var/name", b);
 	}
+
+	public static void generate_block_finalization(Block b, CCodeFunction decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["block"] = b;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/block/finalization", args);
+	}
+
 	public static CCodeExpression?generate_instance_cargument_for_struct(MemberAccess ma, Method m, CCodeExpression instance) { 
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["ma"] = ma;

@@ -18,6 +18,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		PluginManager.register("visit/block", new HookExtension(visit_block, this));
 		PluginManager.register("generate/block/name", new HookExtension(generate_block_name, this));
 		PluginManager.register("generate/block/var/name", new HookExtension(generate_block_var_name, this));
+		PluginManager.register("generate/block/finalization", new HookExtension(generate_block_finalization_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -191,6 +192,26 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		unref_fun.block = free_block;
 
 		decl_space.add_function (unref_fun);
+	}
+
+	Value? generate_block_finalization_helper(Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		generate_block_finalization(
+			(Block?)args["block"]
+			,(CCodeFunction?)args["decl_space"]
+		);
+		return null;
+	}
+
+	void generate_block_finalization(Block b, CCodeFunction decl_space) {
+
+		var data_unref = new CCodeFunctionCall (new CCodeIdentifier (generate_block_finalize_function_name(b)));
+		data_unref.add_argument (
+			new CCodeUnaryExpression (
+					CCodeUnaryOperator.ADDRESS_OF, 
+					resolve.get_variable_cexpression((string?)generate_block_var_name(b))
+				));
+		emitter.ccode.add_expression (data_unref);
 	}
 	
 	void generate_block_declaration (Block b, CCodeFile decl_space) {
