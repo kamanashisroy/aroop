@@ -16,6 +16,7 @@ public class codegenplug.MethodModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("visit/method", new HookExtension(visit_method, this));
+		PluginManager.register("generate/method/declaration", new HookExtension(generate_method_declaration_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -45,7 +46,13 @@ public class codegenplug.MethodModule : shotodolplug.Module {
 		return null;
 	}*/
 
-	public void generate_method_declaration (Method m, CCodeFile decl_space) {
+	Value? generate_method_declaration_helper (Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		generate_method_declaration((Method?)args["method"], (CCodeFile?)args["decl_space"]);
+		return null;
+	}
+
+	void generate_method_declaration (Method m, CCodeFile decl_space) {
 		if (emitter.add_symbol_declaration (decl_space, m, resolve.get_ccode_name (m))) {
 			return;
 		}

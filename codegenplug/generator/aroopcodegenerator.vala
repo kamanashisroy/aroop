@@ -475,6 +475,15 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	private AroopCodeGeneratorAdapter() {
 	}
 	
+	public static CCodeExpression? generate_expression_transformation(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr = null) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["source_cexpr"] = source_cexpr;
+		args["expression_type"] = expression_type;
+		args["target_type"] = target_type;
+		args["expr"] = expr;
+		return (CCodeExpression?)PluginManager.swarmValue("generate/expression/transformation", args);
+	}
+
 	public static void generate_element_destruction_code(Field f, CCodeBlock stmt) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = f;
@@ -505,6 +514,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["class"] = cl;
 		args["decl_space"] = decl_space;
 		PluginManager.swarmValue("generate/class/declaration", args);
+	}
+
+	public static void generate_method_declaration (Method m, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["method"] = m;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/method/declaration", args);
 	}
 
 	public static void generate_interface_declaration (Interface iface, CCodeFile decl_space) {
@@ -597,7 +613,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["param"] = param;
 		args["arg"] = arg;
 		args["cexpr"] = cexpr;
-		PluginManager.swarmValue("generate/struct/cargument", args);
+		return (CCodeExpression?)PluginManager.swarmValue("generate/struct/cargument", args);
 	}
 
 	public static void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {

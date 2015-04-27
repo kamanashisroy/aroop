@@ -47,7 +47,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 			assert(((ObjectType) itype).type_symbol is Class);
 			var cl = (Class) ((ObjectType) itype).type_symbol;
 			m = cl.default_construction_method;
-			AroopCodeGeneratorAdapter.generate_method_declaration (m, cfile);
+			AroopCodeGeneratorAdapter.generate_method_declaration (m, emitter.cfile);
 			ccall = new CCodeFunctionCall (new CCodeIdentifier (resolve.get_ccode_real_name (m)));
 		} else if (itype is DelegateType) {
 #if false
@@ -76,7 +76,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 				ccall.add_argument (new CCodeConstant("NULL"));
 			}
 #else
-			ccall = generate_delegate_method_call_ccode(expr);
+			ccall = (CCodeFunctionCall?)PluginManager.swarmValue("generate/delegate/method/call", expr);//generate_delegate_method_call_ccode(expr);
 #endif
 		}
 
@@ -93,7 +93,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 				var instance = resolve.get_cvalue (ma.inner);
 				var st = m.parent_symbol as Struct;
 				if (st != null && !st.is_simple_type ()) {
-					instance = generate_instance_cargument_for_struct(ma, m, instance);
+					instance = AroopCodeGeneratorAdapter.generate_instance_cargument_for_struct(ma, m, instance);
 				}
 				
 				ccall.add_argument (instance);
@@ -167,7 +167,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 						//assign_temp_var.is_imaginary = true;
 						PluginManager.swarmValue("generate/temp", assign_temp_var);
 
-						cassign_comma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (assign_temp_var.name), transform_expression (resolve.get_variable_cexpression (temp_var.name), param.variable_type, unary.inner.value_type, arg)));
+						cassign_comma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (assign_temp_var.name), AroopCodeGeneratorAdapter.generate_expression_transformation (resolve.get_variable_cexpression (temp_var.name), param.variable_type, unary.inner.value_type, arg)));
 
 						// unref old value
 						cassign_comma.append_expression (resolve.get_unref_expression (resolve.get_cvalue (unary.inner), arg.value_type, arg));
