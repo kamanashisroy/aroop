@@ -46,6 +46,8 @@ libcodegenplug_la_SOURCES = \
 	symbols/blockmodule.vala \
 	symbols/cleanupmodule.vala \
 	symbols/objectmodule.vala \
+	symbols/delegatemodule.vala \
+	symbols/valuemodule.vala \
 	symbols/controlflowmodule.vala \
 	symbols/sourcefilemodule.vala \
 	$(NULL)

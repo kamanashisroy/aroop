@@ -177,6 +177,7 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.ElementModule());
 		loadModulesHelper(new codegenplug.ParameterModule());
 		loadModulesHelper(new codegenplug.MethodModule());
+		loadModulesHelper(new codegenplug.DelegateModule());
 		loadModulesHelper(new codegenplug.MethodCallModule());
 		loadModulesHelper(new codegenplug.ControlFlowModule());
 		loadModulesHelper(new codegenplug.CleanUpModule());
@@ -184,6 +185,7 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.StructModule());
 		loadModulesHelper(new codegenplug.StringModule());
 		loadModulesHelper(new codegenplug.ObjectModule());
+		loadModulesHelper(new codegenplug.ValueModule());
 		loadModulesHelper(new codegenplug.ExpressionModule());
 		loadModulesHelper(new codegenplug.SourceFileModule());
 		shotodolplug.PluginManager.swarmValue("rehash", null);

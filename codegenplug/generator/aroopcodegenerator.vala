@@ -552,7 +552,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		return (CCodeParameter?)PluginManager.swarmValue("generate/instance_cparam/struct", args);
 	}
 
-	public static CCodeParameter?generate_temp_variable(LocalVariable tmp) {
+	public static CCodeParameter?generate_temp_variable(LocalVariable tmp) { // emit_temp_var
 		return (CCodeParameter?)PluginManager.swarmValue("generate/temp", tmp);
 	}
 
@@ -624,6 +624,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["vdeclarator"] = vdeclarator;
 		args["vcall"] = vcall;
 		PluginManager.swarmValue("generate/cparameter", args);
+	}
+
+	public static CCodeExpression?generate_instance_cast (CCodeExpression expr, TypeSymbol type) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["expr"] = expr;
+		args["type"] = type;
+		return (CCodeExpression?)PluginManager.swarmValue("generate/instance/cast", args);
 	}
 
 	public static string? generate_block_name(Block b) {

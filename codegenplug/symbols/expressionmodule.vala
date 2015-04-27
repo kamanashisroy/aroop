@@ -14,6 +14,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		PluginManager.register("visit/expression", new HookExtension(visit_expression, this));
 		PluginManager.register("visit/expression_statement", new HookExtension(visit_expression_statement, this));
 		PluginManager.register("generate/expression/transformation", new HookExtension(transform_expression_helper, this));
+		PluginManager.register("generate/instance/cast", new HookExtension(generate_instance_cast_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -220,6 +221,14 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 	}
 	CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
 		return source_cexpr;
+	}
+
+	Value? generate_instance_cast_helper (Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		return generate_instance_cast (
+			(CCodeExpression?)args["expr"]
+			,(TypeSymbol?)args["type"]
+		);
 	}
 	CCodeExpression generate_instance_cast (CCodeExpression expr, TypeSymbol type) {
 		return new CCodeCastExpression (expr, resolve.get_ccode_aroop_name (type) + "*");
