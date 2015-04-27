@@ -736,10 +736,6 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 
-	bool method_has_wrapper (Method method) {
-		return (method.get_attribute ("NoWrapper") == null);
-	}
-
 	string? get_custom_creturn_type (Method m) {
 		var attr = m.get_attribute ("CCode");
 		if (attr != null) {

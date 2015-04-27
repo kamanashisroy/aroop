@@ -491,6 +491,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		PluginManager.swarmValue("generate/element/destruction", args);
 	}
 
+	public static void generate_constant_declaration(Constant c, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["constant"] = c;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/constant/declaration", args);
+	}
+
 	public static void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = f;

@@ -84,6 +84,10 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return  CCodeBaseModule.get_ccode_name (node);
 	}
 
+	public string get_ccode_upper_case_name (Symbol node, string? infix = null) {
+		return CCodeBaseModule.get_ccode_upper_case_name (node, infix);
+	}
+
 	public string get_ccode_name(CodeNode node) {
 		return  CCodeBaseModule.get_ccode_name (node);
 	}
@@ -632,6 +636,10 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		} else {
 			return new CCodeConstant ("NULL");
 		}
+	}
+
+	public bool method_has_wrapper (Method method) {
+		return (method.get_attribute ("NoWrapper") == null);
 	}
 
 	public bool requires_copy (DataType type) {

@@ -225,7 +225,7 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	}
 
 	public bool add_symbol_declaration (CCodeFile decl_space, Symbol sym, string name) {
-#if false
+#if true
 		if (decl_space.add_declaration (name)) {
 			return true;
 		}
@@ -254,6 +254,9 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 #else
 		return false;
 #endif
+	}
+	public bool add_generated_external_symbol (Symbol external_symbol) {
+		return generated_external_symbols.add (external_symbol);
 	}
 	public LocalVariable get_temp_variable (DataType type, bool value_owned = true, CodeNode? node_reference = null) {
 		var var_type = type.copy ();

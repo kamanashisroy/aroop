@@ -331,6 +331,5 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			)
 		);
 	}
-
 }
 

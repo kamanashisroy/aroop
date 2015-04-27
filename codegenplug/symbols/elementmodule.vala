@@ -5,20 +5,29 @@ using codegenplug;
 
 public class codegenplug.ElementModule : shotodolplug.Module {
 	CSymbolResolve resolve;
-	SourceEmitterModule compiler;
+	SourceEmitterModule emitter;
 	public ElementModule() {
 		base("Element", "0.0");
 	}
 
 	public override int init() {
+		PluginManager.register("visit/field", new HookExtension(visit_field, this));
 		PluginManager.register("generate/element/destruction", new HookExtension(generate_element_destruction_code_helper, this));
 		PluginManager.register("generate/struct/cargument", new HookExtension(generate_cargument_for_struct_helper, this));
 		PluginManager.register("generate/struct/instance/cargument", new HookExtension(generate_instance_cargument_for_struct_helper, this));
+		//PluginManager.register("get/field_cvalue/struct", new HookExtension(get_field_cvalue_for_struct_helper, this));
+		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
 
 	public override int deinit() {
 		return 0;
+	}
+
+	Value?rehashHook(Value?arg) {
+		emitter = (SourceEmitterModule?)PluginManager.swarmValue("source/emitter", null);
+		resolve = (CSymbolResolve?)PluginManager.swarmValue("resolve/c/symbol",null);
+		return null;
 	}
 
 	Value? generate_element_destruction_code_helper(Value?givenArgs) {
@@ -86,9 +95,14 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 			return false;
 		}
 		//print("[%s]member access identifier:%s\n", instanceType.name, cid.name);
-		return (instanceType == compiler.current_type_symbol && (cid.name) == resolve.self_instance);
+		return (instanceType == emitter.current_type_symbol && (cid.name) == resolve.self_instance);
 	}
 	
+	/*Value? get_field_cvalue_for_struct_helper(Value?givenArgs) {
+		HashTable<string,Value?> args = (HashTable<string,Value?>)givenArgs;
+		return get_field_cvalue_for_struct((Field)args["field"], (CCodeExpression)args["cexpr"]);
+	}*/
+
 	CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
 		if(is_current_instance_struct((TypeSymbol) f.parent_symbol, cexpr)) {
 			return new CCodeMemberAccess.pointer (cexpr, resolve.get_ccode_name (f));
@@ -136,7 +150,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 			// (tmp = expr, &tmp)
 			var ccomma = new CCodeCommaExpression ();
 
-			var temp_var = compiler.get_temp_variable (ma.inner.target_type);
+			var temp_var = emitter.get_temp_variable (ma.inner.target_type);
 			AroopCodeGeneratorAdapter.generate_temp_variable (temp_var);
 			ccomma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (temp_var.name), instance));
 			ccomma.append_expression (new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, resolve.get_variable_cexpression (temp_var.name)));
@@ -195,5 +209,86 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		assert_not_reached ();
 		return null;
 	}
+
+	TargetValue get_field_cvalue (Field f, TargetValue? instance) {
+		var result = new AroopValue (f.variable_type);
+		
+		if (f.binding == MemberBinding.INSTANCE) {
+			CCodeExpression pub_inst = null;
+
+			if (instance != null) {
+				pub_inst = resolve.get_cvalue_ (instance);
+			}
+
+			var instance_target_type = resolve.get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
+
+			//var cl = instance_target_type.data_type as Class;
+			bool aroop_priv = false;
+			if ((f.access == SymbolAccessibility.PRIVATE || f.access == SymbolAccessibility.INTERNAL)) {
+				aroop_priv = true;
+			}
+
+			CCodeExpression inst = pub_inst;
+			if (instance.value_type is StructValueType) {
+				result.cvalue = get_field_cvalue_for_struct(f, inst);
+			} else if (instance_target_type.data_type.is_reference_type () || (instance != null 
+					&& (instance.value_type is PointerType))) {
+				result.cvalue = new CCodeMemberAccess.pointer (inst, resolve.get_ccode_name (f));
+			} else {
+				result.cvalue = new CCodeMemberAccess (inst, resolve.get_ccode_name (f));
+			}
+		} else {
+			generate_field_declaration (f, emitter.cfile, false);
+
+			result.cvalue = new CCodeIdentifier (resolve.get_ccode_name (f));
+		}
+
+		return result;
+	}
+	public void generate_field_declaration (Field f, CCodeFile decl_space, bool defineHere = false) {
+		if (!defineHere && emitter.add_symbol_declaration (decl_space, f, resolve.get_ccode_aroop_name (f))) {
+			return;
+		}
+		assert(f.variable_type != null);
+		AroopCodeGeneratorAdapter.generate_type_declaration (f.variable_type, decl_space);
+
+		string field_ctype = resolve.get_ccode_aroop_name (f.variable_type);
+		if (f.is_volatile) {
+			field_ctype = "volatile " + field_ctype;
+		}
+
+		var cdecl = new CCodeDeclaration (field_ctype);
+		cdecl.add_declarator (new CCodeVariableDeclarator (resolve.get_ccode_name (f), null, resolve.get_ccode_declarator_suffix (f.variable_type)));
+		if (f.is_private_symbol ()) {
+			cdecl.modifiers = CCodeModifiers.STATIC;
+		} else if(!defineHere) {
+			cdecl.modifiers = CCodeModifiers.EXTERN;
+		}
+
+		if (f.get_attribute ("ThreadLocal") != null) {
+			cdecl.modifiers |= CCodeModifiers.THREAD_LOCAL;
+		}
+
+		decl_space.add_type_member_declaration (cdecl);
+	}
+
+	Value? visit_field (Value?givenArgs) {
+		Field f = (Field?)givenArgs;
+		if (f.binding == MemberBinding.CLASS) {
+			generate_field_declaration (f, emitter.cfile, true);
+			if (!f.is_internal_symbol ()) {
+				generate_field_declaration (f, emitter.header_file, false);
+			}
+		} else if (f.binding == MemberBinding.STATIC)  {
+			generate_field_declaration (f, emitter.cfile, true);
+
+			if (!f.is_internal_symbol ()) {
+				generate_field_declaration (f, emitter.header_file, false);
+			}
+		}
+		return null;
+	}
+
+
 }
 
