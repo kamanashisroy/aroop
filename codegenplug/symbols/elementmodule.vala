@@ -15,7 +15,6 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		PluginManager.register("generate/element/destruction", new HookExtension(generate_element_destruction_code_helper, this));
 		PluginManager.register("generate/struct/cargument", new HookExtension(generate_cargument_for_struct_helper, this));
 		PluginManager.register("generate/struct/instance/cargument", new HookExtension(generate_instance_cargument_for_struct_helper, this));
-		//PluginManager.register("get/field_cvalue/struct", new HookExtension(get_field_cvalue_for_struct_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -89,33 +88,6 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 			, resolve.get_ccode_declarator_suffix (f.variable_type));
 	}
 
-	bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {
-		CCodeIdentifier?cid = null;
-		if(!(cexpr is CCodeIdentifier) || (cid = (CCodeIdentifier)cexpr) == null || cid.name == null) {
-			return false;
-		}
-		//print("[%s]member access identifier:%s\n", instanceType.name, cid.name);
-		return (instanceType == emitter.current_type_symbol && (cid.name) == resolve.self_instance);
-	}
-	
-	/*Value? get_field_cvalue_for_struct_helper(Value?givenArgs) {
-		HashTable<string,Value?> args = (HashTable<string,Value?>)givenArgs;
-		return get_field_cvalue_for_struct((Field)args["field"], (CCodeExpression)args["cexpr"]);
-	}*/
-
-	CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
-		if(is_current_instance_struct((TypeSymbol) f.parent_symbol, cexpr)) {
-			return new CCodeMemberAccess.pointer (cexpr, resolve.get_ccode_name (f));
-		}
-		unowned CCodeUnaryExpression?cuop = null;
-		if((cexpr is CCodeUnaryExpression) 
-			&& (cuop = (CCodeUnaryExpression)cexpr) != null
-			&& cuop.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
-			return new CCodeMemberAccess.pointer (cuop.inner, resolve.get_ccode_name (f));
-		}
-		return new CCodeMemberAccess (cexpr, resolve.get_ccode_name (f));
-	}
-
 	Value? generate_instance_cargument_for_struct_helper(Value?givenArgs) { 
 		HashTable<string,Value?> args = (HashTable<string,Value?>)givenArgs;
 		return generate_instance_cargument_for_struct((MemberAccess)args["ma"], (Method)args["m"], (CCodeExpression)args["instance"]);	
@@ -134,7 +106,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 				returnval = unary.inner;
 			}
 		} else if (instance is CCodeIdentifier) {
-			if(is_current_instance_struct((TypeSymbol)m.parent_symbol, instance)) {
+			if(resolve.is_current_instance_struct((TypeSymbol)m.parent_symbol, instance)) {
 				//print("[%s]'this' struct instance argument:%s\n", m.name, ((CCodeIdentifier)instance).name);
 				return returnval;
 			} else {
@@ -210,41 +182,6 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		return null;
 	}
 
-	TargetValue get_field_cvalue (Field f, TargetValue? instance) {
-		var result = new AroopValue (f.variable_type);
-		
-		if (f.binding == MemberBinding.INSTANCE) {
-			CCodeExpression pub_inst = null;
-
-			if (instance != null) {
-				pub_inst = resolve.get_cvalue_ (instance);
-			}
-
-			var instance_target_type = resolve.get_data_type_for_symbol ((TypeSymbol) f.parent_symbol);
-
-			//var cl = instance_target_type.data_type as Class;
-			bool aroop_priv = false;
-			if ((f.access == SymbolAccessibility.PRIVATE || f.access == SymbolAccessibility.INTERNAL)) {
-				aroop_priv = true;
-			}
-
-			CCodeExpression inst = pub_inst;
-			if (instance.value_type is StructValueType) {
-				result.cvalue = get_field_cvalue_for_struct(f, inst);
-			} else if (instance_target_type.data_type.is_reference_type () || (instance != null 
-					&& (instance.value_type is PointerType))) {
-				result.cvalue = new CCodeMemberAccess.pointer (inst, resolve.get_ccode_name (f));
-			} else {
-				result.cvalue = new CCodeMemberAccess (inst, resolve.get_ccode_name (f));
-			}
-		} else {
-			generate_field_declaration (f, emitter.cfile, false);
-
-			result.cvalue = new CCodeIdentifier (resolve.get_ccode_name (f));
-		}
-
-		return result;
-	}
 	public void generate_field_declaration (Field f, CCodeFile decl_space, bool defineHere = false) {
 		if (!defineHere && emitter.add_symbol_declaration (decl_space, f, resolve.get_ccode_aroop_name (f))) {
 			return;

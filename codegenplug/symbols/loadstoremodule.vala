@@ -15,8 +15,14 @@ public class codegenplug.LoadStoreModule : shotodolplug.Module {
 	}
 
 	public override int init() {
+		PluginManager.register("load/local", new HookExtension(load_local, this));
+		PluginManager.register("load/field", new HookExtension(load_field, this));
+		PluginManager.register("load/parameter", new HookExtension(load_parameter, this));
 		//PluginManager.register("load/variable", new HookExtension(load_variable_helper, this));
 		PluginManager.register("store/variable", new HookExtension(store_variable_helper, this));
+		PluginManager.register("store/local", new HookExtension(store_local_helper, this));
+		PluginManager.register("store/parameter", new HookExtension(store_parameter_helper, this));
+		PluginManager.register("store/field", new HookExtension(store_field_helper, this));
 		PluginManager.register("store/property", new HookExtension(store_property_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
@@ -29,6 +35,39 @@ public class codegenplug.LoadStoreModule : shotodolplug.Module {
 	Value?rehashHook(Value?arg) {
 		emitter = (SourceEmitterModule?)PluginManager.swarmValue("source/emitter", null);
 		resolve = (CSymbolResolve?)PluginManager.swarmValue("resolve/c/symbol",null);
+		return null;
+	}
+
+	Value?store_local_helper (Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		store_variable (
+			(LocalVariable?)args["local"]
+			,resolve.get_local_cvalue ((LocalVariable?)args["local"])
+			, (TargetValue?)args["xvalue"]
+			, (((string?)args["initializer"]) == "1")
+		);
+		return null;
+	}
+
+	Value?store_field_helper (Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		store_variable (
+			(Field)args["field"]
+			,resolve.get_field_cvalue ((Field)args["field"], (TargetValue?)args["instance"])
+			, (TargetValue?)args["xvalue"]
+			, false
+		);
+		return null;
+	}
+
+	Value?store_parameter_helper (Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		store_variable (
+			(Vala.Parameter)args["param"]
+			,resolve.get_parameter_cvalue ((Vala.Parameter)args["param"])
+			,(TargetValue?)args["xvalue"]
+			, (((string?)args["capturing_parameter"]) == "1")
+		);
 		return null;
 	}
 
@@ -100,5 +139,22 @@ public class codegenplug.LoadStoreModule : shotodolplug.Module {
 		ccall.add_argument (resolve.get_cvalue_ (value));
 
 		emitter.ccode.add_expression (ccall);
+	}
+
+
+	Value?load_local (Value?givenValue) {
+		LocalVariable?local = (LocalVariable?)givenValue;
+		return load_variable (local, resolve.get_local_cvalue (local));
+	}
+	Value?load_parameter (Value?givenValue) {
+		Vala.Parameter?param = (Vala.Parameter?)givenValue;
+		return load_variable (param, resolve.get_parameter_cvalue (param));
+	}
+	TargetValue load_variable (Variable variable, TargetValue xvalue) {
+		return xvalue;
+	}
+	Value?load_field (Value?given_args) {
+		HashTable<string,Value?> args = (HashTable<string,Value?>)given_args;
+		return load_variable ((Field?)args["field"], resolve.get_field_cvalue ((Field?)args["field"], (TargetValue?)args["instance"]));
 	}
 }

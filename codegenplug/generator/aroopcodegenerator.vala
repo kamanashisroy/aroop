@@ -417,48 +417,43 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override TargetValue load_local (LocalVariable local) {
-		string exten= "load/local";
-		return (TargetValue)PluginManager.swarmValue(exten, local);
+		return (TargetValue)PluginManager.swarmValue("load/local", local);
 	}
 
-	public override void store_local (LocalVariable local, TargetValue value, bool initializer) {
-		string exten= "store/local";
+	public override void store_local (LocalVariable local, TargetValue xvalue, bool initializer) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["local"] = local;
-		args["value"] = value;
+		args["xvalue"] = xvalue;
 		args["initializer"] = initializer;
-		PluginManager.swarmValue(exten, args);
+		PluginManager.swarmValue("store/local", args);
 	}
 
 	public override TargetValue load_parameter (Vala.Parameter param) {
 		string exten= "load/parameter";
-		return (TargetValue)PluginManager.swarmValue(exten, param);
+		return (TargetValue)PluginManager.swarmValue("load/parameter", param);
 	}
 
-	public override void store_parameter (Vala.Parameter param, TargetValue value, bool capturing_parameter = false) {
-		string exten= "store/parameter";
+	public override void store_parameter (Vala.Parameter param, TargetValue xvalue, bool capturing_parameter = false) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["param"] = param;
-		args["value"] = value;
+		args["xvalue"] = xvalue;
 		args["capturing_parameter"] = capturing_parameter?"1":"0";
-		PluginManager.swarmValue(exten, args);
+		PluginManager.swarmValue("store/parameter", args);
 	}
 
 	public override TargetValue load_field (Field field, TargetValue? instance) {
-		string exten= "store/field";
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = field;
 		args["instance"] = instance;
-		return (TargetValue)PluginManager.swarmValue(exten, args);
+		return (TargetValue)PluginManager.swarmValue("load/field", args);
 	}
 
-	public override void store_field (Field field, TargetValue? instance, TargetValue value) {
-		string exten= "store/field";
+	public override void store_field (Field field, TargetValue? instance, TargetValue xvalue) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = field;
 		args["instance"] = instance;
-		args["value"] = value;
-		PluginManager.swarmValue(exten, args);
+		args["xvalue"] = xvalue;
+		PluginManager.swarmValue("store/field", args);
 	}
 
 	public override void emit (CodeContext context) {

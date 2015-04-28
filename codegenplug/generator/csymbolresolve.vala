@@ -60,9 +60,9 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("resolve/c/symbol", new HookExtension(getInterface, this));
-		PluginManager.register("load/local", new HookExtension((Hook)get_local_cvalue, this));
-		PluginManager.register("load/parameter", new HookExtension((Hook)get_parameter_cvalue, this));
-		PluginManager.register("load/field", new HookExtension((Hook)get_field_cvalue, this));
+		//PluginManager.register("load/local", new HookExtension((Hook)get_local_cvalue, this));
+		//PluginManager.register("load/parameter", new HookExtension(get_parameter_cvalue, this));
+		//PluginManager.register("load/field", new HookExtension(get_field_cvalue, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -542,10 +542,29 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return result;
 	}
 	
-	//public TargetValue get_field_cvalue (Field f, TargetValue? instance) {
-	public TargetValue get_field_cvalue (HashMap<string,Value?> args) {
-		Field f = (Field)args["field"];
-		TargetValue? instance = (TargetValue?)args["instance"];
+	public bool is_current_instance_struct(TypeSymbol instanceType, CCodeExpression cexpr) {
+		CCodeIdentifier?cid = null;
+		if(!(cexpr is CCodeIdentifier) || (cid = (CCodeIdentifier)cexpr) == null || cid.name == null) {
+			return false;
+		}
+		//print("[%s]member access identifier:%s\n", instanceType.name, cid.name);
+		return (instanceType == emitter.current_type_symbol && (cid.name) == self_instance);
+	}
+
+	public CCodeExpression get_field_cvalue_for_struct(Field f, CCodeExpression cexpr) {
+		if(is_current_instance_struct((TypeSymbol) f.parent_symbol, cexpr)) {
+			return new CCodeMemberAccess.pointer (cexpr, get_ccode_name (f));
+		}
+		unowned CCodeUnaryExpression?cuop = null;
+		if((cexpr is CCodeUnaryExpression) 
+			&& (cuop = (CCodeUnaryExpression)cexpr) != null
+			&& cuop.operator == CCodeUnaryOperator.POINTER_INDIRECTION) {
+			return new CCodeMemberAccess.pointer (cuop.inner, get_ccode_name (f));
+		}
+		return new CCodeMemberAccess (cexpr, get_ccode_name (f));
+	}
+
+	public TargetValue get_field_cvalue (Field f, TargetValue? instance) {
 		var result = new AroopValue (f.variable_type);
 		
 		if (f.binding == MemberBinding.INSTANCE) {
@@ -565,8 +584,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 			CCodeExpression inst = pub_inst;
 			if (instance.value_type is StructValueType) {
-				//result.cvalue = get_field_cvalue_for_struct(f, inst);
-				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/field/struct", args);
+				result.cvalue = get_field_cvalue_for_struct(f, inst);
 			} else if (instance_target_type.data_type.is_reference_type () || (instance != null 
 					&& (instance.value_type is PointerType))) {
 				result.cvalue = new CCodeMemberAccess.pointer (inst, get_ccode_name (f));

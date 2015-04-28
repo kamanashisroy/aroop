@@ -11,7 +11,7 @@ public class codegenplug.TempVariableModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("generate/temp", new HookExtension((shotodolplug.Hook)generate_temp_variable, this));
+		PluginManager.register("generate/temp", new HookExtension(generate_temp_variable, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}

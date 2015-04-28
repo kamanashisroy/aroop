@@ -312,23 +312,6 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 	
 
 
-#if false
-	TargetValue load_variable (Variable variable, TargetValue value) {
-		return value;
-	}
-
-	TargetValue load_local (LocalVariable local) {
-		return load_variable (local, get_local_cvalue (local));
-	}
-
-	TargetValue load_parameter (Vala.Parameter param) {
-		return load_variable (param, get_parameter_cvalue (param));
-	}
-
-	TargetValue load_field (Field field, TargetValue? instance) {
-		return load_variable (field, get_field_cvalue (field, instance));
-	}
-#endif
 	CCodeExpression get_parameter_cvalue_for_block(Vala.Parameter p) {
 		// captured variables are stored on the heap
 		var block = p.parent_symbol as Block;
