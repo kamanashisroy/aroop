@@ -677,6 +677,25 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		return CCodeBaseModule.get_ccode_ref_function_void (node);
 	}
 
+	public double get_ccode_instance_pos (CodeNode node) {
+		return CCodeBaseModule.get_ccode_instance_pos (node);
+	}
+
+	public string get_ccode_sentinel (Method m) {
+		return CCodeBaseModule.get_ccode_sentinel (m);
+	}
+
+	public string? get_custom_creturn_type (Method m) {
+		var attr = m.get_attribute ("CCode");
+		if (attr != null) {
+			string type = attr.get_string ("type");
+			if (type != null) {
+				return type;
+			}
+		}
+		return null;
+	}
+
 	bool is_ref_function_void (DataType type) {
 		if(type.data_type != null && type.data_type is Class) {
 			var cl = type.data_type as Class;

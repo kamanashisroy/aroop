@@ -274,6 +274,7 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 		return false;
 #endif
 	}
+
 	public bool add_generated_external_symbol (Symbol external_symbol) {
 		return generated_external_symbols.add (external_symbol);
 	}

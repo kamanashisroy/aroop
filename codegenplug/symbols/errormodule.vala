@@ -16,6 +16,7 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 		PluginManager.register("visit/try_statement", new HookExtension(visit_try_statement, this));
 		PluginManager.register("visit/catch_clause", new HookExtension(visit_catch_clause, this));
 		PluginManager.register("simple_check", new HookExtension(add_simple_check_helper, this));
+		PluginManager.register("generate/error_domain/declaration", new HookExtension(generate_error_domain_declaration_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -48,6 +49,11 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 		return cdomain_desc;
 	}
 
+	Value? generate_error_domain_declaration_helper(Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		generate_error_domain_declaration((ErrorDomain?)args["edomain"], (CCodeFile?)args["decl_space"]);
+		return null;
+	}
 	void generate_error_domain_declaration (ErrorDomain edomain, CCodeFile decl_space) {
 		if (emitter.add_symbol_declaration (decl_space, edomain, resolve.get_error_module_lower_case_name (edomain))) {
 			return;

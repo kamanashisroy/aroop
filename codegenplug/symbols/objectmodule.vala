@@ -639,66 +639,6 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		return null;
 	}
 
-#if false
-	void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
-		if (emitter.add_symbol_declaration (decl_space, acc.prop, resolve.get_ccode_name (acc))) {
-			return;
-		}
-
-		var prop = (Property) acc.prop;
-
-		AroopCodeGeneratorAdapter.generate_type_declaration (acc.value_type, decl_space);
-
-		CCodeFunction function;
-
-		if (acc.readable) {
-			function = new CCodeFunction (resolve.get_ccode_name (acc), resolve.get_ccode_aroop_name (acc.value_type));
-		} else {
-			function = new CCodeFunction (resolve.get_ccode_name (acc), "void");
-		}
-
-		if (prop.binding == MemberBinding.INSTANCE) {
-			DataType this_type;
-			if (prop.parent_symbol is Struct) {
-				var st = (Struct) prop.parent_symbol;
-				this_type = SemanticAnalyzer.resolve.get_data_type_for_symbol (st);
-			} else {
-				var t = (ObjectTypeSymbol) prop.parent_symbol;
-				this_type = new ObjectType (t);
-			}
-
-			AroopCodeGeneratorAdapter.generate_type_declaration (this_type, decl_space);
-			var cselfparam = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type));
-
-			function.add_parameter (cselfparam);
-		}
-
-		if (acc.writable) {
-			var cvalueparam = new CCodeParameter ("value", resolve.get_ccode_aroop_name (acc.value_type));
-			function.add_parameter (cvalueparam);
-		}
-
-		if (prop.is_internal_symbol () || acc.is_internal_symbol ()) {
-			function.modifiers |= CCodeModifiers.STATIC;
-		}
-		decl_space.add_function_declaration (function);
-
-		if (prop.is_abstract || prop.is_virtual) {
-			string param_list = "(%s *this".printf (resolve.get_ccode_aroop_name (prop.parent_symbol));
-			if (!acc.readable) {
-				param_list += ", ";
-				param_list += resolve.get_ccode_aroop_name (acc.value_type);
-			}
-			param_list += ")";
-
-			var override_func = new CCodeFunction ("%soverride_%s_%s".printf (resolve.get_ccode_lower_case_prefix (prop.parent_symbol), acc.readable ? "get" : "set", prop.name));
-			override_func.add_parameter (new CCodeParameter ("type", resolve.get_aroop_type_cname()));
-			override_func.add_parameter (new CCodeParameter ("(*function) %s".printf (param_list), acc.readable ? resolve.get_ccode_aroop_name (acc.value_type) : "void"));
-
-			decl_space.add_function_declaration (override_func);
-		}
-	}
-#endif
 
 #if USE_MACRO_GETTER_SETTER
 	void visit_property_accessor2 (PropertyAccessor acc) {
@@ -735,17 +675,6 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 #endif
 	}
 
-
-	string? get_custom_creturn_type (Method m) {
-		var attr = m.get_attribute ("CCode");
-		if (attr != null) {
-			string type = attr.get_string ("type");
-			if (type != null) {
-				return type;
-			}
-		}
-		return null;
-	}
 
 	void generate_method_declaration (Method m, CCodeFile decl_space) {
 		if (emitter.add_symbol_declaration (decl_space, m, resolve.get_ccode_name (m))) {
@@ -896,7 +825,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				var calloc_call = new CCodeFunctionCall (new CCodeIdentifier ("calloc"));
 				calloc_call.add_argument (new CCodeConstant ("1"));
 				calloc_call.add_argument (type_get_value_size);
-				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (get_ccode_upper_case_name (emitter.current_class, null))));
+				var priv_call = new CCodeFunctionCall (new CCodeIdentifier ("%s_GET_PRIVATE".printf (resolve.get_ccode_upper_case_name (emitter.current_class, null))));
 				priv_call.add_argument (new CCodeIdentifier (resolve.self_instance));
 
 				vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess.pointer (priv_call, f.name), calloc_call)));

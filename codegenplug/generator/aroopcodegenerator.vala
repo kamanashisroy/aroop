@@ -337,7 +337,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_object_creation_expression (ObjectCreationExpression expr) {
-		string visit_exten= "visit/creation_expression";
+		string visit_exten= "visit/object_creation_expression";
 		PluginManager.swarmValue(visit_exten, expr);
 	}
 
@@ -563,6 +563,12 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		return (CCodeParameter?)PluginManager.swarmValue("generate/temp", tmp);
 	}
 
+	public static void generate_error_domain_declaration (ErrorDomain edomain, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["edomain"] = edomain;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/error_domain/declaration", args);
+	}
 	/*public void set_context(CodeContext context) {
 		return PluginManager.swarmValue("set/context", context);
 	}
@@ -663,6 +669,15 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		return (CCodeExpression?)PluginManager.swarmValue("generate/struct/instance/cargument", args);
 	}
 
+	public static void add_generic_type_arguments (CCodeFunctionCall ccall,Vala.List<DataType> type_args, CodeNode expr, bool is_chainup = false) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["ccall"] = ccall;
+		args["type_args"] = type_args;
+		args["expr"] = expr;
+		args["is_chainup"] = is_chainup?"1":"0";
+		PluginManager.swarmValue("add/generic_type_arguments", args);
+	}
+
 	public static void add_simple_check(CodeNode node, bool always_fails = false) { 
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["node"] = node;
@@ -676,6 +691,24 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["stop_at_loop"] = stop_at_loop?"1":"0";
 		args["stop_at"] = stop_at;
 		PluginManager.swarmValue("append/cleanup/local", args);
+	}
+
+
+	public static void store_variable (Variable variable, TargetValue lvalue, TargetValue xvalue, bool initializer) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["variable"] = variable;
+		args["lvalue"] = lvalue;
+		args["xvalue"] = xvalue;
+		args["initializer"] = initializer?"1":"0";
+		PluginManager.swarmValue("store/variable", args);
+	}
+
+	public static void store_property (Property prop, Expression? instance, TargetValue xvalue) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["prop"] = prop;
+		args["instance"] = instance;
+		args["xvalue"] = xvalue;
+		PluginManager.swarmValue("store/property", args);
 	}
 }
 	

@@ -47,9 +47,12 @@ libcodegenplug_la_SOURCES = \
 	symbols/blockmodule.vala \
 	symbols/cleanupmodule.vala \
 	symbols/objectmodule.vala \
+	symbols/objectcreationmodule.vala \
+	symbols/generictypemodule.vala \
 	symbols/delegatemodule.vala \
 	symbols/valuemodule.vala \
 	symbols/localvariablemodule.vala \
+	symbols/loadstoremodule.vala \
 	symbols/controlflowmodule.vala \
 	symbols/errormodule.vala \
 	symbols/sourcefilemodule.vala \

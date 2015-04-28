@@ -73,28 +73,6 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 	}
 #endif
 
-	public override void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {
-		var generic_type = (lvalue.value_type as GenericType);
-		if (generic_type == null) {
-			base.store_variable (variable, lvalue, value, initializer);
-			return;
-		}
-
-		var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_value_copy"));
-		if (generic_type.type_parameter.parent_symbol is TypeSymbol) {
-			// generic type
-			ccall.add_argument (new CCodeMemberAccess.pointer (new CCodeIdentifier (self_instance), get_generic_class_variable_cname()));
-		} else {
-			// generic method
-			ccall.add_argument (new CCodeIdentifier ("%s_type".printf (generic_type.type_parameter.name.down ())));
-		}
-		ccall.add_argument (resolve.get_cvalue_ (lvalue));
-		ccall.add_argument (new CCodeConstant ("0"));
-		ccall.add_argument (resolve.get_cvalue_ (value));
-		ccall.add_argument (new CCodeConstant ("0"));
-
-		ccode.add_expression (ccall);
-	}
 #endif
 
 	Value?visit_binary_expression (Value?given_args) {

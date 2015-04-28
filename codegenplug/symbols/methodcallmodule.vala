@@ -104,11 +104,11 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 				var type_symbol = (ObjectTypeSymbol) m.parent_symbol;
 				if (type_symbol.get_type_parameters ().size > 0 && ma.inner is MemberAccess) {
 					var type_ma = (MemberAccess) ma.inner;
-					add_generic_type_arguments (ccall, type_ma.get_type_arguments (), expr);
+					AroopCodeGeneratorAdapter.add_generic_type_arguments (ccall, type_ma.get_type_arguments (), expr);
 				}
 			}
 			if (m.get_type_parameters ().size > 0) {
-				add_generic_type_arguments (ccall, ma.get_type_arguments (), expr);
+				AroopCodeGeneratorAdapter.add_generic_type_arguments (ccall, ma.get_type_arguments (), expr);
 			}
 		}
 
@@ -275,12 +275,6 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 			resolve.set_cvalue (expr, temp_ref);
 		}
 		return null;
-	}
-	void add_generic_type_arguments (CCodeFunctionCall ccall,Vala.List<DataType> type_args, CodeNode expr, bool is_chainup = false) {
-		foreach (var type_arg in type_args) {
-			var targ = resolve.get_type_id_expression (type_arg, is_chainup);
-			ccall.add_argument (targ);
-		}
 	}
 
 
