@@ -16,6 +16,7 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("visit/integer_literal", new HookExtension(visit_integer_literal, this));
+		PluginManager.register("visit/null_literal", new HookExtension(visit_null_literal, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -33,6 +34,12 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 	Value? visit_integer_literal (Value? givenValue) {
 		IntegerLiteral?expr = (IntegerLiteral?)givenValue;
 		resolve.set_cvalue (expr, new CCodeConstant (expr.value));
+		return null;
+	}
+
+	Value?visit_null_literal (Value?given) {
+		NullLiteral?expr = (NullLiteral?)given;
+		resolve.set_cvalue (expr, new CCodeConstant ("NULL"));
 		return null;
 	}
 
