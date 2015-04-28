@@ -190,6 +190,7 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.ValueModule());
 		loadModulesHelper(new codegenplug.LocalVariableModule());
 		loadModulesHelper(new codegenplug.PropertyModule());
+		loadModulesHelper(new codegenplug.EnumModule());
 		loadModulesHelper(new codegenplug.LoadStoreModule());
 		loadModulesHelper(new codegenplug.LiteralModule());
 		loadModulesHelper(new codegenplug.ExpressionModule());
