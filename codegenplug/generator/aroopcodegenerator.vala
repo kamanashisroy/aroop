@@ -407,7 +407,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_end_full_expression (Expression expr) {
-		string visit_exten= "visit/full_expression";
+		string visit_exten= "visit/end_full_expression";
 		PluginManager.swarmValue(visit_exten, expr);
 	}
 

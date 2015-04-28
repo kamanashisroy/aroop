@@ -13,7 +13,9 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 	public override int init() {
 		PluginManager.register("visit/declaration_statement", new HookExtension(visit_declaration_statement, this));
 		PluginManager.register("visit/expression", new HookExtension(visit_expression, this));
+		PluginManager.register("visit/return_statement", new HookExtension(visit_return_statement, this));
 		PluginManager.register("visit/expression_statement", new HookExtension(visit_expression_statement, this));
+		PluginManager.register("visit/end_full_expression", new HookExtension(visit_end_full_expression, this));
 		PluginManager.register("generate/expression/transformation", new HookExtension(transform_expression_helper, this));
 		PluginManager.register("generate/instance/cast", new HookExtension(generate_instance_cast_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
@@ -42,6 +44,64 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			// memory management, implicit casts, and boxing/unboxing
 			resolve.set_cvalue (expr, transform_expression (resolve.get_cvalue (expr), expr.value_type, expr.target_type, expr));
 		}
+		return null;
+	}
+
+
+	Value? visit_end_full_expression (Value?given) {
+		Expression?expr = (Expression?)given;
+		/* expr is a full expression, i.e. an initializer, the
+		 * expression in an expression statement, the controlling
+		 * expression in if, while, for, or foreach statements
+		 *
+		 * we unref temporary variables at the end of a full
+		 * expression
+		 */
+
+		if (((Vala.List<LocalVariable>) emitter.emit_context.temp_ref_vars).size == 0) {
+			/* nothing to do without temporary variables */
+			return null;
+		}
+
+		var expr_type = expr.value_type;
+		if (expr.target_type != null) {
+			expr_type = expr.target_type;
+		}
+
+		var full_expr_var = emitter.get_temp_variable (expr_type, true, expr);
+		PluginManager.swarmValue("generate/temp", full_expr_var);
+
+		var expr_list = new CCodeCommaExpression ();
+		expr_list.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (full_expr_var.name), resolve.get_cvalue (expr)));
+
+		foreach (LocalVariable local in emitter.emit_context.temp_ref_vars) {
+			var ma = new MemberAccess.simple (local.name);
+			ma.symbol_reference = local;
+			expr_list.append_expression (resolve.get_unref_expression (resolve.get_variable_cexpression (local.name), local.variable_type, ma));
+		}
+
+		expr_list.append_expression (resolve.get_variable_cexpression (full_expr_var.name));
+
+		resolve.set_cvalue (expr, expr_list);
+
+		emitter.emit_context.temp_ref_vars.clear ();
+		return null;
+	}
+
+	Value? visit_return_statement (Value?given) {
+		ReturnStatement stmt = (ReturnStatement?)given;
+		// free local variables
+		CCodeExpression holder = new CCodeIdentifier ("result");
+
+		var rexpr = stmt.return_expression;
+		if(rexpr != null) {
+			if(emitter.current_return_type is GenericType) {
+				holder = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, new CCodeIdentifier ("result"));
+			}
+			emitter.ccode.add_assignment (holder, resolve.get_cvalue(rexpr));
+		}
+		AroopCodeGeneratorAdapter.append_local_free (emitter.current_symbol);
+		emitter.ccode.add_return ((emitter.current_return_type is VoidType || emitter.current_return_type is GenericType) ? null : holder);
 		return null;
 	}
 
