@@ -485,6 +485,8 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			result.cvalue = new CCodeIdentifier ("result");
 		} else if (local.captured) {
 			result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/local/block", local);//get_local_cvalue_for_block(local);
+			if(result.cvalue == null)
+				print("Please report this bug, result.value should not be null\n");
 		} else {
 			result.cvalue = get_variable_cexpression (local.name);
 		}
@@ -506,6 +508,8 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		} else {
 			if (p.captured) {
 				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/parameter/block", p);
+				if(result.cvalue == null)
+					print("Please report this bug, result.value should not be null\n");
 				//result.cvalue = get_parameter_cvalue_for_block(p);
 			} else {
 				if (emitter.current_method != null && emitter.current_method.coroutine) {
@@ -526,6 +530,8 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 						// of the "value" formal parameter with a dereferencing version of that
 						// parameter.
 						var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
+						if(current_property_accessor == null)
+							print("Please report this bug, current_property_accessor should not be null\n");
 						if (current_property_accessor != null &&
 						    current_property_accessor.writable &&
 						    current_property_accessor.value_parameter == p &&
@@ -734,7 +740,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			// (copy (&temp, 0, &expr, 0), temp)
 
 			var decl = emitter.get_temp_variable (expression_type, false, node);
-			PluginManager.swarmValue ("generate/temp", decl);
+			AroopCodeGeneratorAdapter.generate_temp_variable(decl);
 
 			var ctemp = get_variable_cexpression (decl.name);
 
@@ -778,7 +784,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			return new CCodeCastExpression(ccall, get_ccode_aroop_name (expression_type));
 		} else {
 			var decl = emitter.get_temp_variable (expression_type, false, node);
-			PluginManager.swarmValue ("generate/temp", decl);
+			AroopCodeGeneratorAdapter.generate_temp_variable(decl);
 
 			var ctemp = get_variable_cexpression (decl.name);
 

@@ -69,7 +69,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		}
 
 		var full_expr_var = emitter.get_temp_variable (expr_type, true, expr);
-		PluginManager.swarmValue("generate/temp", full_expr_var);
+		AroopCodeGeneratorAdapter.generate_temp_variable(full_expr_var);
 
 		var expr_list = new CCodeCommaExpression ();
 		expr_list.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (full_expr_var.name), resolve.get_cvalue (expr)));
@@ -161,7 +161,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			} else if (resolve.requires_destroy (expression_type)) {
 #if true
 				var decl = emitter.get_temp_variable (expression_type, true, expression_type);
-				PluginManager.swarmValue ("generate/temp", decl);
+				AroopCodeGeneratorAdapter.generate_temp_variable(decl);
 				emitter.emit_context.temp_ref_vars.insert (0, decl);
 				cexpr = new CCodeAssignment (resolve.get_variable_cexpression (decl.name), cexpr);
 #else

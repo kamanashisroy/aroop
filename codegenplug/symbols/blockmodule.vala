@@ -57,7 +57,9 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			var data_decl = new CCodeDeclaration ((string?)generate_block_name(b));
 			data_decl.add_declarator (new CCodeVariableDeclarator ((string?)generate_block_var_name(b)));
 			emitter.ccode.add_statement (data_decl);
-			var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
+			var current_property_accessor = (PropertyAccessor?)PluginManager.swarmValue("current/property_accessor", null);
+			if(current_property_accessor == null)
+				print("Please report this bug, current_property_accessor should not be null\n");
 
 			if (parent_block != null) {
 				generate_block_parent_assignment(b);
@@ -225,6 +227,8 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		var free_block = new CCodeBlock ();
 		var block_struct = proto.definition;
 		var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
+		if(current_property_accessor == null)
+			print("Please report this bug, current_property_accessor should not be null\n");
 		
 		if (parent_block != null) {
 			// XXX this piece of code is not tested

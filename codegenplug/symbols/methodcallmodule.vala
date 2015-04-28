@@ -77,6 +77,8 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 			}
 #else
 			ccall = (CCodeFunctionCall?)PluginManager.swarmValue("generate/delegate/method/call", expr);//generate_delegate_method_call_ccode(expr);
+			if(ccall == null)
+				print("Please report this bug, ccall should not be null\n");
 #endif
 		}
 
@@ -140,7 +142,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 
 						var temp_var = emitter.get_temp_variable (param.variable_type, param.variable_type.value_owned);
 						//temp_var.is_imaginary = true;
-						PluginManager.swarmValue("generate/temp", temp_var);
+						AroopCodeGeneratorAdapter.generate_temp_variable(temp_var);
 						cexpr = new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, resolve.get_variable_cexpression (temp_var.name));
 
 						if (param.direction == Vala.ParameterDirection.REF) {
@@ -157,7 +159,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 						} else {
 							ret_temp_var = emitter.get_temp_variable (itype.get_return_type ());
 							//ret_temp_var.is_imaginary = true;
-							PluginManager.swarmValue("generate/temp", ret_temp_var);
+							AroopCodeGeneratorAdapter.generate_temp_variable(ret_temp_var);
 							ccomma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (ret_temp_var.name), ccall_expr));
 						}
 
@@ -165,7 +167,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 
 						var assign_temp_var = emitter.get_temp_variable (unary.inner.value_type, unary.inner.value_type.value_owned);
 						//assign_temp_var.is_imaginary = true;
-						PluginManager.swarmValue("generate/temp", assign_temp_var);
+						AroopCodeGeneratorAdapter.generate_temp_variable(assign_temp_var);
 
 						cassign_comma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (assign_temp_var.name), AroopCodeGeneratorAdapter.generate_expression_transformation (resolve.get_variable_cexpression (temp_var.name), param.variable_type, unary.inner.value_type, arg)));
 
@@ -241,7 +243,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 
 			var temp_var = emitter.get_temp_variable (expr.value_type);
 			//temp_var.is_imaginary = true;
-			PluginManager.swarmValue("generate/temp", temp_var);
+			AroopCodeGeneratorAdapter.generate_temp_variable(temp_var);
 			//if (expr.value_type is GenericType) {
 				//ccall.add_argument (resolve.get_variable_cexpression (temp_var.name));
 			//} else {
@@ -269,7 +271,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 			var temp_var = emitter.get_temp_variable (expr.value_type);
 			var temp_ref = resolve.get_variable_cexpression (temp_var.name);
 
-			PluginManager.swarmValue("generate/temp", temp_var);
+			AroopCodeGeneratorAdapter.generate_temp_variable(temp_var);
 
 			emitter.ccode.add_assignment (temp_ref, ccall_expr);
 			resolve.set_cvalue (expr, temp_ref);

@@ -409,11 +409,17 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 
 	public override LocalVariable create_local (DataType type) {
 		string exten= "create/local";
-		return (LocalVariable)PluginManager.swarmValue(exten, type);
+		LocalVariable result = (LocalVariable?)PluginManager.swarmValue(exten, type);
+		if(result == null)
+			print("Please report this bug, result for create_local should not be null\n");
+		return result;
 	}
 
 	public override TargetValue load_local (LocalVariable local) {
-		return (TargetValue)PluginManager.swarmValue("load/local", local);
+		TargetValue?result = (TargetValue)PluginManager.swarmValue("load/local", local);
+		if(result == null)
+			print("Please report this bug, result for load_local should not be null\n");
+		return result;
 	}
 
 	public override void store_local (LocalVariable local, TargetValue xvalue, bool initializer) {
@@ -425,8 +431,10 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override TargetValue load_parameter (Vala.Parameter param) {
-		string exten= "load/parameter";
-		return (TargetValue)PluginManager.swarmValue("load/parameter", param);
+		TargetValue?result = (TargetValue)PluginManager.swarmValue("load/parameter", param);
+		if(result == null)
+			print("Please report this bug, result for load_parameter should not be null\n");
+		return result;
 	}
 
 	public override void store_parameter (Vala.Parameter param, TargetValue xvalue, bool capturing_parameter = false) {
@@ -441,7 +449,10 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = field;
 		args["instance"] = instance;
-		return (TargetValue)PluginManager.swarmValue("load/field", args);
+		TargetValue? result = (TargetValue)PluginManager.swarmValue("load/field", args);
+		if(result == null)
+			print("Please report this bug, result for load_field should not be null\n");
+		return result;
 	}
 
 	public override void store_field (Field field, TargetValue? instance, TargetValue xvalue) {
@@ -472,7 +483,10 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["expression_type"] = expression_type;
 		args["target_type"] = target_type;
 		args["expr"] = expr;
-		return (CCodeExpression?)PluginManager.swarmValue("generate/expression/transformation", args);
+		CCodeExpression?result = (CCodeExpression?)PluginManager.swarmValue("generate/expression/transformation", args);
+		if(result == null)
+			print("Please report this bug, result for transformation should not be null\n");
+		return result;
 	}
 
 	public static void generate_element_destruction_code(Field f, CCodeBlock stmt) {
@@ -546,11 +560,14 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["method"] = m;
 		args["param"] = param;
 		args["type"] = this_type;
-		return (CCodeParameter?)PluginManager.swarmValue("generate/instance_cparam/struct", args);
+		CCodeParameter?result = (CCodeParameter?)PluginManager.swarmValue("generate/instance_cparam/struct", args);
+		if(result == null)
+			print("Please report this bug, result for instance_cparameter_for_struct should not be null\n");
+		return result;
 	}
 
-	public static CCodeParameter?generate_temp_variable(LocalVariable tmp) { // emit_temp_var
-		return (CCodeParameter?)PluginManager.swarmValue("generate/temp", tmp);
+	public static void generate_temp_variable(LocalVariable tmp) { // emit_temp_var
+		PluginManager.swarmValue("generate/temp", tmp);
 	}
 
 	public static void generate_error_domain_declaration (ErrorDomain edomain, CCodeFile decl_space) {
@@ -629,7 +646,10 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["param"] = param;
 		args["arg"] = arg;
 		args["cexpr"] = cexpr;
-		return (CCodeExpression?)PluginManager.swarmValue("generate/struct/cargument", args);
+		CCodeExpression?result = (CCodeExpression?)PluginManager.swarmValue("generate/struct/cargument", args);
+		if(result == null)
+			print("Please report this bug, result for generate_cargument_for_struct should not be null\n");
+		return result;
 	}
 
 	public static void generate_cparameters (Method m, CCodeFile decl_space, CCodeFunction func, CCodeFunctionDeclarator? vdeclarator = null, CCodeFunctionCall? vcall = null) {
@@ -646,7 +666,10 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["expr"] = expr;
 		args["type"] = type;
-		return (CCodeExpression?)PluginManager.swarmValue("generate/instance/cast", args);
+		CCodeExpression?result = (CCodeExpression?)PluginManager.swarmValue("generate/instance/cast", args);
+		if(result == null)
+			print("Please report this bug, result for generate_instance_cast should not be null\n");
+		return result;
 	}
 
 	public static string? generate_block_name(Block b) {
@@ -676,7 +699,10 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["ma"] = ma;
 		args["m"] = m;
 		args["instance"] = instance;
-		return (CCodeExpression?)PluginManager.swarmValue("generate/struct/instance/cargument", args);
+		CCodeExpression?result = (CCodeExpression?)PluginManager.swarmValue("generate/struct/instance/cargument", args);
+		if(result == null)
+			print("Please report this bug, result for generate_instance_cargument_for_struct should not be null\n");
+		return result;
 	}
 
 	public static void add_generic_type_arguments (CCodeFunctionCall ccall,Vala.List<DataType> type_args, CodeNode expr, bool is_chainup = false) {
