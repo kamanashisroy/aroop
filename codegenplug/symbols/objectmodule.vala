@@ -608,7 +608,6 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	bool cleanup_is_already_declared;
 	Value?visit_class (Value?args) {
 		Class cl = (Class)args;
-		print("visiting class ....\n");
 		cleanup_is_already_declared = false;
 		emitter.push_context (new EmitContext (cl));
 

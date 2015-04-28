@@ -45,27 +45,6 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 		return null;
 	}
 
-	public override void generate_struct_declaration (Struct st, CCodeFile decl_space) {
-		base.generate_struct_declaration (st, decl_space);
-
-		if (add_symbol_declaration (decl_space, st, resolve.get_ccode_copy_function (st))) {
-			return;
-		}
-
-		if(type_class != null)
-		generate_class_declaration (type_class, decl_space);
-
-#if false
-		var func_macro = new CCodeMacroReplacement("%s(dst,dst_index,src,src_index)".printf(resolve.get_ccode_copy_function(st)), "({aroop_struct_cpy_or_destroy(dst,src,%s);})".printf(CCodeBaseModule.get_ccode_destroy_function(st)));
-		decl_space.add_type_declaration (func_macro);
-#endif
-
-	}
-
-	public override void visit_struct (Struct st) {
-		base.visit_struct (st);
-	}
-
 #if false
 	public override void visit_assignment (Assignment assignment) {
 		base.visit_assignment (assignment);

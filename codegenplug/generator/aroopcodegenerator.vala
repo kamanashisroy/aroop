@@ -20,7 +20,6 @@ public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 	}
 
 	Value?getInstance(Value?param) {
-		print("get interface cb\n");
 		return cgen;
 	}
 }
@@ -28,7 +27,6 @@ public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	public override void visit_source_file(SourceFile source_file) {
 		string visit_exten= "visit/source_file";
-		print("visiting source file\n");
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["source_file"] = source_file;
 		PluginManager.swarmValue(visit_exten, args);
@@ -39,12 +37,10 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 	public override void visit_class(Class cl) {
 		string visit_exten= "visit/class";
-		print("visiting class\n");
 		PluginManager.swarmValue(visit_exten, cl);
 	}
 	public override void visit_struct(Struct st) {
 		string visit_exten= "visit/struct";
-		print("visiting struct\n");
 		PluginManager.swarmValue(visit_exten, st);
 	}
 	public override void visit_interface(Interface iface) {
@@ -512,7 +508,6 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		if(cl == null);
 			print("Cl is null\n");
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
-		assert(cl != null);
 		args["class"] = cl;
 		args["decl_space"] = decl_space;
 		PluginManager.swarmValue("generate/class/declaration", args);
@@ -572,11 +567,15 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		return PluginManager.swarmValue("set/csource_filename", fn);
 	}*/
 	public static void generate_type_declaration (DataType type, CCodeFile decl_space) {
-		// TODO fill me
 		if (type is ObjectType) {
 			var object_type = (ObjectType) type;
 			if (object_type.type_symbol is Class) {
-				generate_class_declaration ((Class) object_type.type_symbol, decl_space);
+				Class?cl = (Class)object_type.type_symbol;
+				if(cl == null) {
+					print("debug:omitting class declaration %s\n", object_type.to_string());
+					return;
+				}
+				generate_class_declaration (cl, decl_space);
 			} else if (object_type.type_symbol is Interface) {
 				generate_interface_declaration ((Interface) object_type.type_symbol, decl_space);
 			}
@@ -589,14 +588,23 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 			generate_enum_declaration (en, decl_space);
 		} else if (type is ValueType) {
 			var value_type = (ValueType) type;
-			generate_struct_declaration ((Struct) value_type.type_symbol, decl_space);
+			Struct?st = (Struct)value_type.type_symbol;
+			if(st == null) {
+				print("debug:omitting struct declaration %s\n", value_type.to_string());
+				return;
+			}
+			generate_struct_declaration (st, decl_space);
 		} else if (type is ArrayType) {
 			var array_type = (ArrayType) type;
 #if false
 			generate_struct_declaration (emitter.array_struct, decl_space);
 #endif
-			assert(array_type.element_type != null);
-			generate_type_declaration (array_type.element_type, decl_space);
+			var elem = (DataType) array_type.element_type;
+			if(elem == null) {
+				print("debug:omitting element declaration %s\n", array_type.to_string());
+				return;
+			}
+			generate_type_declaration (elem, decl_space);
 		} else if (type is PointerType) {
 			var pointer_type = (PointerType) type;
 			assert(pointer_type.base_type != null);

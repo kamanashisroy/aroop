@@ -140,11 +140,8 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 
 	Value?emitHook (Value?inmsg) {
 		var args = (HashTable<string,Value?>)inmsg;
-		print("SourceEmitterModule:Emitting\n");
-		print("SourceEmitterModule:Emitting length:%d\n", (int)args.length);
 		this.context = (CodeContext)args["context"];
 		PluginManager.swarmValue("set/context", context);
-		print("SourceEmitterModule:...\n");
 		visitor = (CodeGenerator)args["visitor"];
 
 		root_symbol = context.root;
