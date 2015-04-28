@@ -149,6 +149,74 @@ int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...) {
 }
 #endif
 
+int aroop_debug_printf(const char*format, ...) {
+	va_list arg;
+	int i = 0;
+	int olen = 0;
+	FILE*stream = stdout;
+	va_start (arg, format);
+	for(;format[i] != '\0';i++) {
+		if(format[i] != '%') {
+			putc(format[i], stream);
+			olen++;
+			continue;
+		}
+		if(format[i+1] == '%') {
+			i++;
+			putc(format[i], stream);
+			olen++;
+			continue;
+		}
+		switch(format[i+1]) {
+			case 's':
+			{
+				const char*x = va_arg(arg, const char*);
+				if(x != NULL)
+					//olen+=fwrite(x, 1, strlen(x), stream);
+					olen+=fputs(x, stream);
+				break;
+			}
+			case 'S':
+			{
+				aroop_txt_t*x = va_arg(arg, aroop_txt_t*);
+				if(x != NULL) {
+					int idx = 0;
+					for(idx=0;idx<x->len;idx++) {
+						putc(aroop_txt_char_at(x,idx), stream);
+						olen++;
+					}
+					//olen+=fwrite(aroop_txt_to_string(x), 1, x->len, stream);
+				}
+				break;
+			}
+			case 'd':
+			{
+				int x = va_arg(arg, int);
+				int digits[10] = {0,0,0,0,0,0,0,0,0,0};
+				const static int ddiv[10] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
+				int idx = 0;
+				int xval = x;
+				for(idx = 10;idx;idx--) {
+					digits[idx-1] = xval/ddiv[idx-1];
+					xval -= digits[idx-1];
+				}
+				int discard_zero = 1;
+				for(idx = 0;idx<10;idx++) {
+					if(discard_zero && digits[idx] == 0)
+						continue;
+					putc(digits[idx]+'0', stream);
+					olen++;
+					discard_zero = 0;
+				}
+				break;
+			}
+		}
+		i++; // skip the %argument ..
+	}
+	va_end (arg);
+	return olen;
+}
+
 static int aroop_txt_equals_cb_impl(void*cb_data, const void*xarg, const void*otherarg) {
 	const aroop_txt_t*x = xarg;
 	const aroop_txt_t*other = otherarg;

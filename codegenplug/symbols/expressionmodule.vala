@@ -11,6 +11,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 	}
 
 	public override int init() {
+		PluginManager.register("visit/declaration_statement", new HookExtension(visit_declaration_statement, this));
 		PluginManager.register("visit/expression", new HookExtension(visit_expression, this));
 		PluginManager.register("visit/expression_statement", new HookExtension(visit_expression_statement, this));
 		PluginManager.register("generate/expression/transformation", new HookExtension(transform_expression_helper, this));
@@ -29,7 +30,11 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		return null;
 	}
 
-
+	Value? visit_declaration_statement (Value?given) {
+		DeclarationStatement?stmt = (DeclarationStatement?)given;
+		stmt.declaration.accept (emitter.visitor);
+		return null;
+	}
 
 	Value? visit_expression (Value?given) {
 		Expression?expr = (Expression?)given;

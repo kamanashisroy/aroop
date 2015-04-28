@@ -367,6 +367,7 @@ void aroop_txt_system_init();
 void aroop_txt_system_deinit();
 
 int aroop_txt_printf_extra(aroop_txt_t*output, char* format, ...);
+int aroop_debug_printf(const char*format, ...);
 
 OPP_CB_NOSTATIC(aroop_txt);
 OPP_CB_NOSTATIC(aroop_searchable_txt);

@@ -14,9 +14,11 @@ Building
 
 ### Requirements
 The following projects are needed to build aroopc.
+- autoconf
 - automake
 - libtool
-- valac (If the aroop project does not come with generated C files)
+- valac (If the aroop project does not come with generated C files) (currently it is compiled with vala-26 version)
+- libgee (please install the development version too)
 - C compiler (gnu C compiler for example)
 
 ### Getting aroop source
@@ -30,10 +32,10 @@ Aroop uses the same [automake tool-chain](http://www.gnu.org/software/automake/m
 a/aroop$ ./autogen.sh --prefix=/opt/aroop
 a/aroop$ make
 a/aroop$ ls aroop/compiler/
-aroopc
+aroopc-0.1.0
 a/aroop$ make install
 a/aroop$ ls /opt/aroop/bin
-aroopc
+aroopc-0.1.0
 ```
 
 ##### If _autogen_ failed to find right vala version
@@ -41,6 +43,7 @@ Well if _autogen_ command above fails and it says it needs right version of vala
 
 ```
 a/aroop$ export VALAC=/opt/vala-26/bin/valac # skip this if it is installed right version to default location
+a/aroop$ cp /opt/vala-26/lib/pkgconfig/libvala-0.26.pc /usr/lib/pkgconfig/ # skip this if it is installed right version to default location
 a/aroop$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/vala-26/lib # skip this if it is installed right version to default location
 a/aroop$ ldconfig # skip this if it is installed right version to default location
 ```
@@ -66,7 +69,7 @@ class HelloWorld {
 At first the *aroopc* generates C code output. It creates `hello_world.c` file for the source `hello_world.vala`.
 
 ```
-a/tmp$ /opt/aroop/bin/aroopc -C hello_world.vala
+a/tmp$ /opt/aroop/bin/aroopc-0.1.0 -C hello_world.vala
 a/tmp$ ls
 hello_world.c
 ```
@@ -77,9 +80,9 @@ The `hello_world.c` contains all the instructions in `hello_world.vala`.
 Now the the C source can be compiled using C compiler. If gnu C compiler is used then the following command will serve the purpose.
 
 ```
-a/tmp$ gcc -I/opt/aroop/include/aroop hello_world.c /opt/aroop/bin/libaroop_core.o -o hello_world.bin # link statically
-a/tmp$ gcc -I/opt/aroop/include/aroop hello_world.c /opt/aroop/lib/libaroop_core_static.a  -o hello_world.bin # linking statically
-a/tmp$ gcc -I/opt/aroop/include/aroop hello_world.c -L/opt/aroop/lib -laroop_core -o hello_world.bin # link dynamically
+a/tmp$ gcc -I/opt/aroop/include/aroop_core-0.1.0 hello_world.c /opt/aroop/bin/libaroop_core.o -o hello_world.bin # link statically
+a/tmp$ gcc -I/opt/aroop/include/aroop_core-0.1.0 hello_world.c /opt/aroop/lib/libaroop_core_static.a  -o hello_world.bin # linking statically
+a/tmp$ gcc -I/opt/aroop/include/aroop_core-0.1.0 hello_world.c -L/opt/aroop/lib -laroop_core -o hello_world.bin # link dynamically
 a/tmp$ ls
 hello_world.bin
 a/tmp$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/aroop/lib # you need to set the dynamic library path
@@ -92,16 +95,16 @@ Hello world
 Once you installed the package file in `/usr/lib/pkgconfig`, you can compile a source in one step.
 
 ```
-a/tmp$ install /opt/aroop/lib/pkgconfig/aroop_core-1.0.pc /usr/lib/pkgconfig
-a/tmp$ /opt/aroop/bin/aroopc hello_world.vala -o hello_world.bin
+a/tmp$ install /opt/aroop/lib/pkgconfig/aroop_core-0.1.0.pc /usr/lib/pkgconfig
+a/tmp$ /opt/aroop/bin/aroopc-0.1.0 hello_world.vala -o hello_world.bin
 a/tmp$ ./hello_world.bin
 Hello world
 ```
 
 The above binary will need the shared library to run. You can also build standalone binary using --static-link argument.
 ```
-a/tmp$ install /opt/aroop/lib/pkgconfig/aroop_core-1.0.pc /usr/lib/pkgconfig
-a/tmp$ /opt/aroop/bin/aroopc --static-link hello_world.vala
+a/tmp$ install /opt/aroop/lib/pkgconfig/aroop_core-0.1.0.pc /usr/lib/pkgconfig
+a/tmp$ /opt/aroop/bin/aroopc-0.1.0 --static-link hello_world.vala
 a/tmp$ ./hello_world.bin
 Hello world
 ```
@@ -123,7 +126,7 @@ init
 The following commands will compile genie.
 
 ```
-a/tmp$ /opt/aroop/bin/aroopc hello_world.gs
+a/tmp$ /opt/aroop/bin/aroopc-0.1.0 hello_world.gs
 a/tmp$ ./hello_world
 Hello world
 ```

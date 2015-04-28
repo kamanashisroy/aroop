@@ -25,18 +25,18 @@ aroop/platform/raspberrypi/raspberry_pi_bare_metal_config.h aroop/platform/raspb
 AROOP_CORE_INCLUDES=-Iaroop
 
 libaroop_core_la_SOURCES = $(AROOP_CORE_SOURCE_FILES)
-libaroop_core_la_CPPFLAGS = $(AROOP_CORE_INCLUDES)
+libaroop_core_la_CPPFLAGS = $(AROOP_CORE_CFLAGS) $(AROOP_CORE_INCLUDES)
 libaroop_core_static_a_SOURCES = $(AROOP_CORE_SOURCE_FILES)
-libaroop_core_static_a_CPPFLAGS = $(AROOP_CORE_INCLUDES)
+libaroop_core_static_a_CPPFLAGS = $(AROOP_CORE_CFLAGS) $(AROOP_CORE_INCLUDES)
 libaroop_core_debug_a_SOURCES = $(AROOP_CORE_SOURCE_FILES)
-libaroop_core_debug_a_CPPFLAGS = -ggdb3 -DAROOP_OPP_PROFILE -DAROOP_OPP_DEBUG -DMTRACE -DOPP_DEBUG $(AROOP_CORE_INCLUDES) 
+libaroop_core_debug_a_CPPFLAGS = $(AROOP_CORE_CFLAGS) -ggdb3 -DAROOP_OPP_PROFILE -DAROOP_OPP_DEBUG -DMTRACE -DOPP_DEBUG $(AROOP_CORE_INCLUDES) 
 #libaroop_core_debug_a_CPPFLAGS = -ggdb3 -DAROOP_OPP_PROFILE -DAROOP_OPP_DEBUG -DMTRACE $(AROOP_CORE_INCLUDES) 
 libaroop_core_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
-libaroop_core_o_CPPFLAGS = $(AROOP_CORE_INCLUDES)
+libaroop_core_o_CPPFLAGS = $(AROOP_CORE_CFLAGS) $(AROOP_CORE_INCLUDES)
 libaroop_core_basic_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
-libaroop_core_basic_o_CPPFLAGS=-DAROOP_BASIC $(AROOP_CORE_INCLUDES)
+libaroop_core_basic_o_CPPFLAGS= $(AROOP_CORE_CFLAGS)-DAROOP_BASIC $(AROOP_CORE_INCLUDES)
 libaroop_core_has_thread_o_SOURCES = $(AROOP_CORE_SOURCE_FILES)
-libaroop_core_has_thread_o_CPPFLAGS=-DHAS_THREAD $(AROOP_CORE_INCLUDES)
+libaroop_core_has_thread_o_CPPFLAGS= $(AROOP_CORE_CFLAGS)-DHAS_THREAD $(AROOP_CORE_INCLUDES)
 
 
 pkgconfigdir = $(libdir)/pkgconfig
