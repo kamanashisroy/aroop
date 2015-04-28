@@ -178,8 +178,7 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 			var prop = (Property) expr.symbol_reference;
 
 			if (!(prop is DynamicProperty)) {
-				// TODO write property accessor implementation
-				// generate_property_accessor_declaration (prop.get_accessor, emitter.cfile);
+				AroopCodeGeneratorAdapter.generate_property_accessor_declaration (prop.get_accessor, emitter.cfile);
 
 				if (!prop.external && prop.external_package) {
 					// internal VAPI properties

@@ -52,6 +52,7 @@ libcodegenplug_la_SOURCES = \
 	symbols/delegatemodule.vala \
 	symbols/valuemodule.vala \
 	symbols/localvariablemodule.vala \
+	symbols/propertymodule.vala \
 	symbols/loadstoremodule.vala \
 	symbols/controlflowmodule.vala \
 	symbols/errormodule.vala \

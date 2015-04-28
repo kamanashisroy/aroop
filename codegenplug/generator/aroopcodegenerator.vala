@@ -661,6 +661,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		PluginManager.swarmValue("generate/block/finalization", args);
 	}
 
+	public static void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["acc"] = acc;
+		args["decl_space"] = decl_space;
+		PluginManager.swarmValue("generate/property_accessor/declaration", args);
+	}
+
 	public static CCodeExpression?generate_instance_cargument_for_struct(MemberAccess ma, Method m, CCodeExpression instance) { 
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["ma"] = ma;
