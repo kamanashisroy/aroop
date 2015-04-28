@@ -15,6 +15,7 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 		PluginManager.register("visit/throw_statement", new HookExtension(visit_throw_statement, this));
 		PluginManager.register("visit/try_statement", new HookExtension(visit_try_statement, this));
 		PluginManager.register("visit/catch_clause", new HookExtension(visit_catch_clause, this));
+		PluginManager.register("simple_check", new HookExtension(add_simple_check_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}

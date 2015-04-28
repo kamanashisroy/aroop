@@ -66,10 +66,8 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 
 		if (stmt.tree_can_fail && stmt.expression.tree_can_fail) {
 			// simple case, no node breakdown necessary
-#if false
-			// TODO Enable This Check
-			add_simple_check (stmt.expression);
-#endif
+			//add_simple_check (stmt.expression);
+			PluginManager.swarmValue("simple_check", stmt.expression);
 		}
 
 		emitter.emit_context.temp_ref_vars.clear ();

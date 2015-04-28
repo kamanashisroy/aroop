@@ -125,10 +125,10 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmValue(visit_exten, ns);
 	}
 
-	public override void visit_data_type (DataType type) {
+	/*public override void visit_data_type (DataType type) {
 		string visit_exten= "visit/data_type";
 		PluginManager.swarmValue(visit_exten, type);
-	}
+	}*/
 
 	public override void visit_block (Block b) {
 		string visit_exten= "visit/block";
