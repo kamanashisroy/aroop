@@ -645,6 +645,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["decl_space"] = decl_space;
 		PluginManager.swarmValue("populate/parent/closure", args);
         }
+
+	public static CCodeExpression? generate_delegate_closure_argument(Expression arg) {
+		CCodeExpression?result = (CCodeExpression?)PluginManager.swarmValue("generate/delegate/closure/argument", arg);
+		if(result == null)
+			print("Please report this bug, result for generate_delegate_closure_argument should not be null\n");
+		return result;
+	}
 	
 	public static CCodeExpression? generate_cargument_for_struct (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		var args = new HashTable<string,Value?>(str_hash, str_equal);

@@ -16,6 +16,7 @@ public class codegenplug.DelegateModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("generate/delegate/declaration", new HookExtension(generate_delegate_declaration_helper, this));
+		PluginManager.register("generate/delegate/closure/argument", new HookExtension(generate_delegate_closure_argument_helper, this));
 		PluginManager.register("visit/delegate", new HookExtension(visit_delegate, this));
 		PluginManager.register("visit/binary_expression/delegate", new HookExtension(visit_binary_expression_for_delegate, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
@@ -99,6 +100,10 @@ public class codegenplug.DelegateModule : shotodolplug.Module {
 	}
 #endif
 	
+	Value? generate_delegate_closure_argument_helper(Value?given) {
+		return generate_delegate_closure_argument((Expression?)given);
+	}
+
 	CCodeExpression? generate_delegate_closure_argument(Expression arg) {
 		CCodeExpression?dleg_expr = null;
 		do {
@@ -190,38 +195,7 @@ public class codegenplug.DelegateModule : shotodolplug.Module {
 	}
 #endif
 
-	CCodeExpression? generate_method_to_delegate_cast_expression_as_comma(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr, CCodeCommaExpression ccomma) {
-		if (expression_type is DelegateType) {
-			return null;
-		}
-		CCodeExpression delegate_expr = generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
-		var assign_temp_var = emitter.get_temp_variable (target_type);
-		AroopCodeGeneratorAdapter.generate_temp_variable(assign_temp_var);
-		//emit_temp_var (assign_temp_var);
-		ccomma.append_expression(new CCodeAssignment(resolve.get_variable_cexpression (assign_temp_var.name), delegate_expr));
-		ccomma.append_expression(resolve.get_variable_cexpression(assign_temp_var.name));
-		return resolve.get_variable_cexpression(assign_temp_var.name);
-	}
 
-	CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
-		if (expression_type is DelegateType) {
-			return source_cexpr;
-		}
-		if (source_cexpr is CCodeCastExpression) {
-			CCodeCastExpression cast_expr = (CCodeCastExpression)source_cexpr;
-			if(cast_expr.type_name == resolve.get_ccode_aroop_name(target_type) && cast_expr.inner is CCodeInitializerList) {
-				return source_cexpr;
-			}
-		}
-		var clist = new CCodeInitializerList ();
-		if (expression_type is NullType) {
-			clist.append (source_cexpr);
-		} else {
-			clist.append (generate_delegate_closure_argument(expr));
-		}
-		clist.append (source_cexpr);
-		return new CCodeCastExpression(clist, resolve.get_ccode_aroop_name(target_type));
-	}
 	CCodeFunctionCall? generate_delegate_method_call_ccode (MethodCall expr) {
 		var ccall = new CCodeFunctionCall (new CCodeMemberAccess(resolve.get_cvalue(expr.call),"aroop_cb"));
 		ccall.add_argument (new CCodeMemberAccess(resolve.get_cvalue(expr.call),"aroop_closure_data"));
