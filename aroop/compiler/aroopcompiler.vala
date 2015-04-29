@@ -59,7 +59,7 @@ class aroop.Compiler {
 	static bool compile_only;
 	static bool static_link;
 	static string output;
-	static string module_debug;
+	static string?module_debug;
 	static bool debug;
 	static bool thread;
 	static bool mem_profiler;
@@ -169,7 +169,7 @@ class aroop.Compiler {
 	void loadModulesHelper(shotodolplug.Module x) {
 		x.init();
 		modules[moduleCount++] = x;
-		if(module_debug == "ALL" || module_debug.contains("|%s|".printf(x.name.down()))) {
+		if(module_debug != null && (module_debug == "ALL" || module_debug.contains("|%s|".printf(x.name.down())))) {
 			x.debug_is_enabled = true;
 		}
 	}
@@ -202,6 +202,7 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.ExpressionModule());
 		loadModulesHelper(new codegenplug.PostfixExpressionModule());
 		loadModulesHelper(new codegenplug.UnaryExpressionModule());
+		loadModulesHelper(new codegenplug.LambdaExpressionModule());
 		loadModulesHelper(new codegenplug.CastExpressionModule());
 		loadModulesHelper(new codegenplug.AssignmentModule());
 		loadModulesHelper(new codegenplug.GenericTypeModule());
