@@ -10,7 +10,7 @@ using Vala;
  *  @{
  */
 public abstract class shotodolplug.Module {
-	internal string name;
+	public string name;
 	string version;
 	public Module(string nm,string ver) {
 		name = nm;
@@ -25,5 +25,10 @@ public abstract class shotodolplug.Module {
 	}
 	public abstract int init();
 	public abstract int deinit();
+	public bool debug_is_enabled = false;
+	public void print_debug(string content) {
+		if(debug_is_enabled)
+			print(content);
+	}
 }
 /** @}*/

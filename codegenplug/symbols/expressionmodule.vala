@@ -63,11 +63,11 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		 * we unref temporary variables at the end of a full
 		 * expression
 		 */
-		print("Ending expression %s\n", expr.to_string());
+		print_debug("Ending expression %s\n".printf(expr.to_string()));
 
 		if (((Vala.List<LocalVariable>) emitter.emit_context.temp_ref_vars).size == 0) {
 			/* nothing to do without temporary variables */
-			print("Ending expression %s nothing to do ..\n", expr.to_string());
+			print_debug("Ending expression %s nothing to do ..\n".printf(expr.to_string()));
 			return null;
 		}
 
@@ -158,7 +158,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			return cexpr;
 		}
 
-		print("transforming expression %s for target %s\n", expr.to_string(), target_type.to_string());
+		print_debug("transforming expression %s for target %s\n".printf(expr.to_string(), target_type.to_string()));
 
 		if (expression_type.value_owned
 		    && (target_type == null || !target_type.value_owned)) {
@@ -172,7 +172,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 				var decl = emitter.get_temp_variable (expression_type, true, expression_type);
 				AroopCodeGeneratorAdapter.generate_temp_variable(decl);
 				emitter.emit_context.temp_ref_vars.insert (0, decl);
-				print("adding temp variable %s for expression %s\n", decl.to_string(), expr.to_string());
+				print_debug("adding temp variable %s for expression %s\n".printf(decl.to_string(), expr.to_string()));
 				cexpr = new CCodeAssignment (resolve.get_variable_cexpression (decl.name), cexpr);
 #else
 				// use macro instead of temporary variable
@@ -208,7 +208,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 
 		if (expression_type.data_type != null && expression_type.data_type == target_type.data_type) {
 			// same type, no cast required
-			print("no cast required for target %s for expression %s\n", expr.to_string(), target_type.to_string());
+			print_debug("no cast required for target %s for expression %s\n".printf(expr.to_string(), target_type.to_string()));
 			return cexpr;
 		}
 

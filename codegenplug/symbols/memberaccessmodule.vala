@@ -34,7 +34,7 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 
 #if false
 	string get_vtable_var(Class cl, Class of_class) {
-		print("%s grephere %s\n", resolve.get_ccode_aroop_name(cl), resolve.get_ccode_aroop_name(of_class));
+		print_debug("%s grephere %s\n".printf(resolve.get_ccode_aroop_name(cl), resolve.get_ccode_aroop_name(of_class)));
 		if(of_class == null) {
 			return "unknown";
 		}
@@ -49,7 +49,7 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 #endif
 
 	string get_vtable_var_for_method(Class cl, Class of_class, Method m) {
-		print("%s grephere %s\n", resolve.get_ccode_aroop_name(cl), resolve.get_ccode_aroop_name(of_class));
+		print_debug("%s grephere %s\n".printf(resolve.get_ccode_aroop_name(cl), resolve.get_ccode_aroop_name(of_class)));
 		if(of_class == null) {
 			return "unknown";
 		}

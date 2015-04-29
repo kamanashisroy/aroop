@@ -323,7 +323,6 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	public LocalVariable get_declaration_variable () {
 		return current_declaration_variable_stack.get(current_declaration_variable_stack.size - 1);
 	}
-
 }
 public class codegenplug.EmitContext {
 	public Symbol? current_symbol;

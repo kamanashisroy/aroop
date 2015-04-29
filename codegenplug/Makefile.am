@@ -33,6 +33,7 @@ libcodegenplug_la_SOURCES = \
 	valaccodebasemodule.vala \
 	valaccodecompiler.vala \
 	generator/aroopcodegenerator.vala \
+	generator/aroopcodegeneratoradapter.vala \
 	tempvariablemodule.vala \
 	sourceemittermodule.vala \
 	generator/csymbolresolve.vala \

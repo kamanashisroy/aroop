@@ -59,6 +59,7 @@ class aroop.Compiler {
 	static bool compile_only;
 	static bool static_link;
 	static string output;
+	static string module_debug;
 	static bool debug;
 	static bool thread;
 	static bool mem_profiler;
@@ -118,6 +119,7 @@ class aroop.Compiler {
 		{ "compile", 'c', 0, OptionArg.NONE, ref compile_only, "Compile but do not link", null },
 		{ "output", 'o', 0, OptionArg.FILENAME, ref output, "Place output in file FILE", "FILE" },
 		{ "debug", 'g', 0, OptionArg.NONE, ref debug, "Produce debug information", null },
+		{ "module-debug", 0, 0, OptionArg.STRING, ref module_debug, "enable compile module debug, for example --module-debug \"|assignment|expression|unaryexpression|\", use ALL to debug all modules", null },
 		{ "thread", 0, 0, OptionArg.NONE, ref thread, "Enable multithreading support", null },
 		{ "enable-mem-profiler", 0, 0, OptionArg.NONE, ref mem_profiler, "Enable GLib memory profiler", null },
 		{ "define", 'D', 0, OptionArg.STRING_ARRAY, ref defines, "Define SYMBOL", "SYMBOL..." },
@@ -167,6 +169,9 @@ class aroop.Compiler {
 	void loadModulesHelper(shotodolplug.Module x) {
 		x.init();
 		modules[moduleCount++] = x;
+		if(module_debug == "ALL" || module_debug.contains("|%s|".printf(x.name.down()))) {
+			x.debug_is_enabled = true;
+		}
 	}
 	void loadModules() {
 		loadModulesHelper(new shotodolplug.PluginManager());
