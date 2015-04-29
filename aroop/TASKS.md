@@ -1,4 +1,5 @@
 
+#### Unsorted
 - [ ] The binary should have one context object, so that they do not conflict if loaded multiple times.
 - [ ] Integrate AspectC for aspect oriented programming.
 - [ ] Support parameter direction
@@ -7,4 +8,7 @@
 - [ ] **Write xtring related test code.**
 - [ ] Support a new statement with parameter, something like x new
 - [ ] add AROOP_LOW_MEMORY in makefile.mk to create low memory static library.
+
+#### Generated C code
+	- [ ] Do static analysis on generated C code.
 

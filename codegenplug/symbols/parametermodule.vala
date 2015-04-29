@@ -12,6 +12,7 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("generate/cparameter", new HookExtension(generate_cparameters_helper, this));
+		PluginManager.register("visit/formal_parameter", new HookExtension(visit_formal_parameter, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -174,4 +175,8 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 	}
 
 	
+	Value?visit_formal_parameter (Value?given) {
+		Vala.Parameter?p = (Vala.Parameter?)given;
+		return null;
+	}
 }

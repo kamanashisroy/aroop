@@ -84,12 +84,10 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmValue(visit_exten, m);
 	}
 	public override void visit_formal_parameter(Vala.Parameter m) {
-		string visit_exten= "visit/formal_parameter";
-		PluginManager.swarmValue(visit_exten, m);
+		PluginManager.swarmValue("visit/formal_parameter", m);
 	}
 	public override void visit_property(Property prop) {
-		string visit_exten= "visit/property";
-		PluginManager.swarmValue(visit_exten, prop);
+		PluginManager.swarmValue("visit/property", prop);
 	}
 	public override void visit_property_accessor (PropertyAccessor acc) {
 		string visit_exten= "visit/property_accessor";
