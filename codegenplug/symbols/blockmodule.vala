@@ -57,14 +57,11 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			var data_decl = new CCodeDeclaration (AroopCodeGeneratorAdapter.generate_block_name(b));
 			data_decl.add_declarator (new CCodeVariableDeclarator (AroopCodeGeneratorAdapter.generate_block_var_name(b)));
 			emitter.ccode.add_statement (data_decl);
-			var current_property_accessor = (PropertyAccessor?)PluginManager.swarmValue("current/property_accessor", null);
-			if(current_property_accessor == null)
-				print("Please report this bug, current_property_accessor should not be null\n");
 
 			if (parent_block != null) {
 				generate_block_parent_assignment(b);
 			} else if ((emitter.current_method != null && emitter.current_method.binding == MemberBinding.INSTANCE) ||
-			           (current_property_accessor != null && current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
+			           (emitter.current_property_accessor != null && emitter.current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
 				var ref_call = new CCodeFunctionCall (resolve.get_dup_func_expression (resolve.get_data_type_for_symbol(emitter.current_type_symbol), b.source_reference));
 				ref_call.add_argument (new CCodeIdentifier (resolve.self_instance));
 
@@ -226,9 +223,6 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		var proto = new CCodeStructPrototype (AroopCodeGeneratorAdapter.generate_block_name(b));
 		var free_block = new CCodeBlock ();
 		var block_struct = proto.definition;
-		var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
-		if(current_property_accessor == null)
-			print("Please report this bug, current_property_accessor should not be null\n");
 		
 		if (parent_block != null) {
 			// XXX this piece of code is not tested
@@ -238,7 +232,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 				, AroopCodeGeneratorAdapter.generate_block_var_name(parent_block));
 
 		} else if ((emitter.current_method != null && emitter.current_method.binding == MemberBinding.INSTANCE) ||
-				   (current_property_accessor != null && current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
+				   (emitter.current_property_accessor != null && emitter.current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
 			//block_struct.add_field ("%s *".printf (resolve.get_ccode_aroop_name(emitter.current_symbol)), resolve.self_instance);
 			block_struct.add_field ("%s *".printf (resolve.get_ccode_aroop_name(emitter.current_type_symbol)), resolve.self_instance);
 

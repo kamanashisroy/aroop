@@ -59,6 +59,17 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 			return next_closure_block (current_symbol);
 		}
 	}
+	public PropertyAccessor? current_property_accessor {
+		get {
+			var sym = current_symbol;
+			while (sym is Block) {
+				sym = sym.parent_symbol;
+			}
+			return sym as PropertyAccessor;
+		}
+	}
+
+
 	public bool current_method_inner_error;
 	public int next_temp_var_id;
 	int next_block_id = 0;

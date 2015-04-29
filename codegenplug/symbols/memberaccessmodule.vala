@@ -293,14 +293,10 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 						// Property setters of non simple structs shall replace all occurences
 						// of the "value" formal parameter with a dereferencing version of that
 						// parameter.
-						var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
-						if(current_property_accessor == null) {
-							print("Please report this bug, current_property_accessor for get_parameter_cvalue should not be null\n");
-						}
-						if (current_property_accessor != null &&
-						    current_property_accessor.writable &&
-						    current_property_accessor.value_parameter == p &&
-						    current_property_accessor.prop.property_type.is_real_struct_type ()) {
+						if (emitter.current_property_accessor != null &&
+						    emitter.current_property_accessor.writable &&
+						    emitter.current_property_accessor.value_parameter == p &&
+						    emitter.current_property_accessor.prop.property_type.is_real_struct_type ()) {
 							result.cvalue = new CCodeIdentifier ("(*value)");
 						} else {
 							result.cvalue = resolve.get_variable_cexpression (p.name);

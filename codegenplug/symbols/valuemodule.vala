@@ -15,8 +15,8 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		//PluginManager.register("visit/creation_method", new HookExtension(visit_block, this));
 		PluginManager.register("visit/binary_expression", new HookExtension(visit_binary_expression, this));
+		PluginManager.register("visit/type_check", new HookExtension(visit_type_check, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -45,6 +45,24 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 		return null;
 	}
 #endif
+
+	CCodeExpression? create_type_check (CCodeNode ccodenode, DataType type) {
+		var ccheck = new CCodeFunctionCall (new CCodeIdentifier ("any_is_a"));
+		ccheck.add_argument ((CCodeExpression) ccodenode);
+		ccheck.add_argument (resolve.get_type_id_expression (type));
+		return ccheck;
+	}
+
+	Value?visit_type_check (Value?given) {
+		TypeCheck?expr = (TypeCheck?)given;
+		AroopCodeGeneratorAdapter.generate_type_declaration (expr.type_reference, emitter.cfile);
+
+		resolve.set_cvalue (expr, create_type_check (resolve.get_cvalue (expr.expression), expr.type_reference));
+		if (resolve.get_cvalue (expr) is CCodeInvalidExpression) {
+			Report.error (expr.source_reference, "type check expressions not supported for compact classes, structs, and enums");
+		}
+		return null;
+	}
 
 	Value?visit_binary_expression (Value?given_args) {
 		BinaryExpression?expr = (BinaryExpression?)given_args;

@@ -176,6 +176,7 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.CSymbolResolve());
 		loadModulesHelper(new codegenplug.ElementModule());
 		loadModulesHelper(new codegenplug.MemberAccessModule());
+		loadModulesHelper(new codegenplug.BaseAccessModule());
 		loadModulesHelper(new codegenplug.ParameterModule());
 		loadModulesHelper(new codegenplug.MethodModule());
 		loadModulesHelper(new codegenplug.DelegateModule());

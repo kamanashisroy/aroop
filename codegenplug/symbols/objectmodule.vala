@@ -6,10 +6,8 @@ using codegenplug;
 public class codegenplug.ObjectModule : shotodolplug.Module {
 	SourceEmitterModule?emitter = null;
 	CSymbolResolve?resolve = null;
-	Class type_class;
 	public ObjectModule() {
 		base("Object", "0.0");
-		//type_class = (Class) aroop_ns.scope.lookup ("Type");
 	}
 
 	public override int init() {

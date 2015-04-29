@@ -13,6 +13,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 	public override int init() {
 		PluginManager.register("visit/field", new HookExtension(visit_field, this));
 		PluginManager.register("generate/element/destruction", new HookExtension(generate_element_destruction_code_helper, this));
+		PluginManager.register("generate/element/declaration", new HookExtension(generate_element_declaration_helper, this));
 		PluginManager.register("generate/struct/cargument", new HookExtension(generate_cargument_for_struct_helper, this));
 		PluginManager.register("generate/struct/instance/cargument", new HookExtension(generate_instance_cargument_for_struct_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
@@ -54,6 +55,17 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		if (resolve.requires_destroy (f.variable_type))  {
 			stmt.add_statement(new CCodeExpressionStatement(resolve.get_unref_expression(new CCodeMemberAccess.pointer(new CCodeIdentifier(resolve.self_instance), resolve.get_ccode_name(f)), f.variable_type)));
 		}
+	}
+
+	Value? generate_element_declaration_helper(Value?givenArgs) {
+		HashTable<string,Value?> args = (HashTable<string,Value?>)givenArgs;
+		generate_element_declaration(
+			(Field)args["field"]
+			, (CCodeStruct)args["container"]
+			, (CCodeFile)args["decl_space"]
+			, (((string?)args["internalSymbol"]) == "1")
+		);
+		return null;
 	}
 
 	void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space, bool internalSymbol = true) {
