@@ -44,14 +44,6 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 		emitter.visitor.visit_method (m);
 		return null;
 	}
-
-#if false
-	public override void visit_assignment (Assignment assignment) {
-		base.visit_assignment (assignment);
-		return;
-	}
-#endif
-
 #endif
 
 	Value?visit_binary_expression (Value?given_args) {

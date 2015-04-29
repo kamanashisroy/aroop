@@ -39,6 +39,7 @@ libcodegenplug_la_SOURCES = \
 	symbols/structmodule.vala \
 	symbols/stringmodule.vala \
 	symbols/expressionmodule.vala \
+	symbols/assignmentmodule.vala \
 	symbols/elementmodule.vala \
 	symbols/memberaccessmodule.vala \
 	symbols/parametermodule.vala \

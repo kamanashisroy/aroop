@@ -165,6 +165,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 				var decl = emitter.get_temp_variable (expression_type, true, expression_type);
 				AroopCodeGeneratorAdapter.generate_temp_variable(decl);
 				emitter.emit_context.temp_ref_vars.insert (0, decl);
+				print("adding temp variable %s for expression %s\n", decl.to_string(), expr.to_string());
 				cexpr = new CCodeAssignment (resolve.get_variable_cexpression (decl.name), cexpr);
 #else
 				// use macro instead of temporary variable
