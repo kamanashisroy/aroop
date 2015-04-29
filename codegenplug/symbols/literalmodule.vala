@@ -179,7 +179,5 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 		resolve.set_cvalue (expr, new CCodeConstant (expr.value ? "true" : "false"));
 		return null;
 	}
-
-
 }
 

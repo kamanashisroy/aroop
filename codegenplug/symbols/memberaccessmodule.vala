@@ -325,7 +325,5 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 			return new CCodeMemberAccess.pointer (cblock_val, resolve.get_variable_cname (p.name));
 		}
 	}
-
-
 }
 
