@@ -14,7 +14,7 @@ public class codegenplug.ControlFlowModule : shotodolplug.Module {
 		PluginManager.register("visit/if_statement", new HookExtension(visit_if_statement, this));
 		PluginManager.register("visit/switch_statement", new HookExtension(visit_switch_statement, this));
 		PluginManager.register("visit/switch_label", new HookExtension(visit_switch_label, this));
-		PluginManager.register("visit/visit_loop", new HookExtension(visit_loop, this));
+		PluginManager.register("visit/loop", new HookExtension(visit_loop, this));
 		PluginManager.register("visit/break_statement", new HookExtension(visit_break_statement, this));
 		PluginManager.register("visit/continue_statement", new HookExtension(visit_continue_statement, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));

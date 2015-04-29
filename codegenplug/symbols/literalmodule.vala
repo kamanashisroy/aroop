@@ -17,6 +17,7 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 	public override int init() {
 		PluginManager.register("visit/integer_literal", new HookExtension(visit_integer_literal, this));
 		PluginManager.register("visit/null_literal", new HookExtension(visit_null_literal, this));
+		PluginManager.register("visit/boolean_literal", new HookExtension(visit_boolean_literal, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -172,5 +173,13 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 		resolve.set_cvalue (expr, map_creation);
 	}
 #endif
+
+	Value?visit_boolean_literal (Value?given) {
+		BooleanLiteral?expr = (BooleanLiteral?)given;
+		resolve.set_cvalue (expr, new CCodeConstant (expr.value ? "true" : "false"));
+		return null;
+	}
+
+
 }
 

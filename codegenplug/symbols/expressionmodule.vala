@@ -203,7 +203,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 
 		return cexpr;
 	}
-	public CCodeExpression get_implicit_cast_expression (CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr = null) {
+	CCodeExpression get_implicit_cast_expression (CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr = null) {
 		var cexpr = source_cexpr;
 
 		if (expression_type.data_type != null && expression_type.data_type == target_type.data_type) {
