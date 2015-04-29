@@ -14,6 +14,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		PluginManager.register("visit/field", new HookExtension(visit_field, this));
 		PluginManager.register("generate/element/destruction", new HookExtension(generate_element_destruction_code_helper, this));
 		PluginManager.register("generate/element/declaration", new HookExtension(generate_element_declaration_helper, this));
+		PluginManager.register("generate/field/declaration", new HookExtension(generate_field_declaration_helper, this));
 		PluginManager.register("generate/struct/cargument", new HookExtension(generate_cargument_for_struct_helper, this));
 		PluginManager.register("generate/struct/instance/cargument", new HookExtension(generate_instance_cargument_for_struct_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
@@ -191,6 +192,16 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 	
 	CCodeExpression? handle_struct_argument (Vala.Parameter param, Expression arg, CCodeExpression? cexpr) {
 		assert_not_reached ();
+		return null;
+	}
+
+	Value? generate_field_declaration_helper(Value?givenArgs) {
+		HashTable<string,Value?> args = (HashTable<string,Value?>)givenArgs;
+		generate_field_declaration(
+			(Field?)args["field"]
+			, (CCodeFile?)args["decl_space"]
+			, (((string?)args["defineHere"]) == "1")
+		);
 		return null;
 	}
 

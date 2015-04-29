@@ -595,11 +595,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 				result.cvalue = new CCodeMemberAccess (inst, get_ccode_name (f));
 			}
 		} else {
-			var fargs = new HashMap<string,Value?>();
-			fargs["field"] = f;
-			PluginManager.swarmValue("generate/field/declaration", fargs);
-			//generate_field_declaration (f, cfile, false);
-
+			AroopCodeGeneratorAdapter.generate_field_declaration (f, emitter.cfile, false);
 			result.cvalue = new CCodeIdentifier (get_ccode_name (f));
 		}
 

@@ -56,12 +56,10 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmValue(visit_exten, ev);
 	}
 	public override void visit_error_domain(ErrorDomain edomain) {
-		string visit_exten= "visit/error_domain";
-		PluginManager.swarmValue(visit_exten, edomain);
+		PluginManager.swarmValue("visit/error_domain", edomain);
 	}
 	public override void visit_error_code(ErrorCode ecode) {
-		string visit_exten= "visit/error_code";
-		PluginManager.swarmValue(visit_exten, ecode);
+		PluginManager.swarmValue("visit/error_code", ecode);
 	}
 	public override void visit_delegate(Delegate d) {
 		string visit_exten= "visit/delegate";
@@ -509,6 +507,15 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["internalSymbol"] = internalSymbol?"1":"0";
 		PluginManager.swarmValue("generate/element/declaration", args);
 	}
+
+	public static void generate_field_declaration(Field f, CCodeFile decl_space, bool defineHere = false) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["field"] = f;
+		args["decl_space"] = decl_space;
+		args["defineHere"] = defineHere?"1":"0";
+		PluginManager.swarmValue("generate/field/declaration", args);
+	}
+
 	public static void generate_struct_declaration (Struct st, CCodeFile decl_space) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["struct"] = st;
