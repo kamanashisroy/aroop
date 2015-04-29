@@ -40,6 +40,7 @@ libcodegenplug_la_SOURCES = \
 	symbols/stringmodule.vala \
 	symbols/expressionmodule.vala \
 	symbols/postfixexpressionmodule.vala \
+	symbols/unaryexpressionmodule.vala \
 	symbols/assignmentmodule.vala \
 	symbols/elementmodule.vala \
 	symbols/baseaccessmodule.vala \

@@ -196,6 +196,7 @@ class aroop.Compiler {
 		loadModulesHelper(new codegenplug.LiteralModule());
 		loadModulesHelper(new codegenplug.ExpressionModule());
 		loadModulesHelper(new codegenplug.PostfixExpressionModule());
+		loadModulesHelper(new codegenplug.UnaryExpressionModule());
 		loadModulesHelper(new codegenplug.AssignmentModule());
 		loadModulesHelper(new codegenplug.GenericTypeModule());
 		loadModulesHelper(new codegenplug.ErrorModule());
