@@ -34,7 +34,13 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 
 	Value? visit_declaration_statement (Value?given) {
 		DeclarationStatement?stmt = (DeclarationStatement?)given;
+		var local = stmt.declaration as LocalVariable;
+		if (local == null) {
+			local = new LocalVariable(new PointerType(new VoidType()), "_AROOP_NO_DECLARATION_VARIABLE_");
+		}
+		emitter.push_declaration_variable(local);
 		stmt.declaration.accept (emitter.visitor);
+		emitter.pop_declaration_variable();
 		return null;
 	}
 
@@ -152,6 +158,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			return cexpr;
 		}
 
+		print("transforming expression %s for target %s\n", expr.to_string(), target_type.to_string());
 
 		if (expression_type.value_owned
 		    && (target_type == null || !target_type.value_owned)) {
@@ -201,6 +208,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 
 		if (expression_type.data_type != null && expression_type.data_type == target_type.data_type) {
 			// same type, no cast required
+			print("no cast required for target %s for expression %s\n", expr.to_string(), target_type.to_string());
 			return cexpr;
 		}
 

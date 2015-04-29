@@ -48,6 +48,7 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			// value-type initialization or object creation expression with object initializer
 			var temp_decl = emitter.get_temp_variable (expr.type_reference, false, expr);
 			AroopCodeGeneratorAdapter.generate_temp_variable (temp_decl);
+			print("visit_object_creation_expression is creating temporary variable %s for %s\n", temp_decl.to_string(), expr.to_string());
 
 			// TODO omit the following line of code
 			var memclean = new CCodeFunctionCall(new CCodeIdentifier("aroop_memclean_raw2"));
@@ -219,15 +220,19 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 		}
 
 		if (creation_expr != null) {
+#if false
 			var temp_var = emitter.get_temp_variable (expr.value_type);
 			var temp_ref = resolve.get_variable_cexpression (temp_var.name);
 
 			AroopCodeGeneratorAdapter.generate_temp_variable (temp_var);
+			print("visit_object_creation_expression 2 is creating temporary variable %s for %s\n", temp_var.to_string(), expr.to_string());
 
 			emitter.ccode.add_assignment (temp_ref, creation_expr);
 			resolve.set_cvalue (expr, temp_ref);
+#else
+			emitter.ccode.add_assignment (resolve.get_variable_cexpression(emitter.get_declaration_variable().name), creation_expr);
+			resolve.set_cvalue (expr, creation_expr);
+#endif
 		}
 	}
-
-
 }

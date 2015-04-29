@@ -63,6 +63,7 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	public int next_temp_var_id;
 	int next_block_id = 0;
 	Map<Block,int> block_map = new HashMap<Block,int> ();
+
 	public unowned Block? next_closure_block (Symbol sym) {
 		unowned Block block = null;
 		while (true) {
@@ -124,10 +125,11 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	DataType int_type;
 	DataType uint_type;
 	DataType string_type;
-	public Class object_class;
+	//public Class object_class;
+	public Interface object_class;
 	//public Class type_class;
 	public Struct type_class;
-	Class value_class;
+	Struct value_class;
 	Class string_class;
 	public Struct array_struct;
 	Class delegate_class;
@@ -154,10 +156,10 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 
 		var aroop_ns = (Namespace) root_symbol.scope.lookup ("aroop");
 		//object_class = (Class) aroop_ns.scope.lookup ("Object");
-		object_class = (Class) aroop_ns.scope.lookup ("Replicable");
+		object_class = (Interface) aroop_ns.scope.lookup ("Replicable");
 		//type_class = (Class) aroop_ns.scope.lookup ("Type");
 		type_class = (Struct) aroop_ns.scope.lookup ("Type");
-		value_class = (Class) aroop_ns.scope.lookup ("Value");
+		value_class = (Struct) aroop_ns.scope.lookup ("Value");
 		string_class = (Class) root_symbol.scope.lookup ("string");
 		array_struct = (Struct) aroop_ns.scope.lookup ("Array");
 		delegate_class = (Class) aroop_ns.scope.lookup ("Delegate");
@@ -298,7 +300,18 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 		return null;
 	}
 
+	public ArrayList<LocalVariable> current_declaration_variable_stack = new ArrayList<LocalVariable> ();
+	public void push_declaration_variable (LocalVariable local) {
+		current_declaration_variable_stack.add (local);
+	}
 
+	public void pop_declaration_variable () {
+		current_declaration_variable_stack.remove_at (current_declaration_variable_stack.size - 1);
+	}
+
+	public LocalVariable get_declaration_variable () {
+		return current_declaration_variable_stack.get(current_declaration_variable_stack.size - 1);
+	}
 
 }
 public class codegenplug.EmitContext {

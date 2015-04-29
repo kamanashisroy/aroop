@@ -741,6 +741,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 			var decl = emitter.get_temp_variable (expression_type, false, node);
 			AroopCodeGeneratorAdapter.generate_temp_variable(decl);
+			print("get_ref_cexpression is creating temporary variable %s for %s\n", decl.to_string(), expr.to_string());
 
 			var ctemp = get_variable_cexpression (decl.name);
 
@@ -785,6 +786,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 		} else {
 			var decl = emitter.get_temp_variable (expression_type, false, node);
 			AroopCodeGeneratorAdapter.generate_temp_variable(decl);
+			print("get_ref_cexpression is creating temporary variable %s for %s\n", decl.to_string(), expr.to_string());
 
 			var ctemp = get_variable_cexpression (decl.name);
 
