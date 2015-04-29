@@ -252,7 +252,7 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 	CCodeExpression get_local_cvalue_for_block(LocalVariable local) {
 		// captured variables are stored on the heap
 		var block = (Block) local.parent_symbol;
-		CCodeExpression cblock = resolve.get_variable_cexpression ((string?)PluginManager.swarmValue ("generate/block/var/name", block));
+		CCodeExpression cblock = resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(block));
 		string local_name = resolve.get_variable_cname (local.name);
 		if(block == emitter.current_closure_block && emitter.current_closure_block.parent_symbol == emitter.current_method) {
 			return new CCodeMemberAccess (cblock, local_name);
@@ -294,6 +294,9 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 						// of the "value" formal parameter with a dereferencing version of that
 						// parameter.
 						var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
+						if(current_property_accessor == null) {
+							print("Please report this bug, current_property_accessor for get_parameter_cvalue should not be null\n");
+						}
 						if (current_property_accessor != null &&
 						    current_property_accessor.writable &&
 						    current_property_accessor.value_parameter == p &&
@@ -319,7 +322,7 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 			block = ((Method) p.parent_symbol).body;
 		}
 		
-		var cblock_val = resolve.get_variable_cexpression ((string?)PluginManager.swarmValue ("generate/block/var/name", block));
+		var cblock_val = resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(block));
 		if(block == emitter.current_closure_block && emitter.current_closure_block.parent_symbol == emitter.current_method) {
 			return new CCodeMemberAccess (cblock_val, resolve.get_variable_cname (p.name));
 		} else {

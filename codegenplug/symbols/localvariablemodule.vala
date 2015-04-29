@@ -91,7 +91,8 @@ public class codegenplug.LocalVariableModule : shotodolplug.Module {
 		emitter.ccode.add_assignment (
 			new CCodeMemberAccess (
 				resolve.get_variable_cexpression (
-				(string?)PluginManager.swarmValue("generate/block/var/name", (Block) local.parent_symbol))
+					AroopCodeGeneratorAdapter.generate_block_var_name((Block) local.parent_symbol)
+				)
 				, resolve.get_variable_cname (local.name)), rhs);
 	}
 

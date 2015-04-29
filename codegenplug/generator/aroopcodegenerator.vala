@@ -673,11 +673,17 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	}
 
 	public static string? generate_block_name(Block b) {
-		return (string?)PluginManager.swarmValue("generate/block/name", b);
+		string? result = (string?)PluginManager.swarmValue("generate/block/name", b);
+		if(result == null)
+			print("Please report this bug, result for generate_block_name should not be null\n");
+		return result;
 	}
 
 	public static string? generate_block_var_name(Block b) {
-		return (string?)PluginManager.swarmValue("generate/block/var/name", b);
+		string? result = (string?)PluginManager.swarmValue("generate/block/var/name", b);
+		if(result == null)
+			print("Please report this bug, result for generate_block_var_name should not be null\n");
+		return result;
 	}
 
 	public static void generate_block_finalization(Block b, CCodeFunction decl_space) {

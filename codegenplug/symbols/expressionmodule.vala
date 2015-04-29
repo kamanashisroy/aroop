@@ -57,9 +57,11 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		 * we unref temporary variables at the end of a full
 		 * expression
 		 */
+		print("Ending expression %s\n", expr.to_string());
 
 		if (((Vala.List<LocalVariable>) emitter.emit_context.temp_ref_vars).size == 0) {
 			/* nothing to do without temporary variables */
+			print("Ending expression %s nothing to do ..\n", expr.to_string());
 			return null;
 		}
 

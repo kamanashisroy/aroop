@@ -50,12 +50,12 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			generate_block_declaration(b, emitter.cfile);
 			
 			//var alloc_call = new CCodeFunctionCall (new CCodeIdentifier ("aroop_object_alloc"));
-			//alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf ((string?)generate_block_name(b))));
-			//alloc_call.add_argument (new CCodeIdentifier("%spray".printf ((string?)generate_block_name(b))));
+			//alloc_call.add_argument (new CCodeIdentifier ("sizeof(struct _%s)".printf (AroopCodeGeneratorAdapter.generate_block_name(b))));
+			//alloc_call.add_argument (new CCodeIdentifier("%spray".printf (AroopCodeGeneratorAdapter.generate_block_name(b))));
 			//vblock.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeIdentifier (resolve.self_instance), new CCodeCastExpression (alloc_call, "%s *".printf (resolve.get_ccode_aroop_name (emitter.current_type_symbol))))));
 			
-			var data_decl = new CCodeDeclaration ((string?)generate_block_name(b));
-			data_decl.add_declarator (new CCodeVariableDeclarator ((string?)generate_block_var_name(b)));
+			var data_decl = new CCodeDeclaration (AroopCodeGeneratorAdapter.generate_block_name(b));
+			data_decl.add_declarator (new CCodeVariableDeclarator (AroopCodeGeneratorAdapter.generate_block_var_name(b)));
 			emitter.ccode.add_statement (data_decl);
 			var current_property_accessor = (PropertyAccessor?)PluginManager.swarmValue("current/property_accessor", null);
 			if(current_property_accessor == null)
@@ -68,7 +68,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 				var ref_call = new CCodeFunctionCall (resolve.get_dup_func_expression (resolve.get_data_type_for_symbol(emitter.current_type_symbol), b.source_reference));
 				ref_call.add_argument (new CCodeIdentifier (resolve.self_instance));
 
-				emitter.ccode.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess (resolve.get_variable_cexpression ((string?)generate_block_var_name(b)), resolve.self_instance), ref_call)));
+				emitter.ccode.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess (resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(b)), resolve.self_instance), ref_call)));
 			}
 
 			if (b.parent_symbol is Method) {
@@ -133,7 +133,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			data_unref.add_argument (
 				new CCodeUnaryExpression (
 					CCodeUnaryOperator.ADDRESS_OF, 
-					new CCodeIdentifier((string?)generate_block_var_name(b))
+					new CCodeIdentifier(AroopCodeGeneratorAdapter.generate_block_var_name(b))
 				)
 			);
 			emitter.ccode.add_statement (new CCodeExpressionStatement (data_unref));
@@ -165,7 +165,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		emitter.ccode.add_assignment (
 			new CCodeMemberAccess (
 				resolve.get_variable_cexpression (
-					(string?)generate_block_var_name(b)
+					AroopCodeGeneratorAdapter.generate_block_var_name(b)
 				), resolve.get_variable_cname (param.name)), cparam);
 	}
 
@@ -188,7 +188,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 	
 	void generate_block_finalize_function(Block b, CCodeBlock free_block, CCodeFile decl_space) {
 		var unref_fun = new CCodeFunction (generate_block_finalize_function_name(b), "void");
-		unref_fun.add_parameter (new CCodeParameter ((string?)generate_block_var_name(b), (string?)generate_block_name(b) + "*"));
+		unref_fun.add_parameter (new CCodeParameter (AroopCodeGeneratorAdapter.generate_block_var_name(b), AroopCodeGeneratorAdapter.generate_block_name(b) + "*"));
 		unref_fun.modifiers = CCodeModifiers.STATIC;
 		decl_space.add_function_declaration (unref_fun);
 		unref_fun.block = free_block;
@@ -211,7 +211,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		data_unref.add_argument (
 			new CCodeUnaryExpression (
 					CCodeUnaryOperator.ADDRESS_OF, 
-					resolve.get_variable_cexpression((string?)generate_block_var_name(b))
+					resolve.get_variable_cexpression(AroopCodeGeneratorAdapter.generate_block_var_name(b))
 				));
 		emitter.ccode.add_expression (data_unref);
 	}
@@ -223,7 +223,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		}
 		var parent_block = emitter.next_closure_block (b.parent_symbol);
 		var local_vars = b.get_local_variables ();
-		var proto = new CCodeStructPrototype ((string?)generate_block_name(b));
+		var proto = new CCodeStructPrototype (AroopCodeGeneratorAdapter.generate_block_name(b));
 		var free_block = new CCodeBlock ();
 		var block_struct = proto.definition;
 		var current_property_accessor = (PropertyAccessor)PluginManager.swarmValue("current/property_accessor", null);
@@ -234,8 +234,8 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			// XXX this piece of code is not tested
 			int parent_block_id = emitter.get_block_id (parent_block);
 
-			block_struct.add_field ((string?)generate_block_name(parent_block) + "*"
-				, (string?)generate_block_var_name(parent_block));
+			block_struct.add_field (AroopCodeGeneratorAdapter.generate_block_name(parent_block) + "*"
+				, AroopCodeGeneratorAdapter.generate_block_var_name(parent_block));
 
 		} else if ((emitter.current_method != null && emitter.current_method.binding == MemberBinding.INSTANCE) ||
 				   (current_property_accessor != null && current_property_accessor.prop.binding == MemberBinding.INSTANCE)) {
@@ -248,7 +248,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 				new CCodeExpressionStatement (resolve.get_unref_expression (
 				new CCodeMemberAccess.pointer (
 				new CCodeIdentifier (
-					(string?)generate_block_var_name(b)
+					AroopCodeGeneratorAdapter.generate_block_var_name(b)
 				), resolve.self_instance), resolve.get_data_type_for_symbol(emitter.current_type_symbol), ma)));
 		}
 		foreach (var local in local_vars) {
@@ -270,7 +270,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 					ma.value_type = local.variable_type.copy ();
 					free_block.add_statement (new CCodeExpressionStatement (
 						resolve.get_unref_expression (new CCodeMemberAccess.pointer (
-						new CCodeIdentifier ((string?)generate_block_var_name(b)), resolve.get_variable_cname (local.name)), local.variable_type, ma)));
+						new CCodeIdentifier (AroopCodeGeneratorAdapter.generate_block_var_name(b)), resolve.get_variable_cname (local.name)), local.variable_type, ma)));
 				}
 			}
 		}
@@ -313,7 +313,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 					resolve.get_unref_expression (
 						new CCodeMemberAccess.pointer (
 							new CCodeIdentifier (
-								(string?)generate_block_var_name(b)
+								AroopCodeGeneratorAdapter.generate_block_var_name(b)
 							), resolve.get_variable_cname (param.name)
 						), param.variable_type, ma)
 					)
@@ -327,10 +327,10 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			new CCodeExpressionStatement (
 				new CCodeAssignment (
 					new CCodeMemberAccess (
-						resolve.get_variable_cexpression ((string?)generate_block_var_name(b))
-						, (string?)generate_block_var_name(parent_block)
+						resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(b))
+						, AroopCodeGeneratorAdapter.generate_block_var_name(parent_block)
 					)
-					, resolve.get_variable_cexpression ((string?)generate_block_var_name(parent_block))
+					, resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(parent_block))
 				)
 			)
 		);
