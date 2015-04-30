@@ -264,7 +264,7 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 			, decl_space.is_header?"Headerfile":"C file");*/
 		if (sym.external_package || (!decl_space.is_header && CodeContext.get ().use_header && !sym.is_internal_symbol ())) {
 			// add appropriate include file
-			foreach (string header_filename in CCodeBaseModule.get_ccode_header_filenames (sym).split (",")) {
+			foreach (string header_filename in CodegenPlugBaseModule.get_ccode_header_filenames (sym).split (",")) {
 				/*print("%s is being added for symbol %s in %s\n"
 					, header_filename
 					, name

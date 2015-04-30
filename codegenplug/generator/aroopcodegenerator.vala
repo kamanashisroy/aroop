@@ -346,8 +346,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_cast_expression (CastExpression expr) {
-		string visit_exten= "visit/cast_expression";
-		PluginManager.swarmValue(visit_exten, expr);
+		PluginManager.swarmValue("visit/cast_expression", expr);
 	}
 
 	public override void visit_named_argument (NamedArgument expr) {

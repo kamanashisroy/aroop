@@ -187,7 +187,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 						ccall_expr = ccomma;
 					}
 
-					if (CCodeBaseModule.get_ccode_type (param) != null) {
+					if (CodegenPlugBaseModule.get_ccode_type (param) != null) {
 						if(param.variable_type is DelegateType) {
 #if false
 							var deleg_comma = new CCodeCommaExpression();
@@ -201,7 +201,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 							}
 #endif
 						} else {
-							cexpr = new CCodeCastExpression (cexpr, CCodeBaseModule.get_ccode_type (param));
+							cexpr = new CCodeCastExpression (cexpr, CodegenPlugBaseModule.get_ccode_type (param));
 						}
 					}
 				} else if(/*arg.value_type is MethodType &&*/ param.variable_type is DelegateType) {					

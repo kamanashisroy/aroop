@@ -80,10 +80,10 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			if(expr.type_reference.data_type is Class)
 				cl = expr.type_reference.data_type as Class;
 
-			if (!CCodeBaseModule.get_ccode_has_new_function (m)) {
+			if (!CodegenPlugBaseModule.get_ccode_has_new_function (m)) {
 				// use construct function directly
 				creation_call = new CCodeFunctionCall (new CCodeIdentifier (resolve.get_ccode_real_name (m)));
-				creation_call.add_argument (new CCodeIdentifier (CCodeBaseModule.get_ccode_type_id (cl)));
+				creation_call.add_argument (new CCodeIdentifier (CodegenPlugBaseModule.get_ccode_type_id (cl)));
 			} else {
 				creation_call = new CCodeFunctionCall (new CCodeIdentifier (resolve.get_ccode_name (m)));
 			}

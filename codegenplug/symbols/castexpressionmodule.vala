@@ -84,6 +84,7 @@ public class codegenplug.CastExpressionModule : shotodolplug.Module {
 		}
 		return null;
 	}
+
 	CCodeExpression? generate_method_to_delegate_cast_expression_as_comma_2(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
 		var deleg_comma = new CCodeCommaExpression();
 		var deleg_temp_var = generate_method_to_delegate_cast_expression_as_comma(source_cexpr, expression_type, target_type, expr, deleg_comma);

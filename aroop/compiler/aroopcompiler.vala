@@ -169,7 +169,7 @@ class aroop.Compiler {
 	void loadModulesHelper(shotodolplug.Module x) {
 		x.init();
 		modules[moduleCount++] = x;
-		if(module_debug != null && (module_debug == "ALL" || module_debug.contains("|%s|".printf(x.name.down())))) {
+		if(module_debug != null && (module_debug == "ALL" || module_debug.contains(".%s.".printf(x.name.down())))) {
 			x.debug_is_enabled = true;
 		}
 	}

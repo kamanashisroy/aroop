@@ -30,7 +30,8 @@ libcodegenplug_la_VALAFLAGS = \
 	$(NULL)
 
 libcodegenplug_la_SOURCES = \
-	valaccodebasemodule.vala \
+	codegenplugbasemodule.vala \
+	codegenplugattribute.vala \
 	valaccodecompiler.vala \
 	generator/aroopcodegenerator.vala \
 	generator/aroopcodegeneratoradapter.vala \

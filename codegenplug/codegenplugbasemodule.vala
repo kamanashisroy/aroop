@@ -27,7 +27,7 @@ using Vala;
 /**
  * Code visitor generating C Code.
  */
-public abstract class aroop.CCodeBaseModule {
+public abstract class codegenplug.CodegenPlugBaseModule {
 
 	public static int ccode_attribute_cache_index = -1;
 	public static DataType get_data_type_for_symbol (TypeSymbol sym) {
@@ -62,16 +62,16 @@ public abstract class aroop.CCodeBaseModule {
 		return type;
 	}
 
-	public static CCodeAttribute get_ccode_attribute (CodeNode node) {
+	public static CodegenPlugAttribute get_ccode_attribute (CodeNode node) {
 		if(ccode_attribute_cache_index == -1) {
 			ccode_attribute_cache_index = CodeNode.get_attribute_cache_index ();
 		}
 		var attr = node.get_attribute_cache (ccode_attribute_cache_index);
 		if (attr == null) {
-			attr = new CCodeAttribute (node);
+			attr = new CodegenPlugAttribute (node);
 			node.set_attribute_cache (ccode_attribute_cache_index, attr);
 		}
-		return (CCodeAttribute) attr;
+		return (CodegenPlugAttribute) attr;
 	}
 
 	public static string get_ccode_name (CodeNode node) {

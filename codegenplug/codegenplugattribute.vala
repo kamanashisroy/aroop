@@ -25,7 +25,7 @@ using Vala;
 /**
  * Cache for the CCode attribute
  */
-public class aroop.CCodeAttribute : AttributeCache {
+public class codegenplug.CodegenPlugAttribute : AttributeCache {
 	private weak CodeNode node;
 	private weak Symbol sym;
 	private Attribute ccode;
@@ -65,7 +65,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 					_type_name = ccode.get_string ("type_cname");
 				}
 				if (_type_name == null) {
-					_type_name = "%sIface".printf (CCodeBaseModule.get_ccode_name (sym));
+					_type_name = "%sIface".printf (CodegenPlugBaseModule.get_ccode_name (sym));
 				}
 			}
 			return _type_name;
@@ -154,7 +154,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				} else {
 					var cl = (Class) sym;
 					if (cl.base_class != null) {
-						_ref_function_void = CCodeBaseModule.get_ccode_ref_function_void (cl.base_class);
+						_ref_function_void = CodegenPlugBaseModule.get_ccode_ref_function_void (cl.base_class);
 					} else {
 						_ref_function_void = false;
 					}
@@ -246,7 +246,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				} else {
 					var cl = (Class) sym;
 					if (cl.base_class != null) {
-						_free_function_address_of = CCodeBaseModule.get_ccode_free_function_address_of (cl.base_class);
+						_free_function_address_of = CodegenPlugBaseModule.get_ccode_free_function_address_of (cl.base_class);
 					} else {
 						_free_function_address_of = false;
 					}
@@ -545,7 +545,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 
 	private static int dynamic_method_id;
 
-	public CCodeAttribute (CodeNode node) {
+	public CodegenPlugAttribute (CodeNode node) {
 		this.node = node;
 		this.sym = node as Symbol;
 
@@ -574,13 +574,13 @@ public class aroop.CCodeAttribute : AttributeCache {
 					// local constant
 					return sym.name;
 				}
-				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).ascii_up (), sym.name);
+				return "%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).ascii_up (), sym.name);
 			} else if (sym is Vala.EnumValue) {
-				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).ascii_up (), sym.name);
+				return "%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol).ascii_up (), sym.name);
 			} else if (sym is Field) {
 				var cname = sym.name;
 				if (((Field) sym).binding == MemberBinding.STATIC) {
-					cname = "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name);
+					cname = "%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name);
 				}
 				if (cname[0].isdigit ()) {
 					Report.error (node.source_reference, "Field name starts with a digit. Use the `cname' attribute to provide a valid C name if intended");
@@ -596,33 +596,33 @@ public class aroop.CCodeAttribute : AttributeCache {
 					infix = "new";
 				}
 				if (m.name == ".new") {
-					return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (m.parent_symbol), infix);
+					return "%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (m.parent_symbol), infix);
 				} else {
-					return "%s%s_%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (m.parent_symbol), infix, m.name);
+					return "%s%s_%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (m.parent_symbol), infix, m.name);
 				}
 			} else if (sym is DynamicMethod) {
 				return "_dynamic_%s%d".printf (sym.name, dynamic_method_id++);
 			} else if (sym is Method) {
 				var m = (Method) sym;
 				if (m.is_async_callback) {
-					return "%s_co".printf (CCodeBaseModule.get_ccode_real_name ((Method) m.parent_symbol));
+					return "%s_co".printf (CodegenPlugBaseModule.get_ccode_real_name ((Method) m.parent_symbol));
 				}
 				if (sym.name == "main" && sym.parent_symbol.name == null) {
 					// avoid conflict with generated main function
 					return "_aroop_main";
 				} else if (sym.name.has_prefix ("_")) {
-					return "_%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name.substring (1));
+					return "_%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name.substring (1));
 				} else {
-					return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name);
+					return "%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), sym.name);
 				}
 			} else if (sym is PropertyAccessor) {
 				var acc = (PropertyAccessor) sym;
 				var t = (TypeSymbol) acc.prop.parent_symbol;
 
 				if (acc.readable) {
-					return "%sget_%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (t), acc.prop.name);
+					return "%sget_%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (t), acc.prop.name);
 				} else {
-					return "%sset_%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (t), acc.prop.name);
+					return "%sset_%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (t), acc.prop.name);
 				}
 			} else if (sym is Vala.Signal) {
 				return Symbol.camel_case_to_lower_case (sym.name);
@@ -641,32 +641,32 @@ public class aroop.CCodeAttribute : AttributeCache {
 					return st.width == 64 ? "double" : "float";
 				} else {
 					//if(sym.parent_symbol == null)
-						return "aroop_st_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
+						return "aroop_st_%s".printf(CodegenPlugBaseModule.get_ccode_lower_case_name (sym));
 					//else 
-						//return "%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
+						//return "%s%s".printf(CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CodegenPlugBaseModule.get_ccode_lower_case_name (sym));
 				}
 			} else if(sym is Class/* && !sym.external*/) {
 				//if(sym.parent_symbol == null)
-					return "aroop_cl_%s".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
-					//return CCodeBaseModule.get_ccode_lower_case_name (sym);
+					return "aroop_cl_%s".printf(CodegenPlugBaseModule.get_ccode_lower_case_name (sym));
+					//return CodegenPlugBaseModule.get_ccode_lower_case_name (sym);
 				//else 
-					//return "%s%s".printf(CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CCodeBaseModule.get_ccode_lower_case_name (sym));
+					//return "%s%s".printf(CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), CodegenPlugBaseModule.get_ccode_lower_case_name (sym));
 			} else {
-				return CCodeBaseModule.get_ccode_lower_case_name (sym);
+				return CodegenPlugBaseModule.get_ccode_lower_case_name (sym);
 			}
 		} else if (node is ObjectType) {
 			var type = (ObjectType) node;
 
 			string cname;
 			if (!type.value_owned) {
-				cname = CCodeBaseModule.get_ccode_const_name (type.type_symbol);
+				cname = CodegenPlugBaseModule.get_ccode_const_name (type.type_symbol);
 			} else {
-				cname = CCodeBaseModule.get_ccode_name (type.type_symbol);
+				cname = CodegenPlugBaseModule.get_ccode_name (type.type_symbol);
 			}
 			return "%s*".printf (cname);
 		} else if (node is ArrayType) {
 			var type = (ArrayType) node;
-			var cname = CCodeBaseModule.get_ccode_name (type.element_type);
+			var cname = CodegenPlugBaseModule.get_ccode_name (type.element_type);
 			if (type.inline_allocated) {
 				return cname;
 			} else {
@@ -674,7 +674,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			}
 		} else if (node is DelegateType) {
 			var type = (DelegateType) node;
-			return CCodeBaseModule.get_ccode_name (type.delegate_symbol);
+			return CodegenPlugBaseModule.get_ccode_name (type.delegate_symbol);
 		} else if (node is Vala.ErrorType) {
 			return "aroop_wrong*";
 		} else if (node is GenericType) {
@@ -686,21 +686,21 @@ public class aroop.CCodeAttribute : AttributeCache {
 		} else if (node is PointerType) {
 			var type = (PointerType) node;
 			if (type.base_type.data_type != null && type.base_type.data_type.is_reference_type ()) {
-				return CCodeBaseModule.get_ccode_name (type.base_type);
+				return CodegenPlugBaseModule.get_ccode_name (type.base_type);
 			} else {
-				return "%s*".printf (CCodeBaseModule.get_ccode_name (type.base_type));
+				return "%s*".printf (CodegenPlugBaseModule.get_ccode_name (type.base_type));
 			}
 		} else if (node is VoidType) {
 			return "void";
 		} else if (node is ClassType) {
 			var type = (ClassType) node;
-			return "%s*".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
+			return "%s*".printf(CodegenPlugBaseModule.get_ccode_lower_case_name (sym));
 		} else if (node is InterfaceType) {
 			var type = (InterfaceType) node;
-			return "%s*".printf(CCodeBaseModule.get_ccode_lower_case_name (sym));
+			return "%s*".printf(CodegenPlugBaseModule.get_ccode_lower_case_name (sym));
 		} else if (node is ValueType) {
 			var type = (ValueType) node;
-			var cname = CCodeBaseModule.get_ccode_name (type.type_symbol);
+			var cname = CodegenPlugBaseModule.get_ccode_name (type.type_symbol);
 			if (type.nullable) {
 				return "%s*".printf (cname);
 			} else {
@@ -724,7 +724,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			return "";
 		}
 		if (sym.parent_symbol != null) {
-			var parent_headers = CCodeBaseModule.get_ccode_header_filenames (sym.parent_symbol);
+			var parent_headers = CodegenPlugBaseModule.get_ccode_header_filenames (sym.parent_symbol);
 			if (parent_headers.length > 0) {
 				return parent_headers;
 			}
@@ -740,12 +740,12 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (sym is ObjectTypeSymbol) {
 			return name;
 		} else if (sym is Enum || sym is ErrorDomain) {
-			return "%s_".printf (CCodeBaseModule.get_ccode_upper_case_name (sym));
+			return "%s_".printf (CodegenPlugBaseModule.get_ccode_upper_case_name (sym));
 		} else if (sym is Namespace) {
 			if (sym.name != null) {
 				var parent_prefix = "";
 				if (sym.parent_symbol != null) {
-					parent_prefix = CCodeBaseModule.get_ccode_prefix (sym.parent_symbol);
+					parent_prefix = CodegenPlugBaseModule.get_ccode_prefix (sym.parent_symbol);
 				}
 				return "%s%s".printf (parent_prefix, sym.name);
 			} else {
@@ -762,14 +762,14 @@ public class aroop.CCodeAttribute : AttributeCache {
 			if (sym.name == null) {
 				return "";
 			} else {
-				return "%s%s_".printf (CCodeBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), Symbol.camel_case_to_lower_case (sym.name));
+				return "%s%s_".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (sym.parent_symbol), Symbol.camel_case_to_lower_case (sym.name));
 			}
 		} else if (sym is Method) {
 			// for lambda expressions
 			return "";
 		} else {
 #if true
-			return "%s_".printf (CCodeBaseModule.get_ccode_lower_case_name (sym));
+			return "%s_".printf (CodegenPlugBaseModule.get_ccode_lower_case_name (sym));
 #else
 			return "%s_".printf(get_default_name());
 #endif			
@@ -800,29 +800,11 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (sym is GenericType) {
 			return "aroop_generic_object_ref";
 		} else if (sym is Class) {
-#if false
-			var cl = (Class) sym;
-			if (cl.is_fundamental ()) {
-				return lower_case_prefix + "ref";
-			} else if (cl.base_class != null) {
-				return CCodeBaseModule.get_ccode_ref_function (cl.base_class);
-			}
-#else
 			return "aroop_object_ref";
-#endif
 		} else if (sym is Interface) {
-#if false
-			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-				var ref_func = CCodeBaseModule.get_ccode_ref_function ((ObjectTypeSymbol) prereq.data_type);
-				if (ref_func != null) {
-					return ref_func;
-				}
-			}
-#else
 			return "aroop_object_ref";
-#endif
 		}
-		return null;
+		return "idonotknow";
 	}
 
 	private string? get_default_unref_function () {
@@ -834,7 +816,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			if (cl.is_fundamental ()) {
 				return lower_case_prefix + "unref";
 			} else if (cl.base_class != null) {
-				return CCodeBaseModule.get_ccode_unref_function (cl.base_class);
+				return CodegenPlugBaseModule.get_ccode_unref_function (cl.base_class);
 			}
 #else
 			return "aroop_object_unref";
@@ -842,7 +824,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 		} else if (sym is Interface) {
 #if false
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-				string unref_func = CCodeBaseModule.get_ccode_unref_function ((ObjectTypeSymbol) prereq.data_type);
+				string unref_func = CodegenPlugBaseModule.get_ccode_unref_function ((ObjectTypeSymbol) prereq.data_type);
 				if (unref_func != null) {
 					return unref_func;
 				}
@@ -856,10 +838,10 @@ public class aroop.CCodeAttribute : AttributeCache {
 
 	private string get_default_ref_sink_function () {
 		if (sym is Class) {
-			return CCodeBaseModule.get_ccode_ref_sink_function (((Class) sym).base_class);
+			return CodegenPlugBaseModule.get_ccode_ref_sink_function (((Class) sym).base_class);
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-				string ref_sink_func = CCodeBaseModule.get_ccode_ref_sink_function ((ObjectTypeSymbol) prereq.data_type);
+				string ref_sink_func = CodegenPlugBaseModule.get_ccode_ref_sink_function ((ObjectTypeSymbol) prereq.data_type);
 				if (ref_sink_func != "") {
 					return ref_sink_func;
 				}
@@ -872,7 +854,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (sym is Class) {
 			var cl = (Class) sym;
 			if (cl.base_class != null) {
-				return CCodeBaseModule.get_ccode_free_function (cl.base_class);
+				return CodegenPlugBaseModule.get_ccode_free_function (cl.base_class);
 			}
 			return lower_case_prefix + "free";
 		} else if (sym is Struct) {
@@ -886,26 +868,26 @@ public class aroop.CCodeAttribute : AttributeCache {
 	private string get_default_type_id () {
 		if (sym != null) {
 			if (sym is Class && !((Class) sym).is_compact || sym is Interface) {
-				return CCodeBaseModule.get_ccode_upper_case_name (sym, "TYPE_");
+				return CodegenPlugBaseModule.get_ccode_upper_case_name (sym, "TYPE_");
 			} else if (sym is Vala.ErrorType && sym.source_reference != null && sym.source_reference.file.context.require_glib_version (2, 26)) {
 				return "G_TYPE_ERROR";
 			} else if (sym is Struct) {
 				var st = (Struct) sym;
-				if (!CCodeBaseModule.get_ccode_has_type_id (st)) {
+				if (!CodegenPlugBaseModule.get_ccode_has_type_id (st)) {
 					var base_struct = st.base_struct;
 					if (base_struct != null) {
-						return CCodeBaseModule.get_ccode_type_id (base_struct);
+						return CodegenPlugBaseModule.get_ccode_type_id (base_struct);
 					}
 					if (!st.is_simple_type ()) {
 						return "G_TYPE_POINTER";
 					}
 				} else {
-					return CCodeBaseModule.get_ccode_upper_case_name (st, "TYPE_");
+					return CodegenPlugBaseModule.get_ccode_upper_case_name (st, "TYPE_");
 				}
 			} else if (sym is Enum) {
 				var en = (Enum) sym;
-				if (CCodeBaseModule.get_ccode_has_type_id (en)) {
-					return CCodeBaseModule.get_ccode_upper_case_name (en, "TYPE_");
+				if (CodegenPlugBaseModule.get_ccode_has_type_id (en)) {
+					return CodegenPlugBaseModule.get_ccode_upper_case_name (en, "TYPE_");
 				} else {
 					return en.is_flags ? "G_TYPE_UINT" : "G_TYPE_INT";
 				}
@@ -927,7 +909,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 		} else {
 			var type = (DataType) node;
 			if (type.data_type != null) {
-				return CCodeBaseModule.get_ccode_type_id (type.data_type);
+				return CodegenPlugBaseModule.get_ccode_type_id (type.data_type);
 			}
 		}
 		return "";
@@ -938,9 +920,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 			if (sym is Class) {
 				var cl = (Class) sym;
 				if (cl.base_class != null) {
-					return CCodeBaseModule.get_ccode_marshaller_type_name (cl.base_class);
+					return CodegenPlugBaseModule.get_ccode_marshaller_type_name (cl.base_class);
 				} else if (!cl.is_compact) {
-					return CCodeBaseModule.get_ccode_upper_case_name (cl);
+					return CodegenPlugBaseModule.get_ccode_upper_case_name (cl);
 				} else if (type_id == "G_TYPE_POINTER") {
 					return "POINTER";
 				} else {
@@ -948,7 +930,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				}
 			} else if (sym is Enum) {
 				var en = (Enum) sym;
-				if (CCodeBaseModule.get_ccode_has_type_id (en)) {
+				if (CodegenPlugBaseModule.get_ccode_has_type_id (en)) {
 					if (en.is_flags) {
 						return "FLAGS";
 					} else {
@@ -963,7 +945,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				}
 			} else if (sym is Interface) {
 				foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-					var type_name = CCodeBaseModule.get_ccode_marshaller_type_name (prereq.data_type);
+					var type_name = CodegenPlugBaseModule.get_ccode_marshaller_type_name (prereq.data_type);
 					if (type_name != "") {
 						return type_name;
 					}
@@ -973,15 +955,15 @@ public class aroop.CCodeAttribute : AttributeCache {
 				var st = (Struct) sym;
 				var base_st = st.base_struct;
 				while (base_st != null) {
-					if (CCodeBaseModule.get_ccode_has_type_id (base_st)) {
-						return CCodeBaseModule.get_ccode_marshaller_type_name (base_st);
+					if (CodegenPlugBaseModule.get_ccode_has_type_id (base_st)) {
+						return CodegenPlugBaseModule.get_ccode_marshaller_type_name (base_st);
 					} else {
 						base_st = base_st.base_struct;
 					}
 				}
 				if (st.is_simple_type ()) {
 					Report.error (st.source_reference, "The type `%s` doesn't declare a marshaller type name".printf (st.get_full_name ()));
-				} else if (CCodeBaseModule.get_ccode_has_type_id (st)) {
+				} else if (CodegenPlugBaseModule.get_ccode_has_type_id (st)) {
 					return "BOXED";
 				} else {
 					return "POINTER";
@@ -991,7 +973,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				if (param.direction != Vala.ParameterDirection.IN) {
 					return "POINTER";
 				} else {
-					return CCodeBaseModule.get_ccode_marshaller_type_name (param.variable_type);
+					return CodegenPlugBaseModule.get_ccode_marshaller_type_name (param.variable_type);
 				}
 			} else {
 				return "POINTER";
@@ -1009,7 +991,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 		} else if (node is VoidType) {
 			return "VOID";
 		} else {
-			return CCodeBaseModule.get_ccode_marshaller_type_name (((DataType) node).data_type);
+			return CodegenPlugBaseModule.get_ccode_marshaller_type_name (((DataType) node).data_type);
 		}
 		return "";
 	}
@@ -1018,9 +1000,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (sym is Class) {
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
-				return CCodeBaseModule.get_ccode_lower_case_name (cl, "value_get_");
+				return CodegenPlugBaseModule.get_ccode_lower_case_name (cl, "value_get_");
 			} else if (cl.base_class != null) {
-				return CCodeBaseModule.get_ccode_get_value_function (cl.base_class);
+				return CodegenPlugBaseModule.get_ccode_get_value_function (cl.base_class);
 			} else if (type_id == "G_TYPE_POINTER") {
 				return "g_value_get_pointer";
 			} else {
@@ -1028,7 +1010,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			}
 		} else if (sym is Enum) {
 			var en = (Enum) sym;
-			if (CCodeBaseModule.get_ccode_has_type_id (en)) {
+			if (CodegenPlugBaseModule.get_ccode_has_type_id (en)) {
 				if (en.is_flags) {
 					return "g_value_get_flags";
 				} else {
@@ -1043,7 +1025,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			}
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-				var type_name = CCodeBaseModule.get_ccode_get_value_function (prereq.data_type);
+				var type_name = CodegenPlugBaseModule.get_ccode_get_value_function (prereq.data_type);
 				if (type_name != "") {
 					return type_name;
 				}
@@ -1053,15 +1035,15 @@ public class aroop.CCodeAttribute : AttributeCache {
 			var st = (Struct) sym;
 			var base_st = st.base_struct;
 			while (base_st != null) {
-				if (CCodeBaseModule.get_ccode_has_type_id (base_st)) {
-					return CCodeBaseModule.get_ccode_get_value_function (base_st);
+				if (CodegenPlugBaseModule.get_ccode_has_type_id (base_st)) {
+					return CodegenPlugBaseModule.get_ccode_get_value_function (base_st);
 				} else {
 					base_st = base_st.base_struct;
 				}
 			}
 			if (st.is_simple_type ()) {
 				Report.error (st.source_reference, "The type `%s` doesn't declare a GValue get function".printf (st.get_full_name ()));
-			} else if (CCodeBaseModule.get_ccode_has_type_id (st)) {
+			} else if (CodegenPlugBaseModule.get_ccode_has_type_id (st)) {
 				return "g_value_get_boxed";
 			} else {
 				return "g_value_get_pointer";
@@ -1076,9 +1058,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (sym is Class) {
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
-				return CCodeBaseModule.get_ccode_lower_case_name (cl, "value_set_");
+				return CodegenPlugBaseModule.get_ccode_lower_case_name (cl, "value_set_");
 			} else if (cl.base_class != null) {
-				return CCodeBaseModule.get_ccode_set_value_function (cl.base_class);
+				return CodegenPlugBaseModule.get_ccode_set_value_function (cl.base_class);
 			} else if (type_id == "G_TYPE_POINTER") {
 				return "g_value_set_pointer";
 			} else {
@@ -1086,7 +1068,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			}
 		} else if (sym is Enum) {
 			var en = (Enum) sym;
-			if (CCodeBaseModule.get_ccode_has_type_id (en)) {
+			if (CodegenPlugBaseModule.get_ccode_has_type_id (en)) {
 				if (en.is_flags) {
 					return "g_value_set_flags";
 				} else {
@@ -1101,7 +1083,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			}
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-				var type_name = CCodeBaseModule.get_ccode_set_value_function (prereq.data_type);
+				var type_name = CodegenPlugBaseModule.get_ccode_set_value_function (prereq.data_type);
 				if (type_name != "") {
 					return type_name;
 				}
@@ -1111,15 +1093,15 @@ public class aroop.CCodeAttribute : AttributeCache {
 			var st = (Struct) sym;
 			var base_st = st.base_struct;
 			while (base_st != null) {
-				if (CCodeBaseModule.get_ccode_has_type_id (base_st)) {
-					return CCodeBaseModule.get_ccode_set_value_function (base_st);
+				if (CodegenPlugBaseModule.get_ccode_has_type_id (base_st)) {
+					return CodegenPlugBaseModule.get_ccode_set_value_function (base_st);
 				} else {
 					base_st = base_st.base_struct;
 				}
 			}
 			if (st.is_simple_type ()) {
 				Report.error (st.source_reference, "The type `%s` doesn't declare a GValue set function".printf (st.get_full_name ()));
-			} else if (CCodeBaseModule.get_ccode_has_type_id (st)) {
+			} else if (CodegenPlugBaseModule.get_ccode_has_type_id (st)) {
 				return "g_value_set_boxed";
 			} else {
 				return "g_value_set_pointer";
@@ -1134,9 +1116,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (sym is Class) {
 			var cl = (Class) sym;
 			if (cl.is_fundamental ()) {
-				return CCodeBaseModule.get_ccode_lower_case_name (cl, "value_take_");
+				return CodegenPlugBaseModule.get_ccode_lower_case_name (cl, "value_take_");
 			} else if (cl.base_class != null) {
-				return CCodeBaseModule.get_ccode_take_value_function (cl.base_class);
+				return CodegenPlugBaseModule.get_ccode_take_value_function (cl.base_class);
 			} else if (type_id == "G_TYPE_POINTER") {
 				return "g_value_set_pointer";
 			} else {
@@ -1144,7 +1126,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			}
 		} else if (sym is Enum) {
 			var en = (Enum) sym;
-			if (CCodeBaseModule.get_ccode_has_type_id (en)) {
+			if (CodegenPlugBaseModule.get_ccode_has_type_id (en)) {
 				if (en.is_flags) {
 					return "g_value_take_flags";
 				} else {
@@ -1159,7 +1141,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			}
 		} else if (sym is Interface) {
 			foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-				var func = CCodeBaseModule.get_ccode_take_value_function (prereq.data_type);
+				var func = CodegenPlugBaseModule.get_ccode_take_value_function (prereq.data_type);
 				if (func != "") {
 					return func;
 				}
@@ -1169,15 +1151,15 @@ public class aroop.CCodeAttribute : AttributeCache {
 			var st = (Struct) sym;
 			var base_st = st.base_struct;
 			while (base_st != null) {
-				if (CCodeBaseModule.get_ccode_has_type_id (base_st)) {
-					return CCodeBaseModule.get_ccode_take_value_function (base_st);
+				if (CodegenPlugBaseModule.get_ccode_has_type_id (base_st)) {
+					return CodegenPlugBaseModule.get_ccode_take_value_function (base_st);
 				} else {
 					base_st = base_st.base_struct;
 				}
 			}
 			if (st.is_simple_type ()) {
 				Report.error (st.source_reference, "The type `%s` doesn't declare a GValue take function".printf (st.get_full_name ()));
-			} else if (CCodeBaseModule.get_ccode_has_type_id (st)) {
+			} else if (CodegenPlugBaseModule.get_ccode_has_type_id (st)) {
 				return "g_value_take_boxed";
 			} else {
 				return "g_value_set_pointer";
@@ -1193,9 +1175,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 			if (sym is Class) {
 				var cl = (Class) sym;
 				if (cl.is_fundamental ()) {
-					return CCodeBaseModule.get_ccode_lower_case_name (cl, "param_spec_");
+					return CodegenPlugBaseModule.get_ccode_lower_case_name (cl, "param_spec_");
 				} else if (cl.base_class != null) {
-					return CCodeBaseModule.get_ccode_param_spec_function (cl.base_class);
+					return CodegenPlugBaseModule.get_ccode_param_spec_function (cl.base_class);
 				} else if (type_id == "G_TYPE_POINTER") {
 					return "g_param_spec_pointer";
 				} else {
@@ -1203,7 +1185,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				}
 			} else if (sym is Interface) {
 				foreach (var prereq in ((Interface) sym).get_prerequisites ()) {
-					var func = CCodeBaseModule.get_ccode_param_spec_function (prereq.data_type);
+					var func = CodegenPlugBaseModule.get_ccode_param_spec_function (prereq.data_type);
 					if (func != "") {
 						return func;
 					}
@@ -1211,7 +1193,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				return "g_param_spec_pointer";
 			} else if (sym is Enum) {
 				var e = sym as Enum;
-				if (CCodeBaseModule.get_ccode_has_type_id (e)) {
+				if (CodegenPlugBaseModule.get_ccode_has_type_id (e)) {
 					if (e.is_flags) {
 						return "g_param_spec_flags";
 					} else {
@@ -1225,7 +1207,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 					}
 				}
 			} else if (sym is Struct) {
-				var type_id = CCodeBaseModule.get_ccode_type_id (sym);
+				var type_id = CodegenPlugBaseModule.get_ccode_type_id (sym);
 				if (type_id == "G_TYPE_INT") {
 					return "g_param_spec_int";
 				} else if (type_id == "G_TYPE_UINT") {
@@ -1257,7 +1239,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 		} else if (node is ArrayType && ((ArrayType)node).element_type.data_type == CodeContext.get().analyzer.string_type.data_type) {
 			return "g_param_spec_boxed";
 		} else if (node is DataType && ((DataType) node).data_type != null) {
-			return CCodeBaseModule.get_ccode_param_spec_function (((DataType) node).data_type);
+			return CodegenPlugBaseModule.get_ccode_param_spec_function (((DataType) node).data_type);
 		}
 
 		return "g_param_spec_pointer";
@@ -1271,7 +1253,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 			var base_st = st.base_struct;
 
 			if (base_st != null) {
-				return CCodeBaseModule.get_ccode_default_value (base_st);
+				return CodegenPlugBaseModule.get_ccode_default_value (base_st);
 			}
 
 			if (st.is_boolean_type ()) {
@@ -1305,19 +1287,19 @@ public class aroop.CCodeAttribute : AttributeCache {
 			string infix = "aroop_init";
 
 			if (m.name == ".new") {
-				return "%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (parent), infix);
+				return "%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (parent), infix);
 			} else {
-				return "%s%s_%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (parent), infix, m.name);
+				return "%s%s_%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (parent), infix, m.name);
 			}
 		} else if (sym is Method) {
 			var m = (Method) sym;
 			if (m.base_method != null || m.base_interface_method != null) {
 				if (m.base_interface_type != null) {
-					return "%sreal_%s%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (m.parent_symbol),
-												 CCodeBaseModule.get_ccode_lower_case_prefix (m.base_interface_type.data_type),
+					return "%sreal_%s%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (m.parent_symbol),
+												 CodegenPlugBaseModule.get_ccode_lower_case_prefix (m.base_interface_type.data_type),
 												 m.name);
 				} else {
-					return "%sreal_%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (m.parent_symbol), m.name);
+					return "%sreal_%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (m.parent_symbol), m.name);
 				}
 			} else {
 				return name;
@@ -1327,9 +1309,9 @@ public class aroop.CCodeAttribute : AttributeCache {
 			var prop = (Property) acc.prop;
 			if (prop.base_property != null || prop.base_interface_property != null) {
 				if (acc.readable) {
-					return "%sreal_get_%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (prop.parent_symbol), prop.name);
+					return "%sreal_get_%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (prop.parent_symbol), prop.name);
 				} else {
-					return "%sreal_set_%s".printf (CCodeBaseModule.get_ccode_lower_case_prefix (prop.parent_symbol), prop.name);
+					return "%sreal_set_%s".printf (CodegenPlugBaseModule.get_ccode_lower_case_prefix (prop.parent_symbol), prop.name);
 				}
 			} else {
 				return name;
@@ -1355,7 +1337,7 @@ public class aroop.CCodeAttribute : AttributeCache {
 				ptr = "*";
 			}
 
-			return "const %s%s".printf (CCodeBaseModule.get_ccode_name (t), ptr);
+			return "const %s%s".printf (CodegenPlugBaseModule.get_ccode_name (t), ptr);
 		} else {
 			if (node is Class && ((Class) node).is_immutable) {
 				return "const %s".printf (name);
@@ -1369,14 +1351,14 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (node is Vala.Parameter) {
 			var param = (Vala.Parameter) node;
 			if (param.base_parameter != null) {
-				return CCodeBaseModule.get_ccode_array_length (param.base_parameter);
+				return CodegenPlugBaseModule.get_ccode_array_length (param.base_parameter);
 			}
 		} else if (node is Method) {
 			var method = (Method) node;
 			if (method.base_method != null && method.base_method != method) {
-				return CCodeBaseModule.get_ccode_array_length (method.base_method);
+				return CodegenPlugBaseModule.get_ccode_array_length (method.base_method);
 			} else if (method.base_interface_method != null && method.base_interface_method != method) {
-				return CCodeBaseModule.get_ccode_array_length (method.base_interface_method);
+				return CodegenPlugBaseModule.get_ccode_array_length (method.base_interface_method);
 			}
 		}
 		return true;
@@ -1386,14 +1368,14 @@ public class aroop.CCodeAttribute : AttributeCache {
 		if (node is Vala.Parameter) {
 			var param = (Vala.Parameter) node;
 			if (param.base_parameter != null) {
-				return CCodeBaseModule.get_ccode_array_null_terminated (param.base_parameter);
+				return CodegenPlugBaseModule.get_ccode_array_null_terminated (param.base_parameter);
 			}
 		} else if (node is Method) {
 			var method = (Method) node;
 			if (method.base_method != null && method.base_method != method) {
-				return CCodeBaseModule.get_ccode_array_null_terminated (method.base_method);
+				return CodegenPlugBaseModule.get_ccode_array_null_terminated (method.base_method);
 			} else if (method.base_interface_method != null && method.base_interface_method != method) {
-				return CCodeBaseModule.get_ccode_array_null_terminated (method.base_interface_method);
+				return CodegenPlugBaseModule.get_ccode_array_null_terminated (method.base_interface_method);
 			}
 		}
 		return false;

@@ -15,7 +15,7 @@ class MainClass : Replicable {
 
 	public static int main() {
 		var mango = new Mango();
-		Fruit fr = null;
+		Fruit?fr = null;
 		fr = mango;
 		return 0;
 	}

@@ -81,42 +81,42 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 
 	public string get_ccode_aroop_name(CodeNode node) {
-		return  CCodeBaseModule.get_ccode_name (node);
+		return  CodegenPlugBaseModule.get_ccode_name (node);
 	}
 
 	public string get_ccode_upper_case_name (Symbol node, string? infix = null) {
-		return CCodeBaseModule.get_ccode_upper_case_name (node, infix);
+		return CodegenPlugBaseModule.get_ccode_upper_case_name (node, infix);
 	}
 
 	public string get_ccode_name(CodeNode node) {
-		return  CCodeBaseModule.get_ccode_name (node);
+		return  CodegenPlugBaseModule.get_ccode_name (node);
 	}
 
 	public string get_ccode_copy_function(TypeSymbol node) {
-		return CCodeBaseModule.get_ccode_copy_function (node);
+		return CodegenPlugBaseModule.get_ccode_copy_function (node);
 	}
 
 	public string get_ccode_dup_function(TypeSymbol node) {
-		return CCodeBaseModule.get_ccode_dup_function (node);
+		return CodegenPlugBaseModule.get_ccode_dup_function (node);
 	}
 
 	public string get_ccode_ref_function(TypeSymbol node) {
-		return CCodeBaseModule.get_ccode_ref_function (node);
+		return CodegenPlugBaseModule.get_ccode_ref_function (node);
 	}
 
 	public string get_ccode_free_function(TypeSymbol node) {
 		if (node is Vala.ErrorType || node is ErrorDomain || node is ErrorCode) {
 			return "aroop_free_error";
 		}
-		return CCodeBaseModule.get_ccode_free_function (node);
+		return CodegenPlugBaseModule.get_ccode_free_function (node);
 	}
 
 	public string get_ccode_lower_case_prefix(Symbol node) {
-		return CCodeBaseModule.get_ccode_lower_case_prefix (node);
+		return CodegenPlugBaseModule.get_ccode_lower_case_prefix (node);
 	}
 
 	public string get_ccode_lower_case_suffix(Symbol node) {
-		return CCodeBaseModule.get_ccode_lower_case_suffix (node);
+		return CodegenPlugBaseModule.get_ccode_lower_case_suffix (node);
 	}
 	public string get_error_module_lower_case_name (CodeNode node, string? infix = null) {
 		if (node is Vala.ErrorType) {
@@ -138,14 +138,14 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			//assert(false);
 			return get_error_module_lower_case_name(node,infix);
 		}
-		return CCodeBaseModule.get_ccode_lower_case_name (node, infix);
+		return CodegenPlugBaseModule.get_ccode_lower_case_name (node, infix);
 	}
 	public string get_ccode_real_name(Method node) {
-		return CCodeBaseModule.get_ccode_real_name (node);
+		return CodegenPlugBaseModule.get_ccode_real_name (node);
 	}
 
 	public string get_ccode_vfunc_name(Method node) {
-		return CCodeBaseModule.get_ccode_vfunc_name (node);
+		return CodegenPlugBaseModule.get_ccode_vfunc_name (node);
 	}
 
 	public string get_ccode_aroop_definition(ObjectTypeSymbol node) {
@@ -329,7 +329,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 	public string get_ccode_vtable_var(Class cl, Class of_class) {
 		return "vtable_%sovrd_%s".printf(get_ccode_lower_case_prefix(cl)
-			, CCodeBaseModule.get_ccode_lower_case_suffix(of_class));
+			, CodegenPlugBaseModule.get_ccode_lower_case_suffix(of_class));
 	}
 	public /*static*/ DataType get_data_type_for_symbol (TypeSymbol sym) {
 		DataType type = null;
@@ -367,7 +367,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			var get_interface = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_interface"));
 			get_interface.add_argument (type_expression);
 			get_interface.add_argument (new CCodeIdentifier ("%s_type".printf (get_ccode_lower_case_name (type_symbol))));
-			return new CCodeCastExpression (get_interface, "%sTypePrivate *".printf (CCodeBaseModule.get_ccode_name (type_symbol)));
+			return new CCodeCastExpression (get_interface, "%sTypePrivate *".printf (CodegenPlugBaseModule.get_ccode_name (type_symbol)));
 		}
 	}
 	bool is_in_generic_type (DataType type) {
@@ -444,7 +444,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 	public string get_ccode_unref_function (ObjectTypeSymbol node) {
 		//return "OPPUNREF";
-		return CCodeBaseModule.get_ccode_unref_function (node);
+		return CodegenPlugBaseModule.get_ccode_unref_function (node);
 	}
 
 	public CCodeDeclaratorSuffix? get_ccode_declarator_suffix (DataType type) {
@@ -467,7 +467,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 
 	public bool is_reference_counting (TypeSymbol node) {
-		return CCodeBaseModule.is_reference_counting (node);
+		return CodegenPlugBaseModule.is_reference_counting (node);
 	}
 
 	public CCodeExpression get_variable_cexpression (string name) {
@@ -635,7 +635,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 
 	public string get_ccode_default_value (TypeSymbol node) {
-		return CCodeBaseModule.get_ccode_default_value (node);
+		return CodegenPlugBaseModule.get_ccode_default_value (node);
 	}
 
 	public CCodeExpression? get_dup_func_expression (DataType type
@@ -691,15 +691,15 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 
 	public bool get_ccode_ref_function_void (Class node) {
-		return CCodeBaseModule.get_ccode_ref_function_void (node);
+		return CodegenPlugBaseModule.get_ccode_ref_function_void (node);
 	}
 
 	public double get_ccode_instance_pos (CodeNode node) {
-		return CCodeBaseModule.get_ccode_instance_pos (node);
+		return CodegenPlugBaseModule.get_ccode_instance_pos (node);
 	}
 
 	public string get_ccode_sentinel (Method m) {
-		return CCodeBaseModule.get_ccode_sentinel (m);
+		return CodegenPlugBaseModule.get_ccode_sentinel (m);
 	}
 
 	public string? get_custom_creturn_type (Method m) {
@@ -777,6 +777,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 			return new CCodeCastExpression(ccall, get_ccode_aroop_name (expression_type));
 		} else {
+#if true
 			var decl = emitter.get_temp_variable (expression_type, false, node);
 			AroopCodeGeneratorAdapter.generate_temp_variable(decl);
 			print("get_ref_cexpression is creating temporary variable %s for %s\n", decl.to_string(), expr.to_string());
@@ -805,6 +806,9 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			}
 
 			return ccomma;
+#else
+			return new CCodeCastExpression(ccall, get_ccode_aroop_name (expression_type));
+#endif
 		}
 	}
 
