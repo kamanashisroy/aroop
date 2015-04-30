@@ -317,10 +317,14 @@ public class codegenplug.SourceEmitterModule : shotodolplug.Module {
 	}
 
 	public void pop_declaration_variable () {
+		print("variable declaration stack size:%d\n", current_declaration_variable_stack.size);
 		current_declaration_variable_stack.remove_at (current_declaration_variable_stack.size - 1);
 	}
 
-	public LocalVariable get_declaration_variable () {
+	public LocalVariable?get_declaration_variable () {
+		print("variable declaration stack size2:%d\n", current_declaration_variable_stack.size);
+		if(current_declaration_variable_stack.size == 0)
+			return null;
 		return current_declaration_variable_stack.get(current_declaration_variable_stack.size - 1);
 	}
 }
@@ -345,6 +349,7 @@ public class codegenplug.EmitContext {
 	}
 
 	public void pop_symbol () {
+		print("symbol stack size:%d\n", symbol_stack.size);
 		current_symbol = symbol_stack[symbol_stack.size - 1];
 		symbol_stack.remove_at (symbol_stack.size - 1);
 	}
