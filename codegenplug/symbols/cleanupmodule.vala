@@ -31,7 +31,7 @@ public class codegenplug.CleanUpModule : shotodolplug.Module {
 		var args = (HashTable<string,Value?>)given_args;
 		append_local_free(
 			(Symbol)args["sym"]
-			,(((string?)args["stop_at_loop"]) == "1")
+			,(bool)args["stop_at_loop"]
 			,(CodeNode?)args["stop_at"]
 		);
 		return null;

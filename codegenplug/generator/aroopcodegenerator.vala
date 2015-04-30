@@ -222,18 +222,15 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_try_statement (TryStatement stmt) {
-		string visit_exten= "visit/try_statement";
-		PluginManager.swarmValue(visit_exten, stmt);
+		PluginManager.swarmValue("visit/try_statement", stmt);
 	}
 
 	public override void visit_catch_clause (CatchClause clause) {
-		string visit_exten= "visit/catch_clause";
-		PluginManager.swarmValue(visit_exten, clause);
+		PluginManager.swarmValue("visit/catch_clause", clause);
 	}
 
 	public override void visit_lock_statement (LockStatement stmt) {
-		string visit_exten= "visit/lock_statement";
-		PluginManager.swarmValue(visit_exten, stmt);
+		PluginManager.swarmValue("visit/lock_statement", stmt);
 	}
 
 	public override void visit_unlock_statement (UnlockStatement stmt) {
@@ -437,7 +434,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["param"] = param;
 		args["xvalue"] = xvalue;
-		args["capturing_parameter"] = capturing_parameter?"1":"0";
+		args["capturing_parameter"] = capturing_parameter;
 		PluginManager.swarmValue("store/parameter", args);
 	}
 

@@ -32,7 +32,7 @@ public class codegenplug.GenericTypeModule : shotodolplug.Module {
 			(CCodeFunctionCall?)args["ccall"]
 			,(Vala.List<DataType>?)args["type_args"]
 			,(CodeNode?)args["expr"]
-			,((string?)args["is_chainup"]) == "1"
+			,(bool)args["is_chainup"]
 		);
 		return null;
 	}

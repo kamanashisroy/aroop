@@ -64,7 +64,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 			(Field)args["field"]
 			, (CCodeStruct)args["container"]
 			, (CCodeFile)args["decl_space"]
-			, (((string?)args["internalSymbol"]) == "1")
+			, (bool)args["internalSymbol"]
 		);
 		return null;
 	}
@@ -200,7 +200,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		generate_field_declaration(
 			(Field?)args["field"]
 			, (CCodeFile?)args["decl_space"]
-			, (((string?)args["defineHere"]) == "1")
+			, (bool)args["defineHere"]
 		);
 		return null;
 	}

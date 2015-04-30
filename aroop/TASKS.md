@@ -8,6 +8,7 @@
 - [ ] **Write xtring related test code.**
 - [ ] Support a new statement with parameter, something like x new
 - [ ] add AROOP_LOW_MEMORY in makefile.mk to create low memory static library.
+- [ ] Study http://stratos.apache.org/index.html
 
 #### Generated C code
 	- [ ] Do static analysis on generated C code.

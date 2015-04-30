@@ -32,10 +32,12 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 	}
 
 
-	private int current_try_id = 0;
-	private int next_try_id = 0;
-	private bool is_in_catch = false;
-	public Vala.ErrorType gerror_type;
+	int current_try_id = 0;
+	int next_try_id = 0;
+	bool is_in_catch = false;
+#if false
+	Vala.ErrorType gerror_type;
+#endif
 
 	private string generate_error_domain_description_function(ErrorDomain edomain) {
 		return resolve.get_error_module_lower_case_name (edomain) + "_desc";
@@ -176,7 +178,7 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 
 	Value? add_simple_check_helper (Value?given_args) {
 		var args = (HashTable<string,Value?>)given_args;
-		add_simple_check((CodeNode?)args["node"], ((string?)args["always_fails"]) == "1");
+		add_simple_check((CodeNode?)args["node"], (bool)args["always_fails"]);
 		return null;
 	}
 
@@ -224,12 +226,16 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 					}
 					handled_error_types.clear ();
 
+#if false
 					if (clause.error_type.equals (gerror_type)) {
 						// general catch clause, this should be the last one
 						has_general_catch_clause = true;
 						emitter.ccode.add_goto (clause.clabel_name);
 						break;
 					} else {
+#else
+					{
+#endif
 						var catch_type = clause.error_type as Vala.ErrorType;
 
 						if (catch_type.error_code != null) {
@@ -277,10 +283,12 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 
 			foreach (DataType error_type in emitter.current_method.get_error_types ()) {
 				// If GLib.Error is allowed we propagate everything
+#if false
 				if (error_type.equals (gerror_type)) {
 					ccond = null;
 					break;
 				}
+#endif
 
 				// Check the allowed error domains to propagate
 				var domain_check = new CCodeBinaryExpression (CCodeBinaryOperator.EQUALITY, new CCodeMemberAccess.pointer

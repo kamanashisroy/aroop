@@ -39,7 +39,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["field"] = f;
 		args["container"] = container;
 		args["decl_space"] = decl_space;
-		args["internalSymbol"] = internalSymbol?"1":"0";
+		args["internalSymbol"] = internalSymbol;
 		PluginManager.swarmValue("generate/element/declaration", args);
 	}
 
@@ -47,7 +47,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["field"] = f;
 		args["decl_space"] = decl_space;
-		args["defineHere"] = defineHere?"1":"0";
+		args["defineHere"] = defineHere;
 		PluginManager.swarmValue("generate/field/declaration", args);
 	}
 
@@ -176,7 +176,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 	public static void populate_variables_of_parent_closure(Block b, bool populate_self, CCodeFunction decl_space) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["block"] = b;
-		args["populate_self"] = populate_self?"1":"0";
+		args["populate_self"] = populate_self;
 		args["decl_space"] = decl_space;
 		PluginManager.swarmValue("populate/parent/closure", args);
         }
@@ -263,21 +263,21 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["ccall"] = ccall;
 		args["type_args"] = type_args;
 		args["expr"] = expr;
-		args["is_chainup"] = is_chainup?"1":"0";
+		args["is_chainup"] = is_chainup;
 		PluginManager.swarmValue("add/generic_type_arguments", args);
 	}
 
 	public static void add_simple_check(CodeNode node, bool always_fails = false) { 
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["node"] = node;
-		args["always_fails"] = always_fails?"1":"0";
+		args["always_fails"] = always_fails;
 		PluginManager.swarmValue("add/simple/check", args);
 	}
 
 	public static void append_local_free (Symbol sym, bool stop_at_loop = false, CodeNode? stop_at = null) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["sym"] = sym;
-		args["stop_at_loop"] = stop_at_loop?"1":"0";
+		args["stop_at_loop"] = stop_at_loop;
 		args["stop_at"] = stop_at;
 		PluginManager.swarmValue("append/cleanup/local", args);
 	}
@@ -288,7 +288,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		args["variable"] = variable;
 		args["lvalue"] = lvalue;
 		args["xvalue"] = xvalue;
-		args["initializer"] = initializer?"1":"0";
+		args["initializer"] = initializer;
 		PluginManager.swarmValue("store/variable", args);
 	}
 

@@ -44,7 +44,7 @@ public class codegenplug.LoadStoreModule : shotodolplug.Module {
 			(LocalVariable?)args["local"]
 			,resolve.get_local_cvalue ((LocalVariable?)args["local"])
 			, (TargetValue?)args["xvalue"]
-			, (((string?)args["initializer"]) == "1")
+			, (bool)args["initializer"]
 		);
 		return null;
 	}
@@ -66,25 +66,48 @@ public class codegenplug.LoadStoreModule : shotodolplug.Module {
 			(Vala.Parameter)args["param"]
 			,resolve.get_parameter_cvalue ((Vala.Parameter)args["param"])
 			,(TargetValue?)args["xvalue"]
-			, (((string?)args["capturing_parameter"]) == "1")
+			, (bool)args["capturing_parameter"]
 		);
 		return null;
 	}
 
 	Value?store_variable_helper(Value?given_args) {
 		var args = (HashTable<string,Value?>)given_args;
-		store_variable((Variable?)args["variable"], (TargetValue?)args["lvalue"], (TargetValue?)args["xvalue"], ((string?)args["initializer"]) == "1");
+		store_variable((Variable?)args["variable"], (TargetValue?)args["lvalue"], (TargetValue?)args["xvalue"], (bool)args["initializer"]);
 		return null;
 	}
 
-	void store_variable (Variable variable, TargetValue lvalue, TargetValue xvalue, bool initializer) {
-#if false
+	void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {
+
 		var generic_type = (lvalue.value_type as GenericType);
-		if (generic_type == null) {
-			base.store_variable (variable, lvalue, xvalue, initializer);
+		if (generic_type != null) {
+			store_variable_generic (variable, lvalue, value, initializer);
 			return;
 		}
+		if (!initializer && resolve.requires_destroy (variable.variable_type)) {
+			/* unref old value */
+			emitter.ccode.add_expression (resolve.destroy_value (lvalue));
+		}
 
+		emitter.ccode.add_assignment (resolve.get_cvalue_ (lvalue), resolve.get_cvalue_ (value));
+#if false
+		var dtvar = lvalue.value_type as DelegateType;
+		if(dtvar != null) {
+			var closure_exp = new CCodeFunctionCall(new CCodeIdentifier("aroop_assign_closure_of_delegate"));
+			closure_exp.add_argument(get_cvalue_ (lvalue));
+			//if(value.value_type is MethodType) {
+				//closure_exp.add_argument(new CCodeConstant("NULL"));
+			//} else {
+				closure_exp.add_argument(get_cvalue_ (value));
+			//}
+			ccode.add_expression(closure_exp);
+		}
+#endif
+	}
+
+
+	void store_variable_generic (Variable variable, TargetValue lvalue, TargetValue xvalue, bool initializer) {
+		var generic_type = (lvalue.value_type as GenericType);
 		var ccall = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_value_copy"));
 		if (generic_type.type_parameter.parent_symbol is TypeSymbol) {
 			// generic type
@@ -95,11 +118,10 @@ public class codegenplug.LoadStoreModule : shotodolplug.Module {
 		}
 		ccall.add_argument (resolve.get_cvalue_ (lvalue));
 		ccall.add_argument (new CCodeConstant ("0"));
-		ccall.add_argument (resolve.get_cvalue_ (value));
+		ccall.add_argument (resolve.get_cvalue_ (xvalue));
 		ccall.add_argument (new CCodeConstant ("0"));
 
 		emitter.ccode.add_expression (ccall);
-#endif
 	}
 
 	Value?store_property_helper(Value?given_args) {
