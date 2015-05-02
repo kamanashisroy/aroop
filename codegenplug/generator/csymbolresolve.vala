@@ -507,7 +507,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			}
 		} else {
 			if (p.captured) {
-				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/parameter/block", p);
+				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("resolve/parameter/block", p);
 				if(result.cvalue == null)
 					print("Please report this bug, result.value should not be null\n");
 				//result.cvalue = get_parameter_cvalue_for_block(p);

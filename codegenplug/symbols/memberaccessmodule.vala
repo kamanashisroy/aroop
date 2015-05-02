@@ -13,6 +13,7 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("visit/member_access", new HookExtension(visit_member_access, this));
+		PluginManager.register("resolve/parameter/block", new HookExtension(visit_member_access, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -261,55 +262,9 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 		}
 	}
 
-	TargetValue get_parameter_cvalue (Vala.Parameter p) {
-		var result = new AroopValue (p.variable_type);
-
-		if (p.name == resolve.self_instance) {
-			if (emitter.current_method != null && emitter.current_method.coroutine) {
-				// use closure
-				result.cvalue = new CCodeMemberAccess.pointer (new CCodeIdentifier ("data"), resolve.self_instance);
-			} else {
-				var st = emitter.current_type_symbol as Struct;
-				result.cvalue = new CCodeIdentifier (resolve.self_instance);
-			}
-		} else {
-			if (p.captured) {
-				result.cvalue = get_parameter_cvalue_for_block(p);
-			} else {
-				if (emitter.current_method != null && emitter.current_method.coroutine) {
-					// use closure
-					result.cvalue = resolve.get_variable_cexpression (p.name);
-				} else {
-					var type_as_struct = p.variable_type.data_type as Struct;
-					if (p.direction != Vala.ParameterDirection.IN
-					    || (type_as_struct != null && !type_as_struct.is_simple_type () && !p.variable_type.nullable)) {
-						if (p.variable_type is GenericType) {
-							result.cvalue = resolve.get_variable_cexpression (p.name);
-						} else {
-							result.cvalue = resolve.get_variable_cexpression (p.name);
-							//result.cvalue = new CCodeIdentifier ("(*%s)".printf (resolve.get_variable_cname (p.name)));
-						}
-					} else {
-						// Property setters of non simple structs shall replace all occurences
-						// of the "value" formal parameter with a dereferencing version of that
-						// parameter.
-						if (emitter.current_property_accessor != null &&
-						    emitter.current_property_accessor.writable &&
-						    emitter.current_property_accessor.value_parameter == p &&
-						    emitter.current_property_accessor.prop.property_type.is_real_struct_type ()) {
-							result.cvalue = new CCodeIdentifier ("(*value)");
-						} else {
-							result.cvalue = resolve.get_variable_cexpression (p.name);
-						}
-					}
-				}
-			}
-		}
-
-		return result;
+	Value? get_parameter_cvalue_for_block_helper(Value?given) {
+		return get_parameter_cvalue_for_block((Vala.Parameter?)given);
 	}
-	
-
 
 	CCodeExpression get_parameter_cvalue_for_block(Vala.Parameter p) {
 		// captured variables are stored on the heap
