@@ -493,7 +493,20 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 
 		return result;
 	}
-
+	CCodeExpression get_parameter_cvalue_for_block(Vala.Parameter p) {
+		// captured variables are stored on the heap
+		var block = p.parent_symbol as Block;
+		if (block == null) {
+			block = ((Method) p.parent_symbol).body;
+		}
+		
+		var cblock_val = get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(block));
+		if(block == emitter.current_closure_block && emitter.current_closure_block.parent_symbol == emitter.current_method) {
+			return new CCodeMemberAccess (cblock_val, get_variable_cname (p.name));
+		} else {
+			return new CCodeMemberAccess.pointer (cblock_val, get_variable_cname (p.name));
+		}
+	}
 	public TargetValue get_parameter_cvalue (Vala.Parameter p) {
 		var result = new AroopValue (p.variable_type);
 
@@ -507,10 +520,10 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			}
 		} else {
 			if (p.captured) {
-				result.cvalue = (CCodeExpression?)PluginManager.swarmValue("resolve/parameter/block", p);
+				/*result.cvalue = (CCodeExpression?)PluginManager.swarmValue("resolve/parameter/block", p);
 				if(result.cvalue == null)
-					print("Please report this bug, result.value should not be null\n");
-				//result.cvalue = get_parameter_cvalue_for_block(p);
+					print("Please report this bug, result.value should not be null\n");*/
+				result.cvalue = get_parameter_cvalue_for_block(p);
 			} else {
 				if (emitter.current_method != null && emitter.current_method.coroutine) {
 					// use closure

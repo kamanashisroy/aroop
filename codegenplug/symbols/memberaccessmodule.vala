@@ -261,24 +261,5 @@ public class codegenplug.MemberAccessModule : shotodolplug.Module {
 			return new CCodeMemberAccess.pointer (cblock, local_name);
 		}
 	}
-
-	Value? get_parameter_cvalue_for_block_helper(Value?given) {
-		return get_parameter_cvalue_for_block((Vala.Parameter?)given);
-	}
-
-	CCodeExpression get_parameter_cvalue_for_block(Vala.Parameter p) {
-		// captured variables are stored on the heap
-		var block = p.parent_symbol as Block;
-		if (block == null) {
-			block = ((Method) p.parent_symbol).body;
-		}
-		
-		var cblock_val = resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(block));
-		if(block == emitter.current_closure_block && emitter.current_closure_block.parent_symbol == emitter.current_method) {
-			return new CCodeMemberAccess (cblock_val, resolve.get_variable_cname (p.name));
-		} else {
-			return new CCodeMemberAccess.pointer (cblock_val, resolve.get_variable_cname (p.name));
-		}
-	}
 }
 
