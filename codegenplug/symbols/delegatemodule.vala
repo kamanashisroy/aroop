@@ -16,6 +16,7 @@ public class codegenplug.DelegateModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("generate/delegate/declaration", new HookExtension(generate_delegate_declaration_helper, this));
+		PluginManager.register("generate/delegate/method/call", new HookExtension(generate_delegate_method_call_ccode, this));
 		PluginManager.register("generate/delegate/closure/argument", new HookExtension(generate_delegate_closure_argument_helper, this));
 		PluginManager.register("visit/delegate", new HookExtension(visit_delegate, this));
 		PluginManager.register("visit/binary_expression/delegate", new HookExtension(visit_binary_expression_for_delegate, this));
@@ -165,7 +166,8 @@ public class codegenplug.DelegateModule : shotodolplug.Module {
 #endif
 
 
-	CCodeFunctionCall? generate_delegate_method_call_ccode (MethodCall expr) {
+	Value? generate_delegate_method_call_ccode (Value?given) {
+		MethodCall?expr = (MethodCall?)given;
 		var ccall = new CCodeFunctionCall (new CCodeMemberAccess(resolve.get_cvalue(expr.call),"aroop_cb"));
 		ccall.add_argument (new CCodeMemberAccess(resolve.get_cvalue(expr.call),"aroop_closure_data"));
 		return ccall;

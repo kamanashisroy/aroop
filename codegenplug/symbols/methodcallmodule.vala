@@ -50,36 +50,9 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 			AroopCodeGeneratorAdapter.generate_method_declaration (m, emitter.cfile);
 			ccall = new CCodeFunctionCall (new CCodeIdentifier (resolve.get_ccode_real_name (m)));
 		} else if (itype is DelegateType) {
-#if false
-			bool is_param = false;
-			foreach (Vala.Parameter param in emitter.current_method.get_parameters ()) {
-				//print("symbol:%s:parent:%s\n".printf(expr.call.to_string(), param.name.to_string()));
-				if(param.name == expr.call.to_string()) {
-					is_param = true;
-					break;
-				}
-			}
-			if(is_param) {
-				// TODO avoid to_string() 
-				ccall.add_argument (new CCodeIdentifier(expr.call.to_string() + "_closure_data"));
-			} else if (ma != null) {
-				var closure_instance = resolve.get_cvalue (ma.inner);
-				if(closure_instance != null) {
-					var ccode_member_access = (CCodeMemberAccess)resolve.get_cvalue (expr.call);
-					var closure_expr = new CCodeMemberAccess.pointer(closure_instance, ccode_member_access.member_name + "_closure_data");
-					ccall.add_argument(closure_expr);
-				} else {
-					ccall.add_argument (new CCodeIdentifier(expr.call.to_string() + "_closure_data"));
-					//ccall.add_argument (new CCodeConstant("NULL"));
-				}
-			} else {
-				ccall.add_argument (new CCodeConstant("NULL"));
-			}
-#else
 			ccall = (CCodeFunctionCall?)PluginManager.swarmValue("generate/delegate/method/call", expr);//generate_delegate_method_call_ccode(expr);
 			if(ccall == null)
 				print("Please report this bug, ccall should not be null\n");
-#endif
 		}
 
 		if (m is CreationMethod) {
