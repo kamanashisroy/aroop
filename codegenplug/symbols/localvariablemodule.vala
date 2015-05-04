@@ -67,8 +67,7 @@ public class codegenplug.LocalVariableModule : shotodolplug.Module {
 			}
 		}
 		if (local.initializer != null && local.initializer.tree_can_fail) {
-			//add_simple_check (local.initializer);
-			PluginManager.swarmValue("simple_check", local.initializer);
+			AroopCodeGeneratorAdapter.add_simple_check (local.initializer);
 		}
 
 		local.active = true;

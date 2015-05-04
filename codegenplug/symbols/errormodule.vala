@@ -15,7 +15,7 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 		PluginManager.register("visit/throw_statement", new HookExtension(visit_throw_statement, this));
 		PluginManager.register("visit/try_statement", new HookExtension(visit_try_statement, this));
 		PluginManager.register("visit/catch_clause", new HookExtension(visit_catch_clause, this));
-		PluginManager.register("simple_check", new HookExtension(add_simple_check_helper, this));
+		PluginManager.register("add/simple/check", new HookExtension(add_simple_check_helper, this));
 		PluginManager.register("generate/error_domain/declaration", new HookExtension(generate_error_domain_declaration_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
@@ -182,21 +182,33 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 		return null;
 	}
 
-	void add_simple_check (CodeNode node, bool always_fails = false) { // WHAT DOES IT DO ?
+	/**
+	 * This method adds if statement for failed statements.
+	 *
+	 * if(_inner_error_) {
+	 *   goto catch_clause;
+	 * }
+	 *
+         */
+	void add_simple_check (CodeNode node, bool always_fails = false) {
 		emitter.current_method_inner_error = true;
 
 		var inner_error = resolve.get_variable_cexpression ("_inner_error_");
 
+		print_debug("doing check: %s\n".printf(node.to_string()));
 		if (always_fails) {
 			// inner_error is always set, avoid unnecessary if statement
+			print_debug("always fails : %s\n".printf(node.to_string()));
 			// eliminates C warnings
 		} else {
 			var ccond = new CCodeBinaryExpression (CCodeBinaryOperator.INEQUALITY, inner_error, new CCodeConstant ("NULL"));
 			emitter.ccode.open_if (ccond);
+			print_debug("we opened an if statement for %s\n".printf(node.to_string()));
 		}
 
 		if (emitter.emit_context.current_try != null) {
 			// surrounding try found
+			print_debug("we should add open an if statement for %s\n".printf(node.to_string()));
 
 			// free local variables
 			if (is_in_catch) {
