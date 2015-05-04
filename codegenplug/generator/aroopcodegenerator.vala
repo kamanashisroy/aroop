@@ -31,10 +31,12 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		args["source_file"] = source_file;
 		PluginManager.swarmValue(visit_exten, args);
 	}
+#if false
 	public override void visit_namespace(Namespace ns) {
 		string visit_exten= "visit/namespace";
 		PluginManager.swarmValue(visit_exten, ns);
 	}
+#endif
 	public override void visit_class(Class cl) {
 		string visit_exten= "visit/class";
 		PluginManager.swarmValue(visit_exten, cl);
@@ -102,10 +104,12 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmValue(visit_exten, c);
 	}
 
+#if false
 	public override void visit_destructor (Destructor d) {
 		string visit_exten= "visit/destructor";
 		PluginManager.swarmValue(visit_exten, d);
 	}
+#endif
 
 	public override void visit_type_parameter (TypeParameter p) {
 		string visit_exten= "visit/type_parameter";
