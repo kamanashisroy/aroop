@@ -83,23 +83,6 @@ public class codegenplug.DelegateModule : shotodolplug.Module {
 		return function;
 	}
 
-#if false
-	public override void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space) {
-		if (f.binding != MemberBinding.INSTANCE)  {
-			return;
-		}
-		base.generate_element_declaration(f,container,decl_space);
-		if(f.variable_type is DelegateType) {
-			string field_ctype_cdata =  "void*";
-			if (f.is_volatile) {
-				field_ctype_cdata = "volatile " + field_ctype_cdata;
-			}
-			container.add_field (field_ctype_cdata, "%s_closure_data".printf(resolve.get_ccode_name (f)
-				+ resolve.get_ccode_declarator_suffix (f.variable_type)), null, generate_declarator_suffix_cexpr(f.variable_type));
-		}
-	}
-#endif
-	
 	Value? generate_delegate_closure_argument_helper(Value?given) {
 		return generate_delegate_closure_argument((Expression?)given);
 	}
@@ -157,20 +140,6 @@ public class codegenplug.DelegateModule : shotodolplug.Module {
 		return null;
 	}
 	
-#if false
-	public override void visit_local_variable (LocalVariable local) {
-		if(local.variable_type is DelegateType) {
-			//LocalVariable closure_var = new LocalVariable(new PointerType(new VoidType()), "%s_closure_data".printf(local.name), local.initializer, local.source_reference);
-			LocalVariable closure_var = new LocalVariable(new PointerType(new VoidType()), "%s_closure_data".printf(local.name), null, null);
-			/*if (local.is_volatile) {
-				closure_var.is_volatile = true;
-			}*/
-			base.visit_local_variable(closure_var);
-		}
-		base.visit_local_variable(local);
-	}
-#endif
-
 #if false
 	public override void store_delegate (Variable variable, TargetValue?pinstance, Expression exp, bool initializer) {
 		var deleg_arg = generate_delegate_closure_argument(exp);

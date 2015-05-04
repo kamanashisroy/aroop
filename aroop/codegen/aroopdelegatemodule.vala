@@ -69,23 +69,6 @@ public class aroop.AroopDelegateModule : AroopValueModule {
 		return function;
 	}
 
-#if false
-	public override void generate_element_declaration(Field f, CCodeStruct container, CCodeFile decl_space) {
-		if (f.binding != MemberBinding.INSTANCE)  {
-			return;
-		}
-		base.generate_element_declaration(f,container,decl_space);
-		if(f.variable_type is DelegateType) {
-			string field_ctype_cdata =  "void*";
-			if (f.is_volatile) {
-				field_ctype_cdata = "volatile " + field_ctype_cdata;
-			}
-			container.add_field (field_ctype_cdata, "%s_closure_data".printf(get_ccode_name (f)
-				+ get_ccode_declarator_suffix (f.variable_type)), null, generate_declarator_suffix_cexpr(f.variable_type));
-		}
-	}
-#endif
-	
 	protected override CCodeExpression? generate_delegate_closure_argument(Expression arg) {
 		CCodeExpression?dleg_expr = null;
 		do {
