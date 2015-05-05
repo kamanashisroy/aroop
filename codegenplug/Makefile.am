@@ -59,6 +59,7 @@ libcodegenplug_la_SOURCES = \
 	symbols/generictypemodule.vala \
 	symbols/delegatemodule.vala \
 	symbols/valuemodule.vala \
+	symbols/pointermodule.vala \
 	symbols/localvariablemodule.vala \
 	symbols/propertymodule.vala \
 	symbols/enummodule.vala \
