@@ -484,15 +484,14 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 			// used in postconditions
 			result.cvalue = new CCodeIdentifier ("result");
 		} else if (local.captured) {
-			result.cvalue = (CCodeExpression?)PluginManager.swarmValue("load/local/block", local);//get_local_cvalue_for_block(local);
-			if(result.cvalue == null)
-				print("Please report this bug, result.value should not be null\n");
+			result.cvalue = AroopCodeGeneratorAdapter.generate_local_captured_variable(local);
 		} else {
 			result.cvalue = get_variable_cexpression (local.name);
 		}
 
 		return result;
 	}
+
 	CCodeExpression get_parameter_cvalue_for_block(Vala.Parameter p) {
 		// captured variables are stored on the heap
 		var block = p.parent_symbol as Block;

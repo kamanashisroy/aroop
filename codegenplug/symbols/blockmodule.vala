@@ -18,7 +18,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		PluginManager.register("visit/block", new HookExtension(visit_block, this));
 		PluginManager.register("generate/block/name", new HookExtension(generate_block_name, this));
 		PluginManager.register("generate/block/var/name", new HookExtension(generate_block_var_name, this));
-		PluginManager.register("generate/block/finalization", new HookExtension(generate_block_finalization_helper, this));
+		PluginManager.register("generate/block/finalization", new HookExtension(generate_block_finalization_wrapper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -193,7 +193,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		decl_space.add_function (unref_fun);
 	}
 
-	Value? generate_block_finalization_helper(Value?given_args) {
+	Value? generate_block_finalization_wrapper(Value?given_args) {
 		var args = (HashTable<string,Value?>)given_args;
 		generate_block_finalization(
 			(Block?)args["block"]

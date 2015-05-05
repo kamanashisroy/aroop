@@ -12,6 +12,7 @@ public class codegenplug.LocalVariableModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("visit/local_variable", new HookExtension(visit_local_variable, this));
+		PluginManager.register("generate/local_variable/captured", new HookExtension(generate_local_captured_variable, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -95,7 +96,18 @@ public class codegenplug.LocalVariableModule : shotodolplug.Module {
 				, resolve.get_variable_cname (local.name)), rhs);
 	}
 
-
+	Value? generate_local_captured_variable(Value?given) {
+		LocalVariable?local = (LocalVariable?)given;
+		// captured variables are stored on the heap
+		var block = (Block) local.parent_symbol;
+		CCodeExpression cblock = resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name (block));
+		string local_name = resolve.get_variable_cname (local.name);
+		if(block == emitter.current_closure_block && emitter.current_closure_block.parent_symbol == emitter.current_method) {
+			return new CCodeMemberAccess (cblock, local_name);
+		} else {
+			return new CCodeMemberAccess.pointer (cblock, local_name);
+		}
+	}
 
 }
 

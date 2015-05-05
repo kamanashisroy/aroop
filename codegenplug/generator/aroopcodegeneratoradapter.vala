@@ -128,6 +128,13 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		PluginManager.swarmValue("generate/temp", tmp);
 	}
 
+	public static CCodeExpression?generate_local_captured_variable(LocalVariable local) {
+		CCodeExpression? cvalue = (CCodeExpression?)PluginManager.swarmValue("generate/local_variable/captured", local);//get_local_cvalue_for_block(local);
+		if(cvalue == null)
+			print("Please report this bug, value should not be null\n");
+		return cvalue;
+	}
+
 	public static void generate_error_domain_declaration (ErrorDomain edomain, CCodeFile decl_space) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["edomain"] = edomain;
