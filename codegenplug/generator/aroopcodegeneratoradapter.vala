@@ -113,6 +113,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		PluginManager.swarmValue("generate/enum/declaration", args);
 	}
 
+#if false
 	public static CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["method"] = m;
@@ -123,6 +124,7 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 			print("Please report this bug, result for instance_cparameter_for_struct should not be null\n");
 		return result;
 	}
+#endif
 
 	public static void generate_temp_variable(LocalVariable tmp) { // emit_temp_var
 		PluginManager.swarmValue("generate/temp", tmp);

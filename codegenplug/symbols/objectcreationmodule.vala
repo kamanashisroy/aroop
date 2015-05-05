@@ -34,6 +34,7 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 	void visit_object_creation_expression (ObjectCreationExpression expr) {
 		CCodeExpression instance = null;
 		CCodeExpression creation_expr = null;
+		bool requires_assignment = false;
 
 		Struct?st = null;
 		if(expr.type_reference.data_type is Struct)
@@ -43,28 +44,29 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 		if (st != null && !st.is_boolean_type () && !st.is_integer_type () && !st.is_floating_type ()) {
 			struct_by_ref = true;
 		}
-		bool usingtemp_so_requires_assignment = true;
 
 		if (struct_by_ref || expr.get_object_initializer ().size > 0) {
 			/**
-			 * The following code may pop target variable ..
+			 * The following code tries to get current destination for the creation expression
 			 */ 
-#if false
-			// value-type initialization or object creation expression with object initializer
-			var temp_decl = emitter.get_temp_variable (expr.type_reference, false, expr);
-			AroopCodeGeneratorAdapter.generate_temp_variable (temp_decl);
-			print_debug("visit_object_creation_expression is creating temporary variable %s for %s\n".printf(temp_decl.to_string(), expr.to_string()));
-
-			// TODO omit the following line of code
-			var memclean = new CCodeFunctionCall(new CCodeIdentifier("aroop_memclean_raw2"));
-			var temp_ref = resolve.get_variable_cexpression (temp_decl.name);
-			memclean.add_argument(new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, temp_ref));
-			emitter.ccode.add_expression (memclean); // XXX doing costly memory cleanup
-			instance = resolve.get_variable_cexpression (resolve.get_variable_cname (temp_decl.name));
-#else
-			usingtemp_so_requires_assignment = false;
 			instance = resolve.get_variable_cexpression(emitter.get_declaration_variable().name);
-#endif
+			if(instance == null) {
+				/**
+				 * The following code creates temprary variable for structure initialization ..
+				 */ 
+				// value-type initialization or object creation expression with object initializer
+				var temp_decl = emitter.get_temp_variable (expr.type_reference, false, expr);
+				AroopCodeGeneratorAdapter.generate_temp_variable (temp_decl);
+				print_debug("visit_object_creation_expression is creating temporary variable %s for %s\n".printf(temp_decl.to_string(), expr.to_string()));
+
+				// TODO omit the following line of code
+				var memclean = new CCodeFunctionCall(new CCodeIdentifier("aroop_memclean_raw2"));
+				var temp_ref = resolve.get_variable_cexpression (temp_decl.name);
+				memclean.add_argument(new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, temp_ref));
+				emitter.ccode.add_expression (memclean); // XXX doing costly memory cleanup
+				instance = resolve.get_variable_cexpression (resolve.get_variable_cname (temp_decl.name));
+				requires_assignment = true;
+			}
 		}
 
 		if (expr.symbol_reference == null) {
@@ -239,7 +241,7 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			emitter.ccode.add_assignment (temp_ref, creation_expr);
 			resolve.set_cvalue (expr, temp_ref);
 #else
-			if(usingtemp_so_requires_assignment)
+			if(requires_assignment)
 				emitter.ccode.add_assignment (resolve.get_variable_cexpression(emitter.get_declaration_variable().name), creation_expr);
 			resolve.set_cvalue (expr, creation_expr);
 #endif

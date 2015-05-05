@@ -137,16 +137,6 @@ public class codegenplug.StructModule : shotodolplug.Module {
 		return null;
 	}
 	
-	CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
-		var returnparam = param;
-		var st = (Struct) m.parent_symbol;
-		if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
-			// use return value
-		} else {
-			returnparam = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type)+"*");
-			//returnparam = new CCodeUnaryExpression((CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)));
-		}
-		return returnparam;
-	}
+
 }
 

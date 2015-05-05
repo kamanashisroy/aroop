@@ -64,7 +64,7 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 				instance_param = new CCodeParameter ("base_instance", resolve.get_ccode_aroop_name (base_type));
 			} else {
 				if (m.parent_symbol is Struct) {
-					instance_param = AroopCodeGeneratorAdapter.generate_instance_cparameter_for_struct(m, instance_param, this_type);
+					instance_param = generate_instance_cparameter_for_struct(m, instance_param, this_type);
 				} else {
 					instance_param = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type));
 				}
@@ -174,6 +174,17 @@ public class codegenplug.ParameterModule : shotodolplug.Module {
 		}
 	}
 
+	CCodeParameter?generate_instance_cparameter_for_struct(Method m, CCodeParameter?param, DataType this_type) {
+		var returnparam = param;
+		var st = (Struct) m.parent_symbol;
+		if (st.is_boolean_type () || st.is_integer_type () || st.is_floating_type ()) {
+			// use return value
+		} else {
+			returnparam = new CCodeParameter (resolve.self_instance, resolve.get_ccode_aroop_name (this_type)+"*");
+			//returnparam = new CCodeUnaryExpression((CCodeUnaryOperator.POINTER_INDIRECTION, get_variable_cexpression (param.name)));
+		}
+		return returnparam;
+	}
 	
 	Value?visit_formal_parameter (Value?given) {
 		Vala.Parameter?p = (Vala.Parameter?)given;
