@@ -88,6 +88,24 @@ internal class codegenplug.AroopCodeGeneratorAdapter {
 		PluginManager.swarmValue("generate/delegate/declaration", args);
 	}
 
+	public static CCodeExpression? generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
+		var args = new HashTable<string,Value?>(str_hash,str_equal);
+		args["source_cexpr"] = source_cexpr;
+		args["expression_type"] = expression_type;
+		args["target_type"] = target_type;
+		args["expr"] = expr;
+		CCodeExpression?outexpr = (CCodeExpression?)PluginManager.swarmValue("generate/delegate/cast", args);
+		if(outexpr == null)
+			print("Please report this bug, outexpr should not be null\n");
+		return outexpr;
+	}
+	public static CCodeFunctionCall? generate_delegate_method_call_ccode (MethodCall expr) {
+		CCodeFunctionCall?ccall = (CCodeFunctionCall?)PluginManager.swarmValue("generate/delegate/method/call", expr);
+		if(ccall == null)
+			print("Please report this bug, ccall should not be null\n");
+		return ccall;
+	}
+
 	public static void generate_enum_declaration (Enum en, CCodeFile decl_space) {
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["enum"] = en;

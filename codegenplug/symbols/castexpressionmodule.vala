@@ -80,31 +80,9 @@ public class codegenplug.CastExpressionModule : shotodolplug.Module {
 			resolve.set_cvalue (expr, new CCodeCastExpression (resolve.get_cvalue (expr.inner), resolve.get_ccode_aroop_name (expr.type_reference)));
 		}
 		if (expr.type_reference is DelegateType) {
-			resolve.set_cvalue(expr, generate_method_to_delegate_cast_expression_as_comma_2(resolve.get_cvalue(expr.inner), expr.inner.value_type, expr.type_reference, expr.inner));
+			resolve.set_cvalue(expr, AroopCodeGeneratorAdapter.generate_method_to_delegate_cast_expression(resolve.get_cvalue(expr.inner), expr.inner.value_type, expr.type_reference, expr.inner));
 		}
 		return null;
-	}
-
-	CCodeExpression? generate_method_to_delegate_cast_expression_as_comma_2(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
-		var deleg_comma = new CCodeCommaExpression();
-		var deleg_temp_var = generate_method_to_delegate_cast_expression_as_comma(source_cexpr, expression_type, target_type, expr, deleg_comma);
-		if(deleg_temp_var == null) { 
-			return generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
-		}
-		return deleg_comma;
-	}
-
-	CCodeExpression? generate_method_to_delegate_cast_expression_as_comma(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr, CCodeCommaExpression ccomma) {
-		if (expression_type is DelegateType) {
-			return null;
-		}
-		CCodeExpression delegate_expr = generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
-		var assign_temp_var = emitter.get_temp_variable (target_type);
-		AroopCodeGeneratorAdapter.generate_temp_variable(assign_temp_var);
-		//emit_temp_var (assign_temp_var);
-		ccomma.append_expression(new CCodeAssignment(resolve.get_variable_cexpression (assign_temp_var.name), delegate_expr));
-		ccomma.append_expression(resolve.get_variable_cexpression(assign_temp_var.name));
-		return resolve.get_variable_cexpression(assign_temp_var.name);
 	}
 
 	CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {

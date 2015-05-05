@@ -220,7 +220,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			}
 
 			if (target_type is DelegateType) {
-				return generate_method_to_delegate_cast_expression_as_comma_2(source_cexpr, expression_type, target_type, expr);
+				return AroopCodeGeneratorAdapter.generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
 			}
 			// null literal, no cast required when not converting to generic type pointer
 			return cexpr;
@@ -254,7 +254,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		AroopCodeGeneratorAdapter.generate_type_declaration (target_type, emitter.cfile);
 
 		if (target_type is DelegateType && expression_type is MethodType) {
-			return generate_method_to_delegate_cast_expression_as_comma_2(source_cexpr, expression_type, target_type, expr);
+			return AroopCodeGeneratorAdapter.generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
 		}
 
 		Class? cl = null;
@@ -279,21 +279,6 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		} else {
 			return cexpr;
 		}
-	}
-	CCodeExpression? generate_method_to_delegate_cast_expression_as_comma_2(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
-		var deleg_comma = new CCodeCommaExpression();
-		var deleg_temp_var = generate_method_to_delegate_cast_expression_as_comma(source_cexpr, expression_type, target_type, expr, deleg_comma);
-		if(deleg_temp_var == null) { 
-			return generate_method_to_delegate_cast_expression(source_cexpr, expression_type, target_type, expr);
-		}
-		return deleg_comma;
-	}
-
-	CCodeExpression? generate_method_to_delegate_cast_expression_as_comma(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr, CCodeCommaExpression ccomma) {
-		return null;
-	}
-	CCodeExpression generate_method_to_delegate_cast_expression(CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr) {
-		return source_cexpr;
 	}
 
 	Value? generate_instance_cast_helper (Value?given_args) {

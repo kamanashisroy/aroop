@@ -50,9 +50,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 			AroopCodeGeneratorAdapter.generate_method_declaration (m, emitter.cfile);
 			ccall = new CCodeFunctionCall (new CCodeIdentifier (resolve.get_ccode_real_name (m)));
 		} else if (itype is DelegateType) {
-			ccall = (CCodeFunctionCall?)PluginManager.swarmValue("generate/delegate/method/call", expr);//generate_delegate_method_call_ccode(expr);
-			if(ccall == null)
-				print("Please report this bug, ccall should not be null\n");
+			ccall = AroopCodeGeneratorAdapter.generate_delegate_method_call_ccode(expr);
 		}
 
 		if (m is CreationMethod) {
