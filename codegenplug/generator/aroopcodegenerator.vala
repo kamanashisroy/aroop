@@ -364,7 +364,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_addressof_expression (AddressofExpression expr) {
-		string visit_exten= "visit/addressof_indirection";
+		string visit_exten= "visit/addressof_expression";
 		PluginManager.swarmValue(visit_exten, expr);
 	}
 
