@@ -329,5 +329,50 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			)
 		);
 	}
+
+	Value? populate_variables_of_parent_closure_wrapper(Value?given_args) {
+		var args = (HashTable<string,Value?>)given_args;
+		populate_variables_of_parent_closure(
+			(Block?)args["block"]
+			,(bool)args["populate_self"]
+			,(CCodeFunction?)args["decl_space"]
+		);
+		return null;
+	}
+
+	void populate_variables_of_parent_closure(Block b, bool populate_self, CCodeFunction decl_space) {
+		// add variables for parent closure blocks
+		// as closures only have one parameter for the innermost closure block
+		var closure_block = b;
+		while (true) {
+			var parent_closure_block = emitter.next_closure_block (b.parent_symbol);
+			if (parent_closure_block == null) {
+				break;
+			}
+			int parent_block_id = emitter.get_block_id (parent_closure_block);
+
+			var parent_data = new CCodeMemberAccess.pointer (
+				new CCodeIdentifier (
+					AroopCodeGeneratorAdapter.generate_block_var_name(closure_block)
+				), AroopCodeGeneratorAdapter.generate_block_var_name (parent_closure_block));
+			var cdecl = new CCodeDeclaration (AroopCodeGeneratorAdapter.generate_block_name (parent_closure_block));
+			cdecl.add_declarator (new CCodeVariableDeclarator (AroopCodeGeneratorAdapter.generate_block_var_name (parent_closure_block), parent_data));
+
+			decl_space.add_statement (cdecl);
+
+			closure_block = parent_closure_block;
+		}
+		
+		if(populate_self) {
+			var cself = new CCodeMemberAccess.pointer (
+				new CCodeIdentifier (AroopCodeGeneratorAdapter.generate_block_var_name(closure_block))
+				, resolve.self_instance);
+			var cdecl = new CCodeDeclaration ("%s *".printf (resolve.get_ccode_aroop_name (emitter.current_type_symbol)));
+			cdecl.add_declarator (new CCodeVariableDeclarator (resolve.self_instance, cself));
+
+			decl_space.add_statement (cdecl);
+		}
+	}
+
 }
 
