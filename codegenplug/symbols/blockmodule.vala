@@ -19,6 +19,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 		PluginManager.register("generate/block/name", new HookExtension(generate_block_name, this));
 		PluginManager.register("generate/block/var/name", new HookExtension(generate_block_var_name, this));
 		PluginManager.register("generate/block/finalization", new HookExtension(generate_block_finalization_wrapper, this));
+		PluginManager.register("populate/parent/closure", new HookExtension(populate_variables_of_parent_closure_wrapper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}

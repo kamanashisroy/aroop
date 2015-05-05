@@ -43,8 +43,13 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 		if (st != null && !st.is_boolean_type () && !st.is_integer_type () && !st.is_floating_type ()) {
 			struct_by_ref = true;
 		}
+		bool usingtemp_so_requires_assignment = true;
 
 		if (struct_by_ref || expr.get_object_initializer ().size > 0) {
+			/**
+			 * The following code may pop target variable ..
+			 */ 
+#if false
 			// value-type initialization or object creation expression with object initializer
 			var temp_decl = emitter.get_temp_variable (expr.type_reference, false, expr);
 			AroopCodeGeneratorAdapter.generate_temp_variable (temp_decl);
@@ -56,6 +61,10 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			memclean.add_argument(new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, temp_ref));
 			emitter.ccode.add_expression (memclean); // XXX doing costly memory cleanup
 			instance = resolve.get_variable_cexpression (resolve.get_variable_cname (temp_decl.name));
+#else
+			usingtemp_so_requires_assignment = false;
+			instance = resolve.get_variable_cexpression(emitter.get_declaration_variable().name);
+#endif
 		}
 
 		if (expr.symbol_reference == null) {
@@ -230,7 +239,8 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			emitter.ccode.add_assignment (temp_ref, creation_expr);
 			resolve.set_cvalue (expr, temp_ref);
 #else
-			emitter.ccode.add_assignment (resolve.get_variable_cexpression(emitter.get_declaration_variable().name), creation_expr);
+			if(usingtemp_so_requires_assignment)
+				emitter.ccode.add_assignment (resolve.get_variable_cexpression(emitter.get_declaration_variable().name), creation_expr);
 			resolve.set_cvalue (expr, creation_expr);
 #endif
 		}
