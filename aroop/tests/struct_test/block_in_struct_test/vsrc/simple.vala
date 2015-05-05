@@ -10,7 +10,7 @@ internal struct Orchard {
 	internal void doHelper(ODescribe cb) {
 		cb(&mango);
 	}
-	internal void do() {
+	internal void go() {
 		extring fruit = extring();
 		doHelper((x) => {
 			fruit.rebuild_and_copy_shallow(x);
@@ -23,7 +23,7 @@ class MainClass : Replicable {
 
 	public static int main() {
 		Orchard orchard = Orchard();
-		orchard.do();
+		orchard.go();
 		return 0;
 	}
 }

@@ -39,17 +39,21 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			local = new LocalVariable(new PointerType(new VoidType()), "_AROOP_NO_DECLARATION_VARIABLE_");
 		}
 		emitter.push_declaration_variable(local);
+		print_debug("Emitting declaration statement %s\n".printf(stmt.to_string()));
 		stmt.declaration.accept (emitter.visitor);
+		print_debug("Done declaration statement %s\n".printf(stmt.to_string()));
 		emitter.pop_declaration_variable();
 		return null;
 	}
 
 	Value? visit_expression (Value?given) {
 		Expression?expr = (Expression?)given;
+		print_debug("Emitting expression %s\n".printf(expr.to_string()));
 		if (resolve.get_cvalue (expr) != null && !expr.lvalue) {
 			// memory management, implicit casts, and boxing/unboxing
 			resolve.set_cvalue (expr, transform_expression (resolve.get_cvalue (expr), expr.value_type, expr.target_type, expr));
 		}
+		print_debug("Done expression %s\n".printf(expr.to_string()));
 		return null;
 	}
 

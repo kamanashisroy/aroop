@@ -49,7 +49,9 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			/**
 			 * The following code tries to get current destination for the creation expression
 			 */ 
-			instance = resolve.get_variable_cexpression(emitter.get_declaration_variable().name);
+			var decl_var = emitter.get_declaration_variable();
+			if(decl_var != null)
+				instance = resolve.get_variable_cexpression(decl_var.name);
 			if(instance == null) {
 				/**
 				 * The following code creates temprary variable for structure initialization ..
