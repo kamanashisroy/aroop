@@ -67,11 +67,11 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		 * we unref temporary variables at the end of a full
 		 * expression
 		 */
-		print_debug("Ending expression %s\n".printf(expr.to_string()));
+		print_debug("end_full_expression %s\n".printf(expr.to_string()));
 
 		if (((Vala.List<LocalVariable>) emitter.emit_context.temp_ref_vars).size == 0) {
 			/* nothing to do without temporary variables */
-			print_debug("Ending expression %s nothing to do ..\n".printf(expr.to_string()));
+			print_debug("end_full_expression %s nothing to do ..\n".printf(expr.to_string()));
 			return null;
 		}
 
@@ -80,6 +80,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			expr_type = expr.target_type;
 		}
 
+		print_debug("end_full_expression creating temporary variable %s\n".printf(expr.to_string()));
 		var full_expr_var = emitter.get_temp_variable (expr_type, true, expr);
 		AroopCodeGeneratorAdapter.generate_temp_variable(full_expr_var);
 
@@ -161,7 +162,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			return cexpr;
 		}
 
-		print_debug("transforming expression %s for target %s\n".printf(expr.to_string(), target_type.to_string()));
+		print_debug("Transforming expression %s for target %s\n".printf(expr.to_string(), target_type.to_string()));
 
 		if (expression_type.value_owned
 		    && (target_type == null || !target_type.value_owned)) {
@@ -203,6 +204,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 				cexpr = resolve.get_ref_cexpression (target_type, cexpr, expr, node);
 			}
 		}
+		print_debug("End of transformation of %s for target %s\n".printf(expr.to_string(), target_type.to_string()));
 
 		return cexpr;
 	}

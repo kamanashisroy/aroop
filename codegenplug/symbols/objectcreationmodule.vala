@@ -206,6 +206,7 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			if (expr.type_reference.data_type is Struct) {
 				emitter.ccode.add_expression (creation_expr);
 			} else {
+				print_debug("object_creation_expression creating assignment for ------------------ \n");
 				emitter.ccode.add_assignment (instance, creation_expr);
 			}
 
@@ -220,6 +221,7 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 					} else {
 						lhs = new CCodeMemberAccess.pointer (typed_inst, resolve.get_ccode_name (f));
 					}
+					print_debug("object_creation_expression creating assignment for ++++++++++++++++++++++++++++++++\n");
 					emitter.ccode.add_assignment (lhs, resolve.get_cvalue (init.initializer));
 				} else if (init.symbol_reference is Property) {
 					var inst_ma = new MemberAccess.simple ("new");

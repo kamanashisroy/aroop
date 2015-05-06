@@ -30,40 +30,11 @@ public class codegenplug.AssignmentModule : shotodolplug.Module {
 		CCodeExpression rhs = resolve.get_cvalue (assignment.right);
 		CCodeExpression lhs = (CCodeExpression) resolve.get_ccodenode (assignment.left);
 
-#if false
-		var dtvar = assignment.left.value_type as DelegateType;
-		if(dtvar != null) {
-			var closure_exp = new CCodeFunctionCall(new CCodeIdentifier("aroop_assign_closure_of_delegate"));
-			closure_exp.add_argument(lhs);
-			closure_exp.add_argument(rhs);
-			emitter.ccode.add_expression(closure_exp);
-		}
-#endif
 		bool unref_old = resolve.requires_destroy (assignment.left.value_type);
 
 		if (unref_old) {
-#if false
-			if (!is_pure_ccode_expression (lhs)) {
-				/* Assign lhs to temp var to avoid repeating side effect */
-				var lhs_value_type = assignment.left.value_type.copy ();
-				string lhs_temp_name = "_tmp%d_".printf (next_temp_var_id++);
-				var lhs_temp = new LocalVariable (lhs_value_type, "*" + lhs_temp_name);
-				AroopCodeGeneratorAdapter.generate_temp_variable (lhs_temp);
-				emitter.ccode.add_assignment (get_variable_cexpression (lhs_temp_name), new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, lhs));
-				lhs = new CCodeParenthesizedExpression (new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, resolve.get_variable_cexpression (lhs_temp_name)));
-			}
-
-			var temp_decl = emitter..get_temp_variable (assignment.left.value_type);
-			AroopCodeGeneratorAdapter.generate_temp_variable (temp_decl);
-			emitter.ccode.add_assignment (get_variable_cexpression (temp_decl.name), rhs);
-			/* unref old value */
-			emitter.ccode.add_expression (get_unref_expression (lhs, assignment.left.value_type, assignment.left));
-
-			rhs = resolve.get_variable_cexpression (temp_decl.name);
-#else
 			/* unref old value */
 			emitter.ccode.add_expression (resolve.get_unref_expression (lhs, assignment.left.value_type, assignment.left));
-#endif
 		}
 	
 		var cop = CCodeAssignmentOperator.SIMPLE;
@@ -147,40 +118,5 @@ public class codegenplug.AssignmentModule : shotodolplug.Module {
 		}
 		return null;
 	}
-
-#if false
-	void store_variable (Variable variable, TargetValue lvalue, TargetValue value, bool initializer) {
-		if (!initializer && requires_destroy (variable.variable_type)) {
-			/* unref old value */
-			ccode.add_expression (destroy_value (lvalue));
-		}
-
-		ccode.add_assignment (resolve.get_cvalue_ (lvalue), resolve.get_cvalue_ (value));
-#if false
-		var dtvar = lvalue.value_type as DelegateType;
-		if(dtvar != null) {
-			var closure_exp = new CCodeFunctionCall(new CCodeIdentifier("aroop_assign_closure_of_delegate"));
-			closure_exp.add_argument(get_cvalue_ (lvalue));
-			//if(value.value_type is MethodType) {
-				//closure_exp.add_argument(new CCodeConstant("NULL"));
-			//} else {
-				closure_exp.add_argument(get_cvalue_ (value));
-			//}
-			ccode.add_expression(closure_exp);
-		}
-#endif
-	}
-
-	void store_delegate (Variable variable, TargetValue? pinstance, Expression exp, bool initializer) {
-		if(variable is LocalVariable) {
-			store_local((LocalVariable)variable, exp.target_value, initializer);
-		} else if(variable is Field) {
-			store_field((Field)variable, pinstance, exp.target_value);
-		} else {
-			assert("I do not know this!" == null);
-			//store_variable(variable, lvalue, value, initializer);
-		}
-	}
-#endif
 
 }
