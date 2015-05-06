@@ -17,6 +17,7 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 	public override int init() {
 		PluginManager.register("visit/binary_expression", new HookExtension(visit_binary_expression, this));
 		PluginManager.register("visit/type_check", new HookExtension(visit_type_check, this));
+		PluginManager.register("visit/sizeof_expression", new HookExtension(visit_sizeof_expression, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -30,6 +31,15 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 		resolve = (CSymbolResolve?)PluginManager.swarmValue("resolve/c/symbol",null);
 		return null;
 	}
+
+	Value?visit_sizeof_expression (Value?given) {
+		SizeofExpression?expr = (SizeofExpression?)given;
+		var csizeof = new CCodeFunctionCall (new CCodeIdentifier ("sizeof"));
+		csizeof.add_argument (new CCodeIdentifier (resolve.get_ccode_aroop_name (expr.type_reference)));
+		resolve.set_cvalue (expr, csizeof);
+		return null;
+	}
+
 
 #if false
 	Value? visit_creation_method (Value? givenValue) {
