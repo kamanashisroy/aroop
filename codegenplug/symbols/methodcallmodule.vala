@@ -118,6 +118,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 
 						if (param.direction == Vala.ParameterDirection.REF) {
 							var crefcomma = new CCodeCommaExpression ();
+							print_debug("visit_method_call doing assignment for %s ========================= \n".printf(expr.to_string()));
 							crefcomma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (temp_var.name), resolve.get_cvalue (unary.inner)));
 							crefcomma.append_expression (cexpr);
 							cexpr = crefcomma;
@@ -131,6 +132,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 							ret_temp_var = emitter.get_temp_variable (itype.get_return_type ());
 							//ret_temp_var.is_imaginary = true;
 							AroopCodeGeneratorAdapter.generate_temp_variable(ret_temp_var);
+							print_debug("visit_method_call doing assignment for %s ========================= \n".printf(expr.to_string()));
 							ccomma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (ret_temp_var.name), ccall_expr));
 						}
 
@@ -140,6 +142,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 						//assign_temp_var.is_imaginary = true;
 						AroopCodeGeneratorAdapter.generate_temp_variable(assign_temp_var);
 
+						print_debug("visit_method_call doing assignment for %s ========================= \n".printf(expr.to_string()));
 						cassign_comma.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (assign_temp_var.name), AroopCodeGeneratorAdapter.generate_expression_transformation (resolve.get_variable_cexpression (temp_var.name), param.variable_type, unary.inner.value_type, arg)));
 
 						// unref old value
@@ -148,6 +151,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 						cassign_comma.append_expression (resolve.get_variable_cexpression (assign_temp_var.name));
 
 						// assign new value
+						print_debug("visit_method_call doing assignment for %s ========================= \n".printf(expr.to_string()));
 						ccomma.append_expression (new CCodeAssignment (resolve.get_cvalue (unary.inner), cassign_comma));
 
 						// return value
@@ -244,6 +248,7 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 
 			AroopCodeGeneratorAdapter.generate_temp_variable(temp_var);
 
+			print_debug("visit_method_call creating assignment for %s ++++++++++++++++++\n".printf(expr.to_string()));
 			emitter.ccode.add_assignment (temp_ref, ccall_expr);
 			resolve.set_cvalue (expr, temp_ref);
 		}

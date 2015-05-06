@@ -89,6 +89,7 @@ public class codegenplug.LoadStoreModule : shotodolplug.Module {
 			emitter.ccode.add_expression (resolve.destroy_value (lvalue));
 		}
 
+		print_debug("store_variable creating assignment for %s ++++++++++++++++++\n".printf(variable.name));
 		emitter.ccode.add_assignment (resolve.get_cvalue_ (lvalue), resolve.get_cvalue_ (value));
 #if false
 		var dtvar = lvalue.value_type as DelegateType;

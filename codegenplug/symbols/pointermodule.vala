@@ -48,6 +48,7 @@ public class codegenplug.PointerModule : shotodolplug.Module {
 		AroopCodeGeneratorAdapter.generate_temp_variable (temp_decl);
 		var cvar = resolve.get_variable_cexpression (temp_decl.name);
 
+		print_debug("visit_reference_transfer_expression doing assignment for %s ========================= \n".printf(expr.to_string()));
 		ccomma.append_expression (new CCodeAssignment (cvar, resolve.get_cvalue (expr.inner)));
 		ccomma.append_expression (new CCodeAssignment (resolve.get_cvalue (expr.inner), new CCodeConstant ("NULL")));
 		ccomma.append_expression (cvar);

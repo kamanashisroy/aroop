@@ -36,6 +36,7 @@ public class codegenplug.PostfixExpressionModule : shotodolplug.Module {
 			// assign current value to temp variable
 			var temp_decl = emitter.get_temp_variable (prop.property_type, true, expr);
 			AroopCodeGeneratorAdapter.generate_temp_variable (temp_decl);
+			print_debug("visit_postfix_expression is creating temporary variable\n");
 			emitter.ccode.add_assignment (resolve.get_variable_cexpression (temp_decl.name), resolve.get_cvalue (expr.inner));
 
 			// increment/decrement property

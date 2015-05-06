@@ -49,6 +49,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 	Value? visit_expression (Value?given) {
 		Expression?expr = (Expression?)given;
 		print_debug("Emitting expression %s\n".printf(expr.to_string()));
+		print_debug(" --> %s\n".printf((resolve.get_cvalue(expr) == null)?"null":"not null"));
 		if (resolve.get_cvalue (expr) != null && !expr.lvalue) {
 			// memory management, implicit casts, and boxing/unboxing
 			resolve.set_cvalue (expr, transform_expression (resolve.get_cvalue (expr), expr.value_type, expr.target_type, expr));
@@ -85,6 +86,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		AroopCodeGeneratorAdapter.generate_temp_variable(full_expr_var);
 
 		var expr_list = new CCodeCommaExpression ();
+		print_debug("visit_end_full_expression doing assignment for %s ========================= \n".printf(expr.to_string()));
 		expr_list.append_expression (new CCodeAssignment (resolve.get_variable_cexpression (full_expr_var.name), resolve.get_cvalue (expr)));
 
 		foreach (LocalVariable local in emitter.emit_context.temp_ref_vars) {
@@ -111,6 +113,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			if(emitter.current_return_type is GenericType) {
 				holder = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, new CCodeIdentifier ("result"));
 			}
+			print_debug("visit_return_statement creating assignment for %s ++++++++++++++++++\n".printf(stmt.to_string()));
 			emitter.ccode.add_assignment (holder, resolve.get_cvalue(rexpr));
 		}
 		AroopCodeGeneratorAdapter.append_local_free (emitter.current_symbol);
@@ -157,12 +160,18 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 	}
 
 	CCodeExpression transform_expression (CCodeExpression source_cexpr, DataType? expression_type, DataType? target_type, Expression? expr = null) {
+
+		// check for optimization
+		if(source_cexpr is CCodeAssignment)
+			print_debug("Transforming expression %s may be we can do optimization ********\n".printf(expr.to_string()));
+
+
 		var cexpr = source_cexpr;
 		if (expression_type == null) {
 			return cexpr;
 		}
 
-		print_debug("Transforming expression %s for target %s\n".printf(expr.to_string(), target_type.to_string()));
+		print_debug("Transforming expression %s for target %s\n".printf(expr.to_string(), (target_type == null)?"(null)":target_type.to_string()));
 
 		if (expression_type.value_owned
 		    && (target_type == null || !target_type.value_owned)) {
@@ -177,6 +186,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 				AroopCodeGeneratorAdapter.generate_temp_variable(decl);
 				emitter.emit_context.temp_ref_vars.insert (0, decl);
 				print_debug("adding temp variable %s for expression %s\n".printf(decl.to_string(), expr.to_string()));
+				print_debug("transform_expression doing assignment for %s ========================= \n".printf(expr.to_string()));
 				cexpr = new CCodeAssignment (resolve.get_variable_cexpression (decl.name), cexpr);
 #else
 				// use macro instead of temporary variable

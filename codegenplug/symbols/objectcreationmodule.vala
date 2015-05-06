@@ -206,7 +206,7 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			if (expr.type_reference.data_type is Struct) {
 				emitter.ccode.add_expression (creation_expr);
 			} else {
-				print_debug("object_creation_expression creating assignment for ------------------ \n");
+				print_debug("object_creation_expression creating assignment for ++++++++++++++++++++++++++++++++\n");
 				emitter.ccode.add_assignment (instance, creation_expr);
 			}
 
@@ -242,11 +242,14 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			AroopCodeGeneratorAdapter.generate_temp_variable (temp_var);
 			print_debug("visit_object_creation_expression 2 is creating temporary variable %s for %s\n".printf(temp_var.to_string(), expr.to_string()));
 
+			print_debug("object_creation_expression creating assignment for ++++++++++++++++++++++++++++++++\n");
 			emitter.ccode.add_assignment (temp_ref, creation_expr);
 			resolve.set_cvalue (expr, temp_ref);
 #else
-			if(requires_assignment)
+			if(requires_assignment) {
+				print_debug("object_creation_expression creating assignment for ++++++++++++++++++++++++++++++++\n");
 				emitter.ccode.add_assignment (resolve.get_variable_cexpression(emitter.get_declaration_variable().name), creation_expr);
+			}
 			resolve.set_cvalue (expr, creation_expr);
 #endif
 		}

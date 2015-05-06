@@ -29,6 +29,10 @@ public class codegenplug.AssignmentModule : shotodolplug.Module {
 	CCodeExpression? emit_simple_assignment (Assignment assignment) {
 		CCodeExpression rhs = resolve.get_cvalue (assignment.right);
 		CCodeExpression lhs = (CCodeExpression) resolve.get_ccodenode (assignment.left);
+		if(rhs == lhs) {
+			print_debug("Optimised out emit_simple_assignment for %s *********** \n".printf(assignment.to_string()));
+			return null;
+		}
 
 		bool unref_old = resolve.requires_destroy (assignment.left.value_type);
 
@@ -60,6 +64,7 @@ public class codegenplug.AssignmentModule : shotodolplug.Module {
 			cop = CCodeAssignmentOperator.SHIFT_RIGHT;
 		}
 
+		print_debug("emit_simple_assignment doing assignment for %s ========================= \n".printf(assignment.to_string()));
 		CCodeExpression codenode = new CCodeAssignment (lhs, rhs, cop);
 
 		emitter.ccode.add_expression (codenode);

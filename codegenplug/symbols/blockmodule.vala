@@ -66,6 +66,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 				var ref_call = new CCodeFunctionCall (resolve.get_dup_func_expression (resolve.get_data_type_for_symbol(emitter.current_type_symbol), b.source_reference));
 				ref_call.add_argument (new CCodeIdentifier (resolve.self_instance));
 
+				print_debug("visit_block doing assignment for %s ========================= \n".printf(b.to_string()));
 				emitter.ccode.add_statement (new CCodeExpressionStatement (new CCodeAssignment (new CCodeMemberAccess (resolve.get_variable_cexpression (AroopCodeGeneratorAdapter.generate_block_var_name(b)), resolve.self_instance), ref_call)));
 			}
 
@@ -160,6 +161,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			param.captured = true;
 		}
 
+		print_debug("capture_parameter creating assignment for %s ++++++++++++++++++\n".printf(param.to_string()));
 		emitter.ccode.add_assignment (
 			new CCodeMemberAccess (
 				resolve.get_variable_cexpression (
@@ -318,6 +320,7 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 	void generate_block_parent_assignment(Block b) {
 		var parent_block = emitter.next_closure_block (b.parent_symbol);
 
+		print_debug("generate_block_parent_assignment doing assignment for %s ========================= \n".printf(b.to_string()));
 		emitter.ccode.add_statement (
 			new CCodeExpressionStatement (
 				new CCodeAssignment (

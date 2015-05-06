@@ -74,6 +74,11 @@ public class codegenplug.ValueModule : shotodolplug.Module {
 		}
 		var cleft = resolve.get_cvalue (expr.left);
 		var cright = resolve.get_cvalue (expr.right);
+		/*if(cleft == cright && expr.operator == BinaryOperator.EQUALITY) { TODO do some optimization
+			print_debug("Optimised out visit_binary_expression for %s *********** \n".printf(expr.to_string()));
+			resolve.set_cvalue (expr, new CCodeConstant ("1"));
+			return null;
+		}*/
 
 		CCodeBinaryOperator op;
 		if (expr.operator == BinaryOperator.PLUS) {

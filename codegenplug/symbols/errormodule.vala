@@ -430,6 +430,7 @@ public class codegenplug.ErrorModule : shotodolplug.Module {
 #if true
 		if (clause.error_variable != null) {
 			emitter.visitor.visit_local_variable (clause.error_variable);
+			print_debug("visit_catch_clause creating assignment for %s ++++++++++++++++++\n".printf(clause.to_string()));
 			emitter.ccode.add_assignment (resolve.get_variable_cexpression (resolve.get_variable_cname (clause.error_variable.name)), resolve.get_variable_cexpression ("_inner_error_"));
 		}
 #endif

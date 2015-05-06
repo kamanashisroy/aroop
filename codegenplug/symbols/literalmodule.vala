@@ -64,6 +64,7 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 
 			int i = 0;
 			foreach (Expression e in expr.get_expressions ()) {
+				print_debug("visit_list_literal creating assignment for %s ++++++++++++++++++\n".printf(expr.to_string()));
 				ccode.add_assignment (new CCodeElementAccess (name_cnode, new CCodeConstant (i.to_string ())), resolve.get_cvalue (e));
 				i++;
 			}

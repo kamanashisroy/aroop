@@ -160,6 +160,7 @@ public class codegenplug.MethodModule : shotodolplug.Module {
 					emitter.ccode.add_declaration("%s *".printf (resolve.get_ccode_aroop_name(emitter.current_class)), new CCodeVariableDeclarator (resolve.self_instance));
 					var lop = new CCodeIdentifier (resolve.self_instance);
 					var rop = new CCodeCastExpression (new CCodeIdentifier ("base_instance"), "%s *".printf (resolve.get_ccode_aroop_name(emitter.current_class)));
+					print_debug("visit_method creating assignment for %s ++++++++++++++++++\n".printf(m.to_string()));
 					emitter.ccode.add_assignment (lop, rop);
 				}
 		
@@ -349,6 +350,7 @@ public class codegenplug.MethodModule : shotodolplug.Module {
 			var lhs = new CCodeIdentifier (resolve.get_ccode_name (field));
 			var rhs = get_cvalue (field.initializer);
 
+			print_debug("add_module_init creating assignment for %s ++++++++++++++++++\n".printf(field.to_string()));
 			emitter.ccode.add_assignment (lhs, rhs);
 		}
 #endif
