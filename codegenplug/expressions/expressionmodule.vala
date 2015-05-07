@@ -38,7 +38,23 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			resolve.set_cvalue (expr, transform_expression (resolve.get_cvalue (expr), expr.value_type, expr.target_type, expr));
 		}
 		print_debug("Done expression %s\n".printf(expr.to_string()));
+
+		do_optimization_here(expr);
 		return null;
+	}
+
+	void do_optimization_here(Expression?expr) {
+		if(resolve.get_cvalue(expr) is CCodeIdentifier) {
+			CCodeIdentifier cexpr = (CCodeIdentifier)resolve.get_cvalue(expr);
+			LocalVariable?targetvar = emitter.get_declaration_variable();
+			if(targetvar == null)
+				return;
+			CCodeIdentifier otherexpr = (CCodeIdentifier)resolve.get_variable_cexpression(targetvar.name);
+			if(otherexpr.name == cexpr.name) {
+				print_debug("Declaration expression is optimized, removed unwanted assignment for %s\n".printf(expr.to_string()));
+				resolve.set_cvalue(expr, null);
+			}
+		}
 	}
 
 
@@ -155,6 +171,10 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 				}
 				cexpr = resolve.get_ref_cexpression (target_type, cexpr, expr, node);
 			}
+		}
+		if(cexpr is CCodeIdentifier) {
+			CCodeIdentifier myidentpr = (CCodeIdentifier)cexpr;
+			print_debug("cexpr is identifier:%s, it may need optimization ..\n".printf(myidentpr.name));
 		}
 		print_debug("End of transformation of %s for target %s\n".printf(expr.to_string(), target_type.to_string()));
 
