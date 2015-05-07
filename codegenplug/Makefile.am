@@ -40,11 +40,14 @@ libcodegenplug_la_SOURCES = \
 	generator/csymbolresolve.vala \
 	symbols/structmodule.vala \
 	symbols/stringmodule.vala \
-	symbols/expressionmodule.vala \
-	symbols/postfixexpressionmodule.vala \
-	symbols/unaryexpressionmodule.vala \
-	symbols/lambdaexpressionmodule.vala \
-	symbols/castexpressionmodule.vala \
+	expressions/expressionmodule.vala \
+	statements/declarationstatementmodule.vala \
+	statements/expressionstatementmodule.vala \
+	statements/returnstatementmodule.vala \
+	expressions/postfixexpressionmodule.vala \
+	expressions/unaryexpressionmodule.vala \
+	expressions/lambdaexpressionmodule.vala \
+	expressions/castexpressionmodule.vala \
 	symbols/assignmentmodule.vala \
 	symbols/elementmodule.vala \
 	symbols/baseaccessmodule.vala \

@@ -11,10 +11,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		PluginManager.register("visit/declaration_statement", new HookExtension(visit_declaration_statement, this));
 		PluginManager.register("visit/expression", new HookExtension(visit_expression, this));
-		PluginManager.register("visit/return_statement", new HookExtension(visit_return_statement, this));
-		PluginManager.register("visit/expression_statement", new HookExtension(visit_expression_statement, this));
 		PluginManager.register("visit/end_full_expression", new HookExtension(visit_end_full_expression, this));
 		PluginManager.register("generate/expression/transformation", new HookExtension(transform_expression_helper, this));
 		PluginManager.register("generate/instance/cast", new HookExtension(generate_instance_cast_helper, this));
@@ -29,20 +26,6 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 	Value?rehashHook(Value?arg) {
 		emitter = (SourceEmitterModule?)PluginManager.swarmValue("source/emitter", null);
 		resolve = (CSymbolResolve?)PluginManager.swarmValue("resolve/c/symbol",null);
-		return null;
-	}
-
-	Value? visit_declaration_statement (Value?given) {
-		DeclarationStatement?stmt = (DeclarationStatement?)given;
-		var local = stmt.declaration as LocalVariable;
-		if (local == null) {
-			local = new LocalVariable(new PointerType(new VoidType()), "_AROOP_NO_DECLARATION_VARIABLE_");
-		}
-		emitter.push_declaration_variable(local);
-		print_debug("Emitting declaration statement %s\n".printf(stmt.to_string()));
-		stmt.declaration.accept (emitter.visitor);
-		print_debug("Done declaration statement %s\n".printf(stmt.to_string()));
-		emitter.pop_declaration_variable();
 		return null;
 	}
 
@@ -103,52 +86,6 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		return null;
 	}
 
-	Value? visit_return_statement (Value?given) {
-		ReturnStatement stmt = (ReturnStatement?)given;
-		// free local variables
-		CCodeExpression holder = new CCodeIdentifier ("result");
-
-		var rexpr = stmt.return_expression;
-		if(rexpr != null) {
-			if(emitter.current_return_type is GenericType) {
-				holder = new CCodeUnaryExpression (CCodeUnaryOperator.POINTER_INDIRECTION, new CCodeIdentifier ("result"));
-			}
-			print_debug("visit_return_statement creating assignment for %s ++++++++++++++++++\n".printf(stmt.to_string()));
-			emitter.ccode.add_assignment (holder, resolve.get_cvalue(rexpr));
-		}
-		AroopCodeGeneratorAdapter.append_local_free (emitter.current_symbol);
-		emitter.ccode.add_return ((emitter.current_return_type is VoidType || emitter.current_return_type is GenericType) ? null : holder);
-		return null;
-	}
-
-	Value? visit_expression_statement (Value?given) {
-		ExpressionStatement?stmt = (ExpressionStatement?)given;
-		if (stmt.expression.error) {
-			stmt.error = true;
-			return null;
-		}
-
-		if (resolve.get_cvalue (stmt.expression) != null) {
-			emitter.ccode.add_expression (resolve.get_cvalue (stmt.expression));
-		}
-		/* free temporary objects and handle errors */
-
-		foreach (LocalVariable local in emitter.emit_context.temp_ref_vars) {
-			var ma = new MemberAccess.simple (local.name);
-			ma.symbol_reference = local;
-			ma.value_type = local.variable_type.copy ();
-			emitter.ccode.add_expression (resolve.get_unref_expression (resolve.get_variable_cexpression (local.name), local.variable_type, ma));
-		}
-
-		if (stmt.tree_can_fail && stmt.expression.tree_can_fail) {
-			// simple case, no node breakdown necessary
-			AroopCodeGeneratorAdapter.add_simple_check (stmt.expression);
-		}
-
-		emitter.emit_context.temp_ref_vars.clear ();
-		return null;
-	}
-
 	Value? transform_expression_helper (Value?given_args) {
 		var args = (HashTable<string,Value?>)given_args;
 		return transform_expression(
@@ -164,6 +101,11 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		// check for optimization
 		if(source_cexpr is CCodeAssignment)
 			print_debug("Transforming expression %s may be we can do optimization ********\n".printf(expr.to_string()));
+
+		if(expr != null && expr is Vala.Assignment) {
+			Vala.Assignment aexpr = (Vala.Assignment)expr;
+			print_debug("Investigating assignment left:%s, right:%s\n".printf(aexpr.left.to_string(), aexpr.right.to_string()));
+		}
 
 
 		var cexpr = source_cexpr;

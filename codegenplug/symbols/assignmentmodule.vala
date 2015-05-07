@@ -106,6 +106,7 @@ public class codegenplug.AssignmentModule : shotodolplug.Module {
 			return null;
 		}
 
+		print_debug("visit_assignment for %s ========================= \n".printf(assignment.to_string()));
 		if (assignment.left.symbol_reference is Property) {
 			var ma = assignment.left as MemberAccess;
 			var prop = (Property) assignment.left.symbol_reference;
