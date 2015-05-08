@@ -51,8 +51,11 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			 */ 
 			var decl_var = emitter.get_declaration_variable();
 			if(decl_var != null) {
-				var myvar = resolve.get_local_cvalue(decl_var);
-				instance = resolve.get_local_cvalue(resolve.get_cvalue(myvar));//resolve.get_variable_cexpression(decl_var.name);
+				if(decl_var.captured) {
+					instance = AroopCodeGeneratorAdapter.generate_local_captured_variable(decl_var);
+				} else {
+					instance = resolve.get_variable_cexpression(decl_var.name);
+				}
 			}
 			if(instance == null) {
 				/**
@@ -250,9 +253,14 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 #else
 			if(requires_assignment) {
 				print_debug("object_creation_expression creating assignment for ++++++++++++++++++++++++++++++++\n");
-				var declvar = emitter.get_declaration_variable();
-				var myvar = resolve.get_local_cvalue(declvar);
-				emitter.ccode.add_assignment (resolve.get_cvalue(myvar), creation_expr);
+				var decl_var = emitter.get_declaration_variable();
+				CCodeExpression instance2 = null;
+				if(decl_var.captured) {
+					instance2 = AroopCodeGeneratorAdapter.generate_local_captured_variable(decl_var);
+				} else {
+					instance2 = resolve.get_variable_cexpression(decl_var.name);
+				}
+				emitter.ccode.add_assignment (instance2, creation_expr);
 			}
 			resolve.set_cvalue (expr, creation_expr);
 #endif
