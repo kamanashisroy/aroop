@@ -50,8 +50,10 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 			 * The following code tries to get current destination for the creation expression
 			 */ 
 			var decl_var = emitter.get_declaration_variable();
-			if(decl_var != null)
-				instance = resolve.get_variable_cexpression(decl_var.name);
+			if(decl_var != null) {
+				var myvar = resolve.get_local_cvalue(decl_var);
+				instance = resolve.get_local_cvalue(resolve.get_cvalue(myvar));//resolve.get_variable_cexpression(decl_var.name);
+			}
 			if(instance == null) {
 				/**
 				 * The following code creates temprary variable for structure initialization ..
@@ -248,7 +250,9 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 #else
 			if(requires_assignment) {
 				print_debug("object_creation_expression creating assignment for ++++++++++++++++++++++++++++++++\n");
-				emitter.ccode.add_assignment (resolve.get_variable_cexpression(emitter.get_declaration_variable().name), creation_expr);
+				var declvar = emitter.get_declaration_variable();
+				var myvar = resolve.get_local_cvalue(declvar);
+				emitter.ccode.add_assignment (resolve.get_cvalue(myvar), creation_expr);
 			}
 			resolve.set_cvalue (expr, creation_expr);
 #endif

@@ -42,31 +42,32 @@ public class codegenplug.LocalVariableModule : shotodolplug.Module {
 			rhs = resolve.get_cvalue (local.initializer);
 		}
 
-		/**
-		 * @see struct_test/block_in_struct_test/vsrc/simple.c
-		 * extring fruit;
-		 * aroop_memclean_raw2 (&fruit);
-		 */
-		//var cvar = new CCodeVariableDeclarator (resolve.get_variable_cname (local.name), has_simple_struct_initializer (local)?rhs:null, resolve.get_ccode_declarator_suffix (local.variable_type), generate_declarator_suffix_cexpr(local.variable_type));
-		var cvar = new CCodeVariableDeclarator (resolve.get_variable_cname (local.name), has_simple_struct_initializer (local)?rhs:null, resolve.get_ccode_declarator_suffix (local.variable_type));
-
-		var cdecl = new CCodeDeclaration (resolve.get_ccode_aroop_name (local.variable_type));
-		cdecl.add_declarator (cvar);
-		emitter.ccode.add_statement (cdecl);
-
-		// try to initialize uninitialized variables
-		// initialization not necessary for variables stored in closure
-		if (cvar.initializer == null) {
-			cvar.initializer = resolve.default_value_for_type (local.variable_type, true);
-			cvar.init0 = true;
-		}
 		if (local.captured) {
+			/**
+			 * @see struct_test/block_in_struct_test/vsrc/simple.c
+			 * extring fruit;
+			 * aroop_memclean_raw2 (&fruit);
+			 */
 			/**
 			 * @see struct_test/block_in_struct_test/vsrc/simple.c
 			 * _data1_.fruit = fruit;
 			 */
 			if (local.initializer != null) {
-				initialize_local_variable_in_block(local, rhs, emitter.ccode);
+				initialize_local_variable_in_block(local, has_simple_struct_initializer (local)?rhs:null, emitter.ccode);
+			}
+		} else {
+			//var cvar = new CCodeVariableDeclarator (resolve.get_variable_cname (local.name), has_simple_struct_initializer (local)?rhs:null, resolve.get_ccode_declarator_suffix (local.variable_type), generate_declarator_suffix_cexpr(local.variable_type));
+			var cvar = new CCodeVariableDeclarator (resolve.get_variable_cname (local.name), has_simple_struct_initializer (local)?rhs:null, resolve.get_ccode_declarator_suffix (local.variable_type));
+
+			var cdecl = new CCodeDeclaration (resolve.get_ccode_aroop_name (local.variable_type));
+			cdecl.add_declarator (cvar);
+			emitter.ccode.add_statement (cdecl);
+
+			// try to initialize uninitialized variables
+			// initialization not necessary for variables stored in closure
+			if (cvar.initializer == null) {
+				cvar.initializer = resolve.default_value_for_type (local.variable_type, true);
+				cvar.init0 = true;
 			}
 		}
 
