@@ -87,7 +87,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 				vbdecl.modifiers |= CCodeModifiers.STATIC;
 			else
 				vbdecl.modifiers &= ~CCodeModifiers.STATIC;
-			cfile.add_type_member_declaration(vbdecl);
+			resolve.cfile.add_type_member_declaration(vbdecl);
 #endif
 			return;
 		}

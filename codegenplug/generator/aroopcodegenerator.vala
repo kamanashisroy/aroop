@@ -141,8 +141,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_declaration_statement (DeclarationStatement stmt) {
-		string visit_exten= "visit/declaration_statement";
-		PluginManager.swarmValue(visit_exten, stmt);
+		PluginManager.swarmValue("visit/declaration_statement", stmt);
 	}
 
 	public override void visit_local_variable (LocalVariable local) {
@@ -256,33 +255,27 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_array_creation_expression (ArrayCreationExpression expr) {
-		string visit_exten= "visit/array_creation_expression";
-		PluginManager.swarmValue(visit_exten, expr);
+		PluginManager.swarmValue("visit/array_creation_expression", expr);
 	}
 
 	public override void visit_boolean_literal (BooleanLiteral lit) {
-		string visit_exten= "visit/boolean_literal";
-		PluginManager.swarmValue(visit_exten, lit);
+		PluginManager.swarmValue("visit/boolean_literal", lit);
 	}
 
 	public override void visit_character_literal (CharacterLiteral lit) {
-		string visit_exten= "visit/character_literal";
-		PluginManager.swarmValue(visit_exten, lit);
+		PluginManager.swarmValue("visit/character_literal", lit);
 	}
 
 	public override void visit_integer_literal (IntegerLiteral lit) {
-		string visit_exten= "visit/integer_literal";
-		PluginManager.swarmValue(visit_exten, lit);
+		PluginManager.swarmValue("visit/integer_literal", lit);
 	}
 
 	public override void visit_real_literal (RealLiteral lit) {
-		string visit_exten= "visit/real_literal";
-		PluginManager.swarmValue(visit_exten, lit);
+		PluginManager.swarmValue("visit/real_literal", lit);
 	}
 
 	public override void visit_regex_literal (RegexLiteral lit) {
-		string visit_exten= "visit/regex_literal";
-		PluginManager.swarmValue(visit_exten, lit);
+		PluginManager.swarmValue("visit/regex_literal", lit);
 	}
 
 	public override void visit_string_literal (StringLiteral lit) {
@@ -300,8 +293,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_null_literal (NullLiteral lit) {
-		string visit_exten= "visit/null_literal";
-		PluginManager.swarmValue(visit_exten, lit);
+		PluginManager.swarmValue("visit/null_literal", lit);
 	}
 
 	public override void visit_member_access (MemberAccess expr) {

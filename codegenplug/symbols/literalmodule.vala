@@ -16,6 +16,8 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("visit/integer_literal", new HookExtension(visit_integer_literal, this));
+		PluginManager.register("visit/character_literal", new HookExtension(visit_character_literal, this));
+		PluginManager.register("visit/real_literal", new HookExtension(visit_real_literal, this));
 		PluginManager.register("visit/null_literal", new HookExtension(visit_null_literal, this));
 		PluginManager.register("visit/boolean_literal", new HookExtension(visit_boolean_literal, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
@@ -32,11 +34,42 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 		return null;
 	}
 
-	Value? visit_integer_literal (Value? givenValue) {
+	Value?visit_integer_literal (Value? givenValue) {
 		IntegerLiteral?expr = (IntegerLiteral?)givenValue;
+		print_debug("visit_integer_literal generating code for %s\n".printf(expr.to_string()));
 		resolve.set_cvalue (expr, new CCodeConstant (expr.value));
 		return null;
 	}
+
+	Value?visit_character_literal (Value?given) {
+		CharacterLiteral?expr = (CharacterLiteral?)given;
+		if (expr.get_char () >= 0x20 && expr.get_char () < 0x80) {
+			resolve.set_cvalue (expr, new CCodeConstant (expr.value));
+		} else {
+			resolve.set_cvalue (expr, new CCodeConstant ("%uU".printf (expr.get_char ())));
+		}
+		return null;
+	}
+
+	Value?visit_real_literal (Value?given) {
+		RealLiteral?expr = (RealLiteral?)given;
+		string c_literal = expr.value;
+		if (c_literal.has_suffix ("d") || c_literal.has_suffix ("D")) {
+			// there is no suffix for double in C
+			c_literal = c_literal.substring (0, c_literal.length - 1);
+		}
+		if (!("." in c_literal || "e" in c_literal || "E" in c_literal)) {
+			// C requires period or exponent part for floating constants
+			if ("f" in c_literal || "F" in c_literal) {
+				c_literal = c_literal.substring (0, c_literal.length - 1) + ".f";
+			} else {
+				c_literal += ".";
+			}
+		}
+		resolve.set_cvalue (expr, new CCodeConstant (c_literal));
+		return null;
+	}
+
 
 	Value?visit_null_literal (Value?given) {
 		NullLiteral?expr = (NullLiteral?)given;
