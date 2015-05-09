@@ -12,6 +12,7 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 
 	public override int init() {
 		PluginManager.register("visit/field", new HookExtension(visit_field, this));
+		PluginManager.register("visit/element_access", new HookExtension(visit_element_access, this));
 		PluginManager.register("generate/element/destruction", new HookExtension(generate_element_destruction_code_helper, this));
 		PluginManager.register("generate/element/declaration", new HookExtension(generate_element_declaration_helper, this));
 		PluginManager.register("generate/field/declaration", new HookExtension(generate_field_declaration_helper, this));
@@ -249,6 +250,55 @@ public class codegenplug.ElementModule : shotodolplug.Module {
 		return null;
 	}
 
+	Value?visit_element_access (Value?given) {
+		ElementAccess?expr = (ElementAccess?)given;
+		var array_type = expr.container.value_type as ArrayType;
+		if (array_type != null) {
+			// access to element in an array
 
+			expr.accept_children (emitter.visitor);
+
+			Vala.List<Expression> indices = expr.get_indices ();
+			var cindex = resolve.get_cvalue (indices[0]);
+
+			if (array_type.inline_allocated) {
+				if (array_type.element_type is GenericType) {
+					// generic array
+					// calculate offset in bytes based on value size
+					var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
+					value_size.add_argument (resolve.get_type_id_expression (array_type.element_type));
+					resolve.set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (resolve.get_cvalue (expr.container), "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
+				} else {
+					resolve.set_cvalue (expr, new CCodeElementAccess (resolve.get_cvalue (expr.container), cindex));
+				}
+			} else {
+				var ccontainer = resolve.get_cvalue (expr.container);
+
+				if (array_type.element_type is GenericType) {
+					// generic array
+					// calculate offset in bytes based on value size
+					var value_size = new CCodeFunctionCall (new CCodeIdentifier ("aroop_type_get_value_size"));
+					value_size.add_argument (resolve.get_type_id_expression (array_type.element_type));
+					resolve.set_cvalue (expr, new CCodeBinaryExpression (CCodeBinaryOperator.PLUS, new CCodeCastExpression (ccontainer, "char*"), new CCodeBinaryExpression (CCodeBinaryOperator.MUL, value_size, cindex)));
+				} else {
+					resolve.set_cvalue (expr, new CCodeElementAccess (new CCodeCastExpression (ccontainer, "%s*".printf (resolve.get_ccode_aroop_name (array_type.element_type))), cindex));
+				}
+			}
+
+		} else {
+			visit_element_access_array (expr);
+		}
+		return null;
+	}
+
+	void visit_element_access_array (ElementAccess expr) {
+		Vala.List<Expression> indices = expr.get_indices ();
+
+		var ccontainer = resolve.get_cvalue (expr.container);
+		var cindex = resolve.get_cvalue (indices[0]);
+
+		// access to element in an array
+		resolve.set_cvalue (expr, new CCodeElementAccess (ccontainer, cindex));
+	}
 }
 

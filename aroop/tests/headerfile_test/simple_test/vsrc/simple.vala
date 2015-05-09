@@ -1,7 +1,7 @@
 
 using aroop;
 
-internal abstract class orchard.Fruit : Replicable {
+public abstract class orchard.Fruit : Replicable {
 }
 
 
