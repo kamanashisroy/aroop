@@ -104,7 +104,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				set_params = "x,y";
 			}
 			if (prop.get_accessor != null) {
-#if USE_MACRO_GETTER_SETTER
+#if false
 				CCodeFunction gfunc = new CCodeFunction (
 					"%sget_%s".printf (
 						resolve.get_ccode_lower_case_prefix (cl)
@@ -637,7 +637,7 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 	}
 
 
-#if USE_MACRO_GETTER_SETTER
+#if false
 	void visit_property_accessor2 (PropertyAccessor acc) {
 		//emitter.push_context (new EmitContext (acc));
 		if (acc.result_var != null) {

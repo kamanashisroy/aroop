@@ -11,7 +11,8 @@ public class codegenplug.PropertyModule : shotodolplug.Module {
 	}
 
 	public override int init() {
-		//PluginManager.register("visit/property", new HookExtension(visit_property_helper, this));
+		PluginManager.register("visit/property", new HookExtension(visit_property, this));
+		PluginManager.register("visit/property_accessor", new HookExtension(visit_property_accessor, this));
 		PluginManager.register("generate/property_accessor/declaration", new HookExtension(generate_property_accessor_declaration_helper, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
@@ -37,6 +38,7 @@ public class codegenplug.PropertyModule : shotodolplug.Module {
 	}
 
 	void generate_property_accessor_declaration (PropertyAccessor acc, CCodeFile decl_space) {
+#if false
 		if (emitter.add_symbol_declaration (decl_space, acc.prop, resolve.get_ccode_name (acc))) {
 			return;
 		}
@@ -93,8 +95,22 @@ public class codegenplug.PropertyModule : shotodolplug.Module {
 
 			decl_space.add_function_declaration (override_func);
 		}
+#endif
 	}
 
+	Value?visit_property (Value?given) {
+		Property?prop = (Property?)given;
+		if (prop.get_accessor != null) {
+			prop.get_accessor.accept (emitter.visitor);
+		}
+		if (prop.set_accessor != null) {
+			prop.set_accessor.accept (emitter.visitor);
+		}
+		return null;
+	}
 
+	Value?visit_property_accessor (Value?given) {
+		return null;
+	}
 }
 
