@@ -50,13 +50,15 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmValue(visit_exten, iface);
 	}
 	public override void visit_enum(Enum en) {
-		string visit_exten= "visit/interface";
+		string visit_exten= "visit/enum";
 		PluginManager.swarmValue(visit_exten, en);
 	}
+#if false
 	public override void visit_enum_value(Vala.EnumValue ev) {
 		string visit_exten= "visit/enum_value";
 		PluginManager.swarmValue(visit_exten, ev);
 	}
+#endif
 	public override void visit_error_domain(ErrorDomain edomain) {
 		PluginManager.swarmValue("visit/error_domain", edomain);
 	}
