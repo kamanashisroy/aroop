@@ -26,10 +26,9 @@ public class codegenplug.AroopCodeGeneratorModule : shotodolplug.Module {
 
 internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	public override void visit_source_file(SourceFile source_file) {
-		string visit_exten= "visit/source_file";
 		var args = new HashTable<string,Value?>(str_hash,str_equal);
 		args["source_file"] = source_file;
-		PluginManager.swarmValue(visit_exten, args);
+		PluginManager.swarmValue("visit/source_file", args);
 	}
 #if false
 	public override void visit_namespace(Namespace ns) {
@@ -38,25 +37,20 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 #endif
 	public override void visit_class(Class cl) {
-		string visit_exten= "visit/class";
-		PluginManager.swarmValue(visit_exten, cl);
+		PluginManager.swarmValue("visit/class", cl);
 	}
 	public override void visit_struct(Struct st) {
-		string visit_exten= "visit/struct";
-		PluginManager.swarmValue(visit_exten, st);
+		PluginManager.swarmValue("visit/struct", st);
 	}
 	public override void visit_interface(Interface iface) {
-		string visit_exten= "visit/interface";
-		PluginManager.swarmValue(visit_exten, iface);
+		PluginManager.swarmValue("visit/interface", iface);
 	}
 	public override void visit_enum(Enum en) {
-		string visit_exten= "visit/enum";
-		PluginManager.swarmValue(visit_exten, en);
+		PluginManager.swarmValue("visit/enum", en);
 	}
 #if false
 	public override void visit_enum_value(Vala.EnumValue ev) {
-		string visit_exten= "visit/enum_value";
-		PluginManager.swarmValue(visit_exten, ev);
+		PluginManager.swarmValue("visit/enum_value", ev);
 	}
 #endif
 	public override void visit_error_domain(ErrorDomain edomain) {
@@ -66,16 +60,13 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmValue("visit/error_code", ecode);
 	}
 	public override void visit_delegate(Delegate d) {
-		string visit_exten= "visit/delegate";
-		PluginManager.swarmValue(visit_exten, d);
+		PluginManager.swarmValue("visit/delegate", d);
 	}
 	public override void visit_constant(Constant c) {
-		string visit_exten= "visit/constant";
-		PluginManager.swarmValue(visit_exten, c);
+		PluginManager.swarmValue("visit/context", c);
 	}
 	public override void visit_field(Field f) {
-		string visit_exten= "visit/field";
-		PluginManager.swarmValue(visit_exten, f);
+		PluginManager.swarmValue("visit/field", f);
 	}
 	public override void visit_method(Method m) {
 		string visit_exten= "visit/method";
@@ -94,8 +85,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_property_accessor (PropertyAccessor acc) {
-		string visit_exten= "visit/property_accessor";
-		PluginManager.swarmValue(visit_exten, acc);
+		PluginManager.swarmValue("visit/property_accessor", acc);
 	}
 
 	public override void visit_signal (Vala.Signal sig) {
@@ -150,8 +140,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_initializer_list (InitializerList list) {
-		string visit_exten= "visit/initializer_list";
-		PluginManager.swarmValue(visit_exten, list);
+		PluginManager.swarmValue("visit/initializer_list", list);
 	}
 
 	public override void visit_expression_statement (ExpressionStatement stmt) {
@@ -159,18 +148,15 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_if_statement (IfStatement stmt) {
-		string visit_exten= "visit/if_statement";
-		PluginManager.swarmValue(visit_exten, stmt);
+		PluginManager.swarmValue("visit/if_statement", stmt);
 	}
 
 	public override void visit_switch_statement (SwitchStatement stmt) {
-		string visit_exten= "visit/switch_statement";
-		PluginManager.swarmValue(visit_exten, stmt);
+		PluginManager.swarmValue("visit/switch_statement", stmt);
 	}
 
 	public override void visit_switch_section (SwitchSection section) {
-		string visit_exten= "visit/switch_section";
-		PluginManager.swarmValue(visit_exten, section);
+		PluginManager.swarmValue("visit/switch_section", section);
 	}
 
 	public override void visit_switch_label (SwitchLabel label) {
@@ -179,8 +165,7 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 	}
 
 	public override void visit_loop (Loop stmt) {
-		string visit_exten= "visit/loop";
-		PluginManager.swarmValue(visit_exten, stmt);
+		PluginManager.swarmValue("visit/loop", stmt);
 	}
 
 	public override void visit_while_statement (WhileStatement stmt) {
