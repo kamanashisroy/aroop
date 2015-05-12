@@ -1,12 +1,12 @@
 # please refer to https://wiki.gnome.org/Projects/Vala/GameDevelopmentSeries/Setup
 
 m4_define([aroop_major], [0])
-m4_define([aroop_minor], [1])
+m4_define([aroop_minor], [2])
 m4_define([aroop_micro], [0])
 
 m4_define([aroop_version], [aroop_major.aroop_minor.aroop_micro])
 m4_define([aroop_suffix], [-aroop_version])
-m4_define([aroop_api_version], [0.1])
+m4_define([aroop_api_version], [0.2])
 
 m4_define([aroop_name], [aroop])
 
