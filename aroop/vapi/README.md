@@ -19,3 +19,5 @@ This api provides the following classes,
 	- [OPPFactory](oppfactory.md)
 	- [SearchableOPPFactory](oppfactory.md#searchableoppfactory.md)
 
+Note that the above apis are defined in [aroop\_core-1.0.vapi](aroop_core-1.0.vapi) file.
+

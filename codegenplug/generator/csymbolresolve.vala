@@ -9,7 +9,7 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	public string self_instance = "self_data";
 	public Map<string,string> variable_name_map = new HashMap<string,string> (str_hash, str_equal);
 	SourceEmitterModule?emitter;
-	CodeGenerator cgen;
+	//CodeGenerator cgen;
 	public CSymbolResolve() {
 		base("C Symbol Resolver", "0.0");
 		reserved_identifiers = new HashSet<string> (str_hash, str_equal);
@@ -460,7 +460,8 @@ public class codegenplug.CSymbolResolve : shotodolplug.Module {
 	}
 	public CCodeExpression? get_ccodenode (Expression node) {
 		if (get_cvalue (node) == null) {
-			node.emit (cgen);
+			//node.emit (cgen);
+			node.emit (emitter.visitor);
 		}
 		return get_cvalue (node);
 	}

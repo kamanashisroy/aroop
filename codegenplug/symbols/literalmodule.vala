@@ -20,6 +20,7 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 		PluginManager.register("visit/real_literal", new HookExtension(visit_real_literal, this));
 		PluginManager.register("visit/null_literal", new HookExtension(visit_null_literal, this));
 		PluginManager.register("visit/boolean_literal", new HookExtension(visit_boolean_literal, this));
+		//PluginManager.register("visit/list_literal", new HookExtension(visit_list_literal, this));
 		PluginManager.register("rehash", new HookExtension(rehashHook, this));
 		return 0;
 	}
@@ -78,7 +79,8 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 	}
 
 #if false
-	public override void visit_list_literal (ListLiteral expr) {
+	Value?visit_list_literal (Value?given) {
+		ListLiteral?expr = (ListLiteral?)given;
 		CCodeExpression ptr;
 		int length = expr.get_expressions ().size;
 
@@ -123,6 +125,7 @@ public class codegenplug.LiteralModule : shotodolplug.Module {
 		list_creation.add_argument (name_cnode);
 
 		resolve.set_cvalue (expr, list_creation);
+		return null;
 	}
 
 	public override void visit_set_literal (SetLiteral expr) {

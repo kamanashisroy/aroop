@@ -310,6 +310,12 @@ internal class codegenplug.AroopCodeGenerator : CodeGenerator {
 		PluginManager.swarmValue(visit_exten, expr);
 	}
 
+#if false
+	public override void visit_list_literal (PostfixExpression expr) {
+		PluginManager.swarmValue("visit/list_literal", expr);
+	}
+#endif
+
 	public override void visit_object_creation_expression (ObjectCreationExpression expr) {
 		string visit_exten= "visit/object_creation_expression";
 		PluginManager.swarmValue(visit_exten, expr);
