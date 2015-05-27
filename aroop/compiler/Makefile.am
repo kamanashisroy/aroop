@@ -31,13 +31,14 @@ aroopc@PACKAGE_SUFFIX@_CFLAGS = \
 aroopc@PACKAGE_SUFFIX@_VALAFLAGS = \
         --vapidir $(top_srcdir)/shotodolplug --pkg shotodolplug \
         --vapidir $(top_srcdir)/codegenplug --pkg codegenplug \
-        --vapidir $(top_srcdir)/aroop/codegen --pkg config \
+        --vapidir $(top_srcdir)/aroop/compiler --pkg config \
         --pkg $(VALA_PACKAGE) \
         -g \
         $(NULL)
 
 
 #EXTRA_DIST = $(aroopc@PACKAGE_SUFFIX@_VALASOURCES)
+EXTRA_DIST=config.vapi
 
 MAINTAINERCLEANFILES = \
 	$(aroopc@PACKAGE_SUFFIX@_SOURCES:.vala=.c) \
