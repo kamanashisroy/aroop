@@ -48,6 +48,7 @@ public class codegenplug.StructModule : shotodolplug.Module {
 			return;
 		}
 		if(st.external_package) {
+			emitter.add_symbol_declaration (decl_space, st, resolve.get_ccode_name (st));
 			return;
 		}
 		if(!st.is_internal_symbol() && !decl_space.is_header) {

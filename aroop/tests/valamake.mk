@@ -1,7 +1,7 @@
 
 VALA_HOME=../../../../
 #VALAC=$(VALA_HOME)/aroop/compiler/aroopc-0.1.0 --module-debug .error.objectcreation.expression.
-VALAC=$(VALA_HOME)/aroop/compiler/aroopc-0.1.0 --module-debug ALL
+VALAC=$(VALA_HOME)/aroop/compiler/aroopc-0.2.0 --module-debug ALL
 VAPI= --vapidir $(VALA_HOME)/vapi --vapidir $(VALA_HOME)/aroop/vapi
 
 VSOURCES=$(wildcard vsrc/*.vala)

@@ -54,9 +54,12 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 				generate_class_declaration (cl.base_class, emitter.header_file);
 			}
 		}
-		generate_getter_setter_declaration(cl, decl_space);
-		generate_generic_builder_macro(cl, decl_space);
 
+		if(!cl.is_internal_symbol() || !decl_space.is_header) {
+			generate_getter_setter_declaration(cl, decl_space);
+			generate_generic_builder_macro(cl, decl_space);
+
+		}
 		proto.generate_type_declaration(decl_space);
 		//decl_space.add_type_declaration(new CCodeTypeDefinition (resolve.get_ccode_aroop_definition(cl), new CCodeVariableDeclarator (resolve.get_ccode_aroop_name (cl))));
 		bool has_vtables = resolve.hasVtables(cl);
@@ -80,7 +83,9 @@ public class codegenplug.ObjectModule : shotodolplug.Module {
 		if(has_vtables) {
 			class_struct.add_field ("%s*".printf(get_ccode_vtable_struct (cl)), "vtable");
 		}
-		decl_space.add_type_definition (class_struct);
+		if(!cl.is_internal_symbol() || !decl_space.is_header) {
+			decl_space.add_type_definition (class_struct);
+		}
 	}
 
 	void generate_getter_setter_declaration(Class cl, CCodeFile decl_space) {

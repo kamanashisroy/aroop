@@ -112,7 +112,6 @@ public class codegenplug.MethodModule : shotodolplug.Module {
 		}
 	}
 
-
 	Value? visit_method (Value?args) {
 		Method m = (Method?)args;
 		emitter.push_context (new EmitContext (m));
