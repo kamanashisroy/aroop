@@ -54,10 +54,11 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 				if(decl_var.captured) {
 					instance = AroopCodeGeneratorAdapter.generate_local_captured_variable(decl_var);
 				} else {
-					instance = resolve.get_variable_cexpression(decl_var.name);
+					instance = resolve.get_variable_cexpression(resolve.get_variable_cname(decl_var.name));
 				}
 			}
-			if(instance == null) {
+#if false
+			if(instance == null) { // for static variable or for local variable ..
 				/**
 				 * The following code creates temprary variable for structure initialization ..
 				 */ 
@@ -74,6 +75,7 @@ public class codegenplug.ObjectCreationModule : shotodolplug.Module {
 				instance = resolve.get_variable_cexpression (resolve.get_variable_cname (temp_decl.name));
 				requires_assignment = true;
 			}
+#endif
 		}
 
 		if (expr.symbol_reference == null) {

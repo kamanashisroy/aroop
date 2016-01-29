@@ -11,4 +11,5 @@
 
 #### Generated C code
 	- [ ] Do static analysis on generated C code. see coala project.
+	- [ ] study https://github.com/valum-framework/valum
 

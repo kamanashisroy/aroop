@@ -55,7 +55,6 @@ public class codegenplug.MethodCallModule : shotodolplug.Module {
 
 		if (m is CreationMethod) {
 			var cl = m.parent_symbol;
-
 			if (cl == emitter.current_class) {
 				ccall.add_argument (new CCodeIdentifier (resolve.self_instance));
 			} else {

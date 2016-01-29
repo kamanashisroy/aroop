@@ -35,6 +35,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		print_debug(" --> %s\n".printf((resolve.get_cvalue(expr) == null)?"null":"not null"));
 		if (resolve.get_cvalue (expr) != null && !expr.lvalue) {
 			// memory management, implicit casts, and boxing/unboxing
+			print_debug("Transforming expression %s\n".printf(expr.to_string()));
 			resolve.set_cvalue (expr, transform_expression (resolve.get_cvalue (expr), expr.value_type, expr.target_type, expr));
 		}
 		print_debug("Done expression %s\n".printf(expr.to_string()));
@@ -118,6 +119,10 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		if(source_cexpr is CCodeAssignment)
 			print_debug("Transforming expression %s may be we can do optimization ********\n".printf(expr.to_string()));
 
+		if(expr != null && expr is Vala.DeclarationStatement) {
+			print_debug("Transforming a declaration statement %s\n".printf(expr.to_string()));
+		}
+
 		if(expr != null && expr is Vala.Assignment) {
 			Vala.Assignment aexpr = (Vala.Assignment)expr;
 			print_debug("Investigating assignment left:%s, right:%s\n".printf(aexpr.left.to_string(), aexpr.right.to_string()));
@@ -130,6 +135,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 		}
 
 		print_debug("Transforming expression %s for target %s\n".printf(expr.to_string(), (target_type == null)?"(null)":target_type.to_string()));
+		print_debug("\t\t -> data type %s\n".printf(expression_type.to_string()));
 
 		if (expression_type.value_owned
 		    && (target_type == null || !target_type.value_owned)) {
@@ -137,6 +143,7 @@ public class codegenplug.ExpressionModule : shotodolplug.Module {
 			var pointer_type = target_type as PointerType;
 			if (pointer_type != null && !(pointer_type.base_type is VoidType)) {
 				// manual memory management for non-void pointers
+				print_debug("Pointer type %s\n".printf(expr.to_string()));
 				// treat void* special to not leak memory with void* method parameters
 			} else if (resolve.requires_destroy (expression_type)) {
 #if true
