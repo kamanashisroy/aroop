@@ -83,6 +83,8 @@ OPP_CB(opp_factory_profiler) {
 		memset(x,0,sizeof(*x));
 		break;
 	case OPPN_ACTION_FINALIZE:
+		if(x->obuff != NULL)
+			opp_factory_destroy_use_profiler_instead(x->obuff);
 		break;
 	}
 	return 0;
@@ -142,6 +144,21 @@ int opp_factory_create_full_and_profile(struct opp_factory*obuff
 	return 0;
 }
 
+struct late_finalization_pivote {
+	struct opp_factory*target;
+	struct opp_factory_profiler_info*info;
+};
+
+static int opp_factory_profiler_visit_to_find(void*func_data, void*data) {
+	struct late_finalization_pivote*pvt = func_data;
+	struct opp_factory_profiler_info*x = data;
+	if(x->obuff == pvt->target) {
+		pvt->info = x;
+		return 1;
+	}
+	return 0;
+}
+
 static int opp_factory_profiler_visit_to_prune(void*func_data, void*data) {
 	struct opp_factory_profiler_info*x = data;
 	if(x->obuff == func_data) {
@@ -153,6 +170,14 @@ static int opp_factory_profiler_visit_to_prune(void*func_data, void*data) {
 
 int opp_factory_destroy_and_remove_profile(struct opp_factory*src) {
 	RETURN_IF_PROFILER_OFF(0);
+	struct late_finalization_pivote pvt = {.target = src, .info = NULL};
+	if(check_stop(1,0)) return 0;
+	opp_factory_profiler_visit(opp_factory_profiler_visit_to_find, &pvt);
+	if(check_stop(0,1)) return 0;
+	if(pvt.info != NULL) {
+		opp_factory_destroy_use_profiler_instead(pvt.info->obuff);
+		pvt.info->obuff = NULL;
+	}
 	if(check_stop(1,0)) return 0;
 	opp_factory_profiler_visit(opp_factory_profiler_visit_to_prune, src);
 	if(check_stop(0,1)) return 0;
