@@ -155,7 +155,7 @@ static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 	if(cb_data->checkMemory) {
 		// TODO fill me
 	}
-	if(opp_factory_is_initialized(x->obuff)) {
+	if(x->obuff != NULL && opp_factory_is_initialized(x->obuff)) {
 		cb_data->total_memory_used += x->obuff->slot_use_count*x->obuff->obj_size;
 		cb_data->total_memory += (x->obuff->pool_count*x->obuff->memory_chunk_size);
 	} else {
@@ -163,6 +163,9 @@ static int aroop_memory_profiler_visitor(void*func_data, void*data) {
 		struct aroop_txt msg;
 		aroop_txt_embeded_set_static_string(&msg, " !!!! Uninitialized\n");
 		cb_data->log.cb(cb_data->log.cb_data, &msg);
+	}
+	if(x->obuff == NULL) {
+		return 0;
 	}
 	struct aroop_txt content;
 	aroop_txt_embeded_stackbuffer(&content, PROFILER_DUMP_LINE_SIZE);

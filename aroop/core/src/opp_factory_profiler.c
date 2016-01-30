@@ -83,7 +83,7 @@ OPP_CB(opp_factory_profiler) {
 		memset(x,0,sizeof(*x));
 		break;
 	case OPPN_ACTION_FINALIZE:
-		if(x->obuff != NULL)
+		if(x->obuff != NULL && x->obuff != (&prof.pool))
 			opp_factory_destroy_use_profiler_instead(x->obuff);
 		break;
 	}
