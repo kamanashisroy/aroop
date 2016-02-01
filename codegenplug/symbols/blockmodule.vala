@@ -58,6 +58,12 @@ public class codegenplug.BlockModule : shotodolplug.Module {
 			var data_decl = new CCodeDeclaration (AroopCodeGeneratorAdapter.generate_block_name(b));
 			data_decl.add_declarator (new CCodeVariableDeclarator (AroopCodeGeneratorAdapter.generate_block_var_name(b)));
 			emitter.ccode.add_statement (data_decl);
+#if true
+			// memset block
+			var memclean = new CCodeFunctionCall(new CCodeIdentifier("aroop_memclean_raw2"));
+			memclean.add_argument(new CCodeUnaryExpression (CCodeUnaryOperator.ADDRESS_OF, new CCodeIdentifier(AroopCodeGeneratorAdapter.generate_block_var_name(b))));
+			emitter.ccode.add_expression(memclean);
+#endif
 
 			if (parent_block != null) {
 				generate_block_parent_assignment(b);
